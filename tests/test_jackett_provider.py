@@ -100,26 +100,30 @@ class JackettProviderTests(unittest.TestCase):
         self.provider.api_key = "abc"
         self.assertTrue(self.provider._check_auth())
 
-    def test_check_auth_rejects_non_loopback_http_with_apikey(self):
+    def test_check_auth_http_local_vs_public(self):
+        # Public hostname over HTTP still rejected (apikey in query string)
         self.provider.custom_url = "http://jackett.example.com:9117"
         self.assertFalse(self.provider._check_auth())
-
         self.provider.custom_url = "https://jackett.example.com:9117"
         self.assertTrue(self.provider._check_auth())
 
-        # Loopback HTTP still allowed (bare "localhost" fails validators.url)
+        # Loopback HTTP allowed (bare "localhost" fails validators.url)
         self.provider.custom_url = "http://127.0.0.1:9117"
         self.assertTrue(self.provider._check_auth())
         self.provider.custom_url = "http://[::1]:9117"
         self.assertTrue(self.provider._check_auth())
 
-        # Private / LAN / hostname HTTP requires HTTPS (apikey in query string)
+        # Docker bridge → host LAN IP (Jackett published port) over HTTP
         self.provider.custom_url = "http://192.168.1.10:9117"
-        self.assertFalse(self.provider._check_auth())
+        self.assertTrue(self.provider._check_auth())
         self.provider.custom_url = "https://192.168.1.10:9117"
         self.assertTrue(self.provider._check_auth())
+
+        # Same Compose network by service name / .local over HTTP
+        self.provider.custom_url = "http://jackett:9117"
+        self.assertTrue(self.provider._check_auth())
         self.provider.custom_url = "http://jackett.local:9117"
-        self.assertFalse(self.provider._check_auth())
+        self.assertTrue(self.provider._check_auth())
         self.provider.custom_url = "https://jackett.local:9117"
         self.assertTrue(self.provider._check_auth())
 
@@ -131,11 +135,16 @@ class JackettProviderTests(unittest.TestCase):
         self.assertTrue(allow("http://[::1]:9117"))
         self.assertTrue(allow("https://192.168.1.10:9117"))
         self.assertTrue(allow("https://jackett.local:9117"))
-        self.assertFalse(allow("http://10.0.0.5:9117"))
-        self.assertFalse(allow("http://192.168.1.10:9117"))
-        self.assertFalse(allow("http://jackett:9117"))
-        self.assertFalse(allow("http://nas.local:9117"))
+        # Private / Docker-local HTTP (bridge → host IP, Compose service name)
+        self.assertTrue(allow("http://10.0.0.5:9117"))
+        self.assertTrue(allow("http://192.168.1.10:9117"))
+        self.assertTrue(allow("http://172.16.5.1:9117"))
+        self.assertTrue(allow("http://jackett:9117"))
+        self.assertTrue(allow("http://host.docker.internal:9117"))
+        self.assertTrue(allow("http://nas.local:9117"))
+        # Public cleartext still blocked
         self.assertFalse(allow("http://remote.example:9117"))
+        self.assertFalse(allow("http://8.8.8.8:9117"))
         self.assertFalse(allow("ftp://127.0.0.1:9117"))
 
     @patch("sickchill.oldbeard.providers.jackett.time.sleep", return_value=None)

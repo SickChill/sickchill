@@ -68,26 +68,52 @@ class Provider(TorrentProvider, tvcache.RSSTorrentMixin):
         return urlunsplit((parts.scheme, parts.netloc, path, "", ""))
 
     @classmethod
+    def _host_allows_cleartext_apikey(cls, host: str) -> bool:
+        """True when HTTP (cleartext) apikey transport is acceptable for ``host``.
+
+        Allows loopback, RFC1918/link-local/ULA addresses, and local/Docker-style
+        names (``jackett``, ``host.docker.internal``, ``*.local`` / ``*.lan``).
+        Public IPs and public-looking hostnames still require HTTPS — apikey is a
+        query param on the Torznab URL.
+        """
+        host = (host or "").lower().rstrip(".")
+        if not host:
+            return False
+        if host in ("localhost", "127.0.0.1", "::1", "host.docker.internal", "gateway.docker.internal"):
+            return True
+        if host.endswith((".localhost", ".local", ".lan", ".internal")):
+            return True
+        # Docker Compose / swarm service names are usually single-label.
+        if "." not in host and host.replace("-", "").replace("_", "").isalnum():
+            return True
+
+        try:
+            ip = ipaddress.ip_address(host)
+        except ValueError:
+            return False
+        # Prefer is_global so documentation/TEST-NET ranges stay non-public across Python versions.
+        return not ip.is_global
+
+    @classmethod
     def _url_allows_apikey_transport(cls, url: str) -> bool:
-        """Allow apikey query params over HTTPS, or HTTP only for loopback endpoints."""
+        """Allow apikey query params over HTTPS, or HTTP for local/private endpoints."""
         parts = urlsplit((url or "").strip())
         scheme = (parts.scheme or "").lower()
         if scheme == "https":
             return True
         if scheme != "http":
             return False
+        return cls._host_allows_cleartext_apikey(parts.hostname or "")
 
-        host = (parts.hostname or "").lower().rstrip(".")
-        if not host:
-            return False
-        if host in ("localhost", "127.0.0.1", "::1") or host.endswith(".localhost"):
+    @classmethod
+    def _is_usable_jackett_url(cls, url: str) -> bool:
+        """Like ``invalid_url``, but also accept Docker service names validators.url rejects."""
+        if not cls.invalid_url(url or ""):
             return True
-
-        try:
-            return bool(ipaddress.ip_address(host).is_loopback)
-        except ValueError:
-            # Any non-loopback hostname (LAN, docker, public) requires HTTPS
+        parts = urlsplit((url or "").strip())
+        if (parts.scheme or "").lower() not in ("http", "https"):
             return False
+        return cls._host_allows_cleartext_apikey(parts.hostname or "")
 
     @property
     def torznab_url(self) -> str:
@@ -118,15 +144,15 @@ class Provider(TorrentProvider, tvcache.RSSTorrentMixin):
         if not (self.api_key or "").strip():
             logger.warning(_("Jackett API key is not set. Check your provider settings."))
             return False
-        if self.invalid_url(self.custom_url or ""):
+        if not self._is_usable_jackett_url(self.custom_url or ""):
             logger.warning(_("Invalid Jackett URL. Check your provider settings."))
             return False
-        # apikey is sent as a query param — require HTTPS except for loopback HTTP
+        # apikey is sent as a query param — require HTTPS except for local/private HTTP
         if not self._url_allows_apikey_transport(self.torznab_url):
             logger.warning(
                 _(
-                    "Jackett URL must use HTTPS when the API key is sent in the query string. "
-                    "HTTP is only allowed for loopback addresses (localhost / 127.0.0.1 / ::1)."
+                    "Jackett URL must use HTTPS when the API key is sent public in the query string. "
+                    "HTTP allowed for loopback, private LAN IPs, and local/Docker hostnames "
                 )
             )
             return False
