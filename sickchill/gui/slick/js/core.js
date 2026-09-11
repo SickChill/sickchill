@@ -3961,13 +3961,22 @@ const SICKCHILL = {
         },
         index() {
             if (isMeta('settings.COMING_EPS_LAYOUT', ['list'])) {
-                const sortCodes = {date: 0, show: 2, network: 5};
+                // Columns: 0 airdate, 2 show, 4 next ep, 6 network.
+                // sortAppend keeps show then episode as tiebreakers even when saveSort
+                // restores a single-column airdate sort (which previously interleaved
+                // same-time shows by episode number alone).
+                const sortLists = {
+                    date: [[0, 0], [2, 0], [4, 0]],
+                    show: [[2, 0], [0, 0], [4, 0]],
+                    network: [[6, 0], [0, 0], [2, 0], [4, 0]],
+                };
                 const sort = getMeta('settings.COMING_EPS_SORT');
-                const sortList = (sort in sortCodes) ? [[sortCodes[sort], 0]] : [[0, 0]];
+                const sortList = (sort in sortLists) ? sortLists[sort] : [[0, 0], [2, 0], [4, 0]];
 
                 $('#showListTable:has(tbody tr)').tablesorter({
                     widgets: ['stickyHeaders', 'filter', 'columnSelector', 'saveSort'],
                     sortList,
+                    sortAppend: [[2, 0], [4, 0]],
                     textExtraction: {
                         0(node) {
                             return $(node).find('time').attr('datetime');

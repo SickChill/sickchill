@@ -1242,8 +1242,15 @@ class TVShow(object):
         return title
 
     def next_episode(self):
+        """Return ordinal airdate of the next UNAIRED/WANTED episode (cached).
+
+        Refresh when the cache is empty or the cached day has been reached. Using
+        ``>=`` (not only ``>``) matters on air day: once S01Ex leaves UNAIRED/WANTED,
+        the next call must advance to S01Ex+1 instead of keeping today's ordinal and
+        hiding later episodes from the schedule query.
+        """
         current_date = sc_today().toordinal()
-        if not self.next_airdate or current_date > try_int(self.next_airdate):
+        if not self.next_airdate or current_date >= try_int(self.next_airdate):
             main_db_con = db.DBConnection()
             sql_results = main_db_con.select(
                 "SELECT airdate, season, episode FROM tv_episodes WHERE showid = ? AND airdate >= ? AND status IN (?,?) ORDER BY airdate LIMIT 1",
