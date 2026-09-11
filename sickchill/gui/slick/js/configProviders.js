@@ -26,6 +26,10 @@ $(document).ready(function () {
         return found;
     };
 
+    // Monotonic tokens + in-flight XHRs so stale rename callbacks cannot mutate providers.
+    const providerRenameTokens = {};
+    const providerRenameXhrs = {};
+
     /**
      * Gets categories for the provided newznab provider.
      * @param {String} isDefault
@@ -123,12 +127,28 @@ $(document).ready(function () {
         }
 
         const checked = $('#enable_' + oldId).is(':checked');
-        const providerItem = '<li class="ui-state-default" id="' + newId + '">'
-            + ' <input type="checkbox" id="enable_' + newId + '" class="provider_enabler"' + (checked ? ' checked' : '') + '>'
-            + ' <a href="' + anonURL + url + '" class="imgLink" target="_new">'
-            + '<img src="' + scRoot + '/images/providers/' + image + '" alt="' + name + '" width="16" height="16">'
-            + '</a> ' + name + '</li>';
-        $li.replaceWith(providerItem);
+        const $checkbox = $('<input>', {
+            type: 'checkbox',
+            id: 'enable_' + newId,
+            class: 'provider_enabler',
+        }).prop('checked', checked);
+        const $img = $('<img>', {
+            src: scRoot + '/images/providers/' + image,
+            alt: name,
+            width: 16,
+            height: 16,
+        });
+        const $link = $('<a>', {
+            href: anonURL + url,
+            class: 'imgLink',
+            target: '_new',
+        }).append($img);
+        const $item = $('<li>', {
+            class: 'ui-state-default',
+            id: newId,
+        }).append(' ', $checkbox, ' ', $link, document.createTextNode(' ' + name));
+
+        $li.replaceWith($item);
         $('#provider_order_list').sortable('refresh');
         $(this).refreshProviderList();
     };
@@ -170,23 +190,46 @@ $(document).ready(function () {
             return;
         }
 
+        // Invalidate any in-flight rename validation for this provider id.
+        const renameToken = (providerRenameTokens[id] || 0) + 1;
+        providerRenameTokens[id] = renameToken;
+        if (providerRenameXhrs[id]) {
+            providerRenameXhrs[id].abort();
+        }
+
         // Name change → new id. Confirm it does not collide with customs or built-ins.
         // exclude_id matches the Tornado/Python query argument name.
-        $.getJSON(scRoot + '/config/providers/canAddNewznabProvider', {
+        const request = $.getJSON(scRoot + '/config/providers/canAddNewznabProvider', {
             name,
             exclude_id: id, // eslint-disable-line camelcase
-        }, data => {
+        });
+        providerRenameXhrs[id] = request;
+        request.done(data => {
+            if (providerRenameTokens[id] !== renameToken) {
+                return;
+            }
+
             if (data.error !== undefined) {
                 alert(data.error); // eslint-disable-line no-alert
                 $(this).populateNewznabSection();
                 return;
             }
 
+            const renamedId = data.success;
+            if (!renamedId) {
+                $(this).populateNewznabSection();
+                return;
+            }
+
             delete newznabProviders[id];
             $('#editANewznabProvider').removeOption(id);
-            $('#editANewznabProvider').addOption(newId, name);
-            $(this).migrateProviderOrderItem(id, newId, name, url, 'newznab.png');
-            applyUpdate(newId);
+            $('#editANewznabProvider').addOption(renamedId, name);
+            $(this).migrateProviderOrderItem(id, renamedId, name, url, 'newznab.png');
+            applyUpdate(renamedId);
+        }).always(() => {
+            if (providerRenameXhrs[id] === request) {
+                delete providerRenameXhrs[id];
+            }
         });
     };
 
@@ -233,24 +276,46 @@ $(document).ready(function () {
             return;
         }
 
-        $.getJSON(scRoot + '/config/providers/canAddTorrentRssProvider', {
+        const renameToken = (providerRenameTokens[id] || 0) + 1;
+        providerRenameTokens[id] = renameToken;
+        if (providerRenameXhrs[id]) {
+            providerRenameXhrs[id].abort();
+        }
+
+        const request = $.getJSON(scRoot + '/config/providers/canAddTorrentRssProvider', {
             name,
             url,
             cookies,
             titleTAG,
             exclude_id: id, // eslint-disable-line camelcase
-        }, data => {
+        });
+        providerRenameXhrs[id] = request;
+        request.done(data => {
+            if (providerRenameTokens[id] !== renameToken) {
+                return;
+            }
+
             if (data.error !== undefined) {
                 alert(data.error); // eslint-disable-line no-alert
                 $(this).populateTorrentRssSection();
                 return;
             }
 
+            const renamedId = data.success;
+            if (!renamedId) {
+                $(this).populateTorrentRssSection();
+                return;
+            }
+
             delete torrentRssProviders[id];
             $('#editATorrentRssProvider').removeOption(id);
-            $('#editATorrentRssProvider').addOption(newId, name);
-            $(this).migrateProviderOrderItem(id, newId, name, url, 'torrentrss.png');
-            applyUpdate(newId);
+            $('#editATorrentRssProvider').addOption(renamedId, name);
+            $(this).migrateProviderOrderItem(id, renamedId, name, url, 'torrentrss.png');
+            applyUpdate(renamedId);
+        }).always(() => {
+            if (providerRenameXhrs[id] === request) {
+                delete providerRenameXhrs[id];
+            }
         });
     };
 
