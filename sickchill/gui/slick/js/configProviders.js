@@ -27,8 +27,9 @@ $(document).ready(function () {
     };
 
     // Monotonic tokens + in-flight XHRs so stale rename callbacks cannot mutate providers.
-    const providerRenameTokens = {};
-    const providerRenameXhrs = {};
+    // Prototype-free maps so a provider id of "__proto__" is a normal key.
+    const providerRenameTokens = Object.create(null);
+    const providerRenameXhrs = Object.create(null);
 
     const invalidateProviderRename = function (providerId) {
         providerRenameTokens[providerId] = (providerRenameTokens[providerId] || 0) + 1;
@@ -67,8 +68,9 @@ $(document).ready(function () {
         });
     };
 
-    const newznabProviders = [];
-    const torrentRssProviders = [];
+    // Prototype-free maps (keyed by provider id); not arrays despite historical [].
+    const newznabProviders = Object.create(null);
+    const torrentRssProviders = Object.create(null);
 
     const newznabProvidersCapabilities = [];
 
