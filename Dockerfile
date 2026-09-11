@@ -1,10 +1,17 @@
-# syntax=docker/dockerfile:experimental
+# syntax=docker/dockerfile:1
 
-# docker run -dit --user 1000:1000 --name sickchill --restart=always \
-# -v mount_point:/mount_point \
-# -v /docker/sickchill/data:/data \
-# -v /etc/localtime:/etc/localtime:ro
-# -p 8080:8081 sickchill/sickchill
+# NAS-friendly SickChill image (dockering), based on develop packaging:
+# - Pre-builds a template venv at /opt/sickchill/.venv (image layer; not under VOLUME)
+# - Entrypoint copies it to /data/.venv and launches via that interpreter (not stale shebangs)
+# - Bakes Help & Info revision via sickchill/_revision.txt + SICKCHILL_* env
+# - gosu + PUID/PGID for Synology / DSM style installs
+#
+# Note: the venv cannot be created at /data/.venv during build — /data is a runtime
+# volume/bind-mount and would hide any bake-time contents.
+
+# docker run -dit --name sickchill --restart=on-failure \
+#   -e PUID=1026 -e PGID=100 -e TZ=America/New_York \
+#   -v /docker/sickchill/data:/data -p 8081:8081 sickchill/sickchill:develop
 
 FROM --platform=$TARGETPLATFORM python:3.13-slim-bookworm AS base
 
@@ -17,72 +24,66 @@ ENV PYTHONUNBUFFERED=1
 
 ARG SOURCE
 ARG PIP_EXTRA_INDEX_URL="https://www.piwheels.org/simple"
-ARG HOME=${HOME:-}
 # Neutral defaults — never invent "develop" (master/local builds omit or pass real ref)
 ARG GIT_SHA=unknown
 ARG GIT_BRANCH=unknown
 
-ENV POETRY_INSTALLER_PARALLEL=false
-ENV POETRY_VIRTUALENVS_CREATE=false
-ENV POETRY_VIRTUALENVS_IN_PROJECT=false
-ENV POETRY_VIRTUALENVS_PATH="$HOME/.venv"
-ENV POETRY_CACHE_DIR="$HOME/.cache/pypoetry"
-ENV POETRY_HOME="$HOME/.poetry"
-
-ENV PATH=$POETRY_VIRTUALENVS_PATH/local/bin:$POETRY_VIRTUALENVS_PATH/bin:$PATH
-
-# ENV SODIUM_INSTALL=system
+# Template venv in the image (copied to ${DATADIR}/.venv at runtime — see entrypoint).
+# Keep this off DATADIR so VOLUME/bind-mounts do not erase the bake.
+# VENV_RUNTIME_PATH is derived from DATADIR; override both together if relocating data.
+ENV DATADIR=/data
+ENV VENV_IMAGE_PATH=/opt/sickchill/.venv
+ENV VENV_RUNTIME_PATH=${DATADIR}/.venv
+ENV HOME="/root/"
+ENV CARGO_HOME="/root/.cargo"
+ENV PATH="$VENV_IMAGE_PATH/bin:$CARGO_HOME/bin:$PATH"
+ENV SHELL="/bin/sh"
 
 ENV PIP_DISABLE_PIP_VERSION_CHECK=on
 ENV PIP_DEFAULT_TIMEOUT=100
 ENV PIP_EXTRA_INDEX_URL=$PIP_EXTRA_INDEX_URL
 
-# TODO: Add a user and drop privileges, preferablty from --user argument
-
-RUN mkdir -m 777 -p /sickchill "$POETRY_CACHE_DIR"
-
+# Runtime deps (gosu for PUID/PGID drop)
+RUN mkdir -m 777 -p /sickchill "$VENV_IMAGE_PATH"
 RUN sed -i "s/Components: main/Components: main contrib non-free/" /etc/apt/sources.list.d/debian.sources
 RUN apt-get update -qq && apt-get upgrade -yqq && \
- apt-get install -yqq curl libxml2 libxslt1.1 libffi8 libssl3 libmediainfo0v5 mediainfo unrar && \
- apt-get clean -yqq && \
- rm -rf /var/lib/apt/lists/*
+    apt-get install -yqq curl libxml2 libxslt1.1 libffi8 libssl3 libmediainfo0v5 mediainfo unrar gosu ca-certificates && \
+    apt-get clean -yqq && \
+    rm -rf /var/lib/apt/lists/*
 
 FROM base AS builder
 RUN apt-get update -qq && apt-get upgrade -yqq && \
- apt-get install -yqq build-essential python3-distutils-extra python3-dev \
- libxml2-dev libxslt1-dev libffi-dev libssl-dev libmediainfo-dev findutils sed && \
- apt-get clean -yqq && \
- rm -rf /var/lib/apt/lists/*
-
-ENV HOME="/root/"
-ENV CARGO_HOME="/root/.cargo"
-ENV PATH="$CARGO_HOME/bin:$PATH"
-ENV SHELL="/bin/sh"
+    apt-get install -yqq build-essential python3-distutils-extra python3-dev \
+    libxml2-dev libxslt1-dev libffi-dev libssl-dev libmediainfo-dev findutils sed && \
+    apt-get clean -yqq && \
+    rm -rf /var/lib/apt/lists/*
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
-# Make sure HOME exists
 RUN mkdir -m 755 -p "$HOME"
 
-ENV RUSTUP_HOME "$HOME/.rustup"
-ENV RUSTUP_PERMIT_COPY_RENAME "yes"
-ENV RUSTUP_IO_THREADS 1
-ENV CARGO_TERM_VERBOSE "true"
-ENV CARGO "$CARGO_HOME/bin/cargo"
+ENV RUSTUP_HOME="$HOME/.rustup"
+ENV RUSTUP_PERMIT_COPY_RENAME="yes"
+ENV RUSTUP_IO_THREADS=1
+ENV CARGO_TERM_VERBOSE="true"
+ENV CARGO="$CARGO_HOME/bin/cargo"
 
 # hadolint ignore=SC2215
-RUN --security=insecure curl --proto "=https" --tlsv1.2 -sSf https://sh.rustup.rs | sed "s#/proc/self/exe#$SHELL#g" | sh -s -- -y --profile minimal --default-toolchain nightly
+RUN curl --proto "=https" --tlsv1.2 -sSf https://sh.rustup.rs | sed "s#/proc/self/exe#$SHELL#g" | sh -s -- -y --profile minimal --default-toolchain nightly
 
-ENV PATH "$RUSTUP_HOME/bin:$CARGO_HOME/bin:$PATH"
+ENV PATH="$RUSTUP_HOME/bin:$CARGO_HOME/bin:$VENV_IMAGE_PATH/bin:$PATH"
 
-# Always just create our own virtualenv to prevent issues
-RUN python3 -m venv "$POETRY_VIRTUALENVS_PATH" --upgrade --upgrade-deps # upgrade-deps requires python3.9+
+# Create the template environment at VENV_IMAGE_PATH (final user path is VENV_RUNTIME_PATH;
+# entrypoint launches through that interpreter after copy — see docker-sc-entrypoint.sh).
+RUN python3 -m venv "$VENV_IMAGE_PATH" --upgrade --upgrade-deps
 RUN pip install -U wheel setuptools-rust
+# Pin setuptools for pkg_resources compatibility (enzyme on Python 3.13)
+RUN pip install --upgrade "setuptools>=70.0,<81.0"
 
 WORKDIR /sickchill
 COPY . /sickchill/
 
-# Bake git revision for Help & Info. Skip placeholder "unknown" so pip-only
+# Bake git revision for Help & Info. Skip placeholder "unknown".
 ARG GIT_SHA
 ARG GIT_BRANCH
 RUN if [ -n "$GIT_SHA" ] && [ "$GIT_SHA" != "unknown" ]; then \
@@ -103,8 +104,7 @@ else \
 fi
 
 # Ensure installed package has _revision.txt (wheel may omit gitignored file).
-# Run python from /tmp so cwd (/sickchill) is not on sys.path — otherwise
-# `import sickchill` resolves to the source tree and cp is same-file.
+# Run python from /tmp so cwd (/sickchill) is not on sys.path.
 RUN if [ -f sickchill/_revision.txt ]; then \
   REV_DST="$(cd /tmp && python -c 'import pathlib, sickchill; print(pathlib.Path(sickchill.__file__).parent)')" && \
   SRC="$(realpath sickchill/_revision.txt)" && \
@@ -113,13 +113,13 @@ RUN if [ -f sickchill/_revision.txt ]; then \
 fi
 
 RUN mkdir -m 777 /sickchill-wheels && \
- pip download sickchill --dest /sickchill-wheels && \
- rm -rf /sickchill-wheels/*none-any.whl && \
- rm -rf /sickchill-wheels/*.gz;
+    pip download sickchill --dest /sickchill-wheels && \
+    rm -rf /sickchill-wheels/*none-any.whl && \
+    rm -rf /sickchill-wheels/*.gz
 
-RUN if [ -z "$SOURCE" ]; then \
+RUN if [ -n "$SOURCE" ]; then \
   rm -rf /sickchill-wheels/sickchill*.whl && \
-  cp dist/sickchill*.whl /sickchill-wheels/; \
+  cp dist/sickchill-*.whl /sickchill-wheels/; \
 fi
 
 FROM scratch AS sickchill-wheels
@@ -127,24 +127,40 @@ COPY --from=builder /sickchill-wheels /
 
 FROM base AS sickchill-final
 
-COPY --from=builder "$POETRY_VIRTUALENVS_PATH" "$POETRY_VIRTUALENVS_PATH"
+COPY --from=builder "$VENV_IMAGE_PATH" "$VENV_IMAGE_PATH"
 
 # Runtime env + OCI label (builder-stage ENV/LABEL do not reach this image).
-# Defaults are "unknown" (filtered at runtime); CI passes the real ref_name.
 ARG GIT_SHA=unknown
 ARG GIT_BRANCH=unknown
 ENV SICKCHILL_SHA=$GIT_SHA
 ENV SICKCHILL_BRANCH=$GIT_BRANCH
 LABEL org.opencontainers.image.revision=$GIT_SHA
 
-# When you docker exec, show the config files in the container
+# Image revision marker for entrypoint persistent-venv refresh (replaces cgroup hack).
+# Written into the venv so cp -a carries it into /data/.venv on first start.
+RUN if [ -n "$GIT_SHA" ] && [ "$GIT_SHA" != "unknown" ]; then \
+      printf '%s\n' "$GIT_SHA" > /sickchill/.image_revision && \
+      printf '%s\n' "$GIT_SHA" > "$VENV_IMAGE_PATH/.image_revision"; \
+    else \
+      printf 'unknown\n' > /sickchill/.image_revision && \
+      printf 'unknown\n' > "$VENV_IMAGE_PATH/.image_revision"; \
+    fi
+
+# Runtime configuration — datadir is the accessible NAS mount
 ENV HOME=/data
+ENV DATADIR=/data
+ENV VENV_RUNTIME_PATH=${DATADIR}/.venv
+ENV PATH="$VENV_IMAGE_PATH/bin:$PATH"
 WORKDIR /data
 
+COPY docker-sc-entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
+ENTRYPOINT ["entrypoint.sh"]
+CMD ["sickchill", "--nolaunch", "--datadir", "/data", "--port", "8081"]
+
+EXPOSE 8081
 VOLUME /data /downloads /tv
 
-CMD ["sickchill", "--nolaunch", "--datadir", "/data", "--port", "8081"]
-EXPOSE 8081
-
 HEALTHCHECK --interval=5m --timeout=3s \
- CMD bash -c 'if [ "$(curl -f http://localhost:8081/ui/get_messages -s)" == "{}" ]; then echo "sickchill is alive"; elif [ "$(curl -fk https://localhost:8081/ui/get_messages -s)" == "{}" ]; then echo "sickchill is alive"; else echo "sickchill is not responding" && exit 1; fi'
+    CMD bash -c 'if [ "$(curl -f http://localhost:8081/ui/get_messages -s)" == "{}" ]; then echo "sickchill is alive"; elif [ "$(curl -fk https://localhost:8081/ui/get_messages -s)" == "{}" ]; then echo "sickchill is alive"; else echo "sickchill is not responding" && exit 1; fi'
