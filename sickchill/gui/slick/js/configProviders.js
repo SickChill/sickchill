@@ -30,6 +30,16 @@ $(document).ready(function () {
     const providerRenameTokens = {};
     const providerRenameXhrs = {};
 
+    const invalidateProviderRename = function (providerId) {
+        providerRenameTokens[providerId] = (providerRenameTokens[providerId] || 0) + 1;
+        if (providerRenameXhrs[providerId]) {
+            providerRenameXhrs[providerId].abort();
+            delete providerRenameXhrs[providerId];
+        }
+
+        return providerRenameTokens[providerId];
+    };
+
     /**
      * Gets categories for the provided newznab provider.
      * @param {String} isDefault
@@ -185,16 +195,12 @@ $(document).ready(function () {
             $(this).refreshProviderList();
         }.bind(this);
 
+        // Always invalidate first: reverting A→B back to A must not let A→B apply.
+        const renameToken = invalidateProviderRename(id);
+
         if (newId === id) {
             applyUpdate(id);
             return;
-        }
-
-        // Invalidate any in-flight rename validation for this provider id.
-        const renameToken = (providerRenameTokens[id] || 0) + 1;
-        providerRenameTokens[id] = renameToken;
-        if (providerRenameXhrs[id]) {
-            providerRenameXhrs[id].abort();
         }
 
         // Name change → new id. Confirm it does not collide with customs or built-ins.
@@ -263,6 +269,9 @@ $(document).ready(function () {
             $(this).refreshProviderList();
         }.bind(this);
 
+        // Always invalidate first: reverting A→B back to A must not let A→B apply.
+        const renameToken = invalidateProviderRename(id);
+
         if (newId === id) {
             applyUpdate(id);
             const $li = $('#provider_order_list > #' + id);
@@ -274,12 +283,6 @@ $(document).ready(function () {
             }
 
             return;
-        }
-
-        const renameToken = (providerRenameTokens[id] || 0) + 1;
-        providerRenameTokens[id] = renameToken;
-        if (providerRenameXhrs[id]) {
-            providerRenameXhrs[id].abort();
         }
 
         const request = $.getJSON(scRoot + '/config/providers/canAddTorrentRssProvider', {
