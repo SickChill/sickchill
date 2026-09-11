@@ -31,16 +31,38 @@ class ConfigProviders(Config):
         )
 
     @staticmethod
-    def canAddNewznabProvider(name):
+    def canAddNewznabProvider(name, exclude_id=""):
+        """Return whether ``name`` can be used for a custom Newznab provider.
+
+        ``exclude_id`` is the current provider id when renaming — that id is ignored
+        so a no-op / case-only rename that normalizes to the same id still succeeds.
+        Also rejects ids that collide with built-in or torrent-rss providers.
+        """
         if not name:
             return json.dumps({"error": "No Provider Name specified"})
 
-        provider_dict = {x.get_id(): x for x in settings.newznab_provider_list}
-
         provider_id = GenericProvider.make_id(name)
+        if not provider_id:
+            return json.dumps({"error": "No Provider Name specified"})
 
-        if provider_id in provider_dict:
-            return json.dumps({"error": "Provider Name already exists as " + name})
+        exclude_id = GenericProvider.make_id(exclude_id) if exclude_id else ""
+        if exclude_id and provider_id == exclude_id:
+            return json.dumps({"success": provider_id})
+
+        taken = {x.get_id() for x in settings.newznab_provider_list}
+        taken.update(x.get_id() for x in settings.torrent_rss_provider_list)
+        taken.update(x.get_id() for x in (settings.providerList or []))
+        if exclude_id:
+            taken.discard(exclude_id)
+
+        if provider_id in taken:
+            return json.dumps(
+                {
+                    "error": _(
+                        "Provider Name already exists as '{name}' (id '{provider_id}'). Choose a different name that does not match a built-in provider."
+                    ).format(name=name, provider_id=provider_id)
+                }
+            )
 
         return json.dumps({"success": provider_id})
 
@@ -106,19 +128,35 @@ class ConfigProviders(Config):
         return "1"
 
     @staticmethod
-    def canAddTorrentRssProvider(name, url, cookies, titleTAG):
+    def canAddTorrentRssProvider(name, url, cookies, titleTAG, exclude_id=""):
         if not name:
             return json.dumps({"error": "Invalid name specified"})
 
         url = config.clean_url(url)
         temp_provider = TorrentRssProvider(name, url, cookies, titleTAG)
+        provider_id = temp_provider.get_id()
+        exclude_id = GenericProvider.make_id(exclude_id) if exclude_id else ""
+        if exclude_id and provider_id == exclude_id:
+            return json.dumps({"success": provider_id})
 
-        if temp_provider.get_id() in (x.get_id() for x in settings.torrent_rss_provider_list):
-            return json.dumps({"error": "Exists as " + temp_provider.name})
+        taken = {x.get_id() for x in settings.torrent_rss_provider_list}
+        taken.update(x.get_id() for x in settings.newznab_provider_list)
+        taken.update(x.get_id() for x in (settings.providerList or []))
+        if exclude_id:
+            taken.discard(exclude_id)
+
+        if provider_id in taken:
+            return json.dumps(
+                {
+                    "error": _(
+                        "Provider Name already exists as '{name}' (id '{provider_id}'). Choose a different name that does not match a built-in provider."
+                    ).format(name=name, provider_id=provider_id)
+                }
+            )
 
         (succ, errMsg) = temp_provider.validateRSS()
         if succ:
-            return json.dumps({"success": temp_provider.get_id()})
+            return json.dumps({"success": provider_id})
 
         return json.dumps({"error": errMsg})
 
