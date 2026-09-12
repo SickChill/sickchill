@@ -99,15 +99,19 @@ class PPMultiEpFailureMessageTests(unittest.TestCase):
         processor.process.return_value = False
         processor.failure_reason = "File exists and new file quality is not in a preferred quality list"
         processor.log = "processor log line\n"
+        video_name = "Show.S02E16e17e18.mkv"
+        process_path = os.path.join(os.path.sep, "tmp")
+        video_path = os.path.join(process_path, video_name)
 
         with patch("sickchill.oldbeard.processTV.postProcessor.PostProcessor", return_value=processor):
             with patch("sickchill.oldbeard.processTV.already_processed", return_value=False):
-                processTV.process_media("/tmp", ["Show.S02E16e17e18.mkv"], None, "move", False, False, result)
+                processTV.process_media(process_path, [video_name], None, "move", False, False, result)
 
         self.assertFalse(result.result)
         self.assertIn(processor.failure_reason, result.output)
-        self.assertNotIn("Processing failed for /tmp/Show.S02E16e17e18.mkv:\n", result.output)
-        self.assertIn("Processing failed for /tmp/Show.S02E16e17e18.mkv: " + processor.failure_reason, result.output)
+        # Empty reason after colon must not appear; path join is OS-specific (\ vs /).
+        self.assertNotIn(f"Processing failed for {video_path}:\n", result.output)
+        self.assertIn(f"Processing failed for {video_path}: {processor.failure_reason}", result.output)
 
     def test_fail_helper_sets_failure_reason(self):
         post_processor = PostProcessor("/tmp/missing.mkv")
