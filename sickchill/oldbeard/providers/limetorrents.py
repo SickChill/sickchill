@@ -12,13 +12,12 @@ class Provider(TorrentProvider):
     def __init__(self):
         super().__init__("LimeTorrents")
 
+        self.url = "https://www.limetorrents.fun/"
         self.urls = {
-            "index": "https://www.limetorrents.info/",
-            "search": "https://www.limetorrents.info/searchrss/",
-            "rss": "https://www.limetorrents.info/rss/tv/",
+            "index": self.url,
+            "search": self.url + "searchrss/",
+            "rss": self.url + "rss/tv/",
         }
-
-        self.url = self.urls["index"]
 
         self.public = True
         self.minseed = 0
