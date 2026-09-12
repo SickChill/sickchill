@@ -183,13 +183,24 @@ class History(object, metaclass=Singleton):
         """
         Log history of download
 
-        :param episode: episode of show
+        :param episode: episode of show (root; related_episodes are logged too for multi-ep files)
         :param filename: file on disk where the download is
         :param quality: Quality of download
         :param group: Release group
         :param version: Version of file (defaults to -1)
         """
-        self._log_history_item(episode.status, episode.show.indexerid, episode.season, episode.episode, quality, filename, group or -1, version)
+        # Parity with log_snatch: one history row per episode sharing the file.
+        for cur_episode in [episode] + list(getattr(episode, "related_episodes", None) or []):
+            self._log_history_item(
+                cur_episode.status,
+                cur_episode.show.indexerid,
+                cur_episode.season,
+                cur_episode.episode,
+                quality,
+                filename,
+                group or -1,
+                version,
+            )
 
     def log_subtitle(self, show: int, season: int, episode: int, status: int, subtitle: subliminal.subtitle.Subtitle, scores: "Scores"):
         """

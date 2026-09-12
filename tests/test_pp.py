@@ -5,8 +5,11 @@ Test post processing
 import os.path
 import shutil
 import unittest
+from unittest.mock import MagicMock, patch
 
 from sickchill import settings
+from sickchill.helper.exceptions import EpisodeNotFoundException, EpisodePostProcessingFailedException
+from sickchill.oldbeard import processTV
 from sickchill.oldbeard.helpers import make_dirs
 from sickchill.oldbeard.name_cache import add_name
 from sickchill.oldbeard.postProcessor import PostProcessor
@@ -62,6 +65,54 @@ class PPBasicTests(conftest.SickChillTestDBCase):
 
         post_processor = PostProcessor(conftest.FILE_PATH)
         assert post_processor.process()
+
+
+class PPMultiEpFailureMessageTests(unittest.TestCase):
+    """Multi-ep (3 shorts in one file) must not fail with an empty reason."""
+
+    def test_get_ep_obj_missing_third_episode_message(self):
+        show = MagicMock()
+
+        def get_episode(season, episode):
+            if episode == 18:
+                raise EpisodeNotFoundException("Couldn't find episode S{0:02d}E{1:02d}".format(season, episode))
+            ep = MagicMock()
+            ep.season = season
+            ep.episode = episode
+            return ep
+
+        show.get_episode.side_effect = get_episode
+        post_processor = PostProcessor("/tmp/Puffin.Rock.S02E16e17e18.mkv")
+
+        with self.assertRaises(EpisodePostProcessingFailedException) as ctx:
+            post_processor._get_ep_obj(show, 2, [16, 17, 18])
+
+        message = str(ctx.exception)
+        self.assertTrue(message.strip(), "failure exception must include a reason")
+        self.assertIn("S02E18", message)
+        self.assertIn("S02E16", message)
+        self.assertIn("multi-ep", message.lower())
+
+    def test_process_media_surfaces_failure_reason_on_false(self):
+        result = processTV.ProcessResult()
+        processor = MagicMock()
+        processor.process.return_value = False
+        processor.failure_reason = "File exists and new file quality is not in a preferred quality list"
+        processor.log = "processor log line\n"
+
+        with patch("sickchill.oldbeard.processTV.postProcessor.PostProcessor", return_value=processor):
+            with patch("sickchill.oldbeard.processTV.already_processed", return_value=False):
+                processTV.process_media("/tmp", ["Show.S02E16e17e18.mkv"], None, "move", False, False, result)
+
+        self.assertFalse(result.result)
+        self.assertIn(processor.failure_reason, result.output)
+        self.assertNotIn("Processing failed for /tmp/Show.S02E16e17e18.mkv:\n", result.output)
+        self.assertIn("Processing failed for /tmp/Show.S02E16e17e18.mkv: " + processor.failure_reason, result.output)
+
+    def test_fail_helper_sets_failure_reason(self):
+        post_processor = PostProcessor("/tmp/missing.mkv")
+        self.assertFalse(post_processor._fail("did unrar fail?"))
+        self.assertEqual(post_processor.failure_reason, "did unrar fail?")
 
 
 class ListAssociatedFiles(unittest.TestCase):

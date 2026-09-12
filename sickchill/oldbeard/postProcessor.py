@@ -87,6 +87,9 @@ class PostProcessor(object):
 
         self.history = History()
 
+        # Set before every soft failure (``return False``) so processTV can surface it.
+        self.failure_reason = ""
+
     def _log(self, message, level=logging.INFO):
         """
         A wrapper for the internal logger which also keeps track of messages and saves them to a string for later.
@@ -96,6 +99,12 @@ class PostProcessor(object):
         """
         logger.log(level, message)
         self.log += message + "\n"
+
+    def _fail(self, message, level=logging.WARNING):
+        """Log a post-process failure reason and return False for ``process()``."""
+        self.failure_reason = str(message)
+        self._log(message, level)
+        return False
 
     def _checkForExistingFile(self, existing_file):
         """
@@ -764,8 +773,16 @@ class PostProcessor(object):
                 if not curEp:
                     raise EpisodeNotFoundException()
             except EpisodeNotFoundException as error:
-                self._log(_("Unable to create episode: {error}").format(error=error), logger.DEBUG)
-                raise EpisodePostProcessingFailedException()
+                parsed = ", ".join(episode_num(season, ep) or str(ep) for ep in episodes)
+                missing = episode_num(season, cur_episode) or f"S{season:02d}E{cur_episode:02d}"
+                detail = _("Unable to create episode: {error}").format(error=error)
+                self._log(detail, logger.DEBUG)
+                kind = _("multi-ep file") if len(episodes) > 1 else _("file")
+                raise EpisodePostProcessingFailedException(
+                    _("Unable to post-process {kind}: missing {missing} (parsed episodes: {parsed}). {detail}").format(
+                        kind=kind, missing=missing, parsed=parsed, detail=detail
+                    )
+                ) from error
 
             # associate all the episodes together under a single root episode
             if root_ep is None:
@@ -915,20 +932,18 @@ class PostProcessor(object):
         :return: True on success, False on failure
         """
 
+        self.failure_reason = ""
         self._log(_("Processing {directory} ({release_name})").format(directory=self.directory, release_name=self.release_name))
 
         if os.path.isdir(self.directory):
-            self._log(_("File {directory} seems to be a directory").format(directory=self.directory))
-            return False
+            return self._fail(_("File {directory} seems to be a directory").format(directory=self.directory))
 
         if not os.path.exists(self.directory):
-            self._log(_("File {directory} doesn't exist, did unrar fail?").format(directory=self.directory))
-            return False
+            return self._fail(_("File {directory} doesn't exist, did unrar fail?").format(directory=self.directory))
 
         for ignore_file in self.IGNORED_FILESTRINGS:
             if ignore_file in self.directory:
-                self._log(_("File {directory} is ignored type, skipping").format(directory=self.directory))
-                return False
+                return self._fail(_("File {directory} is ignored type, skipping").format(directory=self.directory))
 
         # reset per-file stuff
         self.in_history = False
@@ -939,11 +954,11 @@ class PostProcessor(object):
         # try to find the file info
         (show, season, episodes, quality, version) = self._find_info()
         if not show:
-            self._log(_("This show isn't in your list, you need to add it to SC before post-processing an episode"))
-            raise EpisodePostProcessingFailedException()
+            message = _("This show isn't in your list, you need to add it to SC before post-processing an episode")
+            self._log(message)
+            raise EpisodePostProcessingFailedException(message)
         elif season is None or not episodes:
-            self._log(_("Not enough information to determine what episode this is. Quitting post-processing"))
-            return False
+            return self._fail(_("Not enough information to determine what episode this is. Quitting post-processing"))
 
         # retrieve/create the corresponding TVEpisode objects
         episode_object = self._get_ep_obj(show, season, episodes)
@@ -985,8 +1000,7 @@ class PostProcessor(object):
                 else:
                     allowed_qualities_, preferred_qualities = common.Quality.splitQuality(int(show.quality))
                     if new_ep_quality not in preferred_qualities:
-                        self._log(_("File exists and new file quality is not in a preferred quality list, marking it unsafe to replace"))
-                        return False
+                        return self._fail(_("File exists and new file quality is not in a preferred quality list, marking it unsafe to replace"))
 
             # Check if the processed file season is already in our indexer. If not, the file is most probably mislabled/fake and will be skipped
             # Only proceed if the file season is > 0
@@ -997,25 +1011,23 @@ class PostProcessor(object):
                 )
 
                 if not isinstance(max_season[0]["last_season"], int) or max_season[0]["last_season"] < 0:
-                    self._log(
+                    return self._fail(
                         f"File has season {episode_object.season}, while the database does not have any known seasons yet. "
                         "Try forcing a full update on the show and process this file again. "
                         "The file may be incorrectly labeled or fake, aborting."
                     )
-                    return False
 
                 # If the file season (episode_object.season) is bigger than the indexer season (max_season[0][0]), skip the file
                 newest_season = max_season[0]["last_season"]
                 episode_season = episode_object.season
                 if int(episode_season) > newest_season:
-                    self._log(
+                    return self._fail(
                         _(
                             "File has season {episode_season}, while the indexer is on season {newest_season}. "
                             "Try forcing a full update on the show and process this file again. "
                             "The file may be incorrectly labeled or fake, aborting."
                         ).format(episode_season=episode_season, newest_season=newest_season)
                     )
-                    return False
 
         # if the file is priority then we're going to replace it even if it exists
         else:
@@ -1027,8 +1039,7 @@ class PostProcessor(object):
                 if not verify_freespace(
                     self.directory, episode_object.show.get_location, [episode_object] + episode_object.related_episodes, method=self.process_method
                 ):
-                    self._log(_("Not enough disk space to continue processing, exiting"), logger.WARNING)
-                    return False
+                    return self._fail(_("Not enough disk space to continue processing, exiting"), logger.WARNING)
             else:
                 self._log(_("Unable to determine needed file space as the source file is locked for access"))
 
