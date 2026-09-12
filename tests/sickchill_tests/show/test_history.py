@@ -20,28 +20,36 @@ class HistoryTests(unittest.TestCase):
         show = MagicMock()
         show.indexerid = 299994
 
-        def make_ep(episode_number):
+        def make_ep(episode_number, quality):
             ep = MagicMock()
             ep.show = show
             ep.season = 1
             ep.episode = episode_number
-            ep.status = Quality.compositeStatus(DOWNLOADED, Quality.HDTV)
+            # Distinct statuses so we catch accidentally logging root.status for every ep.
+            ep.status = Quality.compositeStatus(DOWNLOADED, quality)
             ep.related_episodes = []
             return ep
 
-        root = make_ep(4)
-        root.related_episodes = [make_ep(5), make_ep(6)]
+        root = make_ep(4, Quality.SDTV)
+        related_a = make_ep(5, Quality.HDTV)
+        related_b = make_ep(6, Quality.FULLHDTV)
+        root.related_episodes = [related_a, related_b]
+        expected = [
+            (root.status, 4),
+            (related_a.status, 5),
+            (related_b.status, 6),
+        ]
 
         with patch.object(history, "_log_history_item") as log_item:
             history.log_download(root, "/videos/Puffin.Rock.S01E04E05E06.mkv", Quality.HDTV, group="MEMENTO", version=-1)
 
         self.assertEqual(log_item.call_count, 3)
         # positional: action, showid, season, episode, quality, resource, ...
-        logged_episodes = [c.args[3] for c in log_item.call_args_list]
-        self.assertEqual(logged_episodes, [4, 5, 6])
-        for c in log_item.call_args_list:
-            self.assertEqual(c.args[2], 1)  # season
-            self.assertEqual(c.args[5], "/videos/Puffin.Rock.S01E04E05E06.mkv")
+        for call_args, (expected_status, expected_episode) in zip(log_item.call_args_list, expected, strict=True):
+            self.assertEqual(call_args.args[0], expected_status)
+            self.assertEqual(call_args.args[2], 1)  # season
+            self.assertEqual(call_args.args[3], expected_episode)
+            self.assertEqual(call_args.args[5], "/videos/Puffin.Rock.S01E04E05E06.mkv")
 
 
 if __name__ == "__main__":
