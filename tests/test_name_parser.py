@@ -20,6 +20,9 @@ SIMPLE_TEST_CASES = {
         "Show.Name.S01E02E03.Source.Quality.Etc-Group": parser.ParseResult(None, "Show Name", 1, [2, 3], "Source.Quality.Etc", "Group"),
         "Mr. Show Name - S01E02-03 - My Ep Name": parser.ParseResult(None, "Mr. Show Name", 1, [2, 3], "My Ep Name"),
         "Show.Name.S01.E02.E03": parser.ParseResult(None, "Show Name", 1, [2, 3]),
+        # Three shorts in one file (Puffin Rock style Official numbering)
+        "Show.Name.S01E01-E03.Ep.One.&.Ep.Two.&.Ep.Three": parser.ParseResult(None, "Show Name", 1, [1, 2, 3], "Ep.One.&.Ep.Two.&.Ep.Three"),
+        "Show.Name.S01E01E02E03.Source.Quality": parser.ParseResult(None, "Show Name", 1, [1, 2, 3], "Source.Quality"),
         "Show.Name-0.2010.S01E02.Source.Quality.Etc-Group": parser.ParseResult(None, "Show Name-0 2010", 1, [2], "Source.Quality.Etc", "Group"),
         "S01E02 Ep Name": parser.ParseResult(None, None, 1, [2], "Ep Name"),
         "Show Name - S06E01 - 2009-12-20 - Ep Name": parser.ParseResult(None, "Show Name", 6, [1], "2009-12-20 - Ep Name"),
@@ -630,6 +633,38 @@ class BasicFailedTests(conftest.SickChillTestDBCase):
         self._test_names(name_parser, "scene_date_format", lambda x: x + ".avi")
 
 
+class SceneMultiEpContiguousTests(unittest.TestCase):
+    """Scene maps must not turn contiguous multi-ep releases into gapped indexer lists."""
+
+    def test_is_contiguous_helper(self):
+        self.assertTrue(parser.NameParser._is_contiguous([1, 2, 3]))
+        self.assertTrue(parser.NameParser._is_contiguous([16, 17, 18]))
+        self.assertFalse(parser.NameParser._is_contiguous([1, 4, 7]))
+        self.assertFalse(parser.NameParser._is_contiguous([]))
+
+    def test_scene_gap_keeps_release_numbering_for_three_ep_file(self):
+        from unittest.mock import MagicMock, patch
+
+        show = MagicMock()
+        show.is_scene = True
+        show.is_anime = False
+        show.indexerid = 299994
+        show.indexer = 1
+        show.name = "Puffin Rock"
+
+        # DVD/scene pack N → Official short 1 + 3*(N-1): 1→1, 2→4, 3→7
+        def scene_to_indexer(_indexerid, _indexer, season, episode):
+            return season, 1 + 3 * (episode - 1)
+
+        name = "Puffin.Rock.S01E01-E03.Puffin.Practice.&.The.Shiny.Shell.&.Beach.Rescue.1080p.WEB.DL.h265"
+        with patch("sickchill.oldbeard.scene_numbering.get_indexer_numbering", side_effect=scene_to_indexer):
+            with patch("sickchill.oldbeard.helpers.get_show", return_value=show):
+                result = parser.NameParser(show_object=show, naming_pattern=False).parse(name, cache_result=False)
+
+        self.assertEqual(result.season_number, 1)
+        self.assertEqual(result.episode_numbers, [1, 2, 3])
+
+
 if __name__ == "__main__":
     if len(sys.argv) > 1:
         SUITE = unittest.TestLoader().loadTestsFromName("name_parser_tests.BasicTests.test_" + sys.argv[1])
@@ -648,4 +683,7 @@ if __name__ == "__main__":
     unittest.TextTestRunner(verbosity=2).run(SUITE)
 
     SUITE = unittest.TestLoader().loadTestsFromTestCase(AnimeTests)
+    unittest.TextTestRunner(verbosity=2).run(SUITE)
+
+    SUITE = unittest.TestLoader().loadTestsFromTestCase(SceneMultiEpContiguousTests)
     unittest.TextTestRunner(verbosity=2).run(SUITE)

@@ -43,6 +43,14 @@ class NameParser(object):
             self._compile_regexes(self.ALL_REGEX)
 
     @staticmethod
+    def _is_contiguous(episodes):
+        """True when episode numbers form an unbroken inclusive range."""
+        if not episodes:
+            return False
+        ordered = sorted(episodes)
+        return ordered == list(range(ordered[0], ordered[-1] + 1))
+
+    @staticmethod
     def clean_series_name(series_name):
         """Cleans up series name by removing any . and _
         characters, along with any trailing hyphens.
@@ -276,6 +284,10 @@ class NameParser(object):
                     new_season_numbers.append(s)
 
             elif best_result.season_number and best_result.episode_numbers:
+                # Preserve pre-scene list for multi-ep sanity (e.g. S01E01-E03 → [1,2,3]).
+                release_episode_numbers = list(best_result.episode_numbers)
+                release_season_number = best_result.season_number
+
                 for epNo in best_result.episode_numbers:
                     s = best_result.season_number
                     e = epNo
@@ -289,6 +301,27 @@ class NameParser(object):
 
                     new_episode_numbers.append(e)
                     new_season_numbers.append(s)
+
+                # Contiguous multi-ep in the release (E01-E03) that scene-maps to a gapped
+                # set (E01,E04,E07) almost always means the filename already used indexer
+                # numbering (e.g. Official shorts), not scene/DVD pack numbers.
+                if (
+                    best_result.show.is_scene
+                    and not skip_scene_detection
+                    and len(release_episode_numbers) > 1
+                    and self._is_contiguous(release_episode_numbers)
+                    and new_episode_numbers
+                    and not self._is_contiguous(new_episode_numbers)
+                ):
+                    logger.debug(
+                        "Scene numbering mapped contiguous multi-ep {release} to non-contiguous "
+                        "{converted}; keeping release episode numbers (likely already indexer order)".format(
+                            release=release_episode_numbers, converted=sorted(set(new_episode_numbers))
+                        )
+                    )
+                    new_episode_numbers = list(release_episode_numbers)
+                    new_season_numbers = [release_season_number]
+                    new_absolute_numbers = []
 
             # need to do a quick sanity check regex.  It's possible that we now have episodes
             # from more than one season (by tvdb numbering), and this is just too much
