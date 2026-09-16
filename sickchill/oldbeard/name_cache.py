@@ -132,9 +132,13 @@ def build_name_cache(show=None):
 
     :param show: Specify show to build name cache for, if None, just do all shows
     """
-    with name_cache_lock:
-        scene_exceptions.retrieve_exceptions()
+    # Refresh scene exceptions outside the cache lock so MAIN / SHOWQUEUE-ADD are not
+    # blocked for the whole HTTP + XML pass (AniDB used to hold this lock for minutes).
+    # retrieve_exceptions may update many shows; rebuild those under the lock so the
+    # name cache does not keep pre-refresh aliases for untouched shows.
+    updated_exception_ids = scene_exceptions.retrieve_exceptions()
 
+    with name_cache_lock:
         if not show:
             logger.debug("Building internal name cache for all shows")
             name_cache.clear()
@@ -151,10 +155,21 @@ def build_name_cache(show=None):
                 if settings.stopping or settings.restarting:
                     break
                 _log_show_cache(cur_show)
-        else:
-            _build_show_name_cache_locked(show)
-            _load_persisted_names(show.indexerid)
-            _log_show_cache(show)
+            return
+
+        shows_by_id = {int(cur.indexerid): cur for cur in settings.show_list}
+        to_rebuild = {int(show.indexerid)}
+        to_rebuild.update(int(indexer_id) for indexer_id in (updated_exception_ids or ()))
+
+        for indexer_id in sorted(to_rebuild):
+            if settings.stopping or settings.restarting:
+                break
+            cur_show = shows_by_id.get(indexer_id)
+            if not cur_show:
+                continue
+            _build_show_name_cache_locked(cur_show)
+            _load_persisted_names(indexer_id)
+            _log_show_cache(cur_show)
 
 
 def _build_show_name_cache_locked(show):

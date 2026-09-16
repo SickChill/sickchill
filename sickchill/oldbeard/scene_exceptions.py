@@ -253,16 +253,18 @@ def update_custom_scene_exceptions(indexer_id, scene_exceptions: dict) -> None:
         name_cache.build_name_cache(show)
 
 
-def retrieve_exceptions() -> None:
+def retrieve_exceptions() -> set[int]:
     """
     Looks up the exceptions on GitHub, parses them into a dict, and inserts them into the
     scene_exceptions table in cache.db. Removes stale official (custom=0) exceptions
     while preserving user custom=1 entries.
+
+    :return: indexer ids whose official exceptions changed (for name-cache rebuild)
     """
     cache_db_con = db.DBConnection("cache.db")
 
     seen = set()  # (indexerid, name, season)
-    updated_shows = set()
+    updated_shows: set[int] = set()
 
     generators = (
         _sickchill_exceptions_generator(),
@@ -279,7 +281,7 @@ def retrieve_exceptions() -> None:
             if key in seen:
                 continue
             seen.add(key)
-            updated_shows.add(indexerid)
+            updated_shows.add(int(indexerid))
 
             # Remove any old official version of this exact exception
             queries.append(["DELETE FROM scene_exceptions WHERE indexer_id = ? AND show_name = ? AND season = ? AND custom = 0;", [indexerid, name, season]])
@@ -290,11 +292,13 @@ def retrieve_exceptions() -> None:
         cache_db_con.mass_action(queries)
 
         # Rebuild in-memory cache for affected shows
-        for show in list(updated_shows):
-            exceptions_cache.pop(show, None)
-            rebuild_exception_cache(show)
+        for show_id in list(updated_shows):
+            exceptions_cache.pop(show_id, None)
+            rebuild_exception_cache(show_id)
 
         logger.debug("Updated scene exceptions")
+
+    return updated_shows
 
 
 def _sickchill_exceptions_generator() -> Generator[tuple[int, str, int], None, None]:
