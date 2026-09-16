@@ -1,4 +1,3 @@
-# TODO: Implement skipped tests
 import unittest
 from typing import ClassVar
 
@@ -294,8 +293,7 @@ class QualityTests(unittest.TestCase):
     Test Case for common.Quality
     """
 
-    # TODO: repack / proper ? air-by-date ? season rip? multi-ep?
-    # reverse parsing does not work
+    # Reverse parsing for repack/proper, air-by-date, season rip, and multi-ep names is still uncovered.
     def test_reverse_parsing(self):
         """
         Test reverse parsing for all qualities
@@ -388,7 +386,7 @@ class StatusStringsTests(unittest.TestCase):
     Test Case for common.StatusStrings
     """
 
-    # TODO: Split tests into separate tests and add additional tests
+    # Prefer splitting this into focused cases when touching StatusStrings next.
 
     def test_all(self):
         """

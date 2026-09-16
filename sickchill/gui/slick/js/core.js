@@ -4708,8 +4708,7 @@ const SICKCHILL = {
             }
 
             let lastTxt = '';
-            // @TODO This fixes the issue of the page not loading at all,
-            //       before I added this I couldn't get the directories to show in the table.
+            // Keep: without this, the root-dirs table may not populate on load.
             const rootDirectoriesWorkaround = function () {
                 if (lastTxt === $('#rootDirText').val()) {
                     return false;

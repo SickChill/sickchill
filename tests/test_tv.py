@@ -3,6 +3,7 @@ Test tv
 """
 
 import unittest
+from unittest.mock import patch
 
 from sickchill import settings
 from sickchill.tv import TVEpisode, TVShow
@@ -109,8 +110,7 @@ class TVTests(conftest.SickChillTestDBCase):
         super().setUp()
         settings.show_list = []
 
-    @staticmethod
-    def test_get_episode():
+    def test_get_episode(self):
         """
         Test get episodes
         """
@@ -125,7 +125,29 @@ class TVTests(conftest.SickChillTestDBCase):
         show.startyear = 1987
         show.save_to_db()
         settings.show_list = [show]
-        # TODO: implement
+
+        episode = TVEpisode(show, 1, 1)
+        episode.name = "Pilot"
+        episode.save_to_db()
+
+        def specify_from_db(self, season, episode_number, allow_indexer=True):
+            # Local DB load only (conftest stubs specify_episode to avoid indexer I/O).
+            _ = allow_indexer
+            assert self.load_from_db(season, episode_number)
+
+        # Empty cache → get_episode must populate from DB via specify_episode.
+        show.episodes = {}
+        with patch.object(TVEpisode, "specify_episode", specify_from_db):
+            loaded = show.get_episode(1, 1)
+            assert loaded is not None
+            assert loaded.season == 1
+            assert loaded.episode == 1
+            assert loaded.show is show
+            assert loaded.name == "Pilot"
+
+            # Second call returns the cached instance.
+            assert show.get_episode(1, 1) is loaded
+            assert show.episodes[1][1] is loaded
 
 
 if __name__ == "__main__":
