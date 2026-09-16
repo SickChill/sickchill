@@ -1136,8 +1136,10 @@ class TVDB(Indexer):
             return ""
         if location.startswith(("http://", "https://")):
             return location
-        # Legacy relative banner path fallback
-        return f"https://artworks.thetvdb.com/banners/{re.sub(r'^_cache/', '', location)}"
+        location = re.sub(r"^_cache/", "", location).lstrip("/")
+        while location.startswith("banners/"):
+            location = location[len("banners/") :]
+        return f"https://artworks.thetvdb.com/banners/{location}"
 
     def _urls_from_series_artworks(self, series, artwork_type, multiple=False, thumb=False):
         """Filter artworks already on a series result — no extra HTTP."""

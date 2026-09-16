@@ -900,8 +900,20 @@ class TVDBSearchMappingTests(unittest.TestCase):
 
     def test_complete_image_url_passthrough_and_relative(self):
         self.assertEqual(TVDB.complete_image_url("https://cdn.example/a.jpg"), "https://cdn.example/a.jpg")
-        self.assertTrue(TVDB.complete_image_url("posters/foo.jpg").startswith("https://artworks.thetvdb.com/"))
+        self.assertEqual(TVDB.complete_image_url("posters/foo.jpg"), "https://artworks.thetvdb.com/banners/posters/foo.jpg")
         self.assertEqual(TVDB.complete_image_url(""), "")
+        # V4 screencaps often already include banners/ — must not double it (403).
+        screencap = "banners/v4/episode/11641378/screencap/69b9aa8badc3a.jpg"
+        self.assertEqual(
+            TVDB.complete_image_url(screencap),
+            "https://artworks.thetvdb.com/banners/v4/episode/11641378/screencap/69b9aa8badc3a.jpg",
+        )
+        self.assertEqual(
+            TVDB.complete_image_url("/banners/v4/episode/11729060/screencap/6a90e114b9c3e.jpg"),
+            "https://artworks.thetvdb.com/banners/v4/episode/11729060/screencap/6a90e114b9c3e.jpg",
+        )
+        self.assertNotIn("banners//banners", TVDB.complete_image_url(screencap))
+        self.assertNotIn("banners/banners", TVDB.complete_image_url(screencap))
 
     def test_api_key_uses_settings_only(self):
         from sickchill import settings
