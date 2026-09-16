@@ -113,7 +113,35 @@ class TVTests(conftest.SickChillTestDBCase):
         """
         Test get episodes
         """
-        self.skipTest("TVShow episode retrieval coverage not implemented yet")
+        show = TVShow(1, 1, "en")
+        show.name = "show name"
+        show.network = "cbs"
+        show.genre = ["crime"]
+        show.runtime = 40
+        show.status = "Ended"
+        show.default_ep_status = "5"
+        show.airs = "monday"
+        show.startyear = 1987
+        show.save_to_db()
+        settings.show_list = [show]
+
+        episode = TVEpisode(show, 1, 1)
+        episode.name = "Pilot"
+        episode.save_to_db()
+
+        # Empty cache → get_episode constructs a TVEpisode; load_from_db matches TVEpisodeTests.
+        show.episodes = {}
+        loaded = show.get_episode(1, 1)
+        assert loaded is not None
+        assert loaded.season == 1
+        assert loaded.episode == 1
+        assert loaded.show is show
+        assert loaded.load_from_db(1, 1)
+        assert loaded.name == "Pilot"
+
+        # Second call returns the cached instance.
+        assert show.get_episode(1, 1) is loaded
+        assert show.episodes[1][1] is loaded
 
 
 if __name__ == "__main__":
