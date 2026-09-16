@@ -132,9 +132,11 @@ def build_name_cache(show=None):
 
     :param show: Specify show to build name cache for, if None, just do all shows
     """
-    with name_cache_lock:
-        scene_exceptions.retrieve_exceptions()
+    # Refresh scene exceptions outside the cache lock so MAIN / SHOWQUEUE-ADD are not
+    # blocked for the whole HTTP + XML pass (AniDB used to hold this lock for minutes).
+    scene_exceptions.retrieve_exceptions()
 
+    with name_cache_lock:
         if not show:
             logger.debug("Building internal name cache for all shows")
             name_cache.clear()
