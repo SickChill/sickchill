@@ -197,9 +197,7 @@ class NameParser(object):
 
             matches.append(result)
 
-        # only get matches with series_name
-        # TODO: This makes tests fail when checking filenames that do not include the show name (refresh, force update, etc)
-        # matches = [x for x in matches if x.series_name]
+        # Intentionally keep matches without series_name (refresh / force-update / bare SxxExx names).
 
         if matches:
             # pick the best match with the highest score based on placement

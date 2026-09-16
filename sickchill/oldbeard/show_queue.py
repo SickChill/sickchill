@@ -883,29 +883,11 @@ class QueueItemRemove(ShowQueueItem):
         # If any notification fails, don't stop removal
         # noinspection PyBroadException
         try:
-            # TODO: episode_object is undefined here, so all of these will fail.
-            # send notifications
-            # notifiers.notify_download(episode_object.format_pattern('%SN - %Sx%0E - %EN - %QN'))
-
-            # do the library update for KODI
             notifiers.kodi_notifier.update_library(self.show.name)
-
-            # do the library update for Plex
             notifiers.plex_notifier.update_library(self.show)
-
-            # do the library update for EMBY
             notifiers.emby_notifier.update_library(self.show)
-
-            # do the library update for JELLYFIN
             notifiers.jellyfin_notifier.update_library(self.show)
-
-            # do the library update for NMJ
-            # nmj_notifier kicks off its library update when the notify_download is issued (inside notifiers)
-
-            # do the library update for Synology Indexer
             notifiers.synoindex_notifier.addFolder(self.show.get_location)
-
-            # do the library update for tivo
             notifiers.pytivo_notifier.update_library(self.show)
         except Exception:
             logger.info(_("Some notifications could not be sent. Continuing removal of {}...").format(self.show.name))

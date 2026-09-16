@@ -524,10 +524,11 @@ class AnimeTests(conftest.SickChillTestDBCase):
         self._test_names(name_parser, "anime_bare", lambda x: x + ".avi")
 
 
-# TODO: Make these work or document why they shouldn't
 class BasicFailedTests(conftest.SickChillTestDBCase):
     """
-    Basic tests that currently fail
+    Known expectedFailure cases: bare / no-season names without a reliable show
+    match (and some anime-bare paths) still do not parse under NameParser defaults.
+    Kept as expectedFailure so regressions that start passing can be noticed.
     """
 
     def __init__(self, something):
