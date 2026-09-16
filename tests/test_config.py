@@ -469,7 +469,7 @@ class ConfigTestMigrator(unittest.TestCase):
         """
         Test migrate_config
         """
-        # TODO: Assert the 'too-advanced-config-version' error
+        # When implemented: assert the 'too-advanced-config-version' error path.
 
         CFG = ConfigObj("test_config.ini", encoding="UTF-8", indent_type="  ")
         config.check_section(CFG, "General")

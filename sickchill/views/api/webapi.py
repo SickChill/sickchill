@@ -251,8 +251,7 @@ class ApiCall(ApiHandler):
 
     # noinspection PyMissingConstructor
     def __init__(self, args, kwargs):
-        # TODO: Find out why this buggers up RequestHandler init if called
-        # super().__init__(args, kwargs)
+        # Not a Tornado RequestHandler instance path — do not call RequestHandler.__init__.
         self.rh = None
         self.indexer = 1
         self._missing = []

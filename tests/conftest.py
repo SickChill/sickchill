@@ -124,8 +124,7 @@ def _dummy_save_config():
     return True
 
 
-# this overrides the SickChill save_config which gets called during a db upgrade
-# this might be considered a hack
+# Intentional: stub save_config during tests so DB upgrades do not write a real config.
 sickchill.start.save_config = _dummy_save_config
 
 

@@ -111,7 +111,7 @@ class RSSTorrentMixin:
             return
 
         if torznab and not seeders:
-            # TODO: Implement minseed/minleech for torznab/jackett
+            # TODO: Implement minseed/minleech for torznab
             logger.debug(f"Skipping torznab result {title} because there are no seeders.")
 
         if size_units:

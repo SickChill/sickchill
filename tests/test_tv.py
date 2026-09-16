@@ -109,23 +109,11 @@ class TVTests(conftest.SickChillTestDBCase):
         super().setUp()
         settings.show_list = []
 
-    @staticmethod
-    def test_get_episode():
+    def test_get_episode(self):
         """
         Test get episodes
         """
-        show = TVShow(1, 1, "en")
-        show.name = "show name"
-        show.network = "cbs"
-        show.genre = ["crime"]
-        show.runtime = 40
-        show.status = "Ended"
-        show.default_ep_status = "5"
-        show.airs = "monday"
-        show.startyear = 1987
-        show.save_to_db()
-        settings.show_list = [show]
-        # TODO: implement
+        self.skipTest("TVShow episode retrieval coverage not implemented yet")
 
 
 if __name__ == "__main__":

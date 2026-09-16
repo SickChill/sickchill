@@ -169,13 +169,8 @@ class CommonTests(unittest.TestCase):
         """
         Test is_media_file
         """
-        # TODO: Add unicode tests
-        # TODO: Add MAC OS resource fork tests
-        # TODO: Add RARBG release tests
-        # RARBG release intros should be ignored
-        # MAC OS's "resource fork" files should be ignored
-        # Extras should be ignored
-        # and the file extension should be in the list of media extensions
+        # Still useful to add: unicode filenames and macOS resource-fork (._*) cases.
+        # RARBG intros and sample/extras handling are covered below.
 
         # Test all valid media extensions
         temp_name = "Show.Name.S01E01.HDTV.x264-SICKCHILL"
