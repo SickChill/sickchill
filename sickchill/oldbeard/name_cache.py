@@ -127,10 +127,10 @@ def save_all_cached_names():
         cache_db_con.mass_action([["INSERT OR REPLACE INTO scene_names (indexer_id, name) VALUES (?, ?)", [indexer_id, name]] for name, indexer_id in items])
 
 
-def build_name_cache(show_name=None):
+def build_name_cache(show=None):
     """Build internal name cache
 
-    :param show_name: Specify show to build name cache for, if None, just do all shows
+    :param show: Specify show to build name cache for, if None, just do all shows
     """
     # Refresh scene exceptions outside the cache lock so MAIN / SHOWQUEUE-ADD are not
     # blocked for the whole HTTP + XML pass (AniDB used to hold this lock for minutes).

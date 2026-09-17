@@ -448,51 +448,12 @@ def _anidb_exceptions_generator() -> Generator[tuple[int, str, int], None, None]
         if not (show.is_anime and show.indexer == 1):
             continue
 
-            # Remove any old official version of this exact exception
-            queries.append(["DELETE FROM scene_exceptions WHERE indexer_id = ? AND show_name = ? AND season = ? AND custom = 0;", [indexerid, name, season]])
-            # Insert the current official version
-            queries.append(["INSERT OR IGNORE INTO scene_exceptions (indexer_id, show_name, season, custom) VALUES (?,?,?, 0);", [indexerid, name, season]])
-
-    if queries:
-        cache_db_con.mass_action(queries)
-
-        # Rebuild in-memory cache for affected shows
-        for show in list(updated_shows):
-            exceptions_cache.pop(show, None)
-            rebuild_exception_cache(show)
-
-        logger.debug("Updated scene exceptions")
-
-
-def _sickchill_exceptions_generator() -> Generator[tuple[int, str, int], None, None]:
-    if not should_refresh("sickchill"):
-        return
-
-    logger.info("Checking for scene exception updates from sickchill.github.io")
-    url = "https://sickchill.github.io/scene_exceptions/scene_exceptions.json"
-
-    # noinspection PyBroadException
-    try:
-        session = _get_github_session()
-        raw = helpers.getURL(url, session=session, returns="json")
-        jdata: dict = raw if isinstance(raw, dict) else {}
-    except Exception:
-        jdata = {}
-
-    if not jdata:
-        logger.debug(f"Check scene exceptions update failed (no data). Unable to update from {url}")
-        return
-
-    for shows in jdata.values():
         try:
             mappings = tvdb_to_mappings.get(int(show.indexerid), [])
             if not mappings:
                 skipped += 1
                 logger.debug(f"AniDB: no TVDB mapping for {show.name} (tvdb={show.indexerid})")
                 continue
-            else:
-                if anime.name and anime.name != show.name:
-                    yield int(show.indexerid), anime.name, -1
 
             applicable = _show_applicable_tvdb_seasons(show)
             selected: list[tuple[int, int]] = []

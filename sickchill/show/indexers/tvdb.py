@@ -4,8 +4,6 @@ import traceback
 import requests
 
 from sickchill import logger, settings
-from sickchill.show.indexers.base import Indexer
-from sickchill.show.indexers.wrappers import ExceptionDecorator
 from sickchill.tv import TVEpisode
 
 from .base import Indexer
