@@ -69,10 +69,10 @@
                         <div class="h2footer pull-right">
                             <span>
                                 % if (len(seasonResults) > 5):
-                                    <select id="seasonJump" class="form-control input-sm" style="position: relative; top: -4px;" title="Season">
+                                    <select id="seasonJump" class="form-control input-sm" style="position: relative; top: -4px;" title="${_('Jump to Season')}">
                                         <option value="jump">${_('Jump to Season')}</option>
                                         % for seasonNum in seasonResults:
-                                            <option value="#season-${seasonNum["season"]}" data-season="${seasonNum["season"]}">${(_('Specials'), _('Season') + ' ' + str(seasonNum["season"]))[int(seasonNum["season"]) > 0]}</option>
+                                            <option value="#season-${seasonNum["season"]}" data-season="${seasonNum["season"]}">${(_('Specials'), _('Season {num}').format(num=seasonNum["season"]))[int(seasonNum["season"]) > 0]}</option>
                                         % endfor
                                     </select>
                                 % else:
@@ -307,8 +307,17 @@
                                                 <td><span class="displayshow-icon-${('disable', 'enable')[show.is_anime]}" title=${("N", "Y")[show.is_anime]}></span></td>
                                             </tr>
                                             <tr>
-                                                <td class="showLegend">${_('DVD Order')}: </td>
-                                                <td><span class="displayshow-icon-${('disable', 'enable')[bool(show.dvdorder)]}" title=${("N","Y")[bool(show.dvdorder)]}></span></td>
+                                                <td class="showLegend">${_('Season Order')}: </td>
+                                                <td>
+                                                    <%
+                                                        _order_label = seasons_order_label if seasons_order_label is not UNDEFINED else None
+                                                        _order_slug = seasons_order_slug if seasons_order_slug is not UNDEFINED else None
+                                                        if not _order_label:
+                                                            _order_slug = _order_slug or getattr(show, 'resolved_seasons_order', None) or getattr(show, 'seasons_order', None) or ('dvd' if show.dvdorder else 'default')
+                                                            _order_label = _order_slug
+                                                    %>
+                                                    <span title="${_order_slug or _order_label}">${_order_label}</span>
+                                                </td>
                                             </tr>
                                             <tr>
                                                 <td class="showLegend">${_('Scene Numbering')}: </td>
@@ -421,7 +430,7 @@
                     <div class="row seasonheader" data-season-id="${epResult["season"]}">
                         <div class="col-md-12">
                             <br/>
-                            <h3 style="display: inline;"><a id="season-${epResult["season"]}"></a>${(_("Specials"), _("Season") + ' ' + str(epResult["season"]))[int(epResult["season"]) > 0]}</h3>
+                            <h3 style="display: inline;"><a id="season-${epResult["season"]}"></a>${(_("Specials"), _("Season {num}").format(num=epResult["season"]))[int(epResult["season"]) > 0]}</h3>
                             % if not settings.DISPLAY_ALL_SEASONS:
                                 % if curSeason == -1:
                                     <button id="showseason-${epResult['season']}" type="button" class="btn btn-xs pull-right" data-toggle="collapse" data-target="#collapseSeason-${epResult['season']}" aria-expanded="true">${_('Hide Episodes')}</button>

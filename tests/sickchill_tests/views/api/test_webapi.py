@@ -15,7 +15,6 @@ def api_command(request, caplog):
 
 
 def test_api_calls(api_command, capsys):
+    """Currently only enumerates command help via the fixture; call execution is not asserted."""
     with capsys.disabled():
         print(api_command._help)
-
-    # TODO: test the api calls, this method will be called once for each api command automatically because of the fixture

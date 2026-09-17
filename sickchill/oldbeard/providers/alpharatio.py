@@ -89,7 +89,7 @@ class Provider(TorrentProvider):
 
             for search_string in {*search_strings[mode]}:
                 if mode != "RSS":
-                    logger.debug(_("Search string: {0}").format(search_string))
+                    logger.debug(_("Search String: {search_string}").format(search_string=search_string))
 
                 search_params["searchstr"] = search_string
                 search_url = self.urls["search"]
@@ -140,7 +140,11 @@ class Provider(TorrentProvider):
 
                             item = {"title": title, "link": download_url, "size": size, "seeders": seeders, "leechers": leechers, "hash": ""}
                             if mode != "RSS":
-                                logger.debug(_("Found result: {0} with {1} seeders and {2} leechers").format(title, seeders, leechers))
+                                logger.debug(
+                                    _("Found result: {title} with {seeders} seeders and {leechers} leechers").format(
+                                        title=title, seeders=seeders, leechers=leechers
+                                    )
+                                )
 
                             items.append(item)
                         except Exception:  # noqa: S112

@@ -449,3 +449,52 @@ def choose_data_dir(program_dir) -> Path:
             if os.access(location.joinpath(check), os.R_OK):
                 return location.resolve()
     return proper_data_dir.resolve()
+
+
+def is_safe_internal_redirect(url: str | None) -> bool:
+    """
+    Return True if ``url`` is a same-site absolute path safe for redirect.
+
+    Rejects schemes, netlocs, protocol-relative URLs, and backslashes (including
+    encoded forms such as ``/%5C%5Cattacker.example``). Independent of WEB_ROOT.
+    """
+    from urllib.parse import unquote, urlparse
+
+    if not url or not isinstance(url, str):
+        return False
+
+    decoded = url
+    for _ in range(5):
+        nxt = unquote(decoded)
+        if nxt == decoded:
+            break
+        decoded = nxt
+
+    if "\\" in decoded:
+        return False
+    if not decoded.startswith("/") or decoded.startswith("//"):
+        return False
+
+    parsed = urlparse(decoded)
+    if parsed.scheme or parsed.netloc:
+        return False
+
+    return "://" not in decoded
+
+
+def resolve_safe_redirect(next_url: str | None, referer: str, request_host: str, default_page: str) -> str:
+    """
+    Choose a safe redirect target: validated ``next`` query, else same-host referer path,
+    else ``/{default_page}/``.
+    """
+    from urllib.parse import urlparse
+
+    if is_safe_internal_redirect(next_url):
+        return next_url
+
+    parsed = urlparse(referer or "")
+    referer_path = parsed.path + (("?" + parsed.query) if parsed.query else "")
+    if parsed.netloc == request_host and is_safe_internal_redirect(referer_path):
+        return referer_path
+
+    return f"/{default_page.strip('/')}/"

@@ -750,8 +750,17 @@ home_addShows.mako
     padding: 10px;
 }
 
+/* Keep every hub tile the same width regardless of icon/text content */
+#addShowPortal a.btn-large {
+    display: table;
+    width: 100%;
+    box-sizing: border-box;
+    text-align: left;
+}
+
 div.button {
     display: table-cell;
+    width: 72px;
     padding-left: 10px;
     vertical-align: middle;
 }
@@ -761,6 +770,7 @@ div.buttontext {
     padding-left: 20px;
     text-align: left;
     white-space: normal;
+    width: 100%;
 }
 
 div.buttontext h3 {
@@ -789,12 +799,38 @@ div.buttontext p {
     background-position: -38px 0;
 }
 
-.add-list-icon-addimdb {
-    background-position: -76px 0;
+/* TMDB + TVMaze stacked logos (replaces Trakt sprite on Add Shows hub) */
+.add-list-icon-tmdb-tvmaze {
+    position: relative;
+    top: 0;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    width: 64px;
+    height: 72px;
+    float: left;
+    background: none;
 }
 
-.add-list-icon-addtvdb {
-    background-position: 0 0;
+.add-list-icon-tmdb-tvmaze .add-list-logo {
+    display: block;
+    width: 56px;
+    height: 32px;
+    object-fit: contain;
+}
+
+.add-list-icon-tmdb-tvmaze .add-list-logo-tmdb {
+    height: 32px;
+}
+
+.add-list-icon-tmdb-tvmaze .add-list-logo-tvmaze {
+    height: 32px;
+}
+
+.add-list-icon-addimdb {
+    background-position: -76px 0;
 }
 
 .add-list-icon-addexistingshow {
@@ -892,12 +928,55 @@ home_trendingShows.mako
     white-space: nowrap;
 }
 
+/* Discovery list toolbars (Popular / Trending): title left, filters centered on same line */
+.discovery-toolbar {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5em 1em;
+    margin-bottom: 0.75em;
+}
+
+.discovery-toolbar .header,
+.discovery-toolbar .title {
+    margin: 0;
+    flex: 0 0 auto;
+}
+
+.discovery-filters {
+    text-align: right;
+}
+
+.discovery-toolbar .discovery-filters {
+    flex: 1 1 auto;
+}
+
+.discovery-filters label {
+    margin-bottom: 0;
+    font-weight: normal;
+}
+
+/* Outer Isotope item: tile width (188px) + .traktContainer side margins (12px × 2) */
+#popularShows .trakt_show,
+#trendingShows .trakt_show {
+    width: 212px;
+}
+
 .traktContainer {
     width: 188px;
     border: 1px solid #111111;
     border-radius: 6px;
     margin: 12px;
     background-color: #DFDACF;
+}
+
+/* TVMaze premieres: distinguish tiles with/without a TVDB id */
+.traktContainer .show-title.has-tvdb {
+    color: #111111;
+}
+
+.traktContainer .show-title.no-tvdb {
+    color: #B35900;
 }
 
 .trakt-image, .trakt-image img {
@@ -1165,6 +1244,51 @@ span.snatched b {
     empty-cells: show;
     table-layout: auto;
     text-align: center;
+}
+
+/* addShows newShow search results: keep Network/Score/etc. compact */
+.new-show-table {
+    table-layout: auto;
+}
+
+.new-show-table th,
+.new-show-table td {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* 1 radio | 2 name | 3 network | 4 premiere | 5 score | 6 indexer */
+.new-show-table th:nth-child(1),
+.new-show-table td:nth-child(1) {
+    width: 2.5em;
+}
+
+.new-show-table th:nth-child(2),
+.new-show-table td:nth-child(2) {
+    width: auto;
+    text-align: left;
+    white-space: normal; /* allow long show titles to wrap */
+}
+
+.new-show-table th:nth-child(3),
+.new-show-table td:nth-child(3) {
+    width: 16em; /* Network */
+}
+
+.new-show-table th:nth-child(4),
+.new-show-table td:nth-child(4) {
+    width: 8em; /* Premiere */
+}
+
+.new-show-table th:nth-child(5),
+.new-show-table td:nth-child(5) {
+    width: 6em; /* Score */
+}
+
+.new-show-table th:nth-child(6),
+.new-show-table td:nth-child(6) {
+    width: 8em; /* Indexer */
 }
 
 .sickchillTable.display_show {

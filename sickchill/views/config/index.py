@@ -2,7 +2,8 @@ import os
 
 from tornado.web import addslash
 
-from sickchill.init_helpers import get_current_version
+from sickchill import logger
+from sickchill.init_helpers import get_current_version, get_git_revision
 from sickchill.views.common import PageTemplate
 from sickchill.views.index import WebRoot
 from sickchill.views.routes import Route
@@ -24,6 +25,11 @@ class Config(WebRoot):
         ]
 
         return menu
+
+    @staticmethod
+    def log_configuration_save(page: str) -> None:
+        """Emit a single debug line identifying which config page is being saved."""
+        logger.debug(f"Saving configuration: {page}")
 
     @addslash
     def index(self):
@@ -49,6 +55,7 @@ class Config(WebRoot):
         except Exception:
             ssl_version = "Unknown"
 
+        sc_branch, sc_revision = get_git_revision()
         return t.render(
             submenu=self.ConfigMenu(),
             title=_("SickChill Configuration"),
@@ -58,4 +65,6 @@ class Config(WebRoot):
             sc_locale=sc_locale,
             ssl_version=ssl_version,
             sc_version=get_current_version(),
+            sc_branch=sc_branch,
+            sc_revision=sc_revision,
         )

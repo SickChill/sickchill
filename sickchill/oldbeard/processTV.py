@@ -498,13 +498,15 @@ def process_media(process_path, video_files, release_name, process_method, force
         try:
             processor = postProcessor.PostProcessor(cur_video_file_path, release_name, process_method, is_priority)
             result.result = processor.process()
-            process_fail_message = ""
+            process_fail_message = getattr(processor, "failure_reason", "") or ""
         except EpisodePostProcessingFailedException as error:
             result.result = False
-            process_fail_message = error
+            process_fail_message = str(error) if str(error) else _("Episode post-processing failed")
 
         if processor:
             result.output += processor.log
+            if not result.result and not process_fail_message:
+                process_fail_message = getattr(processor, "failure_reason", "") or _("Episode post-processing failed")
 
         if result.result:
             result.output += log_helper(f"Processing succeeded for {cur_video_file_path}")

@@ -94,7 +94,7 @@ class ConfigPostProcessing(Config):
 
         naming_pattern = self.get_body_argument("naming_pattern", default=None)
         naming_multi_ep = self.get_body_argument("naming_multi_ep", default=None)
-        if self.isNamingValid(naming_pattern, naming_multi_ep) != "invalid":
+        if self._is_naming_valid(naming_pattern, naming_multi_ep) != "invalid":
             settings.NAMING_PATTERN = naming_pattern
             settings.NAMING_MULTI_EP = try_int(naming_multi_ep, NAMING_LIMITED_EXTEND_E_PREFIXED)
             settings.NAMING_FORCE_FOLDERS = naming.check_force_season_folders()
@@ -106,7 +106,7 @@ class ConfigPostProcessing(Config):
         naming_anime_multi_ep = self.get_body_argument("naming_anime_multi_ep", default=None)
         naming_abd_pattern = self.get_body_argument("naming_abd_pattern", default=None)
         naming_sports_pattern = self.get_body_argument("naming_sports_pattern", default=None)
-        if self.isNamingValid(naming_anime_pattern, naming_anime_multi_ep, anime_type=naming_anime) != "invalid":
+        if self._is_naming_valid(naming_anime_pattern, naming_anime_multi_ep, anime_type=naming_anime) != "invalid":
             settings.NAMING_ANIME_PATTERN = naming_anime_pattern
             settings.NAMING_ANIME_MULTI_EP = try_int(naming_anime_multi_ep, NAMING_LIMITED_EXTEND_E_PREFIXED)
             settings.NAMING_ANIME = try_int(naming_anime, 3)
@@ -114,16 +114,17 @@ class ConfigPostProcessing(Config):
         else:
             results.append(_("You tried saving an invalid anime naming config, not saving your naming settings"))
 
-        if self.isNamingValid(naming_abd_pattern, None, abd=True) != "invalid":
+        if self._is_naming_valid(naming_abd_pattern, None, abd=True) != "invalid":
             settings.NAMING_ABD_PATTERN = naming_abd_pattern
         else:
             results.append("You tried saving an invalid air-by-date naming config, not saving your air-by-date settings")
 
-        if self.isNamingValid(naming_sports_pattern, None, sports=True) != "invalid":
+        if self._is_naming_valid(naming_sports_pattern, None, sports=True) != "invalid":
             settings.NAMING_SPORTS_PATTERN = naming_sports_pattern
         else:
             results.append("You tried saving an invalid sports naming config, not saving your sports settings")
 
+        self.log_configuration_save("Post Processing")
         sickchill.start.save_config()
 
         if results:
@@ -135,15 +136,29 @@ class ConfigPostProcessing(Config):
 
         return self.redirect("/config/postProcessing/")
 
+    def testNaming(self):
+        pattern = self.get_body_argument("pattern", default=None)
+        multi = self.get_body_argument("multi", default=None)
+        abd = config.checkbox_to_value(self.get_body_argument("abd", default=None))
+        sports = config.checkbox_to_value(self.get_body_argument("sports", default=None))
+        anime_type = self.get_body_argument("anime_type", default=None)
+        return self._test_naming(pattern, multi, abd, sports, anime_type)
+
+    def isNamingValid(self):
+        pattern = self.get_body_argument("pattern", default=None)
+        multi = self.get_body_argument("multi", default=None)
+        abd = config.checkbox_to_value(self.get_body_argument("abd", default=None))
+        sports = config.checkbox_to_value(self.get_body_argument("sports", default=None))
+        anime_type = self.get_body_argument("anime_type", default=None)
+        return self._is_naming_valid(pattern, multi, abd, sports, anime_type)
+
     @staticmethod
-    def testNaming(pattern=None, multi=None, abd=False, sports=False, anime_type=None):
+    def _test_naming(pattern=None, multi=None, abd=False, sports=False, anime_type=None):
         result = naming.test_name(pattern, try_int(multi, None), abd, sports, try_int(anime_type, None))
-        result = os.path.join(result["dir"], result["name"])
-
-        return result
+        return os.path.join(result["dir"], result["name"])
 
     @staticmethod
-    def isNamingValid(pattern=None, multi=None, abd=False, sports=False, anime_type=None):
+    def _is_naming_valid(pattern=None, multi=None, abd=False, sports=False, anime_type=None):
         if not pattern:
             return "invalid"
 

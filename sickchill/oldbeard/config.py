@@ -389,7 +389,10 @@ def change_showupdate_hour(freq):
     if settings.SHOWUPDATE_HOUR > 23 or settings.SHOWUPDATE_HOUR < 0:
         settings.SHOWUPDATE_HOUR = 0
 
-    settings.showUpdateScheduler.start_time = datetime.time(hour=settings.SHOWUPDATE_HOUR)
+    # Keep process-lifetime minute (from instance start); only the hour is configured.
+    # Use the scheduler setter so read/modify of minute + assign stay atomic vs ShowUpdater.
+    if settings.showUpdateScheduler:
+        settings.showUpdateScheduler.set_start_hour(settings.SHOWUPDATE_HOUR)
     return True
 
 
@@ -454,6 +457,30 @@ def change_download_propers(download_propers):
         settings.properFinderScheduler.silent = True
         logger.info("Stopping PROPERFINDER thread")
 
+    return True
+
+
+def change_check_propers_interval(interval):
+    """
+    Apply CHECK_PROPERS_INTERVAL to the running properFinderScheduler cycleTime.
+    """
+    search_intervals = {"30m": 30, "90m": 90, "4h": 4 * 60, "8h": 8 * 60, "daily": 24 * 60}
+    if interval not in search_intervals:
+        interval = "daily"
+    settings.CHECK_PROPERS_INTERVAL = interval
+    if settings.properFinderScheduler:
+        settings.properFinderScheduler.cycleTime = datetime.timedelta(minutes=search_intervals[interval])
+        logger.info(f"Proper finder interval set to {interval} ({search_intervals[interval]} minutes)")
+    return True
+
+
+def change_download_propers_window_days(days):
+    """
+    How far back ProperFinder looks for PROPER/REPACK/REAL (1–7 days, default 2).
+    """
+    settings.DOWNLOAD_PROPERS_WINDOW_DAYS = try_int(days, 2)
+    if settings.DOWNLOAD_PROPERS_WINDOW_DAYS < 1 or settings.DOWNLOAD_PROPERS_WINDOW_DAYS > 7:
+        settings.DOWNLOAD_PROPERS_WINDOW_DAYS = 2
     return True
 
 

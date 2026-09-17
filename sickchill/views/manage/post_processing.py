@@ -21,19 +21,27 @@ class PostProcess(Home):
         )
 
     def processEpisode(self):
-        # Manual mode post processing
-        mode = "manual"
-        release_name = self.get_body_argument("nzbName", default=None)
-        process_method = self.get_body_argument("process_method", default=None)
-        delete_on = self.get_body_argument("delete_on", default="0")
-        force = config.checkbox_to_value(self.get_body_argument("force", default="False"))
-        is_priority = config.checkbox_to_value(self.get_body_argument("is_priority", default="False"))
-        failed = config.checkbox_to_value(self.get_body_argument("failed", default="False"))
-        force_next = config.checkbox_to_value(self.get_body_argument("force_next", default="False"))
+        """Queue post-processing for a download folder.
 
-        process_path = self.get_body_argument("dir", self.get_body_argument("proc_dir", default=""))
+        nzbToMedia / nzbToSickBeard call this via GET with query params including
+        ``quiet=1`` and expect a **plain-text** processing log (not the HTML UI).
+        The browser form POSTs without ``quiet`` and receives the HTML results page.
+        """
+        # Prefer get_argument so both query (scripts) and body (UI form) work.
+        process_path = self.get_argument("dir", default="") or self.get_argument("proc_dir", default="")
         if not process_path:
             return self.redirect("/home/postprocess/")
+
+        release_name = self.get_argument("nzbName", default=None)
+        process_method = self.get_argument("process_method", default=None)
+        delete_on = self.get_argument("delete_on", default="0")
+        force = config.checkbox_to_value(self.get_argument("force", default="False"))
+        is_priority = config.checkbox_to_value(self.get_argument("is_priority", default="False"))
+        failed = config.checkbox_to_value(self.get_argument("failed", default="False"))
+        force_next = config.checkbox_to_value(self.get_argument("force_next", default="False"))
+        quiet = config.checkbox_to_value(self.get_argument("quiet", default="0"))
+        # Prefer type (scripts), then proc_type (UI); empty type must not hide a set proc_type.
+        mode = self.get_argument("type", default="") or self.get_argument("proc_type", default="") or "manual"
 
         result = settings.postProcessorTaskScheduler.action.add_item(
             process_path,
@@ -46,6 +54,11 @@ class PostProcess(Home):
             mode=mode,
             force_next=force_next,
         )
+
+        # nzbToMedia parses plain-text status lines ("Successfully processed", etc.)
+        if quiet:
+            self.set_header("Content-Type", "text/plain; charset=utf-8")
+            return result or ""
 
         if result:
             result = result.replace("\n", "<br>\n")

@@ -59,7 +59,7 @@ class Provider(TorrentProvider):
         results = []
 
         if search_params:
-            logger.debug(_("Search string: {0}").format(search_params))
+            logger.debug(_("Search String: {search_string}").format(search_string=search_params))
         else:
             # age in seconds
             search_params = {"age": f"<={4 * 24 * 60 * 60}"}
@@ -98,7 +98,7 @@ class Provider(TorrentProvider):
                 (title, url) = self._get_title_and_url(torrent_info)
 
                 if title and url:
-                    logger.debug(_("Found result: {0} ").format(title))
+                    logger.debug(_("Found result: {title}").format(title=title))
                     results.append(torrent_info)
 
         return sorted(results, key=lambda x: self._get_seeders_and_leechers(x)[0], reverse=True)

@@ -102,7 +102,7 @@ class Provider(TorrentProvider):
 
         for mode in search_strings:
             items = []
-            logger.debug(_("Search Mode: {0}").format(mode))
+            logger.debug(_("Search Mode: {mode}").format(mode=mode))
 
             all_search_strings = search_strings[mode]
             if mode != "RSS" and self.show and self.show.imdb_id:
@@ -116,7 +116,7 @@ class Provider(TorrentProvider):
                 for search_url in search_urls:
                     if mode != "RSS":
                         search_params["q"] = search_string
-                        logger.debug(_("Search string: {0}").format(search_string))
+                        logger.debug(_("Search String: {search_string}").format(search_string=search_string))
 
                         data = self.get_url(search_url, params=search_params, returns="json")
                     else:
@@ -153,7 +153,7 @@ class Provider(TorrentProvider):
                             # Accept Torrent only from Good People for every Episode Search
                             if self.confirmed and result["status"] not in ("trusted", "vip"):
                                 if mode != "RSS":
-                                    logger.debug(_("Found result: {0} but that doesn't seem like a trusted result so I'm ignoring it").format(title))
+                                    logger.debug(_("Found result {title} but that doesn't seem like a verified result so I'm ignoring it").format(title=title))
                                 continue
 
                             torrent_size = try_int(result["size"])
@@ -167,11 +167,15 @@ class Provider(TorrentProvider):
                                 "hash": info_hash,
                             }
                             if mode != "RSS":
-                                logger.debug(_("Found result: {0} with {1} seeders and {2} leechers").format(title, seeders, leechers))
+                                logger.debug(
+                                    _("Found result: {title} with {seeders} seeders and {leechers} leechers").format(
+                                        title=title, seeders=seeders, leechers=leechers
+                                    )
+                                )
 
                             items.append(item)
                         except Exception as error:
-                            logger.debug(_("Unable to process torrent on {0}: {1}".format(self.name, error)))
+                            logger.debug(_("Unable to process torrent on {name}: {error}").format(name=self.name, error=error))
                             logger.debug(traceback.format_exc())
                             continue
 
