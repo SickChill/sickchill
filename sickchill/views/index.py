@@ -11,6 +11,7 @@ from urllib.parse import urljoin
 
 from mako.exceptions import RichTraceback
 from tornado.concurrent import run_on_executor
+from tornado.iostream import StreamClosedError
 from tornado.web import HTTPError, RequestHandler, authenticated
 
 import sickchill.start
@@ -141,6 +142,39 @@ class WebHandler(BaseHandler):
         super().initialize()
         self.executor = ThreadPoolExecutor(thread_name_prefix="WEBSERVER-" + self.__class__.__name__.upper())
 
+    def _client_disconnected(self) -> bool:
+        """True if the browser already closed the request (navigate away, AJAX abort, etc.)."""
+        if getattr(self, "_finished", False):
+            return True
+        try:
+            connection = getattr(self.request, "connection", None)
+            if connection is None:
+                return True
+            stream = getattr(connection, "stream", None)
+            if stream is not None and stream.closed():
+                return True
+        except Exception:
+            return True
+        return False
+
+    @staticmethod
+    def _summarize_finish_result(results) -> str:
+        """Short description of a finish payload for logs (avoid dumping full HTML pages)."""
+        if results is None:
+            return "None"
+        if isinstance(results, (bytes, bytearray)):
+            return f"<{type(results).__name__} len={len(results)}>"
+        if isinstance(results, str):
+            if results.lstrip().startswith("<!") or "<html" in results[:200].lower():
+                return f"<html page len={len(results)}>"
+            if len(results) > 200:
+                return f"<str len={len(results)} prefix={results[:80]!r}…>"
+            return repr(results)
+        try:
+            return f"<{type(results).__name__}>"
+        except Exception:
+            return "<unprintable>"
+
     @authenticated
     async def get(self, route, *_args, **_kwargs):
         try:
@@ -156,18 +190,41 @@ class WebHandler(BaseHandler):
                 helpers.add_site_message(", ".join(message), tag=message[0])
                 return self.redirect("/home/")
 
-            from inspect import signature
+            from inspect import Parameter, signature
 
             sig = signature(method)
-            if settings.DEVELOPER and len(sig.parameters):
-                logger.debug(f"{route} has signature {sig} and needs updated to use get_*_argument to properly decode and sanitize argument values")
+            # Warn only for *args/**kwargs or required params (legacy kwargs injection).
+            # Skip optional params used for in-process flags (e.g. editShow(direct_call=False)).
+            if settings.DEVELOPER:
+                needs_update = any(p.kind in (Parameter.VAR_POSITIONAL, Parameter.VAR_KEYWORD) or p.default is Parameter.empty for p in sig.parameters.values())
+                if needs_update:
+                    logger.debug(f"{route} has signature {sig} and needs updated to use get_*_argument to properly decode and sanitize argument values")
 
             results = await self.async_call(method, len(sig.parameters))
-            try:
-                await self.finish(results)
-            except Exception as e:
+
+            # Client often disconnects during long work (refresh, search abort, leave page).
+            # Disable Tornado's automatic finish so it does not call finish() after we return.
+            if self._client_disconnected():
+                self._auto_finish = False
                 if settings.DEVELOPER:
-                    logger.debug(f"self.finish exception {e}, result {results}")
+                    logger.debug(f"Skipping finish for '{route}': client already disconnected; result {self._summarize_finish_result(results)}")
+                return
+
+            try:
+                if results is None:
+                    await self.finish()
+                else:
+                    await self.finish(results)
+            except StreamClosedError as e:
+                # Benign: stream closed between the check above and finish()
+                if settings.DEVELOPER:
+                    logger.debug(f"self.finish exception {e}, result {self._summarize_finish_result(results)} (route '{route}', client disconnected)")
+                else:
+                    logger.debug(f"self.finish exception {e}")
+            except Exception as e:
+                # Keep DEVELOPER detail for authors; summarize payloads so HTML pages are not dumped.
+                if settings.DEVELOPER:
+                    logger.debug(f"self.finish exception {e}, result {self._summarize_finish_result(results)} (route '{route}')")
                 else:
                     logger.debug(f"self.finish exception {e}")
         except AttributeError:

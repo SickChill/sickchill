@@ -33,6 +33,7 @@ class ConfigAnime(Config):
         settings.ANIME_SPLIT_HOME = config.checkbox_to_value(self.get_body_argument("split_home", default=None))
         settings.ANIME_SPLIT_HOME_IN_TABS = config.checkbox_to_value(self.get_body_argument("split_home_in_tabs", default=None))
 
+        self.log_configuration_save("Anime")
         sickchill.start.save_config()
         ui.notifications.message(_("Configuration Saved"), os.path.join(settings.CONFIG_FILE))
 

@@ -165,11 +165,12 @@ class Show(object):
         return show.pause(pause=pause)
 
     @staticmethod
-    def refresh(show_or_id: Union[int, str, "TVShow"], force: bool = False) -> (Union[str, None], Union["TVShow", None]):
+    def refresh(show_or_id: Union[int, str, "TVShow"], force: bool = False, front: bool = False) -> (Union[str, None], Union["TVShow", None]):
         """
         Refresh a show moved to tv.py
         :param show_or_id: The unique id or object of the show to refresh. force: Force refresh
         :param force: to purposely refresh the show
+        :param front: Prefer USER priority for UI-triggered refreshes
         """
 
         error, show = Show.validate_indexer_id(show_or_id)
@@ -177,23 +178,24 @@ class Show(object):
             return error, show
 
         # Delegate to the instance method
-        return show.refresh(force=force)
+        return show.refresh(force=force, front=front)
 
     @staticmethod
-    def update(show_or_id: Union[int, str, "TVShow"], force: bool = False) -> (Union[str, None], Union["TVShow", None]):
+    def update(show_or_id: Union[int, str, "TVShow"], force: bool = False, front: bool = False) -> (Union[str, None], Union["TVShow", None]):
         """
-        Try to delete a show
-        :param show_or_id: The unique id or object of the show to delete
+        Queue a show update from the indexer.
+        :param show_or_id: The unique id or object of the show to update
         :param force: Force update
+        :param front: Prefer USER priority for UI-triggered updates
         :return: A tuple containing:
-         - an error message if the show could not be deleted, ``None`` otherwise
-         - the show object that was deleted, if it exists, ``None`` otherwise
+         - an error message if the show could not be updated, ``None`` otherwise
+         - the show object, if it exists, ``None`` otherwise
         """
         error, show = Show.validate_indexer_id(show_or_id)
         if error is not None:
             return error, show
 
-        return show.update(force=force)
+        return show.update(force=force, front=front)
 
     @staticmethod
     def delete(show_or_id: Union[int, str, "TVShow"], remove_files: bool = False) -> (Union[str, None], Union["TVShow", None]):

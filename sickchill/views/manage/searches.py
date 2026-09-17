@@ -1,4 +1,5 @@
 from sickchill import logger, settings
+from sickchill.helper.common import resolve_safe_redirect
 from sickchill.oldbeard import ui
 from sickchill.views.common import PageTemplate
 from sickchill.views.manage.index import Manage
@@ -7,7 +8,7 @@ from sickchill.views.routes import Route
 
 @Route("/manage/manageSearches(/?.*)", name="manage:searches")
 class ManageSearches(Manage):
-    def index(self, *args_, **kwargs_):
+    def index(self):
         t = PageTemplate(rh=self, filename="manage_manageSearches.mako")
 
         # TODO: Add fancy ajax table that shows progress of each thread in the UI
@@ -31,6 +32,7 @@ class ManageSearches(Manage):
             findPropersStatus=settings.properFinderScheduler.action.amActive,
             subtitlesFinderStatus=settings.subtitlesFinderScheduler.action.amActive,
             autoPostProcessorStatus=settings.autoPostProcessorScheduler.action.amActive,
+            showUpdaterStatus=settings.showUpdateScheduler.action.amActive,
             queueLength=settings.searchQueueScheduler.action.queue_length(),
             processing_queue=settings.postProcessorTaskScheduler.action.queue_length(),
             title=_("Manage Searches"),
@@ -78,14 +80,43 @@ class ManageSearches(Manage):
 
     def forceAutoPostProcess(self):
         # force it to run the next time it looks
-        result = settings.autoPostProcessorScheduler.forceRun()
+        if not settings.PROCESS_AUTOMATICALLY:
+            ui.notifications.error(_("Error"), _("Auto Post Processor is disabled"))
+        else:
+            result = settings.autoPostProcessorScheduler.forceRun()
+            if result:
+                logger.info("Auto Post Processor forced")
+                ui.notifications.message(_("Auto Post Processor started"))
+            else:
+                ui.notifications.error(_("Error"), _("Auto Post Processor is already running"))
+
+        # Prefer staying on the page that triggered the action (navbar / Manage Searches)
+        return self.redirect(
+            resolve_safe_redirect(
+                self.get_query_argument("next", default=None),
+                self.request.headers.get("Referer") or "",
+                self.request.host,
+                settings.DEFAULT_PAGE,
+            )
+        )
+
+    def forceShowUpdater(self):
+        """Force ShowUpdater (developer mode only)."""
+        if not settings.DEVELOPER:
+            ui.notifications.error(_("Error"), _("Force Show Updater is only available when developer mode is enabled"))
+            return self.redirect("/manage/manageSearches/")
+
+        result = settings.showUpdateScheduler.forceRun()
         if result:
-            logger.info("Auto Post Processor forced")
-            ui.notifications.message(_("Auto Post Processor started"))
+            logger.info("Show updater forced")
+            ui.notifications.message(_("Show updater started"))
+        else:
+            ui.notifications.error(_("Error"), _("Show updater is already running"))
 
         return self.redirect("/manage/manageSearches/")
 
-    def pauseBacklog(self, paused=None):
+    def pauseBacklog(self):
+        paused = self.get_query_argument("paused", default="0")
         if paused == "1":
             settings.searchQueueScheduler.action.pause_backlog()
         else:

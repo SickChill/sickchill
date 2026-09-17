@@ -425,17 +425,66 @@ class HelpersEncryptionTests(unittest.TestCase):
             remove_test_files()
             self.fail(f"Unable to load generated certificate/key into ssl context: {error}")
 
-    @unittest.skip("Not yet implemented")
-    def test_encrypt(self):
-        """
-        Test encrypt
-        """
+    def setUp(self):
+        self._prev_version = settings.ENCRYPTION_VERSION
+        self._prev_secret = settings.ENCRYPTION_SECRET
+        settings.ENCRYPTION_SECRET = "unit-test-encryption-secret-key!!"
 
-    @unittest.skip("Not yet implemented")
-    def test_decrypt(self):
-        """
-        Test decrypt
-        """
+    def tearDown(self):
+        settings.ENCRYPTION_VERSION = self._prev_version
+        settings.ENCRYPTION_SECRET = self._prev_secret
+
+    def test_encrypt_decrypt_roundtrip(self):
+        """encrypt()/decrypt() round-trip when ENCRYPTION_VERSION is 2."""
+        settings.ENCRYPTION_VERSION = 2
+        plaintext = "roundtrip-secret"
+        ciphertext = helpers.encrypt(plaintext, settings.ENCRYPTION_VERSION)
+        self.assertNotEqual(ciphertext, plaintext)
+        self.assertEqual(helpers.decrypt(ciphertext, settings.ENCRYPTION_VERSION), plaintext)
+
+    def test_config_value_encryption_off_leaves_plaintext(self):
+        """With ENCRYPTION_VERSION 0, config helpers leave values unmarked."""
+        settings.ENCRYPTION_VERSION = 0
+        pin = "b304113c-3d1f-477e-ab6d-fdea3e363d50"
+        self.assertEqual(helpers.encrypt_config_value(pin), pin)
+        self.assertFalse(helpers.is_encrypted_config_value(helpers.encrypt_config_value(pin)))
+        self.assertEqual(helpers.decrypt_config_value(pin), pin)
+
+    def test_config_value_prefix_envelope_encrypts_once(self):
+        """Marked values use SCENC{version}: and are not double-encrypted on save."""
+        settings.ENCRYPTION_VERSION = 2
+        secret = "trakt-api-secret-value"
+        marked = helpers.encrypt_config_value(secret)
+        self.assertTrue(helpers.is_encrypted_config_value(marked))
+        self.assertTrue(marked.startswith("SCENC2:"))
+        self.assertNotEqual(marked, secret)
+        # Second save preserves the envelope (encrypt exactly once)
+        self.assertEqual(helpers.encrypt_config_value(marked), marked)
+        self.assertEqual(helpers.decrypt_config_value(marked), secret)
+
+    def test_config_value_base64_form_tvdb_pin_not_misdetected(self):
+        """Base64-like TVDB PINs stay plaintext until explicitly encrypted."""
+        settings.ENCRYPTION_VERSION = 2
+        # Looks like ciphertext (base64) but is a real subscriber PIN / uuid-style secret
+        base64_like_pin = "YjMwNDExM2MtM2QxZi00NzdlLWFiNmQtZmRlYTNlMzYzZDUw"
+        self.assertFalse(helpers.is_encrypted_config_value(base64_like_pin))
+        self.assertEqual(helpers.decrypt_config_value(base64_like_pin), base64_like_pin)
+        marked = helpers.encrypt_config_value(base64_like_pin)
+        self.assertTrue(marked.startswith("SCENC2:"))
+        self.assertEqual(helpers.decrypt_config_value(marked), base64_like_pin)
+        # Encrypting the marked value again must not nest prefixes
+        self.assertEqual(helpers.encrypt_config_value(marked), marked)
+        self.assertEqual(marked.count("SCENC2:"), 1)
+
+    def test_config_value_trakt_secret_migration(self):
+        """Legacy unmarked Trakt secret is encrypted exactly once on save."""
+        settings.ENCRYPTION_VERSION = 2
+        legacy = "0123456789abcdef0123456789abcdef"
+        self.assertEqual(helpers.decrypt_config_value(legacy), legacy)
+        marked = helpers.encrypt_config_value(legacy)
+        self.assertTrue(helpers.is_encrypted_config_value(marked))
+        self.assertEqual(helpers.decrypt_config_value(marked), legacy)
+        self.assertEqual(helpers.encrypt_config_value(marked), marked)
 
     @unittest.skip("Not yet implemented")
     def test_generate_cookie_secret(self):

@@ -12,13 +12,12 @@ class Provider(TorrentProvider):
     def __init__(self):
         super().__init__("LimeTorrents")
 
+        self.url = "https://www.limetorrents.fun/"
         self.urls = {
-            "index": "https://www.limetorrents.info/",
-            "search": "https://www.limetorrents.info/searchrss/",
-            "rss": "https://www.limetorrents.info/rss/tv/",
+            "index": self.url,
+            "search": self.url + "searchrss/",
+            "rss": self.url + "rss/tv/",
         }
-
-        self.url = self.urls["index"]
 
         self.public = True
         self.minseed = 0
@@ -98,7 +97,11 @@ class Provider(TorrentProvider):
 
                             item = {"title": title, "link": download_url, "size": size, "seeders": seeders, "leechers": leechers, "hash": torrent_hash}
                             if mode != "RSS":
-                                logger.debug(_("Found result: {0} with {1} seeders and {2} leechers").format(title, seeders, leechers))
+                                logger.debug(
+                                    _("Found result: {title} with {seeders} seeders and {leechers} leechers").format(
+                                        title=title, seeders=seeders, leechers=leechers
+                                    )
+                                )
 
                             items.append(item)
 

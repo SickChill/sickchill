@@ -3,7 +3,7 @@ import os
 from tornado.web import addslash
 
 import sickchill.update_manager
-from sickchill import settings
+from sickchill import logger, settings
 from sickchill.oldbeard import helpers
 from sickchill.views.common import PageTemplate
 from sickchill.views.config.index import Config
@@ -39,6 +39,7 @@ class ConfigBackupRestore(Config):
         else:
             final_result += "You need to choose a folder to save your backup to!"
 
+        logger.debug(f"Backup completed: {final_result}")
         final_result += "<br>\n"
 
         return final_result
@@ -60,6 +61,7 @@ class ConfigBackupRestore(Config):
         else:
             final_result += "You need to select a backup file to restore!"
 
+        logger.debug(f"Restore completed: {final_result.replace('<br>', ' ').strip()}")
         final_result += "<br>\n"
 
         return final_result

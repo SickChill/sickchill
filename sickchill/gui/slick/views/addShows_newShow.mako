@@ -25,6 +25,8 @@
                     <div class="row stepDiv">
                         <div class="col-md-12">
                             <input type="hidden" id="indexer_timeout" value="${settings.INDEXER_TIMEOUT}" />
+                            ## Verified TVDB id from TMDB/TVMaze Add — first search uses this; box still shows the title
+                            <input type="hidden" id="discovery-indexer-id" value="${discovery_indexer_id}" />
 
                             % if use_provided_info:
                                 <label>${_('Show retrieved from existing metadata')}:
@@ -49,7 +51,7 @@
                                                            class="form-control"
                                                     />
                                                     <span class="input-group-addon">
-                                                        <input type="checkbox" id="exact-match">
+                                                        <input type="checkbox" id="exact-match" ${checked(bool(exact_match))}>
                                                     </span>
                                                 </div>
                                             </div>
@@ -111,8 +113,10 @@
                         </div>
                     </div>
 
-                    <div class="next-steps" style="display: none;">
-                        <legend class="legendStep">#3 ${_('Pick the Folder')}</legend>
+                    ## When use_provided_info (e.g. addShowByID from TMDB/TVMaze), skip search —
+                    ## show folder/options immediately (JS only reveals next-steps after a search).
+                    <div class="next-steps"${' style="display: none;"' if not use_provided_info else ''}>
+                        <legend class="legendStep">${('#2', '#3')[not use_provided_info]} ${_('Pick the Folder')}</legend>
                         <div class="row stepDiv">
                             <div class="col-lg-6 col-sm-12">
                                 % if provided_show_dir:
@@ -128,14 +132,14 @@
                             </div>
                         </div>
 
-                        <legend class="legendStep">#4 ${_('Customize options')}</legend>
+                        <legend class="legendStep">${('#3', '#4')[not use_provided_info]} ${_('Customize options')}</legend>
                         <div class="row stepDiv">
                             <div class="col-md-12">
                                 <%include file="/inc_addShowOptions.mako" />
                             </div>
                         </div>
 
-                        <legend class="legendStep">#5 ${_('Verify Your Input')}</legend>
+                        <legend class="legendStep">${('#4', '#5')[not use_provided_info]} ${_('Verify Your Input')}</legend>
                         <div class="row stepDiv">
                             <div class="col-md-12">
                                 <div class="field-pair row">

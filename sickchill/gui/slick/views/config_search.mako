@@ -53,14 +53,32 @@
                             </div>
 
                             <div id="content_download_propers" ${hidden(settings.DOWNLOAD_PROPERS)}>
-
+                                <div class="field-pair row">
+                                    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                        <label class="component-title">${_('Proper search window')}</label>
+                                    </div>
+                                    <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <input type="number" min="1" max="7" step="1" name="download_propers_window_days"
+                                                   id="download_propers_window_days" value="${settings.DOWNLOAD_PROPERS_WINDOW_DAYS}"
+                                                   class="form-control input-sm input75" autocapitalize="off" />
+                                           </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <label for="download_propers_window_days">${_('number of days (1–7). How far back to look for PROPER/REPACK/REAL episodes. Default 2.')}</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                                 <div class="field-pair row">
                                     <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                         <label class="component-title">${_('Check propers every')}</label>
                                     </div>
                                     <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                         <select id="check_propers_interval" name="check_propers_interval" class="form-control input-sm input150">
-                                            <% check_propers_interval_text = {'daily': _('24 hours'), '4h': _('4 hours'), '90m': _('90 mins'), '45m': _('45 mins'), '15m': _('15 mins')} %>
+                                            <% check_propers_interval_text = {'daily': _('24 hours'), '8h': _('8 hours'), '4h': _('4 hours'), '90m': _('90 mins'), '30m': _('30 mins')} %>
                                             % for curInterval in check_propers_interval_text:
                                                 <option value="${curInterval}" ${selected(settings.CHECK_PROPERS_INTERVAL == curInterval)}>${check_propers_interval_text[curInterval]}</option>
                                             % endfor

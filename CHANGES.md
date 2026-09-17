@@ -1,3 +1,24 @@
+### 2026.9.18
+
+[full changelog](https://github.com/SickChill/SickChill/compare/2024.3.1...2026.9.18)
+
+* feat: TVDB v4 indexer implementation (#9089)
+* feat: built-in Jackett-SC provider, including HTTP for local/LAN/Docker hosts (#9148, #9167)
+* feat: replace Trakt discovery lists with TMDB and TVMaze lists (#9103)
+* feat: Trakt return / device auth improvements (#9145)
+* feat: status table start times (#9139)
+* feat: DB UI response-rate improvements (#9120)
+* update: multi-episode single-file post-processing (contiguous packs, history for all eps, clearer failures) (#9173)
+* update: anime/AniDB scene-exception refresh performance and name-cache lock (#9165, #9183)
+* update: IMDb redirect/legacy title ids (#9165)
+* update: provider rename when custom names collide with built-ins (#9170, #9171)
+* update: schedule secondary sort by show name; coming-episodes window (#9171)
+* update: MediaBrowser/TVDB artwork URL double `/banners/` path (#9181)
+* update: image fetch/replacer and Edit Show artwork save (#9146, #9161, #9163)
+* update: show refresh, queues, propers, logs, and related stability updates (#9118, #9119, #9134, #9142, #9046)
+* ci: Docker immutable tags `branch{run_id}-{sha:12}`; Dependabot deploy skip (#9168, #9164)
+* chore: dependency updates and TODO cleanup (#9180, #9182, and prior Dependabot bundles)
+
 ### 2024.3.1
 
 [full changelog](https://github.com/SickChill/SickChill/compare/2024.2.27...2024.3.1)

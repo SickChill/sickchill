@@ -6,10 +6,10 @@
 <%block name="content">
     <%
         if logLevel == logging.WARNING:
-            errors = WebErrorViewer.warnings
+            errors = WebErrorViewer.get_warnings()
             title = _('WARNING logs')
         else:
-            errors = WebErrorViewer.errors
+            errors = WebErrorViewer.get_errors()
             title = _('ERROR logs')
     %>
     <div class="row">

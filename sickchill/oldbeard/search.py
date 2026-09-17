@@ -5,7 +5,6 @@ import threading
 import traceback
 from typing import TYPE_CHECKING
 
-import sickchill.oldbeard.name_cache
 import sickchill.oldbeard.providers
 from sickchill import logger, settings
 from sickchill.helper.exceptions import AuthException
@@ -97,9 +96,7 @@ def snatch_episode(result: "SearchResult", end_status=SNATCHED):
                 snatched_result = client.sendTORRENT(result)
             else:
                 logger.warning("Torrent file content is empty")
-                # TODO: This is broken!!
-                # History().log_failed(result.episodes, result.name, result.provider)
-                History().log_failed(result.episodes[0], result.name, result.provider.name)  # This one seems to work
+                History().log_failed(result.episodes[0], result.name, result.provider.name)
                 snatched_result = False
     # NZBs can be sent straight to SAB or saved to disk
     elif result.is_nzb or result.is_nzbdata:
@@ -189,7 +186,7 @@ def pick_best_result(results, show):
         if show.is_anime and not show.release_groups.is_valid(result):
             continue
 
-        logger.info(f"Quality of {result.name} is {Quality.qualityStrings[result.quality]}")
+        logger.debug(f"Quality of {result.name} is {Quality.qualityStrings[result.quality]}")
 
         allowed_qualities, preferred_qualities = Quality.splitQuality(show.quality)
 
@@ -299,7 +296,6 @@ def wanted_episodes(show, from_date):
     allowed_qualities, preferred_qualities = common.Quality.splitQuality(show.quality)
     all_qualities = list(set(allowed_qualities + preferred_qualities))
 
-    logger.debug(f"Seeing if we need anything from {show.name}")
     con = db.DBConnection()
 
     sql_results = con.select(
@@ -342,7 +338,6 @@ def search_for_needed_episodes():
 
     for curShow in show_list:
         if not curShow.paused:
-            sickchill.oldbeard.name_cache.build_name_cache(curShow)
             episodes.extend(wanted_episodes(curShow, from_date))
 
     if not episodes:
@@ -417,8 +412,8 @@ def search_providers(show, episodes, manual=False, downCurQuality=False):
 
     did_search = False
 
-    # build name cache for show
-    sickchill.oldbeard.name_cache.build_name_cache(show)
+    # Name cache is process-global (built at startup / exception refresh / show add).
+    # Daily and backlog search use dict lookups only — do not rebuild from SQLite here.
 
     # noinspection DuplicatedCode
     original_thread_name = threading.current_thread().name

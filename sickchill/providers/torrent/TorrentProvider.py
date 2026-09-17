@@ -6,10 +6,14 @@ from sickchill import logger, settings
 from sickchill.helper.common import try_int
 from sickchill.oldbeard.common import Quality
 from sickchill.oldbeard.db import DBConnection
-from sickchill.oldbeard.network_timezones import sc_now, sc_today
+from sickchill.oldbeard.network_timezones import sc_now, sc_timezone
 from sickchill.providers.GenericProvider import GenericProvider
 from sickchill.providers.result_classes import Proper, TorrentSearchResult
+from sickchill.show.History import History
 from sickchill.show.Show import Show
+
+# Cap live proper episode searches per provider per ProperFinder run (Phase 1)
+_LIVE_PROPER_EPISODE_CAP = 25
 
 
 class TorrentProvider(GenericProvider):
@@ -19,31 +23,84 @@ class TorrentProvider(GenericProvider):
         self.provider_type = GenericProvider.TORRENT
 
     def find_propers(self, search_date=None):
+        """Cache-first propers; live search only if cache is empty (bounded episode cap)."""
         results = []
-        db = DBConnection()
+        seen_urls = set()
+
+        # Prefer TV cache (filled by daily RSS / update_cache) — titles keep PROPER/REPACK/REAL
+        try:
+            for row in self.cache.list_propers(search_date) or []:
+                proper = Proper(row["name"], row["url"], datetime.fromtimestamp(row["time"], tz=sc_timezone), self.show)
+                if proper.url and proper.url not in seen_urls:
+                    seen_urls.add(proper.url)
+                    results.append(proper)
+        except Exception as error:
+            logger.debug(f"{self.name}: cache list_propers failed during proper search: {error}")
+
+        if results:
+            logger.debug(f"{self.name}: using {len(results)} cached proper(s); skipping live proper search")
+            return results
+
+        # Fallback: one OR'd proper term per episode, capped
+        add_string = self.proper_search_add_string()
+        live_count = 0
+        for show, episode in self._recent_proper_candidates(search_date):
+            if live_count >= _LIVE_PROPER_EPISODE_CAP:
+                logger.debug(f"{self.name}: live proper search capped at {_LIVE_PROPER_EPISODE_CAP} episodes")
+                break
+            self.current_episode_object = episode
+            live_count += 1
+            for search_string in self.get_episode_search_strings(episode, add_string=add_string):
+                for item in self.search(search_string):
+                    title, url = self._get_title_and_url(item)
+                    if url and url not in seen_urls:
+                        seen_urls.add(url)
+                        results.append(Proper(title, url, sc_now(), show))
+
+        if live_count:
+            logger.debug(f"{self.name}: live proper searches for {live_count} episode(s); results={len(results)}")
+        return results
+
+    @staticmethod
+    def _recent_proper_candidates(search_date=None):
+        """
+        Episodes recently snatched/downloaded that are not yet proper.
+
+        Prefer history in the proper-search window over every aired ep in the last N days.
+        """
+        if search_date is None:
+            search_date = sc_now()
         status_quality_list = Quality.DOWNLOADED + Quality.SNATCHED + Quality.SNATCHED_BEST
-        placeholders = ", ".join(["?"] * len(status_quality_list))
+        history_actions = Quality.DOWNLOADED + Quality.SNATCHED + Quality.SNATCHED_BEST
+        ep_placeholders = ", ".join(["?"] * len(status_quality_list))
+        hist_placeholders = ", ".join(["?"] * len(history_actions))
+        history_since = search_date.strftime(History.date_format)
+
+        db = DBConnection()
         sql_results = db.select(
-            f"SELECT s.show_name, e.showid, e.season, e.episode, e.status, e.airdate FROM tv_episodes AS e INNER JOIN tv_shows AS s ON (e.showid = s.indexer_id) WHERE e.airdate >= ? AND e.status IN ({placeholders}) and e.is_proper = 0",
-            [search_date.toordinal(), *status_quality_list],
+            f"""
+            SELECT DISTINCT e.showid, e.season, e.episode, MAX(h.date) AS last_hist
+            FROM tv_episodes AS e
+            INNER JOIN history AS h
+                ON h.showid = e.showid AND h.season = e.season AND h.episode = e.episode
+            WHERE e.is_proper = 0
+              AND e.status IN ({ep_placeholders})
+              AND h.action IN ({hist_placeholders})
+              AND h.date >= ?
+            GROUP BY e.showid, e.season, e.episode
+            ORDER BY last_hist DESC
+            LIMIT ?
+            """,
+            [*status_quality_list, *history_actions, history_since, _LIVE_PROPER_EPISODE_CAP],
         )
 
         for result in sql_results or []:
             show = Show.find(settings.show_list, int(result["showid"]))
-
-            if show:
-                episode = show.get_episode(result["season"], result["episode"])
-                self.current_episode_object = episode
-
-                for term in self.proper_strings:
-                    search_strings = self.get_episode_search_strings(episode, add_string=term)
-                    for search_string in search_strings:
-                        for item in self.search(search_string):
-                            title, url = self._get_title_and_url(item)
-
-                            results.append(Proper(title, url, sc_now(), show))
-
-        return results
+            if not show:
+                continue
+            episode = show.get_episode(result["season"], result["episode"])
+            if episode:
+                yield show, episode
 
     @property
     def is_active(self):
