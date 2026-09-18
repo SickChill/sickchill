@@ -2236,10 +2236,6 @@ div.metadataDiv .disabled {
     background-position: -238px 0;
 }
 
-.icon-notifiers-growl {
-    background-position: -272px 0;
-}
-
 .icon-notifiers-prowl {
     background-position: -310px 0;
 }
@@ -2250,14 +2246,6 @@ div.metadataDiv .disabled {
 
 .icon-notifiers-pushover {
     background-position: -377px 0;
-}
-
-.icon-notifiers-boxcar2 {
-    background-position: -414px 0;
-}
-
-.icon-notifiers-pushalot {
-    background-position: -487px 0;
 }
 
 .icon-notifiers-pushbullet {

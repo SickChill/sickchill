@@ -58,7 +58,10 @@ class NotificationsQueue(generic_queue.GenericQueue):
         added = False
         item = None
 
-        if not settings.USE_DISCORD:
+        from sickchill.plugins.notifiers.compat import get_discord_runtime_config
+
+        discord_cfg = get_discord_runtime_config()
+        if notifier == "discord" and not discord_cfg.get("enabled"):
             logger.debug("Notification for Discord not enabled, skipping this notification")
             return added
 
@@ -87,11 +90,14 @@ class DiscordTask(generic_queue.QueueItem):
     def __init__(self, message):
         super().__init__("Discord", DISCORD)
 
+        from sickchill.plugins.notifiers.compat import get_discord_runtime_config
+
+        discord_cfg = get_discord_runtime_config()
         self.embed = {
             "author": {
                 "name": "SickChill",
                 # 'url':
-                "icon_url": settings.DISCORD_AVATAR_URL,
+                "icon_url": discord_cfg.get("avatar_url") or settings.DISCORD_AVATAR_URL,
             },
             "fields": [],
         }
@@ -129,12 +135,18 @@ class DiscordTask(generic_queue.QueueItem):
         return len(self.embed["fields"])
 
     def _send_discord(self, webhook: str | None = None, name: str | None = None, avatar: str | None = None, tts=None):
-        discord_webhook = webhook or settings.DISCORD_WEBHOOK
-        discord_name = name or settings.DISCORD_NAME
-        avatar_icon = avatar or settings.DISCORD_AVATAR_URL
-        discord_tts = int(settings.DISCORD_TTS if tts is None else tts)
+        from sickchill.plugins.notifiers.compat import get_discord_runtime_config
 
-        if not settings.USE_DISCORD:
+        discord_cfg = get_discord_runtime_config()
+        discord_webhook = webhook or discord_cfg.get("webhook") or settings.DISCORD_WEBHOOK
+        discord_name = name or discord_cfg.get("bot_name") or settings.DISCORD_NAME
+        avatar_icon = avatar or discord_cfg.get("avatar_url") or settings.DISCORD_AVATAR_URL
+        if tts is None:
+            discord_tts = int(bool(discord_cfg.get("tts") if discord_cfg.get("enabled") else settings.DISCORD_TTS))
+        else:
+            discord_tts = int(tts)
+
+        if not discord_cfg.get("enabled") and webhook is None:
             logger.debug("Notification for Discord not enabled, skipping this notification")
             return False
 
