@@ -141,6 +141,7 @@ LABEL org.opencontainers.image.revision=$GIT_SHA
 ENV HOME=/data
 WORKDIR /data
 
+# Operator drop-in plugins: /data/plugins (host: $DATA_DIR/plugins or settings.PLUGIN_DIR)
 VOLUME /data /downloads /tv
 
 CMD ["sickchill", "--nolaunch", "--datadir", "/data", "--port", "8081"]

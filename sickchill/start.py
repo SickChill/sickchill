@@ -32,12 +32,21 @@ from sickchill.oldbeard import (
     traktChecker,
 )
 from sickchill.oldbeard.common import ARCHIVED, IGNORED, MULTI_EP_STRINGS, SD, SKIPPED, WANTED
-from sickchill.oldbeard.config import ConfigMigrator, check_section, check_setting_bool, check_setting_float, check_setting_int, check_setting_str
+from sickchill.oldbeard.config import (
+    ConfigMigrator,
+    check_section,
+    check_setting_bool,
+    check_setting_float,
+    check_setting_int,
+    check_setting_str,
+    peek_setting_bool,
+    peek_setting_int,
+    peek_setting_str,
+)
 from sickchill.oldbeard.databases import cache, failed, main
 from sickchill.oldbeard.network_timezones import sc_now
 from sickchill.oldbeard.providers.newznab import NewznabProvider
 from sickchill.oldbeard.providers.rsstorrent import TorrentRssProvider
-from sickchill.providers import metadata
 from sickchill.system.Shutdown import Shutdown
 
 
@@ -47,32 +56,10 @@ def initialize(console_logging: bool = True, debug: bool = False, dbdebug: bool 
             return False
 
         check_section(settings.CFG, "General")
-        check_section(settings.CFG, "Blackhole")
+        # Migrated notifiers live under [extensions]; clients under [CLIENTS]; metadata under [METADATA].
+        # Do not recreate empty legacy KODI/Plex/.../SABnzbd/Blackhole/Synology sections.
         check_section(settings.CFG, "Newzbin")
-        check_section(settings.CFG, "SABnzbd")
-        check_section(settings.CFG, "NZBget")
-        check_section(settings.CFG, "KODI")
-        check_section(settings.CFG, "PLEX")
-        check_section(settings.CFG, "Emby")
-        check_section(settings.CFG, "Jellyfin")
-        check_section(settings.CFG, "Growl")
-        check_section(settings.CFG, "Prowl")
-        check_section(settings.CFG, "Twitter")
-        check_section(settings.CFG, "Boxcar2")
-        check_section(settings.CFG, "NMJ")
-        check_section(settings.CFG, "NMJv2")
-        check_section(settings.CFG, "Synology")
-        check_section(settings.CFG, "SynologyNotifier")
-        check_section(settings.CFG, "pyTivo")
-        check_section(settings.CFG, "NMA")
-        check_section(settings.CFG, "Pushalot")
-        check_section(settings.CFG, "Pushbullet")
         check_section(settings.CFG, "Subtitles")
-        check_section(settings.CFG, "pyTivo")
-        check_section(settings.CFG, "Slack")
-        check_section(settings.CFG, "RocketChat")
-        check_section(settings.CFG, "Discord")
-        check_section(settings.CFG, "Gotify")
 
         # Need to be before any passwords
         settings.ENCRYPTION_VERSION = check_setting_int(settings.CFG, "General", "encryption_version", min_val=0, max_val=2)
@@ -363,9 +350,6 @@ def initialize(console_logging: bool = True, debug: bool = False, dbdebug: bool 
         settings.NEWS_LAST_READ = check_setting_str(settings.CFG, "General", "news_last_read", "1970-01-01")
         settings.NEWS_LATEST = settings.NEWS_LAST_READ
 
-        settings.NZB_DIR = check_setting_str(settings.CFG, "Blackhole", "nzb_dir")
-        settings.TORRENT_DIR = check_setting_str(settings.CFG, "Blackhole", "torrent_dir")
-
         settings.TV_DOWNLOAD_DIR = check_setting_str(settings.CFG, "General", "tv_download_dir")
         settings.PROCESS_AUTOMATICALLY = check_setting_bool(settings.CFG, "General", "process_automatically")
         settings.NO_DELETE = check_setting_bool(settings.CFG, "General", "no_delete")
@@ -403,318 +387,141 @@ def initialize(console_logging: bool = True, debug: bool = False, dbdebug: bool 
         settings.NEWZBIN_USERNAME = check_setting_str(settings.CFG, "Newzbin", "newzbin_username", censor_log=True)
         settings.NEWZBIN_PASSWORD = check_setting_str(settings.CFG, "Newzbin", "newzbin_password", censor_log=True)
 
-        settings.SAB_USERNAME = check_setting_str(settings.CFG, "SABnzbd", "sab_username", censor_log=True)
-        settings.SAB_PASSWORD = check_setting_str(settings.CFG, "SABnzbd", "sab_password", censor_log=True)
-        settings.SAB_APIKEY = check_setting_str(settings.CFG, "SABnzbd", "sab_apikey", censor_log=True)
-        settings.SAB_CATEGORY = check_setting_str(settings.CFG, "SABnzbd", "sab_category", "tv")
-        settings.SAB_CATEGORY_BACKLOG = check_setting_str(settings.CFG, "SABnzbd", "sab_category_backlog", settings.SAB_CATEGORY)
-        settings.SAB_CATEGORY_ANIME = check_setting_str(settings.CFG, "SABnzbd", "sab_category_anime", "anime")
-        settings.SAB_CATEGORY_ANIME_BACKLOG = check_setting_str(settings.CFG, "SABnzbd", "sab_category_anime_backlog", settings.SAB_CATEGORY_ANIME)
-        settings.SAB_HOST = check_setting_str(settings.CFG, "SABnzbd", "sab_host")
-        settings.SAB_FORCED = check_setting_bool(settings.CFG, "SABnzbd", "sab_forced")
+        # Prefer [CLIENTS] when present so check_setting_* does not recreate empty legacy sections.
+        _clients = settings.CFG.get("CLIENTS") if settings.CFG is not None else None
 
-        settings.NZBGET_USERNAME = check_setting_str(settings.CFG, "NZBget", "nzbget_username", "nzbget", censor_log=True)
-        settings.NZBGET_PASSWORD = check_setting_str(settings.CFG, "NZBget", "nzbget_password", "tegbzn6789", censor_log=True)
-        settings.NZBGET_CATEGORY = check_setting_str(settings.CFG, "NZBget", "nzbget_category", "tv")
-        settings.NZBGET_CATEGORY_BACKLOG = check_setting_str(settings.CFG, "NZBget", "nzbget_category_backlog", settings.NZBGET_CATEGORY)
-        settings.NZBGET_CATEGORY_ANIME = check_setting_str(settings.CFG, "NZBget", "nzbget_category_anime", "anime")
-        settings.NZBGET_CATEGORY_ANIME_BACKLOG = check_setting_str(settings.CFG, "NZBget", "nzbget_category_anime_backlog", settings.NZBGET_CATEGORY_ANIME)
-        settings.NZBGET_HOST = check_setting_str(settings.CFG, "NZBget", "nzbget_host")
-        settings.NZBGET_USE_HTTPS = check_setting_bool(settings.CFG, "NZBget", "nzbget_use_https")
-        settings.NZBGET_PRIORITY = check_setting_int(settings.CFG, "NZBget", "nzbget_priority", 100)
+        _bh_client = _clients.get("blackhole") if isinstance(_clients, dict) else None
+        if isinstance(_bh_client, dict) and ("nzb_dir" in _bh_client or "torrent_dir" in _bh_client):
+            settings.NZB_DIR = _bh_client.get("nzb_dir") or ""
+            settings.TORRENT_DIR = _bh_client.get("torrent_dir") or ""
+        else:
+            settings.NZB_DIR = peek_setting_str(settings.CFG, "Blackhole", "nzb_dir")
+            settings.TORRENT_DIR = peek_setting_str(settings.CFG, "Blackhole", "torrent_dir")
+
+        _sab_client = _clients.get("sabnzbd") if isinstance(_clients, dict) else None
+        if isinstance(_sab_client, dict) and (_sab_client.get("host") or _sab_client.get("apikey") or _sab_client.get("username") or "category" in _sab_client):
+            settings.SAB_USERNAME = _sab_client.get("username") or ""
+            settings.SAB_PASSWORD = _sab_client.get("password") or ""
+            settings.SAB_APIKEY = _sab_client.get("apikey") or ""
+            settings.SAB_CATEGORY = _sab_client.get("category") or "tv"
+            settings.SAB_CATEGORY_BACKLOG = _sab_client.get("category_backlog") or settings.SAB_CATEGORY
+            settings.SAB_CATEGORY_ANIME = _sab_client.get("category_anime") or "anime"
+            settings.SAB_CATEGORY_ANIME_BACKLOG = _sab_client.get("category_anime_backlog") or settings.SAB_CATEGORY_ANIME
+            settings.SAB_HOST = _sab_client.get("host") or ""
+            settings.SAB_FORCED = str(_sab_client.get("forced", "")).lower() in {"1", "true", "yes", "on"}
+            if settings.SAB_PASSWORD:
+                logger.censored_items[("CLIENTS", "sabnzbd.password")] = settings.SAB_PASSWORD
+            if settings.SAB_APIKEY:
+                logger.censored_items[("CLIENTS", "sabnzbd.apikey")] = settings.SAB_APIKEY
+        else:
+            settings.SAB_USERNAME = peek_setting_str(settings.CFG, "SABnzbd", "sab_username", censor_log=True)
+            settings.SAB_PASSWORD = peek_setting_str(settings.CFG, "SABnzbd", "sab_password", censor_log=True)
+            settings.SAB_APIKEY = peek_setting_str(settings.CFG, "SABnzbd", "sab_apikey", censor_log=True)
+            settings.SAB_CATEGORY = peek_setting_str(settings.CFG, "SABnzbd", "sab_category", "tv")
+            settings.SAB_CATEGORY_BACKLOG = peek_setting_str(settings.CFG, "SABnzbd", "sab_category_backlog", settings.SAB_CATEGORY)
+            settings.SAB_CATEGORY_ANIME = peek_setting_str(settings.CFG, "SABnzbd", "sab_category_anime", "anime")
+            settings.SAB_CATEGORY_ANIME_BACKLOG = peek_setting_str(settings.CFG, "SABnzbd", "sab_category_anime_backlog", settings.SAB_CATEGORY_ANIME)
+            settings.SAB_HOST = peek_setting_str(settings.CFG, "SABnzbd", "sab_host")
+            settings.SAB_FORCED = peek_setting_bool(settings.CFG, "SABnzbd", "sab_forced")
+
+        _nzbget_client = _clients.get("nzbget") if isinstance(_clients, dict) else None
+        if isinstance(_nzbget_client, dict) and (_nzbget_client.get("host") or _nzbget_client.get("username") or "category" in _nzbget_client):
+            settings.NZBGET_USERNAME = _nzbget_client.get("username") or "nzbget"
+            settings.NZBGET_PASSWORD = _nzbget_client.get("password") or "tegbzn6789"
+            settings.NZBGET_CATEGORY = _nzbget_client.get("category") or "tv"
+            settings.NZBGET_CATEGORY_BACKLOG = _nzbget_client.get("category_backlog") or settings.NZBGET_CATEGORY
+            settings.NZBGET_CATEGORY_ANIME = _nzbget_client.get("category_anime") or "anime"
+            settings.NZBGET_CATEGORY_ANIME_BACKLOG = _nzbget_client.get("category_anime_backlog") or settings.NZBGET_CATEGORY_ANIME
+            settings.NZBGET_HOST = _nzbget_client.get("host") or ""
+            settings.NZBGET_USE_HTTPS = str(_nzbget_client.get("use_https", "")).lower() in {"1", "true", "yes", "on"}
+            try:
+                settings.NZBGET_PRIORITY = int(_nzbget_client.get("priority") if _nzbget_client.get("priority") not in (None, "") else 100)
+            except (TypeError, ValueError):
+                settings.NZBGET_PRIORITY = 100
+            if settings.NZBGET_PASSWORD:
+                logger.censored_items[("CLIENTS", "nzbget.password")] = settings.NZBGET_PASSWORD
+        else:
+            settings.NZBGET_USERNAME = peek_setting_str(settings.CFG, "NZBget", "nzbget_username", "nzbget", censor_log=True)
+            settings.NZBGET_PASSWORD = peek_setting_str(settings.CFG, "NZBget", "nzbget_password", "tegbzn6789", censor_log=True)
+            settings.NZBGET_CATEGORY = peek_setting_str(settings.CFG, "NZBget", "nzbget_category", "tv")
+            settings.NZBGET_CATEGORY_BACKLOG = peek_setting_str(settings.CFG, "NZBget", "nzbget_category_backlog", settings.NZBGET_CATEGORY)
+            settings.NZBGET_CATEGORY_ANIME = peek_setting_str(settings.CFG, "NZBget", "nzbget_category_anime", "anime")
+            settings.NZBGET_CATEGORY_ANIME_BACKLOG = peek_setting_str(settings.CFG, "NZBget", "nzbget_category_anime_backlog", settings.NZBGET_CATEGORY_ANIME)
+            settings.NZBGET_HOST = peek_setting_str(settings.CFG, "NZBget", "nzbget_host")
+            settings.NZBGET_USE_HTTPS = peek_setting_bool(settings.CFG, "NZBget", "nzbget_use_https")
+            settings.NZBGET_PRIORITY = peek_setting_int(settings.CFG, "NZBget", "nzbget_priority", 100)
         if settings.NZBGET_PRIORITY not in (-100, -50, 0, 50, 100, 900):
             settings.NZBGET_PRIORITY = 100
 
-        settings.TORRENT_USERNAME = check_setting_str(settings.CFG, "TORRENT", "torrent_username", censor_log=True)
-        settings.TORRENT_PASSWORD = check_setting_str(settings.CFG, "TORRENT", "torrent_password", censor_log=True)
-        settings.TORRENT_HOST = check_setting_str(settings.CFG, "TORRENT", "torrent_host")
-        settings.TORRENT_PATH = check_setting_str(settings.CFG, "TORRENT", "torrent_path")
-        settings.TORRENT_PATH_INCOMPLETE = check_setting_str(settings.CFG, "TORRENT", "torrent_path_incomplete")
+        _torrent_client = None
+        if isinstance(_clients, dict) and settings.TORRENT_METHOD and settings.TORRENT_METHOD not in ("blackhole",):
+            _torrent_client = _clients.get(settings.TORRENT_METHOD)
 
-        # Fix duplicated options
-        if settings.TORRENT_METHOD.startswith("deluge"):
-            deluge_download_dir = check_setting_str(settings.CFG, "TORRENT", "torrent_download_dir_deluge")
-            deluge_complete_dir = check_setting_str(settings.CFG, "TORRENT", "torrent_complete_dir_deluge")
-            settings.TORRENT_PATH = deluge_complete_dir or settings.TORRENT_PATH
-            if deluge_download_dir and not settings.TORRENT_PATH_INCOMPLETE:
-                settings.TORRENT_PATH_INCOMPLETE = deluge_download_dir
+        if isinstance(_torrent_client, dict) and (_torrent_client.get("host") or _torrent_client.get("username") or _torrent_client.get("password")):
+            settings.TORRENT_USERNAME = _torrent_client.get("username") or ""
+            settings.TORRENT_PASSWORD = _torrent_client.get("password") or ""
+            settings.TORRENT_HOST = _torrent_client.get("host") or ""
+            settings.TORRENT_PATH = _torrent_client.get("path") or ""
+            settings.TORRENT_PATH_INCOMPLETE = _torrent_client.get("path_incomplete") or ""
+            try:
+                settings.TORRENT_SEED_TIME = int(_torrent_client.get("seed_time") or 0)
+            except (TypeError, ValueError):
+                settings.TORRENT_SEED_TIME = 0
+            settings.TORRENT_PAUSED = str(_torrent_client.get("paused", "")).lower() in {"1", "true", "yes", "on"}
+            settings.TORRENT_HIGH_BANDWIDTH = str(_torrent_client.get("high_bandwidth", "")).lower() in {"1", "true", "yes", "on"}
+            settings.TORRENT_LABEL = _torrent_client.get("label") or ""
+            settings.TORRENT_LABEL_ANIME = _torrent_client.get("label_anime") or ""
+            settings.TORRENT_VERIFY_CERT = str(_torrent_client.get("verify_cert", "")).lower() in {"1", "true", "yes", "on"}
+            settings.TORRENT_RPCURL = _torrent_client.get("rpcurl") or "transmission"
+            settings.TORRENT_AUTH_TYPE = _torrent_client.get("auth_type") or ""
+            if settings.TORRENT_PASSWORD:
+                logger.censored_items[("CLIENTS", f"{settings.TORRENT_METHOD}.password")] = settings.TORRENT_PASSWORD
+        else:
+            settings.TORRENT_USERNAME = peek_setting_str(settings.CFG, "TORRENT", "torrent_username", censor_log=True)
+            settings.TORRENT_PASSWORD = peek_setting_str(settings.CFG, "TORRENT", "torrent_password", censor_log=True)
+            settings.TORRENT_HOST = peek_setting_str(settings.CFG, "TORRENT", "torrent_host")
+            settings.TORRENT_PATH = peek_setting_str(settings.CFG, "TORRENT", "torrent_path")
+            settings.TORRENT_PATH_INCOMPLETE = peek_setting_str(settings.CFG, "TORRENT", "torrent_path_incomplete")
 
-        settings.TORRENT_SEED_TIME = check_setting_int(settings.CFG, "TORRENT", "torrent_seed_time", min_val=-1)
-        settings.TORRENT_PAUSED = check_setting_bool(settings.CFG, "TORRENT", "torrent_paused")
-        settings.TORRENT_HIGH_BANDWIDTH = check_setting_bool(settings.CFG, "TORRENT", "torrent_high_bandwidth")
-        settings.TORRENT_LABEL = check_setting_str(settings.CFG, "TORRENT", "torrent_label")
-        settings.TORRENT_LABEL_ANIME = check_setting_str(settings.CFG, "TORRENT", "torrent_label_anime")
-        settings.TORRENT_VERIFY_CERT = check_setting_bool(settings.CFG, "TORRENT", "torrent_verify_cert")
-        settings.TORRENT_RPCURL = check_setting_str(settings.CFG, "TORRENT", "torrent_rpcurl", "transmission")
-        settings.TORRENT_AUTH_TYPE = check_setting_str(settings.CFG, "TORRENT", "torrent_auth_type")
+            # Fix duplicated options
+            if settings.TORRENT_METHOD.startswith("deluge"):
+                deluge_download_dir = peek_setting_str(settings.CFG, "TORRENT", "torrent_download_dir_deluge")
+                deluge_complete_dir = peek_setting_str(settings.CFG, "TORRENT", "torrent_complete_dir_deluge")
+                settings.TORRENT_PATH = deluge_complete_dir or settings.TORRENT_PATH
+                if deluge_download_dir and not settings.TORRENT_PATH_INCOMPLETE:
+                    settings.TORRENT_PATH_INCOMPLETE = deluge_download_dir
 
-        settings.SYNOLOGY_DSM_HOST = check_setting_str(settings.CFG, "Synology", "host")
-        settings.SYNOLOGY_DSM_USERNAME = check_setting_str(settings.CFG, "Synology", "username", censor_log=True)
-        settings.SYNOLOGY_DSM_PASSWORD = check_setting_str(settings.CFG, "Synology", "password", censor_log=True)
-        settings.SYNOLOGY_DSM_PATH = check_setting_str(settings.CFG, "Synology", "path")
+            settings.TORRENT_SEED_TIME = peek_setting_int(settings.CFG, "TORRENT", "torrent_seed_time", min_val=-1)
+            settings.TORRENT_PAUSED = peek_setting_bool(settings.CFG, "TORRENT", "torrent_paused")
+            settings.TORRENT_HIGH_BANDWIDTH = peek_setting_bool(settings.CFG, "TORRENT", "torrent_high_bandwidth")
+            settings.TORRENT_LABEL = peek_setting_str(settings.CFG, "TORRENT", "torrent_label")
+            settings.TORRENT_LABEL_ANIME = peek_setting_str(settings.CFG, "TORRENT", "torrent_label_anime")
+            settings.TORRENT_VERIFY_CERT = peek_setting_bool(settings.CFG, "TORRENT", "torrent_verify_cert")
+            settings.TORRENT_RPCURL = peek_setting_str(settings.CFG, "TORRENT", "torrent_rpcurl", "transmission")
+            settings.TORRENT_AUTH_TYPE = peek_setting_str(settings.CFG, "TORRENT", "torrent_auth_type")
+
+        _ds_client = _clients.get("download_station") if isinstance(_clients, dict) else None
+        if isinstance(_ds_client, dict) and (_ds_client.get("host") or _ds_client.get("username")):
+            settings.SYNOLOGY_DSM_HOST = _ds_client.get("host") or ""
+            settings.SYNOLOGY_DSM_USERNAME = _ds_client.get("username") or ""
+            settings.SYNOLOGY_DSM_PASSWORD = _ds_client.get("password") or ""
+            settings.SYNOLOGY_DSM_PATH = _ds_client.get("path") or ""
+            if settings.SYNOLOGY_DSM_PASSWORD:
+                logger.censored_items[("CLIENTS", "download_station.password")] = settings.SYNOLOGY_DSM_PASSWORD
+        else:
+            settings.SYNOLOGY_DSM_HOST = peek_setting_str(settings.CFG, "Synology", "host")
+            settings.SYNOLOGY_DSM_USERNAME = peek_setting_str(settings.CFG, "Synology", "username", censor_log=True)
+            settings.SYNOLOGY_DSM_PASSWORD = peek_setting_str(settings.CFG, "Synology", "password", censor_log=True)
+            settings.SYNOLOGY_DSM_PATH = peek_setting_str(settings.CFG, "Synology", "path")
 
         helpers.manage_torrents_url(reset=True)
 
-        settings.USE_KODI = check_setting_bool(settings.CFG, "KODI", "use_kodi")
-        settings.KODI_ALWAYS_ON = check_setting_bool(settings.CFG, "KODI", "kodi_always_on", True)
-        settings.KODI_NOTIFY_ONSNATCH = check_setting_bool(settings.CFG, "KODI", "kodi_notify_onsnatch")
-        settings.KODI_NOTIFY_ONDOWNLOAD = check_setting_bool(settings.CFG, "KODI", "kodi_notify_ondownload")
-        settings.KODI_NOTIFY_ONSUBTITLEDOWNLOAD = check_setting_bool(settings.CFG, "KODI", "kodi_notify_onsubtitledownload")
-        settings.KODI_UPDATE_LIBRARY = check_setting_bool(settings.CFG, "KODI", "kodi_update_library")
-        settings.KODI_UPDATE_FULL = check_setting_bool(settings.CFG, "KODI", "kodi_update_full")
-        settings.KODI_UPDATE_ONLYFIRST = check_setting_bool(settings.CFG, "KODI", "kodi_update_onlyfirst")
-        settings.KODI_HOST = check_setting_str(settings.CFG, "KODI", "kodi_host")
-        settings.KODI_USERNAME = check_setting_str(settings.CFG, "KODI", "kodi_username", censor_log=True)
-        settings.KODI_PASSWORD = check_setting_str(settings.CFG, "KODI", "kodi_password", censor_log=True)
-
-        settings.USE_PLEX_SERVER = check_setting_bool(settings.CFG, "Plex", "use_plex_server")
-        settings.PLEX_NOTIFY_ONSNATCH = check_setting_bool(settings.CFG, "Plex", "plex_notify_onsnatch")
-        settings.PLEX_NOTIFY_ONDOWNLOAD = check_setting_bool(settings.CFG, "Plex", "plex_notify_ondownload")
-        settings.PLEX_NOTIFY_ONSUBTITLEDOWNLOAD = check_setting_bool(settings.CFG, "Plex", "plex_notify_onsubtitledownload")
-        settings.PLEX_UPDATE_LIBRARY = check_setting_bool(settings.CFG, "Plex", "plex_update_library")
-        settings.PLEX_SERVER_HOST = check_setting_str(settings.CFG, "Plex", "plex_server_host")
-        settings.PLEX_SERVER_TOKEN = check_setting_str(settings.CFG, "Plex", "plex_server_token")
-        settings.PLEX_CLIENT_HOST = check_setting_str(settings.CFG, "Plex", "plex_client_host")
-        settings.PLEX_SERVER_USERNAME = check_setting_str(settings.CFG, "Plex", "plex_server_username", censor_log=True)
-        settings.PLEX_SERVER_PASSWORD = check_setting_str(settings.CFG, "Plex", "plex_server_password", censor_log=True)
-        settings.USE_PLEX_CLIENT = check_setting_bool(settings.CFG, "Plex", "use_plex_client")
-        settings.PLEX_CLIENT_USERNAME = check_setting_str(settings.CFG, "Plex", "plex_client_username", censor_log=True)
-        settings.PLEX_CLIENT_PASSWORD = check_setting_str(settings.CFG, "Plex", "plex_client_password", censor_log=True)
-        settings.PLEX_SERVER_HTTPS = check_setting_bool(settings.CFG, "Plex", "plex_server_https")
-
-        settings.USE_EMBY = check_setting_bool(settings.CFG, "Emby", "use_emby")
-        settings.EMBY_HOST = check_setting_str(settings.CFG, "Emby", "emby_host")
-        settings.EMBY_APIKEY = check_setting_str(settings.CFG, "Emby", "emby_apikey")
-
-        settings.USE_JELLYFIN = check_setting_bool(settings.CFG, "Jellyfin", "use_jellyfin")
-        settings.JELLYFIN_HOST = check_setting_str(settings.CFG, "Jellyfin", "jellyfin_host")
-        settings.JELLYFIN_APIKEY = check_setting_str(settings.CFG, "Jellyfin", "jellyfin_apikey")
-
-        settings.USE_GROWL = check_setting_bool(settings.CFG, "Growl", "use_growl")
-        settings.GROWL_NOTIFY_ONSNATCH = check_setting_bool(settings.CFG, "Growl", "growl_notify_onsnatch")
-        settings.GROWL_NOTIFY_ONDOWNLOAD = check_setting_bool(settings.CFG, "Growl", "growl_notify_ondownload")
-        settings.GROWL_NOTIFY_ONSUBTITLEDOWNLOAD = check_setting_bool(settings.CFG, "Growl", "growl_notify_onsubtitledownload")
-        settings.GROWL_HOST = check_setting_str(settings.CFG, "Growl", "growl_host")
-        settings.GROWL_PASSWORD = check_setting_str(settings.CFG, "Growl", "growl_password", censor_log=True)
-
-        settings.USE_FREEMOBILE = check_setting_bool(settings.CFG, "FreeMobile", "use_freemobile")
-        settings.FREEMOBILE_NOTIFY_ONSNATCH = check_setting_bool(settings.CFG, "FreeMobile", "freemobile_notify_onsnatch")
-        settings.FREEMOBILE_NOTIFY_ONDOWNLOAD = check_setting_bool(settings.CFG, "FreeMobile", "freemobile_notify_ondownload")
-        settings.FREEMOBILE_NOTIFY_ONSUBTITLEDOWNLOAD = check_setting_bool(settings.CFG, "FreeMobile", "freemobile_notify_onsubtitledownload")
-        settings.FREEMOBILE_ID = check_setting_str(settings.CFG, "FreeMobile", "freemobile_id")
-        settings.FREEMOBILE_APIKEY = check_setting_str(settings.CFG, "FreeMobile", "freemobile_apikey")
+        # Notifier / Trakt / media-server settings come from [extensions] via bootstrap_plugins()
+        # (sync_legacy_maps_to_settings). Do not check_setting_* legacy sections here — that recreates empties.
+        # use_synoindex may still linger under [Synology] until migrate; peek only.
+        settings.USE_SYNOINDEX = peek_setting_bool(settings.CFG, "Synology", "use_synoindex")
 
         settings.FLARESOLVERR_URI = check_setting_str(settings.CFG, "General", "flaresolverr_uri")
-
-        settings.USE_TELEGRAM = check_setting_bool(settings.CFG, "Telegram", "use_telegram")
-        settings.TELEGRAM_NOTIFY_ONSNATCH = check_setting_bool(settings.CFG, "Telegram", "telegram_notify_onsnatch")
-        settings.TELEGRAM_NOTIFY_ONDOWNLOAD = check_setting_bool(settings.CFG, "Telegram", "telegram_notify_ondownload")
-        settings.TELEGRAM_NOTIFY_ONSUBTITLEDOWNLOAD = check_setting_bool(settings.CFG, "Telegram", "telegram_notify_onsubtitledownload")
-        settings.TELEGRAM_ID = check_setting_str(settings.CFG, "Telegram", "telegram_id")
-        settings.TELEGRAM_APIKEY = check_setting_str(settings.CFG, "Telegram", "telegram_apikey")
-
-        settings.USE_JOIN = check_setting_bool(settings.CFG, "Join", "use_join")
-        settings.JOIN_NOTIFY_ONSNATCH = check_setting_bool(settings.CFG, "Join", "join_notify_onsnatch")
-        settings.JOIN_NOTIFY_ONDOWNLOAD = check_setting_bool(settings.CFG, "Join", "join_notify_ondownload")
-        settings.JOIN_NOTIFY_ONSUBTITLEDOWNLOAD = check_setting_bool(settings.CFG, "Join", "join_notify_onsubtitledownload")
-        settings.JOIN_ID = check_setting_str(settings.CFG, "Join", "join_id")
-        settings.JOIN_APIKEY = check_setting_str(settings.CFG, "Join", "join_apikey")
-
-        settings.USE_PROWL = check_setting_bool(settings.CFG, "Prowl", "use_prowl")
-        settings.PROWL_NOTIFY_ONSNATCH = check_setting_bool(settings.CFG, "Prowl", "prowl_notify_onsnatch")
-        settings.PROWL_NOTIFY_ONDOWNLOAD = check_setting_bool(settings.CFG, "Prowl", "prowl_notify_ondownload")
-        settings.PROWL_NOTIFY_ONSUBTITLEDOWNLOAD = check_setting_bool(settings.CFG, "Prowl", "prowl_notify_onsubtitledownload")
-        settings.PROWL_API = check_setting_str(settings.CFG, "Prowl", "prowl_api", censor_log=True)
-        settings.PROWL_PRIORITY = check_setting_str(settings.CFG, "Prowl", "prowl_priority", "0")
-        settings.PROWL_MESSAGE_TITLE = check_setting_str(settings.CFG, "Prowl", "prowl_message_title", "SickChill")
-
-        settings.USE_TWITTER = check_setting_bool(settings.CFG, "Twitter", "use_twitter")
-        settings.TWITTER_NOTIFY_ONSNATCH = check_setting_bool(settings.CFG, "Twitter", "twitter_notify_onsnatch")
-        settings.TWITTER_NOTIFY_ONDOWNLOAD = check_setting_bool(settings.CFG, "Twitter", "twitter_notify_ondownload")
-        settings.TWITTER_NOTIFY_ONSUBTITLEDOWNLOAD = check_setting_bool(settings.CFG, "Twitter", "twitter_notify_onsubtitledownload")
-        settings.TWITTER_USERNAME = check_setting_str(settings.CFG, "Twitter", "twitter_username", censor_log=True)
-        settings.TWITTER_PASSWORD = check_setting_str(settings.CFG, "Twitter", "twitter_password", censor_log=True)
-        settings.TWITTER_PREFIX = check_setting_str(settings.CFG, "Twitter", "twitter_prefix", settings.GIT_REPO)
-        settings.TWITTER_DMTO = check_setting_str(settings.CFG, "Twitter", "twitter_dmto")
-        settings.TWITTER_USEDM = check_setting_bool(settings.CFG, "Twitter", "twitter_usedm")
-
-        settings.USE_TWILIO = check_setting_bool(settings.CFG, "Twilio", "use_twilio")
-        settings.TWILIO_NOTIFY_ONSNATCH = check_setting_bool(settings.CFG, "Twilio", "twilio_notify_onsnatch")
-        settings.TWILIO_NOTIFY_ONDOWNLOAD = check_setting_bool(settings.CFG, "Twilio", "twilio_notify_ondownload")
-        settings.TWILIO_NOTIFY_ONSUBTITLEDOWNLOAD = check_setting_bool(settings.CFG, "Twilio", "twilio_notify_onsubtitledownload")
-        settings.TWILIO_PHONE_SID = check_setting_str(settings.CFG, "Twilio", "twilio_phone_sid", censor_log=True)
-        settings.TWILIO_ACCOUNT_SID = check_setting_str(settings.CFG, "Twilio", "twilio_account_sid", censor_log=True)
-        settings.TWILIO_AUTH_TOKEN = check_setting_str(settings.CFG, "Twilio", "twilio_auth_token", censor_log=True)
-        settings.TWILIO_TO_NUMBER = check_setting_str(settings.CFG, "Twilio", "twilio_to_number", censor_log=True)
-
-        settings.USE_BOXCAR2 = check_setting_bool(settings.CFG, "Boxcar2", "use_boxcar2")
-        settings.BOXCAR2_NOTIFY_ONSNATCH = check_setting_bool(settings.CFG, "Boxcar2", "boxcar2_notify_onsnatch")
-        settings.BOXCAR2_NOTIFY_ONDOWNLOAD = check_setting_bool(settings.CFG, "Boxcar2", "boxcar2_notify_ondownload")
-        settings.BOXCAR2_NOTIFY_ONSUBTITLEDOWNLOAD = check_setting_bool(settings.CFG, "Boxcar2", "boxcar2_notify_onsubtitledownload")
-        settings.BOXCAR2_ACCESSTOKEN = check_setting_str(settings.CFG, "Boxcar2", "boxcar2_accesstoken", censor_log=True)
-
-        settings.USE_PUSHOVER = check_setting_bool(settings.CFG, "Pushover", "use_pushover")
-        settings.PUSHOVER_NOTIFY_ONSNATCH = check_setting_bool(settings.CFG, "Pushover", "pushover_notify_onsnatch")
-        settings.PUSHOVER_NOTIFY_ONDOWNLOAD = check_setting_bool(settings.CFG, "Pushover", "pushover_notify_ondownload")
-        settings.PUSHOVER_NOTIFY_ONSUBTITLEDOWNLOAD = check_setting_bool(settings.CFG, "Pushover", "pushover_notify_onsubtitledownload")
-        settings.PUSHOVER_USERKEY = check_setting_str(settings.CFG, "Pushover", "pushover_userkey", censor_log=True)
-        settings.PUSHOVER_APIKEY = check_setting_str(settings.CFG, "Pushover", "pushover_apikey", censor_log=True)
-        settings.PUSHOVER_DEVICE = check_setting_str(settings.CFG, "Pushover", "pushover_device")
-        settings.PUSHOVER_SOUND = check_setting_str(settings.CFG, "Pushover", "pushover_sound", "pushover")
-        settings.PUSHOVER_PRIORITY = check_setting_str(settings.CFG, "Pushover", "pushover_priority", "0")
-
-        settings.USE_LIBNOTIFY = check_setting_bool(settings.CFG, "Libnotify", "use_libnotify")
-        settings.LIBNOTIFY_NOTIFY_ONSNATCH = check_setting_bool(settings.CFG, "Libnotify", "libnotify_notify_onsnatch")
-        settings.LIBNOTIFY_NOTIFY_ONDOWNLOAD = check_setting_bool(settings.CFG, "Libnotify", "libnotify_notify_ondownload")
-        settings.LIBNOTIFY_NOTIFY_ONSUBTITLEDOWNLOAD = check_setting_bool(settings.CFG, "Libnotify", "libnotify_notify_onsubtitledownload")
-
-        settings.USE_NMJ = check_setting_bool(settings.CFG, "NMJ", "use_nmj")
-        settings.NMJ_HOST = check_setting_str(settings.CFG, "NMJ", "nmj_host")
-        settings.NMJ_DATABASE = check_setting_str(settings.CFG, "NMJ", "nmj_database")
-        settings.NMJ_MOUNT = check_setting_str(settings.CFG, "NMJ", "nmj_mount")
-
-        settings.USE_NMJv2 = check_setting_bool(settings.CFG, "NMJv2", "use_nmjv2")
-        settings.NMJv2_HOST = check_setting_str(settings.CFG, "NMJv2", "nmjv2_host")
-        settings.NMJv2_DATABASE = check_setting_str(settings.CFG, "NMJv2", "nmjv2_database")
-        settings.NMJv2_DBLOC = check_setting_str(settings.CFG, "NMJv2", "nmjv2_dbloc")
-
-        settings.USE_SYNOINDEX = check_setting_bool(settings.CFG, "Synology", "use_synoindex")
-
-        settings.USE_SYNOLOGYNOTIFIER = check_setting_bool(settings.CFG, "SynologyNotifier", "use_synologynotifier")
-        settings.SYNOLOGYNOTIFIER_NOTIFY_ONSNATCH = check_setting_bool(settings.CFG, "SynologyNotifier", "synologynotifier_notify_onsnatch")
-        settings.SYNOLOGYNOTIFIER_NOTIFY_ONDOWNLOAD = check_setting_bool(settings.CFG, "SynologyNotifier", "synologynotifier_notify_ondownload")
-        settings.SYNOLOGYNOTIFIER_NOTIFY_ONSUBTITLEDOWNLOAD = check_setting_bool(settings.CFG, "SynologyNotifier", "synologynotifier_notify_onsubtitledownload")
-
-        settings.USE_SLACK = check_setting_bool(settings.CFG, "Slack", "use_slack")
-        settings.SLACK_NOTIFY_SNATCH = check_setting_bool(settings.CFG, "Slack", "slack_notify_snatch")
-        settings.SLACK_NOTIFY_DOWNLOAD = check_setting_bool(settings.CFG, "Slack", "slack_notify_download")
-        settings.SLACK_NOTIFY_SUBTITLEDOWNLOAD = check_setting_bool(settings.CFG, "Slack", "slack_notify_subtitledownload")
-        settings.SLACK_WEBHOOK = check_setting_str(settings.CFG, "Slack", "slack_webhook")
-        settings.SLACK_ICON_EMOJI = check_setting_str(settings.CFG, "Slack", "slack_icon_emoji")
-
-        settings.USE_MATTERMOST = check_setting_bool(settings.CFG, "Mattermost", "use_mattermost")
-        settings.MATTERMOST_NOTIFY_SNATCH = check_setting_bool(settings.CFG, "Mattermost", "mattermost_notify_snatch")
-        settings.MATTERMOST_NOTIFY_DOWNLOAD = check_setting_bool(settings.CFG, "Mattermost", "mattermost_notify_download")
-        settings.MATTERMOST_NOTIFY_SUBTITLEDOWNLOAD = check_setting_bool(settings.CFG, "Mattermost", "mattermost_notify_subtitledownload")
-        settings.MATTERMOST_WEBHOOK = check_setting_str(settings.CFG, "Mattermost", "mattermost_webhook")
-        settings.MATTERMOST_USERNAME = check_setting_str(settings.CFG, "Mattermost", "mattermost_username")
-        settings.MATTERMOST_ICON_EMOJI = check_setting_str(settings.CFG, "Mattermost", "mattermost_icon_emoji")
-
-        settings.USE_MATTERMOSTBOT = check_setting_bool(settings.CFG, "MattermostBot", "use_mattermostbot")
-        settings.MATTERMOSTBOT_NOTIFY_SNATCH = check_setting_bool(settings.CFG, "MattermostBot", "mattermostbot_notify_snatch")
-        settings.MATTERMOSTBOT_NOTIFY_DOWNLOAD = check_setting_bool(settings.CFG, "MattermostBot", "mattermostbot_notify_download")
-        settings.MATTERMOSTBOT_NOTIFY_SUBTITLEDOWNLOAD = check_setting_bool(settings.CFG, "MattermostBot", "mattermostbot_notify_subtitledownload")
-        settings.MATTERMOSTBOT_URL = check_setting_str(settings.CFG, "MattermostBot", "mattermostbot_url")
-        settings.MATTERMOSTBOT_TOKEN = check_setting_str(settings.CFG, "MattermostBot", "mattermostbot_token")
-        settings.MATTERMOSTBOT_CHANNEL = check_setting_str(settings.CFG, "MattermostBot", "mattermostbot_channel")
-        settings.MATTERMOSTBOT_ICON_EMOJI = check_setting_str(settings.CFG, "MattermostBot", "mattermostbot_icon_emoji")
-        settings.MATTERMOSTBOT_AUTHOR = check_setting_str(settings.CFG, "MattermostBot", "mattermostbot_author")
-
-        settings.USE_ROCKETCHAT = check_setting_bool(settings.CFG, "RocketChat", "use_rocketchat")
-        settings.ROCKETCHAT_NOTIFY_SNATCH = check_setting_bool(settings.CFG, "RocketChat", "rocketchat_notify_snatch")
-        settings.ROCKETCHAT_NOTIFY_DOWNLOAD = check_setting_bool(settings.CFG, "RocketChat", "rocketchat_notify_download")
-        settings.ROCKETCHAT_NOTIFY_SUBTITLEDOWNLOAD = check_setting_bool(settings.CFG, "RocketChat", "rocketchat_notify_subtitledownload")
-        settings.ROCKETCHAT_WEBHOOK = check_setting_str(settings.CFG, "RocketChat", "rocketchat_webhook")
-        settings.ROCKETCHAT_ICON_EMOJI = check_setting_str(settings.CFG, "RocketChat", "rocketchat_icon_emoji")
-
-        settings.USE_MATRIX = check_setting_bool(settings.CFG, "Matrix", "use_matrix")
-        settings.MATRIX_NOTIFY_SNATCH = check_setting_bool(settings.CFG, "Matrix", "matrix_notify_snatch")
-        settings.MATRIX_NOTIFY_DOWNLOAD = check_setting_bool(settings.CFG, "Matrix", "matrix_notify_download")
-        settings.MATRIX_NOTIFY_SUBTITLEDOWNLOAD = check_setting_bool(settings.CFG, "Matrix", "matrix_notify_subtitledownload")
-        settings.MATRIX_API_TOKEN = check_setting_str(settings.CFG, "Matrix", "matrix_api_token")
-        settings.MATRIX_SERVER = check_setting_str(settings.CFG, "Matrix", "matrix_server")
-        settings.MATRIX_ROOM = check_setting_str(settings.CFG, "Matrix", "matrix_room")
-
-        settings.USE_DISCORD = check_setting_bool(settings.CFG, "Discord", "use_discord")
-        settings.DISCORD_NOTIFY_SNATCH = check_setting_bool(settings.CFG, "Discord", "discord_notify_snatch")
-        settings.DISCORD_NOTIFY_DOWNLOAD = check_setting_bool(settings.CFG, "Discord", "discord_notify_download")
-        settings.DISCORD_WEBHOOK = check_setting_str(settings.CFG, "Discord", "discord_webhook")
-        settings.DISCORD_NAME = check_setting_str(settings.CFG, "Discord", "discord_name")
-        settings.DISCORD_AVATAR_URL = check_setting_str(settings.CFG, "Discord", "discord_avatar_url")
-        settings.DISCORD_TTS = check_setting_bool(settings.CFG, "Discord", "discord_tts")
-
-        settings.USE_TRAKT = check_setting_bool(settings.CFG, "Trakt", "use_trakt")
-        settings.TRAKT_USERNAME = check_setting_str(settings.CFG, "Trakt", "trakt_username", censor_log=True)
-        settings.TRAKT_API_KEY = check_setting_str(settings.CFG, "Trakt", "trakt_api_key", settings.TRAKT_API_KEY, censor_log=True)
-        # Secret is not named "*password*", so decrypt explicitly (legacy plaintext migrates on save).
-        raw_trakt_secret = check_setting_str(settings.CFG, "Trakt", "trakt_api_secret", settings.TRAKT_API_SECRET or "", censor_log=True)
-        settings.TRAKT_API_SECRET = helpers.decrypt_config_value(raw_trakt_secret)
-        if settings.TRAKT_API_SECRET:
-            logger.censored_items[("Trakt", "trakt_api_secret")] = settings.TRAKT_API_SECRET
-        from sickchill.oldbeard.trakt_api.trakt import clear_revoked_trakt_defaults, refresh_trakt_pin_url
-
-        settings.TRAKT_ACCESS_TOKEN = check_setting_str(settings.CFG, "Trakt", "trakt_access_token", censor_log=True)
-        settings.TRAKT_REFRESH_TOKEN = check_setting_str(settings.CFG, "Trakt", "trakt_refresh_token", censor_log=True)
-        # After tokens load: blank revoked stock Client IDs (and their tokens) from older installs.
-        if clear_revoked_trakt_defaults():
-            logger.warning(
-                _("Cleared revoked built-in Trakt Client ID. Create a Trakt VIP API app and paste Client ID/Secret under Config → General → Indexer / Data.")
-            )
-        else:
-            refresh_trakt_pin_url()
-        settings.TRAKT_REMOVE_WATCHLIST = check_setting_bool(settings.CFG, "Trakt", "trakt_remove_watchlist")
-        settings.TRAKT_REMOVE_SERIESLIST = check_setting_bool(settings.CFG, "Trakt", "trakt_remove_serieslist")
-        settings.TRAKT_REMOVE_SHOW_FROM_SICKCHILL = check_setting_bool(settings.CFG, "Trakt", "trakt_remove_show_from_sickchill")
-        settings.TRAKT_SYNC_WATCHLIST = check_setting_bool(settings.CFG, "Trakt", "trakt_sync_watchlist")
-        settings.TRAKT_METHOD_ADD = check_setting_int(settings.CFG, "Trakt", "trakt_method_add", min_val=0, max_val=2)
-        settings.TRAKT_START_PAUSED = check_setting_bool(settings.CFG, "Trakt", "trakt_start_paused")
-        settings.TRAKT_USE_RECOMMENDED = check_setting_bool(settings.CFG, "Trakt", "trakt_use_recommended")
-        settings.TRAKT_SYNC = check_setting_bool(settings.CFG, "Trakt", "trakt_sync")
-        settings.TRAKT_SYNC_REMOVE = check_setting_bool(settings.CFG, "Trakt", "trakt_sync_remove")
-        settings.TRAKT_DEFAULT_INDEXER = check_setting_int(settings.CFG, "Trakt", "trakt_default_indexer", 1, min_val=1, max_val=2)
-        settings.TRAKT_TIMEOUT = check_setting_int(settings.CFG, "Trakt", "trakt_timeout", 30, min_val=0)
-        settings.TRAKT_BLACKLIST_NAME = check_setting_str(settings.CFG, "Trakt", "trakt_blacklist_name")
-
-        settings.USE_PYTIVO = check_setting_bool(settings.CFG, "pyTivo", "use_pytivo")
-        settings.PYTIVO_NOTIFY_ONSNATCH = check_setting_bool(settings.CFG, "pyTivo", "pytivo_notify_onsnatch")
-        settings.PYTIVO_NOTIFY_ONDOWNLOAD = check_setting_bool(settings.CFG, "pyTivo", "pytivo_notify_ondownload")
-        settings.PYTIVO_NOTIFY_ONSUBTITLEDOWNLOAD = check_setting_bool(settings.CFG, "pyTivo", "pytivo_notify_onsubtitledownload")
-        settings.PYTIVO_UPDATE_LIBRARY = check_setting_bool(settings.CFG, "pyTivo", "pyTivo_update_library")
-        settings.PYTIVO_HOST = check_setting_str(settings.CFG, "pyTivo", "pytivo_host")
-        settings.PYTIVO_SHARE_NAME = check_setting_str(settings.CFG, "pyTivo", "pytivo_share_name")
-        settings.PYTIVO_TIVO_NAME = check_setting_str(settings.CFG, "pyTivo", "pytivo_tivo_name")
-
-        settings.USE_NMA = check_setting_bool(settings.CFG, "NMA", "use_nma")
-        settings.NMA_NOTIFY_ONSNATCH = check_setting_bool(settings.CFG, "NMA", "nma_notify_onsnatch")
-        settings.NMA_NOTIFY_ONDOWNLOAD = check_setting_bool(settings.CFG, "NMA", "nma_notify_ondownload")
-        settings.NMA_NOTIFY_ONSUBTITLEDOWNLOAD = check_setting_bool(settings.CFG, "NMA", "nma_notify_onsubtitledownload")
-        settings.NMA_API = check_setting_str(settings.CFG, "NMA", "nma_api", censor_log=True)
-        settings.NMA_PRIORITY = check_setting_str(settings.CFG, "NMA", "nma_priority", "0")
-
-        settings.USE_PUSHALOT = check_setting_bool(settings.CFG, "Pushalot", "use_pushalot")
-        settings.PUSHALOT_NOTIFY_ONSNATCH = check_setting_bool(settings.CFG, "Pushalot", "pushalot_notify_onsnatch")
-        settings.PUSHALOT_NOTIFY_ONDOWNLOAD = check_setting_bool(settings.CFG, "Pushalot", "pushalot_notify_ondownload")
-        settings.PUSHALOT_NOTIFY_ONSUBTITLEDOWNLOAD = check_setting_bool(settings.CFG, "Pushalot", "pushalot_notify_onsubtitledownload")
-        settings.PUSHALOT_AUTHORIZATIONTOKEN = check_setting_str(settings.CFG, "Pushalot", "pushalot_authorizationtoken", censor_log=True)
-
-        settings.USE_PUSHBULLET = check_setting_bool(settings.CFG, "Pushbullet", "use_pushbullet")
-        settings.PUSHBULLET_NOTIFY_ONSNATCH = check_setting_bool(settings.CFG, "Pushbullet", "pushbullet_notify_onsnatch")
-        settings.PUSHBULLET_NOTIFY_ONDOWNLOAD = check_setting_bool(settings.CFG, "Pushbullet", "pushbullet_notify_ondownload")
-        settings.PUSHBULLET_NOTIFY_ONSUBTITLEDOWNLOAD = check_setting_bool(settings.CFG, "Pushbullet", "pushbullet_notify_onsubtitledownload")
-        settings.PUSHBULLET_API = check_setting_str(settings.CFG, "Pushbullet", "pushbullet_api", censor_log=True)
-        settings.PUSHBULLET_DEVICE = check_setting_str(settings.CFG, "Pushbullet", "pushbullet_device")
-        settings.PUSHBULLET_CHANNEL = check_setting_str(settings.CFG, "Pushbullet", "pushbullet_channel")
-
-        settings.USE_GOTIFY = check_setting_bool(settings.CFG, "Gotify", "use_gotify")
-        settings.GOTIFY_NOTIFY_ONSNATCH = check_setting_bool(settings.CFG, "Gotify", "gotify_notify_onsnatch")
-        settings.GOTIFY_NOTIFY_ONDOWNLOAD = check_setting_bool(settings.CFG, "Gotify", "gotify_notify_ondownload")
-        settings.GOTIFY_NOTIFY_ONSUBTITLEDOWNLOAD = check_setting_bool(settings.CFG, "Gotify", "gotify_notify_onsubtitledownload")
-        settings.GOTIFY_HOST = check_setting_str(settings.CFG, "Gotify", "gotify_host", censor_log=True)
-        settings.GOTIFY_AUTHORIZATIONTOKEN = check_setting_str(settings.CFG, "Gotify", "gotify_authorizationtoken", censor_log=True)
-
-        settings.USE_EMAIL = check_setting_bool(settings.CFG, "Email", "use_email")
-        settings.EMAIL_NOTIFY_ONSNATCH = check_setting_bool(settings.CFG, "Email", "email_notify_onsnatch")
-        settings.EMAIL_NOTIFY_ONDOWNLOAD = check_setting_bool(settings.CFG, "Email", "email_notify_ondownload")
-        settings.EMAIL_NOTIFY_ONPOSTPROCESS = check_setting_bool(settings.CFG, "Email", "email_notify_onpostprocess")
-        settings.EMAIL_NOTIFY_ONSUBTITLEDOWNLOAD = check_setting_bool(settings.CFG, "Email", "email_notify_onsubtitledownload")
-        settings.EMAIL_HOST = check_setting_str(settings.CFG, "Email", "email_host")
-        settings.EMAIL_PORT = check_setting_int(settings.CFG, "Email", "email_port", 25, min_val=21, max_val=65535)
-        settings.EMAIL_TLS = check_setting_bool(settings.CFG, "Email", "email_tls")
-        settings.EMAIL_USER = check_setting_str(settings.CFG, "Email", "email_user", censor_log=True)
-        settings.EMAIL_PASSWORD = check_setting_str(settings.CFG, "Email", "email_password", censor_log=True)
-        settings.EMAIL_FROM = check_setting_str(settings.CFG, "Email", "email_from")
-        settings.EMAIL_LIST = check_setting_str(settings.CFG, "Email", "email_list")
-        settings.EMAIL_SUBJECT = check_setting_str(settings.CFG, "Email", "email_subject")
 
         settings.USE_SUBTITLES = check_setting_bool(settings.CFG, "Subtitles", "use_subtitles")
         settings.SUBTITLES_INCLUDE_SPECIALS = check_setting_bool(settings.CFG, "Subtitles", "subtitles_include_specials", True)
@@ -778,12 +585,18 @@ def initialize(console_logging: bool = True, debug: bool = False, dbdebug: bool 
         settings.ANIME_SPLIT_HOME = check_setting_bool(settings.CFG, "ANIME", "anime_split_home")
         settings.ANIME_SPLIT_HOME_IN_TABS = check_setting_bool(settings.CFG, "ANIME", "anime_split_home_in_tabs")
 
-        settings.METADATA_KODI = check_setting_str(settings.CFG, "General", "metadata_kodi", "0|0|0|0|0|0|0|0|0|0")
-        settings.METADATA_MEDIABROWSER = check_setting_str(settings.CFG, "General", "metadata_mediabrowser", "0|0|0|0|0|0|0|0|0|0")
-        settings.METADATA_PS3 = check_setting_str(settings.CFG, "General", "metadata_ps3", "0|0|0|0|0|0|0|0|0|0")
-        settings.METADATA_WDTV = check_setting_str(settings.CFG, "General", "metadata_wdtv", "0|0|0|0|0|0|0|0|0|0")
-        settings.METADATA_TIVO = check_setting_str(settings.CFG, "General", "metadata_tivo", "0|0|0|0|0|0|0|0|0|0")
-        settings.METADATA_MEDE8ER = check_setting_str(settings.CFG, "General", "metadata_mede8er", "0|0|0|0|0|0|0|0|0|0")
+        # Prefer [METADATA][[id]] bools (packed for interim UI); peek General only — never recreate metadata_*.
+        from sickchill.plugins.metadata.config import (
+            DEFAULT_PACKED as _METADATA_DEFAULT_PACKED,
+            packed_from_metadata_or_general,
+        )
+
+        settings.METADATA_KODI = packed_from_metadata_or_general(settings.CFG, "kodi", "metadata_kodi", _METADATA_DEFAULT_PACKED)
+        settings.METADATA_MEDIABROWSER = packed_from_metadata_or_general(settings.CFG, "mediabrowser", "metadata_mediabrowser", _METADATA_DEFAULT_PACKED)
+        settings.METADATA_PS3 = packed_from_metadata_or_general(settings.CFG, "sony_ps3", "metadata_ps3", _METADATA_DEFAULT_PACKED)
+        settings.METADATA_WDTV = packed_from_metadata_or_general(settings.CFG, "wdtv", "metadata_wdtv", _METADATA_DEFAULT_PACKED)
+        settings.METADATA_TIVO = packed_from_metadata_or_general(settings.CFG, "tivo", "metadata_tivo", _METADATA_DEFAULT_PACKED)
+        settings.METADATA_MEDE8ER = packed_from_metadata_or_general(settings.CFG, "mede8er", "metadata_mede8er", _METADATA_DEFAULT_PACKED)
 
         settings.HOME_LAYOUT = check_setting_str(settings.CFG, "GUI", "home_layout", "poster")
         settings.HISTORY_LAYOUT = check_setting_str(settings.CFG, "GUI", "history_layout", "detailed")
@@ -936,20 +749,34 @@ def initialize(console_logging: bool = True, debug: bool = False, dbdebug: bool 
         migrator = ConfigMigrator(settings.CFG)
         migrator.migrate_config()
 
-        # initialize metadata_providers
-        settings.metadata_provider_dict = {}
-        for cur_metadata_tuple in [
-            (settings.METADATA_KODI, metadata.kodi),
-            (settings.METADATA_MEDIABROWSER, metadata.mediabrowser),
-            (settings.METADATA_PS3, metadata.ps3),
-            (settings.METADATA_WDTV, metadata.wdtv),
-            (settings.METADATA_TIVO, metadata.tivo),
-            (settings.METADATA_MEDE8ER, metadata.mede8er),
-        ]:
-            cur_metadata_config, cur_metadata_module = cur_metadata_tuple
-            cur_metadata_class = cur_metadata_module.metadata_class()
-            cur_metadata_class.set_config(cur_metadata_config)
-            settings.metadata_provider_dict[cur_metadata_class.name] = cur_metadata_class
+        # One-shot plugin bootstrap: discover → migrate → [extensions]/[CLIENTS]/[METADATA] → sync settings.*
+        try:
+            from sickchill.plugins.bootstrap import bootstrap_plugins
+
+            if bootstrap_plugins():
+                save_config()
+        except Exception as error:
+            logger.exception(f"Plugin manager failed to start: {error}")
+
+        # After extensions sync: blank revoked stock Trakt Client IDs from older installs.
+        try:
+            from sickchill.oldbeard.trakt_api.trakt import clear_revoked_trakt_defaults, refresh_trakt_pin_url
+
+            if clear_revoked_trakt_defaults():
+                logger.warning(
+                    _(
+                        "Cleared revoked built-in Trakt Client ID. Create a Trakt VIP API app and paste Client ID/Secret under Config → General → Indexer / Data."
+                    )
+                )
+            else:
+                refresh_trakt_pin_url()
+        except Exception as error:
+            logger.debug(f"Trakt revoked-default check skipped: {error}")
+
+        # Build metadata_provider_dict AFTER bootstrap so sync'd METADATA_* packed values apply.
+        from sickchill.plugins.metadata.config import refresh_metadata_provider_dict
+
+        refresh_metadata_provider_dict()
 
         # initialize schedulers
         # updaters
@@ -1335,12 +1162,7 @@ def save_config():
                 "proxy_setting": settings.PROXY_SETTING,
                 "proxy_indexers": int(settings.PROXY_INDEXERS),
                 "use_listview": int(settings.USE_LISTVIEW),
-                "metadata_kodi": settings.METADATA_KODI,
-                "metadata_mediabrowser": settings.METADATA_MEDIABROWSER,
-                "metadata_ps3": settings.METADATA_PS3,
-                "metadata_wdtv": settings.METADATA_WDTV,
-                "metadata_tivo": settings.METADATA_TIVO,
-                "metadata_mede8er": settings.METADATA_MEDE8ER,
+                # metadata_* packed strings live under [METADATA]; write_metadata_to_cfg owns them.
                 "backlog_days": int(settings.BACKLOG_DAYS),
                 "backlog_missing_only": int(settings.BACKLOG_MISSING_ONLY),
                 "root_dirs": settings.ROOT_DIRS or "",
@@ -1386,10 +1208,8 @@ def save_config():
             },
             "Cloudflare": {"auth_domain": settings.CF_AUTH_DOMAIN, "audience_policy": settings.CF_POLICY_AUD},
             "Shares": settings.WINDOWS_SHARES,
-            "Blackhole": {
-                "nzb_dir": settings.NZB_DIR,
-                "torrent_dir": settings.TORRENT_DIR,
-            },
+            # Blackhole / SABnzbd / NZBget / TORRENT / notifier / metadata sections live under
+            # [CLIENTS] / [extensions] / [METADATA]; write_all_plugin_settings_to_cfg owns them.
             "NZBs": {
                 "nzbs": int(settings.NZBS),
                 "nzbs_uid": settings.NZBS_UID,
@@ -1399,319 +1219,6 @@ def save_config():
                 "newzbin": int(settings.NEWZBIN),
                 "newzbin_username": settings.NEWZBIN_USERNAME,
                 "newzbin_password": helpers.encrypt(settings.NEWZBIN_PASSWORD, settings.ENCRYPTION_VERSION),
-            },
-            "SABnzbd": {
-                "sab_username": settings.SAB_USERNAME,
-                "sab_password": helpers.encrypt(settings.SAB_PASSWORD, settings.ENCRYPTION_VERSION),
-                "sab_apikey": settings.SAB_APIKEY,
-                "sab_category": settings.SAB_CATEGORY,
-                "sab_category_backlog": settings.SAB_CATEGORY_BACKLOG,
-                "sab_category_anime": settings.SAB_CATEGORY_ANIME,
-                "sab_category_anime_backlog": settings.SAB_CATEGORY_ANIME_BACKLOG,
-                "sab_host": settings.SAB_HOST,
-                "sab_forced": int(settings.SAB_FORCED),
-            },
-            "NZBget": {
-                "nzbget_username": settings.NZBGET_USERNAME,
-                "nzbget_password": helpers.encrypt(settings.NZBGET_PASSWORD, settings.ENCRYPTION_VERSION),
-                "nzbget_category": settings.NZBGET_CATEGORY,
-                "nzbget_category_backlog": settings.NZBGET_CATEGORY_BACKLOG,
-                "nzbget_category_anime": settings.NZBGET_CATEGORY_ANIME,
-                "nzbget_category_anime_backlog": settings.NZBGET_CATEGORY_ANIME_BACKLOG,
-                "nzbget_host": settings.NZBGET_HOST,
-                "nzbget_use_https": int(settings.NZBGET_USE_HTTPS),
-                "nzbget_priority": settings.NZBGET_PRIORITY,
-            },
-            "TORRENT": {
-                "torrent_username": settings.TORRENT_USERNAME,
-                "torrent_password": helpers.encrypt(settings.TORRENT_PASSWORD, settings.ENCRYPTION_VERSION),
-                "torrent_host": settings.TORRENT_HOST,
-                "torrent_path": settings.TORRENT_PATH,
-                "torrent_path_incomplete": settings.TORRENT_PATH_INCOMPLETE,
-                "torrent_seed_time": int(settings.TORRENT_SEED_TIME),
-                "torrent_paused": int(settings.TORRENT_PAUSED),
-                "torrent_high_bandwidth": int(settings.TORRENT_HIGH_BANDWIDTH),
-                "torrent_label": settings.TORRENT_LABEL,
-                "torrent_label_anime": settings.TORRENT_LABEL_ANIME,
-                "torrent_verify_cert": int(settings.TORRENT_VERIFY_CERT),
-                "torrent_rpcurl": settings.TORRENT_RPCURL,
-                "torrent_auth_type": settings.TORRENT_AUTH_TYPE,
-            },
-            "KODI": {
-                "use_kodi": int(settings.USE_KODI),
-                "kodi_always_on": int(settings.KODI_ALWAYS_ON),
-                "kodi_notify_onsnatch": int(settings.KODI_NOTIFY_ONSNATCH),
-                "kodi_notify_ondownload": int(settings.KODI_NOTIFY_ONDOWNLOAD),
-                "kodi_notify_onsubtitledownload": int(settings.KODI_NOTIFY_ONSUBTITLEDOWNLOAD),
-                "kodi_update_library": int(settings.KODI_UPDATE_LIBRARY),
-                "kodi_update_full": int(settings.KODI_UPDATE_FULL),
-                "kodi_update_onlyfirst": int(settings.KODI_UPDATE_ONLYFIRST),
-                "kodi_host": settings.KODI_HOST,
-                "kodi_username": settings.KODI_USERNAME,
-                "kodi_password": helpers.encrypt(settings.KODI_PASSWORD, settings.ENCRYPTION_VERSION),
-            },
-            "Plex": {
-                "use_plex_server": int(settings.USE_PLEX_SERVER),
-                "plex_notify_onsnatch": int(settings.PLEX_NOTIFY_ONSNATCH),
-                "plex_notify_ondownload": int(settings.PLEX_NOTIFY_ONDOWNLOAD),
-                "plex_notify_onsubtitledownload": int(settings.PLEX_NOTIFY_ONSUBTITLEDOWNLOAD),
-                "plex_update_library": int(settings.PLEX_UPDATE_LIBRARY),
-                "plex_server_host": settings.PLEX_SERVER_HOST,
-                "plex_server_token": settings.PLEX_SERVER_TOKEN,
-                "plex_client_host": settings.PLEX_CLIENT_HOST,
-                "plex_server_username": settings.PLEX_SERVER_USERNAME,
-                "plex_server_password": helpers.encrypt(settings.PLEX_SERVER_PASSWORD, settings.ENCRYPTION_VERSION),
-                "use_plex_client": int(settings.USE_PLEX_CLIENT),
-                "plex_client_username": settings.PLEX_CLIENT_USERNAME,
-                "plex_client_password": helpers.encrypt(settings.PLEX_CLIENT_PASSWORD, settings.ENCRYPTION_VERSION),
-                "plex_server_https": int(settings.PLEX_SERVER_HTTPS),
-            },
-            "Emby": {
-                "use_emby": int(settings.USE_EMBY),
-                "emby_host": settings.EMBY_HOST,
-                "emby_apikey": settings.EMBY_APIKEY,
-            },
-            "Jellyfin": {
-                "use_jellyfin": int(settings.USE_JELLYFIN),
-                "jellyfin_host": settings.JELLYFIN_HOST,
-                "jellyfin_apikey": settings.JELLYFIN_APIKEY,
-            },
-            "Growl": {
-                "use_growl": int(settings.USE_GROWL),
-                "growl_notify_onsnatch": int(settings.GROWL_NOTIFY_ONSNATCH),
-                "growl_notify_ondownload": int(settings.GROWL_NOTIFY_ONDOWNLOAD),
-                "growl_notify_onsubtitledownload": int(settings.GROWL_NOTIFY_ONSUBTITLEDOWNLOAD),
-                "growl_host": settings.GROWL_HOST,
-                "growl_password": helpers.encrypt(settings.GROWL_PASSWORD, settings.ENCRYPTION_VERSION),
-            },
-            "FreeMobile": {
-                "use_freemobile": int(settings.USE_FREEMOBILE),
-                "freemobile_notify_onsnatch": int(settings.FREEMOBILE_NOTIFY_ONSNATCH),
-                "freemobile_notify_ondownload": int(settings.FREEMOBILE_NOTIFY_ONDOWNLOAD),
-                "freemobile_notify_onsubtitledownload": int(settings.FREEMOBILE_NOTIFY_ONSUBTITLEDOWNLOAD),
-                "freemobile_id": settings.FREEMOBILE_ID,
-                "freemobile_apikey": settings.FREEMOBILE_APIKEY,
-            },
-            "Telegram": {
-                "use_telegram": int(settings.USE_TELEGRAM),
-                "telegram_notify_onsnatch": int(settings.TELEGRAM_NOTIFY_ONSNATCH),
-                "telegram_notify_ondownload": int(settings.TELEGRAM_NOTIFY_ONDOWNLOAD),
-                "telegram_notify_onsubtitledownload": int(settings.TELEGRAM_NOTIFY_ONSUBTITLEDOWNLOAD),
-                "telegram_id": settings.TELEGRAM_ID,
-                "telegram_apikey": settings.TELEGRAM_APIKEY,
-            },
-            "Join": {
-                "use_join": int(settings.USE_JOIN),
-                "join_notify_onsnatch": int(settings.JOIN_NOTIFY_ONSNATCH),
-                "join_notify_ondownload": int(settings.JOIN_NOTIFY_ONDOWNLOAD),
-                "join_notify_onsubtitledownload": int(settings.JOIN_NOTIFY_ONSUBTITLEDOWNLOAD),
-                "join_id": settings.JOIN_ID,
-                "join_apikey": settings.JOIN_APIKEY,
-            },
-            "Prowl": {
-                "use_prowl": int(settings.USE_PROWL),
-                "prowl_notify_onsnatch": int(settings.PROWL_NOTIFY_ONSNATCH),
-                "prowl_notify_ondownload": int(settings.PROWL_NOTIFY_ONDOWNLOAD),
-                "prowl_notify_onsubtitledownload": int(settings.PROWL_NOTIFY_ONSUBTITLEDOWNLOAD),
-                "prowl_api": settings.PROWL_API,
-                "prowl_priority": settings.PROWL_PRIORITY,
-                "prowl_message_title": settings.PROWL_MESSAGE_TITLE,
-            },
-            "Twitter": {
-                "use_twitter": int(settings.USE_TWITTER),
-                "twitter_notify_onsnatch": int(settings.TWITTER_NOTIFY_ONSNATCH),
-                "twitter_notify_ondownload": int(settings.TWITTER_NOTIFY_ONDOWNLOAD),
-                "twitter_notify_onsubtitledownload": int(settings.TWITTER_NOTIFY_ONSUBTITLEDOWNLOAD),
-                "twitter_username": settings.TWITTER_USERNAME,
-                "twitter_password": helpers.encrypt(settings.TWITTER_PASSWORD, settings.ENCRYPTION_VERSION),
-                "twitter_prefix": settings.TWITTER_PREFIX,
-                "twitter_dmto": settings.TWITTER_DMTO,
-                "twitter_usedm": int(settings.TWITTER_USEDM),
-            },
-            "Twilio": {
-                "use_twilio": int(settings.USE_TWILIO),
-                "twilio_notify_onsnatch": int(settings.TWILIO_NOTIFY_ONSNATCH),
-                "twilio_notify_ondownload": int(settings.TWILIO_NOTIFY_ONDOWNLOAD),
-                "twilio_notify_onsubtitledownload": int(settings.TWILIO_NOTIFY_ONSUBTITLEDOWNLOAD),
-                "twilio_phone_sid": helpers.encrypt(settings.TWILIO_PHONE_SID, settings.ENCRYPTION_VERSION),
-                "twilio_account_sid": helpers.encrypt(settings.TWILIO_ACCOUNT_SID, settings.ENCRYPTION_VERSION),
-                "twilio_auth_token": helpers.encrypt(settings.TWILIO_AUTH_TOKEN, settings.ENCRYPTION_VERSION),
-                "twilio_to_number": helpers.encrypt(settings.TWILIO_TO_NUMBER, settings.ENCRYPTION_VERSION),
-            },
-            "Boxcar2": {
-                "use_boxcar2": int(settings.USE_BOXCAR2),
-                "boxcar2_notify_onsnatch": int(settings.BOXCAR2_NOTIFY_ONSNATCH),
-                "boxcar2_notify_ondownload": int(settings.BOXCAR2_NOTIFY_ONDOWNLOAD),
-                "boxcar2_notify_onsubtitledownload": int(settings.BOXCAR2_NOTIFY_ONSUBTITLEDOWNLOAD),
-                "boxcar2_accesstoken": settings.BOXCAR2_ACCESSTOKEN,
-            },
-            "Pushover": {
-                "use_pushover": int(settings.USE_PUSHOVER),
-                "pushover_notify_onsnatch": int(settings.PUSHOVER_NOTIFY_ONSNATCH),
-                "pushover_notify_ondownload": int(settings.PUSHOVER_NOTIFY_ONDOWNLOAD),
-                "pushover_notify_onsubtitledownload": int(settings.PUSHOVER_NOTIFY_ONSUBTITLEDOWNLOAD),
-                "pushover_userkey": settings.PUSHOVER_USERKEY,
-                "pushover_apikey": settings.PUSHOVER_APIKEY,
-                "pushover_device": settings.PUSHOVER_DEVICE,
-                "pushover_sound": settings.PUSHOVER_SOUND,
-                "pushover_priority": settings.PUSHOVER_PRIORITY,
-            },
-            "Libnotify": {
-                "use_libnotify": int(settings.USE_LIBNOTIFY),
-                "libnotify_notify_onsnatch": int(settings.LIBNOTIFY_NOTIFY_ONSNATCH),
-                "libnotify_notify_ondownload": int(settings.LIBNOTIFY_NOTIFY_ONDOWNLOAD),
-                "libnotify_notify_onsubtitledownload": int(settings.LIBNOTIFY_NOTIFY_ONSUBTITLEDOWNLOAD),
-            },
-            "NMJ": {"use_nmj": int(settings.USE_NMJ), "nmj_host": settings.NMJ_HOST, "nmj_database": settings.NMJ_DATABASE, "nmj_mount": settings.NMJ_MOUNT},
-            "NMJv2": {
-                "use_nmjv2": int(settings.USE_NMJv2),
-                "nmjv2_host": settings.NMJv2_HOST,
-                "nmjv2_database": settings.NMJv2_DATABASE,
-                "nmjv2_dbloc": settings.NMJv2_DBLOC,
-            },
-            "Synology": {
-                "use_synoindex": int(settings.USE_SYNOINDEX),
-                "host": settings.SYNOLOGY_DSM_HOST,
-                "username": settings.SYNOLOGY_DSM_USERNAME,
-                "password": helpers.encrypt(settings.SYNOLOGY_DSM_PASSWORD, settings.ENCRYPTION_VERSION),
-                "path": settings.SYNOLOGY_DSM_PATH,
-            },
-            "SynologyNotifier": {
-                "use_synologynotifier": int(settings.USE_SYNOLOGYNOTIFIER),
-                "synologynotifier_notify_onsnatch": int(settings.SYNOLOGYNOTIFIER_NOTIFY_ONSNATCH),
-                "synologynotifier_notify_ondownload": int(settings.SYNOLOGYNOTIFIER_NOTIFY_ONDOWNLOAD),
-                "synologynotifier_notify_onsubtitledownload": int(settings.SYNOLOGYNOTIFIER_NOTIFY_ONSUBTITLEDOWNLOAD),
-            },
-            "Slack": {
-                "use_slack": int(settings.USE_SLACK),
-                "slack_notify_snatch": int(settings.SLACK_NOTIFY_SNATCH),
-                "slack_notify_download": int(settings.SLACK_NOTIFY_DOWNLOAD),
-                "slack_notify_subtitledownload": int(settings.SLACK_NOTIFY_SUBTITLEDOWNLOAD),
-                "slack_webhook": settings.SLACK_WEBHOOK,
-                "slack_icon_emoji": settings.SLACK_ICON_EMOJI,
-            },
-            "Mattermost": {
-                "use_mattermost": int(settings.USE_MATTERMOST),
-                "mattermost_notify_snatch": int(settings.MATTERMOST_NOTIFY_SNATCH),
-                "mattermost_notify_download": int(settings.MATTERMOST_NOTIFY_DOWNLOAD),
-                "mattermost_notify_subtitledownload": int(settings.MATTERMOST_NOTIFY_SUBTITLEDOWNLOAD),
-                "mattermost_username": settings.MATTERMOST_USERNAME,
-                "mattermost_webhook": settings.MATTERMOST_WEBHOOK,
-                "mattermost_icon_emoji": settings.MATTERMOST_ICON_EMOJI,
-            },
-            "MattermostBot": {
-                "use_mattermostbot": int(settings.USE_MATTERMOSTBOT),
-                "mattermostbot_notify_snatch": int(settings.MATTERMOSTBOT_NOTIFY_SNATCH),
-                "mattermostbot_notify_download": int(settings.MATTERMOSTBOT_NOTIFY_DOWNLOAD),
-                "mattermostbot_notify_subtitledownload": int(settings.MATTERMOSTBOT_NOTIFY_SUBTITLEDOWNLOAD),
-                "mattermostbot_token": settings.MATTERMOSTBOT_TOKEN,
-                "mattermostbot_channel": settings.MATTERMOSTBOT_CHANNEL,
-                "mattermostbot_url": settings.MATTERMOSTBOT_URL,
-                "mattermostbot_icon_emoji": settings.MATTERMOSTBOT_ICON_EMOJI,
-                "mattermostbot_author": settings.MATTERMOSTBOT_AUTHOR,
-            },
-            "RocketChat": {
-                "use_rocketchat": int(settings.USE_ROCKETCHAT),
-                "rocketchat_notify_snatch": int(settings.ROCKETCHAT_NOTIFY_SNATCH),
-                "rocketchat_notify_download": int(settings.ROCKETCHAT_NOTIFY_DOWNLOAD),
-                "rocketchat_notify_subtitledownload": int(settings.ROCKETCHAT_NOTIFY_SUBTITLEDOWNLOAD),
-                "rocketchat_webhook": settings.ROCKETCHAT_WEBHOOK,
-                "rocketchat_icon_emoji": settings.ROCKETCHAT_ICON_EMOJI,
-            },
-            "Matrix": {
-                "use_matrix": int(settings.USE_MATRIX),
-                "matrix_notify_snatch": int(settings.MATRIX_NOTIFY_SNATCH),
-                "matrix_notify_download": int(settings.MATRIX_NOTIFY_DOWNLOAD),
-                "matrix_notify_subtitledownload": int(settings.MATRIX_NOTIFY_SUBTITLEDOWNLOAD),
-                "matrix_api_token": settings.MATRIX_API_TOKEN,
-                "matrix_server": settings.MATRIX_SERVER,
-                "matrix_room": settings.MATRIX_ROOM,
-            },
-            "Discord": {
-                "use_discord": int(settings.USE_DISCORD),
-                "discord_notify_snatch": int(settings.DISCORD_NOTIFY_SNATCH),
-                "discord_notify_download": int(settings.DISCORD_NOTIFY_DOWNLOAD),
-                "discord_webhook": settings.DISCORD_WEBHOOK,
-                "discord_name": settings.DISCORD_NAME,
-                "discord_avatar_url": settings.DISCORD_AVATAR_URL,
-                "discord_tts": int(settings.DISCORD_TTS),
-            },
-            "Trakt": {
-                "use_trakt": int(settings.USE_TRAKT),
-                "trakt_username": settings.TRAKT_USERNAME,
-                "trakt_api_key": settings.TRAKT_API_KEY,
-                "trakt_api_secret": helpers.encrypt_config_value(settings.TRAKT_API_SECRET or ""),
-                "trakt_access_token": settings.TRAKT_ACCESS_TOKEN,
-                "trakt_refresh_token": settings.TRAKT_REFRESH_TOKEN,
-                "trakt_remove_watchlist": int(settings.TRAKT_REMOVE_WATCHLIST),
-                "trakt_remove_serieslist": int(settings.TRAKT_REMOVE_SERIESLIST),
-                "trakt_remove_show_from_sickchill": int(settings.TRAKT_REMOVE_SHOW_FROM_SICKCHILL),
-                "trakt_sync_watchlist": int(settings.TRAKT_SYNC_WATCHLIST),
-                "trakt_method_add": int(settings.TRAKT_METHOD_ADD),
-                "trakt_start_paused": int(settings.TRAKT_START_PAUSED),
-                "trakt_use_recommended": int(settings.TRAKT_USE_RECOMMENDED),
-                "trakt_sync": int(settings.TRAKT_SYNC),
-                "trakt_sync_remove": int(settings.TRAKT_SYNC_REMOVE),
-                "trakt_default_indexer": int(settings.TRAKT_DEFAULT_INDEXER),
-                "trakt_timeout": int(settings.TRAKT_TIMEOUT),
-                "trakt_blacklist_name": settings.TRAKT_BLACKLIST_NAME,
-            },
-            "pyTivo": {
-                "use_pytivo": int(settings.USE_PYTIVO),
-                "pytivo_notify_onsnatch": int(settings.PYTIVO_NOTIFY_ONSNATCH),
-                "pytivo_notify_ondownload": int(settings.PYTIVO_NOTIFY_ONDOWNLOAD),
-                "pytivo_notify_onsubtitledownload": int(settings.PYTIVO_NOTIFY_ONSUBTITLEDOWNLOAD),
-                "pyTivo_update_library": int(settings.PYTIVO_UPDATE_LIBRARY),
-                "pytivo_host": settings.PYTIVO_HOST,
-                "pytivo_share_name": settings.PYTIVO_SHARE_NAME,
-                "pytivo_tivo_name": settings.PYTIVO_TIVO_NAME,
-            },
-            "NMA": {
-                "use_nma": int(settings.USE_NMA),
-                "nma_notify_onsnatch": int(settings.NMA_NOTIFY_ONSNATCH),
-                "nma_notify_ondownload": int(settings.NMA_NOTIFY_ONDOWNLOAD),
-                "nma_notify_onsubtitledownload": int(settings.NMA_NOTIFY_ONSUBTITLEDOWNLOAD),
-                "nma_api": settings.NMA_API,
-                "nma_priority": settings.NMA_PRIORITY,
-            },
-            "Pushalot": {
-                "use_pushalot": int(settings.USE_PUSHALOT),
-                "pushalot_notify_onsnatch": int(settings.PUSHALOT_NOTIFY_ONSNATCH),
-                "pushalot_notify_ondownload": int(settings.PUSHALOT_NOTIFY_ONDOWNLOAD),
-                "pushalot_notify_onsubtitledownload": int(settings.PUSHALOT_NOTIFY_ONSUBTITLEDOWNLOAD),
-                "pushalot_authorizationtoken": settings.PUSHALOT_AUTHORIZATIONTOKEN,
-            },
-            "Pushbullet": {
-                "use_pushbullet": int(settings.USE_PUSHBULLET),
-                "pushbullet_notify_onsnatch": int(settings.PUSHBULLET_NOTIFY_ONSNATCH),
-                "pushbullet_notify_ondownload": int(settings.PUSHBULLET_NOTIFY_ONDOWNLOAD),
-                "pushbullet_notify_onsubtitledownload": int(settings.PUSHBULLET_NOTIFY_ONSUBTITLEDOWNLOAD),
-                "pushbullet_api": settings.PUSHBULLET_API,
-                "pushbullet_device": settings.PUSHBULLET_DEVICE,
-                "pushbullet_channel": settings.PUSHBULLET_CHANNEL,
-            },
-            "Gotify": {
-                "use_gotify": int(settings.USE_GOTIFY),
-                "gotify_notify_onsnatch": int(settings.GOTIFY_NOTIFY_ONSNATCH),
-                "gotify_notify_ondownload": int(settings.GOTIFY_NOTIFY_ONDOWNLOAD),
-                "gotify_notify_onsubtitledownload": int(settings.GOTIFY_NOTIFY_ONSUBTITLEDOWNLOAD),
-                "gotify_host": settings.GOTIFY_HOST,
-                "gotify_authorizationtoken": settings.GOTIFY_AUTHORIZATIONTOKEN,
-            },
-            "Email": {
-                "use_email": int(settings.USE_EMAIL),
-                "email_notify_onsnatch": int(settings.EMAIL_NOTIFY_ONSNATCH),
-                "email_notify_ondownload": int(settings.EMAIL_NOTIFY_ONDOWNLOAD),
-                "email_notify_onpostprocess": int(settings.EMAIL_NOTIFY_ONPOSTPROCESS),
-                "email_notify_onsubtitledownload": int(settings.EMAIL_NOTIFY_ONSUBTITLEDOWNLOAD),
-                "email_host": settings.EMAIL_HOST,
-                "email_port": int(settings.EMAIL_PORT),
-                "email_tls": int(settings.EMAIL_TLS),
-                "email_user": settings.EMAIL_USER,
-                "email_password": helpers.encrypt(settings.EMAIL_PASSWORD, settings.ENCRYPTION_VERSION),
-                "email_from": settings.EMAIL_FROM,
-                "email_list": settings.EMAIL_LIST,
-                "email_subject": settings.EMAIL_SUBJECT,
             },
             "Newznab": {"newznab_data": settings.NEWZNAB_DATA},
             "TorrentRss": {"torrentrss_data": "!!!".join([x.config_string() for x in settings.torrent_rss_provider_list])},
@@ -1787,6 +1294,25 @@ def save_config():
             },
         }
     )
+    # Plugin-backed settings live under [extensions] / [CLIENTS] / [METADATA].
+    try:
+        from sickchill.plugins.bootstrap import write_all_plugin_settings_to_cfg
+        from sickchill.plugins.manager import plugin_manager
+
+        if "extensions" in settings.CFG:
+            new_config["extensions"] = settings.CFG["extensions"]
+        if "CLIENTS" in settings.CFG:
+            new_config["CLIENTS"] = settings.CFG["CLIENTS"]
+        if "METADATA" in settings.CFG:
+            new_config["METADATA"] = settings.CFG["METADATA"]
+        write_all_plugin_settings_to_cfg(new_config)
+        # Keep runtime CFG / plugin manager in sync with what we just wrote so snatch
+        # does not reuse a stale ClientPlugin ctx (empty username after save).
+        settings.CFG = new_config
+        plugin_manager._cfg = new_config
+        plugin_manager._instances.clear()
+    except Exception as error:
+        logger.debug(f"Could not persist plugin settings: {error}")
     new_config.write()
 
 
