@@ -46,6 +46,14 @@ class LegacyMapsMigratorTests(unittest.TestCase):
     def test_sync_populates_settings_from_extensions(self):
         from sickchill import settings
 
+        saved = {
+            "USE_DISCORD": settings.USE_DISCORD,
+            "DISCORD_WEBHOOK": settings.DISCORD_WEBHOOK,
+            "USE_SLACK": settings.USE_SLACK,
+            "SLACK_WEBHOOK": settings.SLACK_WEBHOOK,
+        }
+        self.addCleanup(lambda: [setattr(settings, k, v) for k, v in saved.items()])
+
         cfg = ConfigObj()
         cfg["extensions"] = {
             "notifiers": {
@@ -89,6 +97,12 @@ class LegacyMapsMigratorTests(unittest.TestCase):
         from sickchill import settings
         from sickchill.plugins.legacy_maps import TRAKT_MAP
         from sickchill.plugins.settings import write_legacy_maps_from_settings
+
+        saved = {
+            "TRAKT_SYNC": settings.TRAKT_SYNC,
+            "TRAKT_SYNC_REMOVE": settings.TRAKT_SYNC_REMOVE,
+        }
+        self.addCleanup(lambda: [setattr(settings, k, v) for k, v in saved.items()])
 
         cfg = ConfigObj()
         cfg["extensions"] = {

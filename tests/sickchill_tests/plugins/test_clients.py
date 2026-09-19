@@ -36,11 +36,48 @@ EXPECTED_CLIENT_IDS = frozenset(
 
 
 class ClientPluginTests(unittest.TestCase):
+    _SETTINGS_ATTRS = (
+        "TORRENT_METHOD",
+        "TORRENT_HOST",
+        "TORRENT_USERNAME",
+        "TORRENT_PASSWORD",
+        "TORRENT_PATH",
+        "TORRENT_PATH_INCOMPLETE",
+        "TORRENT_RPCURL",
+        "NZB_METHOD",
+        "NZB_DIR",
+        "TORRENT_DIR",
+        "SAB_HOST",
+        "SAB_USERNAME",
+        "SAB_PASSWORD",
+        "SAB_APIKEY",
+        "NZBGET_HOST",
+        "NZBGET_USERNAME",
+        "NZBGET_PASSWORD",
+        "SYNOLOGY_DSM_HOST",
+        "SYNOLOGY_DSM_USERNAME",
+        "SYNOLOGY_DSM_PASSWORD",
+    )
+
     def setUp(self):
+        from sickchill import settings as sc_settings
+        from sickchill.plugins.manager import plugin_manager
+
         clear_registry()
         self.manager = PluginManager()
+        self._saved_settings = {name: getattr(sc_settings, name, None) for name in self._SETTINGS_ATTRS}
+        self._saved_mgr_cfg = plugin_manager._cfg
+        self._saved_mgr_instances = dict(plugin_manager._instances)
 
     def tearDown(self):
+        from sickchill import settings as sc_settings
+        from sickchill.plugins.manager import plugin_manager
+
+        for name, value in self._saved_settings.items():
+            setattr(sc_settings, name, value)
+        plugin_manager._cfg = self._saved_mgr_cfg
+        plugin_manager._instances.clear()
+        plugin_manager._instances.update(self._saved_mgr_instances)
         clear_registry()
 
     def test_load_first_party_clients_registers_all_twelve(self):

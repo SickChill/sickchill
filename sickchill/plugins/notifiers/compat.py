@@ -34,7 +34,7 @@ def sync_discord_settings_from_cfg(cfg=None) -> None:
     if cfg is None:
         return
     section = read_plugin_section(cfg, PluginKind.NOTIFIER, "discord")
-    if not section:
+    if not section or "enabled" not in section:
         return
     settings.USE_DISCORD = _as_bool(section.get("enabled"), False)
     settings.DISCORD_WEBHOOK = section.get("webhook") or ""

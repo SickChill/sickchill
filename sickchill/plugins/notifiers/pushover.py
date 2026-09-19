@@ -77,8 +77,12 @@ class PushoverNotifier(NotifierPlugin):
 
     def test_notify(self, *args, **kwargs):
         self._sync_settings()
+        previous = settings.USE_PUSHOVER
         settings.USE_PUSHOVER = True
-        return self._impl().test_notify(*args, **kwargs)
+        try:
+            return self._impl().test_notify(*args, **kwargs)
+        finally:
+            settings.USE_PUSHOVER = previous
 
     def test(self):
         result = self.test_notify()

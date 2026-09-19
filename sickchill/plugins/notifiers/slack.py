@@ -79,6 +79,7 @@ class SlackNotifier(NotifierPlugin):
                 slack_webhook,
                 data=json.dumps(dict(text=message, username="SickChillBot", icon_emoji=icon_emoji, icon_url=self.SLACK_ICON_URL)),
                 headers=headers,
+                timeout=30,
             )
             response.raise_for_status()
         except Exception as error:

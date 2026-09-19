@@ -50,4 +50,15 @@ class SabnzbdClient(ClientPlugin):
         host = kwargs.get("host") or (args[0] if args else None) or settings.SAB_HOST
         if not host:
             return False, "SABnzbd host is not configured"
-        return True, f"SABnzbd settings loaded for {host}"
+        username = kwargs.get("username") or (args[1] if len(args) > 1 else None) or settings.SAB_USERNAME
+        password = kwargs.get("password") or (args[2] if len(args) > 2 else None) or settings.SAB_PASSWORD
+        apikey = kwargs.get("apikey") or (args[3] if len(args) > 3 else None) or settings.SAB_APIKEY
+        from sickchill.oldbeard import sab
+
+        connection, access_msg = sab.get_sab_acces_method(host)
+        if not connection:
+            return False, f"Unable to connect to host ({access_msg})"
+        authed, auth_msg = sab.test_client_connection(host, username, password, apikey)
+        if authed:
+            return True, "Success. Connected and authenticated"
+        return False, f"Authentication failed ({access_msg}): {auth_msg}"

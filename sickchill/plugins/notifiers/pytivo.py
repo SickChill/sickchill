@@ -88,14 +88,17 @@ class PytivoNotifier(NotifierPlugin):
 
     def test_notify(self, *args, **kwargs):
         self._sync_settings()
-        # Force-enable for tests when overrides provided
+        previous = settings.USE_PYTIVO
         settings.USE_PYTIVO = True
-        impl = self._impl()
-        if hasattr(impl, "test_notify"):
-            return impl.test_notify(*args, **kwargs)
-        if hasattr(impl, "test_notify_pms"):
-            return impl.test_notify_pms(*args, **kwargs)
-        return False
+        try:
+            impl = self._impl()
+            if hasattr(impl, "test_notify"):
+                return impl.test_notify(*args, **kwargs)
+            if hasattr(impl, "test_notify_pms"):
+                return impl.test_notify_pms(*args, **kwargs)
+            return False
+        finally:
+            settings.USE_PYTIVO = previous
 
     def test(self):
         result = self.test_notify()

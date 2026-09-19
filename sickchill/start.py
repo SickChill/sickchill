@@ -409,6 +409,10 @@ def initialize(console_logging: bool = True, debug: bool = False, dbdebug: bool 
             settings.SAB_CATEGORY_ANIME_BACKLOG = _sab_client.get("category_anime_backlog") or settings.SAB_CATEGORY_ANIME
             settings.SAB_HOST = _sab_client.get("host") or ""
             settings.SAB_FORCED = str(_sab_client.get("forced", "")).lower() in {"1", "true", "yes", "on"}
+            if settings.SAB_PASSWORD:
+                logger.censored_items[("CLIENTS", "sabnzbd.password")] = settings.SAB_PASSWORD
+            if settings.SAB_APIKEY:
+                logger.censored_items[("CLIENTS", "sabnzbd.apikey")] = settings.SAB_APIKEY
         else:
             settings.SAB_USERNAME = peek_setting_str(settings.CFG, "SABnzbd", "sab_username", censor_log=True)
             settings.SAB_PASSWORD = peek_setting_str(settings.CFG, "SABnzbd", "sab_password", censor_log=True)
@@ -434,6 +438,8 @@ def initialize(console_logging: bool = True, debug: bool = False, dbdebug: bool 
                 settings.NZBGET_PRIORITY = int(_nzbget_client.get("priority") if _nzbget_client.get("priority") not in (None, "") else 100)
             except (TypeError, ValueError):
                 settings.NZBGET_PRIORITY = 100
+            if settings.NZBGET_PASSWORD:
+                logger.censored_items[("CLIENTS", "nzbget.password")] = settings.NZBGET_PASSWORD
         else:
             settings.NZBGET_USERNAME = peek_setting_str(settings.CFG, "NZBget", "nzbget_username", "nzbget", censor_log=True)
             settings.NZBGET_PASSWORD = peek_setting_str(settings.CFG, "NZBget", "nzbget_password", "tegbzn6789", censor_log=True)
@@ -468,6 +474,8 @@ def initialize(console_logging: bool = True, debug: bool = False, dbdebug: bool 
             settings.TORRENT_VERIFY_CERT = str(_torrent_client.get("verify_cert", "")).lower() in {"1", "true", "yes", "on"}
             settings.TORRENT_RPCURL = _torrent_client.get("rpcurl") or "transmission"
             settings.TORRENT_AUTH_TYPE = _torrent_client.get("auth_type") or ""
+            if settings.TORRENT_PASSWORD:
+                logger.censored_items[("CLIENTS", f"{settings.TORRENT_METHOD}.password")] = settings.TORRENT_PASSWORD
         else:
             settings.TORRENT_USERNAME = peek_setting_str(settings.CFG, "TORRENT", "torrent_username", censor_log=True)
             settings.TORRENT_PASSWORD = peek_setting_str(settings.CFG, "TORRENT", "torrent_password", censor_log=True)
@@ -498,6 +506,8 @@ def initialize(console_logging: bool = True, debug: bool = False, dbdebug: bool 
             settings.SYNOLOGY_DSM_USERNAME = _ds_client.get("username") or ""
             settings.SYNOLOGY_DSM_PASSWORD = _ds_client.get("password") or ""
             settings.SYNOLOGY_DSM_PATH = _ds_client.get("path") or ""
+            if settings.SYNOLOGY_DSM_PASSWORD:
+                logger.censored_items[("CLIENTS", "download_station.password")] = settings.SYNOLOGY_DSM_PASSWORD
         else:
             settings.SYNOLOGY_DSM_HOST = peek_setting_str(settings.CFG, "Synology", "host")
             settings.SYNOLOGY_DSM_USERNAME = peek_setting_str(settings.CFG, "Synology", "username", censor_log=True)

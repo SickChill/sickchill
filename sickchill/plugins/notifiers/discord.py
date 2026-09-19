@@ -33,7 +33,7 @@ class DiscordNotifier(NotifierPlugin):
             name="notify_subtitle_download",
             type="bool",
             default=False,
-            legacy_keys=("discord_notify_subtitledownload", "discord_notify_subtitledownload"),
+            legacy_keys=("discord_notify_subtitledownload", "notify_subtitledownload"),
         ),
     )
 

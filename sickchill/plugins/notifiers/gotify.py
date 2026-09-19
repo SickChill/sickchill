@@ -79,6 +79,7 @@ class GotifyNotifier(NotifierPlugin):
                 f"{host}message",
                 data=json.dumps(dict(title=title, message=f"{title} : {message}")),
                 headers=headers,
+                timeout=30,
             )
             response.raise_for_status()
         except Exception as error:

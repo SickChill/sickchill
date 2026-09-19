@@ -32,10 +32,11 @@ class PluginManager:
         self._data_dir = data_dir
         self._plugins_dir = plugins_dir
         self._classes = discover_classes(data_dir=data_dir, plugins_dir=plugins_dir)
-        # Drop cached instances for classes that disappeared
-        valid = {(cls.kind.value, cls.id) for cls in self._classes}
-        for key in list(self._instances):
-            if key not in valid:
+        # Evict cache entries whose key disappeared or whose class identity changed.
+        class_by_key = {(cls.kind.value, cls.id): cls for cls in self._classes}
+        for key, instance in list(self._instances.items()):
+            expected = class_by_key.get(key)
+            if expected is None or type(instance) is not expected:
                 self._instances.pop(key, None)
         logger.debug("Discovered %s plugin class(es)", len(self._classes))
 
