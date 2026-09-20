@@ -161,7 +161,6 @@ class DiscordTask(generic_queue.QueueItem):
             discord_content = ""
 
         logger.info(f"Sending discord message: {discord_content}")
-        logger.info(f"Sending discord message to url: {discord_webhook}")
 
         headers = CaseInsensitiveDict({"Content-Type": "application/json"})
         message_data = json.dumps(dict(embeds=[self.embed], username=discord_name, avatar_url=avatar_icon, content=discord_content))
