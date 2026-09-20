@@ -384,9 +384,7 @@ class ReconcileSchemaVersion(AddSeasonsOrder):
 
     def execute(self):
         if not _full_schema_present(self.connection):
-            logger.warning(
-                "Database schema is incomplete; not reconciling version to {0:d}.{1:d}".format(TARGET_DB_MAJOR, TARGET_DB_MINOR)
-            )
+            logger.warning("Database schema is incomplete; not reconciling version to {0:d}.{1:d}".format(TARGET_DB_MAJOR, TARGET_DB_MINOR))
             return
 
         major, minor = self.connection.version
@@ -394,8 +392,4 @@ class ReconcileSchemaVersion(AddSeasonsOrder):
             "UPDATE db_version SET db_version = ?, db_minor_version = ?",
             [TARGET_DB_MAJOR, TARGET_DB_MINOR],
         )
-        logger.info(
-            "Reconciled database version from {0:d}.{1:d} to {2:d}.{3:d} (full schema present)".format(
-                major, minor, TARGET_DB_MAJOR, TARGET_DB_MINOR
-            )
-        )
+        logger.info("Reconciled database version from {0:d}.{1:d} to {2:d}.{3:d} (full schema present)".format(major, minor, TARGET_DB_MAJOR, TARGET_DB_MINOR))
