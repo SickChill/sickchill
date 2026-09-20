@@ -60,3 +60,18 @@ class MigratorTests(unittest.TestCase):
         self.assertIn("slack", cfg["extensions"]["notifiers"])
 
         self.assertFalse(remove_retired_notifier_sections(cfg))
+
+    def test_retired_notifiers_stripped_after_disk_reload(self):
+        """Regression: save_config reloads ConfigObj from disk; must re-strip or Growl returns."""
+        # Simulate new_config = ConfigObj(CONFIG_FILE) still containing retired sections.
+        disk = ConfigObj()
+        disk.indent_type = "  "
+        disk["Growl"] = {"use_growl": "0"}
+        disk["Boxcar2"] = {"use_boxcar2": "0"}
+        disk["Pushalot"] = {"use_pushalot": "0"}
+        disk["NOTIFIERS"] = {"discord": {"enabled": True, "webhook": "https://keep"}}
+
+        self.assertTrue(remove_retired_notifier_sections(disk))
+        for section in ("Growl", "Boxcar2", "Pushalot"):
+            self.assertNotIn(section, disk)
+        self.assertIn("discord", disk.get("NOTIFIERS", {}))

@@ -1184,6 +1184,7 @@ def save_config():
     try:
         from sickchill.plugins.bootstrap import write_all_plugin_settings_to_cfg
         from sickchill.plugins.manager import plugin_manager
+        from sickchill.plugins.settings import remove_retired_notifier_sections
 
         if "NOTIFIERS" in settings.CFG:
             new_config["NOTIFIERS"] = settings.CFG["NOTIFIERS"]
@@ -1197,6 +1198,8 @@ def save_config():
         if "extensions" in settings.CFG:
             new_config["extensions"] = settings.CFG["extensions"]
         write_all_plugin_settings_to_cfg(new_config)
+        # new_config was reloaded from disk — re-strip retired sections or they come back.
+        remove_retired_notifier_sections(new_config)
         # Keep runtime CFG / plugin manager in sync with what we just wrote so snatch
         # does not reuse a stale ClientPlugin ctx (empty username after save).
         settings.CFG = new_config
