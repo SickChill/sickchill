@@ -109,7 +109,14 @@ class PlexNotifier(NotifierPlugin):
             if hasattr(impl, "test_notify"):
                 return impl.test_notify(*args, **kwargs)
             if hasattr(impl, "test_notify_pms"):
-                return impl.test_notify_pms(*args, **kwargs)
+                if args or kwargs:
+                    return impl.test_notify_pms(*args, **kwargs)
+                return impl.test_notify_pms(
+                    settings.PLEX_SERVER_HOST,
+                    settings.PLEX_SERVER_USERNAME,
+                    settings.PLEX_SERVER_PASSWORD,
+                    settings.PLEX_SERVER_TOKEN,
+                )
             return False
         finally:
             settings.USE_PLEX_SERVER = previous
