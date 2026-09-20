@@ -2166,16 +2166,29 @@ const SICKCHILL = {
                 }
             };
 
+            let nzbClientSettingsRequestId = 0;
+            let nzbClientSettingsXhr = null;
+
             $.loadNzbClientSettings = method => {
                 method = (method || $('#nzb_method :selected').val() || '').toLowerCase();
                 if (!method) {
                     return;
                 }
 
-                $.getJSON(scRoot + '/config/search/getNzbClientSettings', {
+                if (nzbClientSettingsXhr) {
+                    nzbClientSettingsXhr.abort();
+                }
+
+                const requestId = ++nzbClientSettingsRequestId;
+                nzbClientSettingsXhr = $.getJSON(scRoot + '/config/search/getNzbClientSettings', {
                     nzb_method: method, // eslint-disable-line camelcase
                 }).done(data => {
-                    if (!data) {
+                    if (requestId !== nzbClientSettingsRequestId) {
+                        return;
+                    }
+
+                    const selected = ($('#nzb_method :selected').val() || '').toLowerCase();
+                    if (!data || method !== selected) {
                         return;
                     }
 
@@ -2250,16 +2263,29 @@ const SICKCHILL = {
                 $('#torrent_high_bandwidth').prop('checked', Boolean(data.high_bandwidth));
             };
 
+            let torrentClientSettingsRequestId = 0;
+            let torrentClientSettingsXhr = null;
+
             $.loadTorrentClientSettings = method => {
                 method = (method || $('#torrent_method :selected').val() || '').toLowerCase();
                 if (!method) {
                     return;
                 }
 
-                $.getJSON(scRoot + '/config/search/getTorrentClientSettings', {
+                if (torrentClientSettingsXhr) {
+                    torrentClientSettingsXhr.abort();
+                }
+
+                const requestId = ++torrentClientSettingsRequestId;
+                torrentClientSettingsXhr = $.getJSON(scRoot + '/config/search/getTorrentClientSettings', {
                     torrent_method: method, // eslint-disable-line camelcase
                 }).done(data => {
-                    if (!data) {
+                    if (requestId !== torrentClientSettingsRequestId) {
+                        return;
+                    }
+
+                    const selected = ($('#torrent_method :selected').val() || '').toLowerCase();
+                    if (!data || method !== selected) {
                         return;
                     }
 

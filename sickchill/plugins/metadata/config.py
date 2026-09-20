@@ -100,19 +100,19 @@ def migrate_metadata_from_general(cfg: ConfigObj) -> bool:
     if general is None:
         return mutated
 
-    stripped_real = False
+    stripped_any = False
     for key in _GENERAL_METADATA_KEYS:
         if key not in general:
             continue
         value = general.get(key)
         del general[key]
-        # Empty / default leftovers recreated by old check_setting_str: silent, no mutate.
+        stripped_any = True
+        # Log only when real packed values were present; empty/default scrub stays quiet.
         if value not in (None, "", DEFAULT_PACKED):
-            stripped_real = True
             logger.debug("Plugin migrator: stripped General.%s after METADATA migrate", key)
 
-    # If we only scrubbed empty/default keys, do not force a config save.
-    if stripped_real:
+    # Persist deletion of any leftover General.metadata_* keys (including empty shells).
+    if stripped_any:
         mutated = True
 
     return mutated
