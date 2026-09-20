@@ -53,13 +53,11 @@ class ConfigSearch(Config):
 
         # Blackhole dirs live in both NZB and Torrent panels. Hidden inputs still POST;
         # only let an empty value clear a dir when that method is actively blackhole.
-        if nzb_dir is not None and (settings.NZB_METHOD == "blackhole" or nzb_dir != ""):
-            if not config.change_nzb_dir(nzb_dir):
-                results += ["Unable to create directory " + os.path.normpath(nzb_dir) + ", dir not changed."]
+        if nzb_dir is not None and (settings.NZB_METHOD == "blackhole" or nzb_dir != "") and not config.change_nzb_dir(nzb_dir):
+            results += ["Unable to create directory " + os.path.normpath(nzb_dir) + ", dir not changed."]
 
-        if torrent_dir is not None and (settings.TORRENT_METHOD == "blackhole" or torrent_dir != ""):
-            if not config.change_torrent_dir(torrent_dir):
-                results += ["Unable to create directory " + os.path.normpath(torrent_dir) + ", dir not changed."]
+        if torrent_dir is not None and (settings.TORRENT_METHOD == "blackhole" or torrent_dir != "") and not config.change_torrent_dir(torrent_dir):
+            results += ["Unable to create directory " + os.path.normpath(torrent_dir) + ", dir not changed."]
         settings.USENET_RETENTION = try_int(self.get_body_argument("usenet_retention", default="500"))
         settings.CACHE_RETENTION = try_int(self.get_body_argument("cache_retention", default="30"))
         settings.SHOW_SKIP_OLDER = try_int(self.get_body_argument("show_skip_older", default="30"))

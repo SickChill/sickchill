@@ -54,6 +54,7 @@ def write_discord_settings_to_cfg(cfg) -> None:
     if "Discord" in cfg:
         del cfg["Discord"]
 
+
 def get_discord_runtime_config() -> dict[str, Any]:
     """Prefer live plugin context; fall back to settings globals."""
     try:

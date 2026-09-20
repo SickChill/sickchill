@@ -118,6 +118,7 @@ def _kind_dest_label(kind: PluginKind, plugin_id: str) -> str:
         return f"PROVIDERS[[{plugin_id}]]"
     return f"extensions.{kind.value}.{plugin_id}"
 
+
 def _coerce_default(field_def: Field) -> Any:
     if field_def.type == "bool":
         return bool(field_def.default)

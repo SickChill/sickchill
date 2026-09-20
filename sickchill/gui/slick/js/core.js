@@ -2114,53 +2114,72 @@ const SICKCHILL = {
                 }
             });
 
+            const applyNzbBlackholeSettings = data => {
+                if (Object.hasOwn(data, 'nzb_dir')) {
+                    $('#nzb_dir').val(data.nzb_dir || '');
+                }
+            };
+
+            const applyNzbDownloadStationSettings = data => {
+                $('#syno_dsm_host').val(data.host || '');
+                $('#syno_dsm_user').val(data.username || '');
+                $('#syno_dsm_pass').val(data.password || '');
+                $('#syno_dsm_path').val(data.path || '');
+            };
+
+            const applySabnzbdSettings = data => {
+                $('#sab_host').val(data.host || '');
+                $('#sab_username').val(data.username || '');
+                $('#sab_password').val(data.password || '');
+                $('#sab_apikey').val(data.apikey || '');
+                $('#sab_category').val(data.category || 'tv');
+                $('#sab_category_backlog').val(data.category_backlog || '');
+                $('#sab_category_anime').val(data.category_anime || 'anime');
+                $('#sab_category_anime_backlog').val(data.category_anime_backlog || '');
+                $('#sab_forced').prop('checked', Boolean(data.forced));
+            };
+
+            const applyNzbgetSettings = data => {
+                const priority = data.priority === undefined || data.priority === null ? 100 : data.priority;
+                $('#nzbget_host').val(data.host || '');
+                $('#nzbget_username').val(data.username || 'nzbget');
+                $('#nzbget_password').val(data.password || '');
+                $('#nzbget_category').val(data.category || 'tv');
+                $('#nzbget_category_backlog').val(data.category_backlog || '');
+                $('#nzbget_category_anime').val(data.category_anime || 'anime');
+                $('#nzbget_category_anime_backlog').val(data.category_anime_backlog || '');
+                $('#nzbget_use_https').prop('checked', Boolean(data.use_https));
+                $('#nzbget_priority').val(priority);
+            };
+
+            const nzbClientSettingsAppliers = {
+                blackhole: applyNzbBlackholeSettings,
+                download_station: applyNzbDownloadStationSettings, // eslint-disable-line camelcase
+                sabnzbd: applySabnzbdSettings,
+                nzbget: applyNzbgetSettings,
+            };
+
+            $.applyNzbClientSettings = (method, data) => {
+                const apply = nzbClientSettingsAppliers[method];
+                if (apply) {
+                    apply(data);
+                }
+            };
+
             $.loadNzbClientSettings = method => {
                 method = (method || $('#nzb_method :selected').val() || '').toLowerCase();
                 if (!method) {
                     return;
                 }
+
                 $.getJSON(scRoot + '/config/search/getNzbClientSettings', {
                     nzb_method: method, // eslint-disable-line camelcase
                 }).done(data => {
                     if (!data) {
                         return;
                     }
-                    if (method === 'blackhole') {
-                        if (Object.prototype.hasOwnProperty.call(data, 'nzb_dir')) {
-                            $('#nzb_dir').val(data.nzb_dir || '');
-                        }
-                        return;
-                    }
-                    if (method === 'download_station') {
-                        $('#syno_dsm_host').val(data.host || '');
-                        $('#syno_dsm_user').val(data.username || '');
-                        $('#syno_dsm_pass').val(data.password || '');
-                        $('#syno_dsm_path').val(data.path || '');
-                        return;
-                    }
-                    if (method === 'sabnzbd') {
-                        $('#sab_host').val(data.host || '');
-                        $('#sab_username').val(data.username || '');
-                        $('#sab_password').val(data.password || '');
-                        $('#sab_apikey').val(data.apikey || '');
-                        $('#sab_category').val(data.category || 'tv');
-                        $('#sab_category_backlog').val(data.category_backlog || '');
-                        $('#sab_category_anime').val(data.category_anime || 'anime');
-                        $('#sab_category_anime_backlog').val(data.category_anime_backlog || '');
-                        $('#sab_forced').prop('checked', !!data.forced);
-                        return;
-                    }
-                    if (method === 'nzbget') {
-                        $('#nzbget_host').val(data.host || '');
-                        $('#nzbget_username').val(data.username || 'nzbget');
-                        $('#nzbget_password').val(data.password || '');
-                        $('#nzbget_category').val(data.category || 'tv');
-                        $('#nzbget_category_backlog').val(data.category_backlog || '');
-                        $('#nzbget_category_anime').val(data.category_anime || 'anime');
-                        $('#nzbget_category_anime_backlog').val(data.category_anime_backlog || '');
-                        $('#nzbget_use_https').prop('checked', !!data.use_https);
-                        $('#nzbget_priority').val(data.priority != null ? data.priority : 100);
-                    }
+
+                    $.applyNzbClientSettings(method, data);
                 });
             };
 
@@ -2206,36 +2225,45 @@ const SICKCHILL = {
                 });
             });
 
+            $.applyTorrentClientSettings = (method, data) => {
+                if (method === 'blackhole') {
+                    if (Object.hasOwn(data, 'torrent_dir')) {
+                        $('#torrent_dir').val(data.torrent_dir || '');
+                    }
+
+                    return;
+                }
+
+                const seedTime = data.seed_time === undefined || data.seed_time === null ? 0 : data.seed_time;
+                $('#torrent_host').val(data.host || '');
+                $('#torrent_username').val(data.username || '');
+                $('#torrent_password').val(data.password || '');
+                $('#torrent_path').val(data.path || '');
+                $('#torrent_path_incomplete').val(data.path_incomplete || '');
+                $('#torrent_label').val(data.label || '');
+                $('#torrent_label_anime').val(data.label_anime || '');
+                $('#torrent_seed_time').val(seedTime);
+                $('#torrent_rpcurl').val(data.rpcurl || 'transmission');
+                $('#torrent_auth_type').val(data.auth_type || 'none');
+                $('#torrent_paused').prop('checked', Boolean(data.paused));
+                $('#torrent_verify_cert').prop('checked', Boolean(data.verify_cert));
+                $('#torrent_high_bandwidth').prop('checked', Boolean(data.high_bandwidth));
+            };
+
             $.loadTorrentClientSettings = method => {
                 method = (method || $('#torrent_method :selected').val() || '').toLowerCase();
                 if (!method) {
                     return;
                 }
+
                 $.getJSON(scRoot + '/config/search/getTorrentClientSettings', {
                     torrent_method: method, // eslint-disable-line camelcase
                 }).done(data => {
                     if (!data) {
                         return;
                     }
-                    if (method === 'blackhole') {
-                        if (Object.prototype.hasOwnProperty.call(data, 'torrent_dir')) {
-                            $('#torrent_dir').val(data.torrent_dir || '');
-                        }
-                        return;
-                    }
-                    $('#torrent_host').val(data.host || '');
-                    $('#torrent_username').val(data.username || '');
-                    $('#torrent_password').val(data.password || '');
-                    $('#torrent_path').val(data.path || '');
-                    $('#torrent_path_incomplete').val(data.path_incomplete || '');
-                    $('#torrent_label').val(data.label || '');
-                    $('#torrent_label_anime').val(data.label_anime || '');
-                    $('#torrent_seed_time').val(data.seed_time != null ? data.seed_time : 0);
-                    $('#torrent_rpcurl').val(data.rpcurl || 'transmission');
-                    $('#torrent_auth_type').val(data.auth_type || 'none');
-                    $('#torrent_paused').prop('checked', !!data.paused);
-                    $('#torrent_verify_cert').prop('checked', !!data.verify_cert);
-                    $('#torrent_high_bandwidth').prop('checked', !!data.high_bandwidth);
+
+                    $.applyTorrentClientSettings(method, data);
                 });
             };
 
