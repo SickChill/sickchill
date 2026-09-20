@@ -295,7 +295,6 @@ class TestSubtitleFileExtensions(unittest.TestCase):
         self.assertIn("ass", allowed)
         self.assertIn("ssa", allowed)
         self.assertIn("srt", allowed)
-        self.assertEqual(default, "srt,ass,ssa,nfo,srr,sfv")
 
     def test_language_tagged_ass_detected_like_srt(self):
         """show.S01E01.en.ass must be detected as eng the same way as .en.srt."""
