@@ -341,6 +341,75 @@ def migrate_legacy_maps(cfg: ConfigObj, maps) -> bool:
     return mutated
 
 
+# Retired notifiers removed from SickChill — strip leftover config on boot.
+RETIRED_NOTIFIER_LEGACY_SECTIONS: tuple[str, ...] = (
+    "Growl",
+    "Boxcar2",
+    "Boxcar",
+    "Pushalot",
+    "NMA",
+    "NotifyMyAndroid",
+)
+RETIRED_NOTIFIER_IDS: tuple[str, ...] = (
+    "growl",
+    "boxcar2",
+    "boxcar",
+    "pushalot",
+    "nma",
+    "notifymyandroid",
+)
+
+
+def remove_retired_notifier_sections(cfg: ConfigObj) -> bool:
+    """
+    Delete discontinued notifier sections from config.ini:
+      - legacy [Growl] / [Boxcar2] / [Pushalot] / [NMA] / …
+      - [NOTIFIERS][[growl]] etc. if present
+      - extensions.notifiers.growl etc. if still lingering
+    INFO only when something is actually removed.
+    """
+    removed: list[str] = []
+
+    for section_name in RETIRED_NOTIFIER_LEGACY_SECTIONS:
+        if section_name in cfg:
+            del cfg[section_name]
+            removed.append(f"[{section_name}]")
+
+    try:
+        notifiers = cfg["NOTIFIERS"]
+    except (KeyError, TypeError):
+        notifiers = None
+    if notifiers is not None:
+        for plugin_id in RETIRED_NOTIFIER_IDS:
+            if plugin_id in notifiers:
+                del notifiers[plugin_id]
+                removed.append(f"NOTIFIERS[[{plugin_id}]]")
+        if not _section_keys(notifiers):
+            del cfg["NOTIFIERS"]
+
+    try:
+        ext_notifiers = cfg["extensions"]["notifiers"]
+    except (KeyError, TypeError):
+        ext_notifiers = None
+    if ext_notifiers is not None:
+        for plugin_id in RETIRED_NOTIFIER_IDS:
+            if plugin_id in ext_notifiers:
+                del ext_notifiers[plugin_id]
+                removed.append(f"extensions.notifiers.{plugin_id}")
+        if not _section_keys(ext_notifiers):
+            del cfg["extensions"]["notifiers"]
+            try:
+                if not _section_keys(cfg["extensions"]):
+                    del cfg["extensions"]
+            except (KeyError, TypeError):
+                pass
+
+    if removed:
+        logger.info("Plugin migrator: removed retired notifiers %s", ", ".join(removed))
+        return True
+    return False
+
+
 def migrate_extensions_notifiers_to_top_level(cfg: ConfigObj) -> bool:
     """
     Move [extensions][[notifiers]][[[id]]] into top-level [NOTIFIERS][[id]].

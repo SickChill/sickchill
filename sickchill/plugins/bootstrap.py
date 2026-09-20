@@ -12,6 +12,7 @@ from sickchill.plugins.settings import (
     migrate_client_maps,
     migrate_extensions_notifiers_to_top_level,
     migrate_legacy_maps,
+    remove_retired_notifier_sections,
     sync_legacy_maps_to_settings,
     write_legacy_maps_from_settings,
 )
@@ -74,7 +75,9 @@ def bootstrap_plugins() -> bool:
 
     plugin_manager.discover(data_dir=settings.DATA_DIR, plugins_dir=plugins_dir)
 
-    mutated = migrate_legacy_maps(settings.CFG, ALL_LEGACY_MAPS)
+    # Drop Growl / Boxcar2 / Pushalot / NMA before other notifier migrates.
+    mutated = remove_retired_notifier_sections(settings.CFG)
+    mutated = migrate_legacy_maps(settings.CFG, ALL_LEGACY_MAPS) or mutated
     mutated = migrate_extensions_notifiers_to_top_level(settings.CFG) or mutated
     mutated = migrate_client_maps(settings.CFG, CLIENT_SECTION_MAPS) or mutated
     mutated = migrate_metadata_from_general(settings.CFG) or mutated
