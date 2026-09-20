@@ -279,11 +279,23 @@ class TestSubtitleFileExtensions(unittest.TestCase):
         self.assertIn("srt", SUBTITLE_EXTENSIONS)
 
     def test_default_allowed_extensions_include_ass(self):
-        """Post-processing MOVE_ASSOCIATED_FILES uses ALLOWED_EXTENSIONS; default must keep .ass."""
-        allowed = {ext.strip() for ext in settings.ALLOWED_EXTENSIONS.split(",") if ext.strip()}
+        """Post-processing MOVE_ASSOCIATED_FILES uses ALLOWED_EXTENSIONS; default must keep .ass.
+
+        Read the shipped default from settings.py — runtime settings.ALLOWED_EXTENSIONS is
+        cleared by other tests (e.g. test_pp sets it to "").
+        """
+        import re
+        from pathlib import Path
+
+        settings_path = Path(__file__).resolve().parents[1] / "sickchill" / "settings.py"
+        match = re.search(r'^ALLOWED_EXTENSIONS = "([^"]+)"', settings_path.read_text(encoding="utf-8"), re.MULTILINE)
+        self.assertIsNotNone(match, "ALLOWED_EXTENSIONS default not found in settings.py")
+        default = match.group(1)
+        allowed = {ext.strip() for ext in default.split(",") if ext.strip()}
         self.assertIn("ass", allowed)
         self.assertIn("ssa", allowed)
         self.assertIn("srt", allowed)
+        self.assertEqual(default, "srt,ass,ssa,nfo,srr,sfv")
 
     def test_language_tagged_ass_detected_like_srt(self):
         """show.S01E01.en.ass must be detected as eng the same way as .en.srt."""
