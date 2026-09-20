@@ -15,7 +15,7 @@ from sickchill.views.routes import Route
 class ConfigNotifications(Config):
     @addslash
     def index(self):
-        # Mako still reads settings.*; keep them synced from [extensions].
+        # Mako still reads settings.*; keep them synced from [NOTIFIERS].
         try:
             from sickchill.plugins.bootstrap import sync_all_plugin_runtime_settings
 

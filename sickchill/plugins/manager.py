@@ -11,10 +11,14 @@ from sickchill.plugins.settings import (
     migrate_legacy_sections,
     read_client_section,
     read_metadata_section,
+    read_notifier_section,
     read_plugin_section,
+    read_provider_section,
     write_client_section,
     write_metadata_section,
+    write_notifier_section,
     write_plugin_section,
+    write_provider_section,
 )
 
 logger = logging.getLogger("sickchill.plugins.manager")
@@ -56,6 +60,10 @@ class PluginManager:
             return read_client_section(self._cfg, plugin_id)
         if kind == PluginKind.METADATA:
             return read_metadata_section(self._cfg, plugin_id)
+        if kind == PluginKind.NOTIFIER:
+            return read_notifier_section(self._cfg, plugin_id)
+        if kind == PluginKind.PROVIDER:
+            return read_provider_section(self._cfg, plugin_id)
         return read_plugin_section(self._cfg, kind, plugin_id)
 
     def _writer(self, kind: PluginKind, plugin_id: str, data: dict[str, Any]) -> None:
@@ -65,6 +73,10 @@ class PluginManager:
             write_client_section(self._cfg, plugin_id, data)
         elif kind == PluginKind.METADATA:
             write_metadata_section(self._cfg, plugin_id, data)
+        elif kind == PluginKind.NOTIFIER:
+            write_notifier_section(self._cfg, plugin_id, data)
+        elif kind == PluginKind.PROVIDER:
+            write_provider_section(self._cfg, plugin_id, data)
         else:
             write_plugin_section(self._cfg, kind, plugin_id, data)
 
@@ -81,9 +93,9 @@ class PluginManager:
         cls = next((c for c in self._classes if c.kind == kind and c.id == plugin_id), None)
         if cls is None:
             return None
-        # Clients are selected via TORRENT_METHOD / NZB_METHOD; metadata generators are always available.
+        # Clients via TORRENT/NZB_METHOD; metadata generators always available; providers listed disabled in UI.
         if require_enabled is None:
-            require_enabled = kind not in (PluginKind.CLIENT, PluginKind.METADATA)
+            require_enabled = kind not in (PluginKind.CLIENT, PluginKind.METADATA, PluginKind.PROVIDER)
         if require_enabled and not self._is_enabled(cls):
             return None
 

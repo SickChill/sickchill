@@ -11,6 +11,7 @@ logger = logging.getLogger("sickchill.plugins.settings")
 
 
 def ensure_extension_section(cfg: ConfigObj, kind: PluginKind, plugin_id: str) -> dict[str, Any]:
+    """Ensure [extensions][[kind]][[[id]]] for non-notifier kinds (e.g. providers)."""
     extensions = cfg.setdefault("extensions", {})
     kind_section = extensions.setdefault(kind.value, {})
     plugin_section = kind_section.setdefault(plugin_id, {})
@@ -26,6 +27,25 @@ def read_plugin_section(cfg: ConfigObj, kind: PluginKind, plugin_id: str) -> dic
 
 def write_plugin_section(cfg: ConfigObj, kind: PluginKind, plugin_id: str, data: dict[str, Any]) -> None:
     section = ensure_extension_section(cfg, kind, plugin_id)
+    section.clear()
+    section.update(data)
+
+
+def ensure_notifier_section(cfg: ConfigObj, notifier_id: str) -> dict[str, Any]:
+    """Ensure top-level [NOTIFIERS][[notifier_id]] (not under [extensions])."""
+    notifiers = cfg.setdefault("NOTIFIERS", {})
+    return notifiers.setdefault(notifier_id, {})
+
+
+def read_notifier_section(cfg: ConfigObj, notifier_id: str) -> dict[str, Any]:
+    try:
+        return dict(cfg["NOTIFIERS"][notifier_id])
+    except (KeyError, TypeError):
+        return {}
+
+
+def write_notifier_section(cfg: ConfigObj, notifier_id: str, data: dict[str, Any]) -> None:
+    section = ensure_notifier_section(cfg, notifier_id)
     section.clear()
     section.update(data)
 
@@ -67,6 +87,36 @@ def write_metadata_section(cfg: ConfigObj, metadata_id: str, data: dict[str, Any
     section.clear()
     section.update(data)
 
+
+def ensure_provider_section(cfg: ConfigObj, provider_id: str) -> dict[str, Any]:
+    """Ensure top-level [PROVIDERS][[provider_id]] (not under [extensions])."""
+    providers = cfg.setdefault("PROVIDERS", {})
+    return providers.setdefault(provider_id, {})
+
+
+def read_provider_section(cfg: ConfigObj, provider_id: str) -> dict[str, Any]:
+    try:
+        return dict(cfg["PROVIDERS"][provider_id])
+    except (KeyError, TypeError):
+        return {}
+
+
+def write_provider_section(cfg: ConfigObj, provider_id: str, data: dict[str, Any]) -> None:
+    section = ensure_provider_section(cfg, provider_id)
+    section.clear()
+    section.update(data)
+
+
+def _kind_dest_label(kind: PluginKind, plugin_id: str) -> str:
+    if kind == PluginKind.NOTIFIER:
+        return f"NOTIFIERS[[{plugin_id}]]"
+    if kind == PluginKind.CLIENT:
+        return f"CLIENTS[[{plugin_id}]]"
+    if kind == PluginKind.METADATA:
+        return f"METADATA[[{plugin_id}]]"
+    if kind == PluginKind.PROVIDER:
+        return f"PROVIDERS[[{plugin_id}]]"
+    return f"extensions.{kind.value}.{plugin_id}"
 
 def _coerce_default(field_def: Field) -> Any:
     if field_def.type == "bool":
@@ -113,7 +163,7 @@ def _log_removed_legacy(legacy_section: str, *, moved: bool, unmapped: list[str]
 def migrate_legacy_sections(cfg: ConfigObj, plugin_classes: list[type[Plugin]]) -> bool:
     """
     For each plugin with legacy_sections:
-      - ensure [extensions][[kind]][[[id]]]
+      - ensure top-level [NOTIFIERS]/[CLIENTS]/[METADATA]/[PROVIDERS][[id]] as appropriate
       - for each Field, if dest missing, copy from the first matching legacy key
       - DELETE each legacy section from cfg entirely
     Return True if cfg mutated.
@@ -126,8 +176,17 @@ def migrate_legacy_sections(cfg: ConfigObj, plugin_classes: list[type[Plugin]]) 
         if not getattr(cls, "legacy_sections", ()):
             continue
 
-        section = ensure_extension_section(cfg, cls.kind, cls.id)
-        dest = f"extensions.{cls.kind.value}.{cls.id}"
+        if cls.kind == PluginKind.NOTIFIER:
+            section = ensure_notifier_section(cfg, cls.id)
+        elif cls.kind == PluginKind.CLIENT:
+            section = ensure_client_section(cfg, cls.id)
+        elif cls.kind == PluginKind.METADATA:
+            section = ensure_metadata_section(cfg, cls.id)
+        elif cls.kind == PluginKind.PROVIDER:
+            section = ensure_provider_section(cfg, cls.id)
+        else:
+            section = ensure_extension_section(cfg, cls.kind, cls.id)
+        dest = _kind_dest_label(cls.kind, cls.id)
         for field_def in cls.all_fields():
             if field_def.name in section and section[field_def.name] not in (None, ""):
                 continue
@@ -189,7 +248,8 @@ def _as_bool(value: Any, default: bool = False) -> bool:
 def migrate_legacy_maps(cfg: ConfigObj, maps) -> bool:
     """
     One-shot structural migrate: copy declared legacy INI sections into
-    [extensions][[kind]][[[id]]] and optionally delete the legacy section.
+    [NOTIFIERS][[id]] (notifiers) or [extensions][[kind]][[[id]]] (other kinds)
+    and optionally delete the legacy section.
     Does not require Plugin classes (hybrid config strategy).
     """
     from sickchill.plugins.legacy_maps import LegacyMap
@@ -202,9 +262,13 @@ def migrate_legacy_maps(cfg: ConfigObj, maps) -> bool:
     for legacy_map in maps:
         assert isinstance(legacy_map, LegacyMap)
         kind = PluginKind(legacy_map.kind)
-        section = ensure_extension_section(cfg, kind, legacy_map.plugin_id)
+        if kind == PluginKind.NOTIFIER or legacy_map.kind == "notifiers":
+            section = ensure_notifier_section(cfg, legacy_map.plugin_id)
+            dest = f"NOTIFIERS[[{legacy_map.plugin_id}]]"
+        else:
+            section = ensure_extension_section(cfg, kind, legacy_map.plugin_id)
+            dest = f"extensions.{legacy_map.kind}.{legacy_map.plugin_id}"
         legacy = cfg.get(legacy_map.legacy_section) if legacy_map.legacy_section in cfg else None
-        dest = f"extensions.{legacy_map.kind}.{legacy_map.plugin_id}"
         copied_here: list[str] = []
 
         for field_def in legacy_map.fields:
@@ -276,6 +340,50 @@ def migrate_legacy_maps(cfg: ConfigObj, maps) -> bool:
     return mutated
 
 
+def migrate_extensions_notifiers_to_top_level(cfg: ConfigObj) -> bool:
+    """
+    Move [extensions][[notifiers]][[[id]]] into top-level [NOTIFIERS][[id]].
+    Does not overwrite non-empty destination keys. Deletes extensions.notifiers
+    (and extensions when empty). INFO only when values actually moved.
+    """
+    try:
+        extensions = cfg["extensions"]
+        notifiers = extensions["notifiers"]
+    except (KeyError, TypeError):
+        return False
+
+    moved_ids: list[str] = []
+
+    for plugin_id in list(notifiers.keys()):
+        if str(plugin_id).startswith("#"):
+            continue
+        src = notifiers[plugin_id]
+        if not hasattr(src, "keys"):
+            continue
+        dest = ensure_notifier_section(cfg, plugin_id)
+        copied_here = False
+        for key in _section_keys(src):
+            if key in dest and dest[key] not in (None, ""):
+                continue
+            value = src[key]
+            dest[key] = value
+            if value not in (None, ""):
+                copied_here = True
+        if copied_here:
+            moved_ids.append(str(plugin_id))
+
+    del extensions["notifiers"]
+    if not _section_keys(extensions):
+        del cfg["extensions"]
+
+    if moved_ids:
+        logger.info(
+            "Plugin migrator: moved extensions.notifiers -> NOTIFIERS (%s)",
+            ", ".join(sorted(moved_ids)),
+        )
+    return True
+
+
 def _coerce_settings_value(field_type: str, raw: Any) -> Any:
     """Coerce ConfigObj/settings values; ConfigObj often stores bools as 'True'/'False' strings."""
     if field_type == "bool":
@@ -302,13 +410,51 @@ def _coerce_settings_value(field_type: str, raw: Any) -> Any:
     return raw
 
 
+# Notifier enable-style fields: presence marks the section as a configured component.
+_NOTIFIER_ENABLE_FIELDS = frozenset({"enabled", "use_plex_server", "use_plex_client"})
+
+
+def _default_for_field_type(field_type: str) -> Any:
+    if field_type == "bool":
+        return False
+    if field_type == "int":
+        return 0
+    return ""
+
+
 def sync_legacy_maps_to_settings(cfg: ConfigObj, maps) -> None:
-    """Fill settings.* globals from [extensions] using declared maps (for Mako / legacy code)."""
+    """Fill settings.* globals from [NOTIFIERS] / [extensions] using declared maps (for Mako / legacy code).
+
+    For notifiers: if an enable-style key is present, load the whole component block
+    (enable flag + parameters) so /config/notifications can render safely. Runtime
+    send paths still gate on the enable flag itself.
+    """
     from sickchill import settings as sc_settings
 
     for legacy_map in maps:
         kind = PluginKind(legacy_map.kind)
-        section = read_plugin_section(cfg, kind, legacy_map.plugin_id)
+        is_notifier = kind == PluginKind.NOTIFIER or legacy_map.kind == "notifiers"
+        if is_notifier:
+            section = read_notifier_section(cfg, legacy_map.plugin_id)
+        else:
+            section = read_plugin_section(cfg, kind, legacy_map.plugin_id)
+
+        enable_fields = [f for f in legacy_map.fields if f.name in _NOTIFIER_ENABLE_FIELDS] if is_notifier else []
+        if is_notifier and enable_fields:
+            if section and not any(f.name in section for f in enable_fields):
+                # Section exists but is not a configured notifier component — skip.
+                _ensure_settings_defaults(sc_settings, legacy_map.fields)
+                continue
+            if not section:
+                _ensure_settings_defaults(sc_settings, legacy_map.fields)
+                continue
+            for field_def in legacy_map.fields:
+                if not hasattr(sc_settings, field_def.settings_attr):
+                    continue
+                value = _coerce_settings_value(field_def.type, section.get(field_def.name))
+                setattr(sc_settings, field_def.settings_attr, value)
+            continue
+
         if not section:
             continue
         for field_def in legacy_map.fields:
@@ -318,8 +464,17 @@ def sync_legacy_maps_to_settings(cfg: ConfigObj, maps) -> None:
             setattr(sc_settings, field_def.settings_attr, value)
 
 
+def _ensure_settings_defaults(sc_settings, fields) -> None:
+    """Replace None settings attrs with type-safe defaults so Mako never sees None."""
+    for field_def in fields:
+        if not hasattr(sc_settings, field_def.settings_attr):
+            continue
+        if getattr(sc_settings, field_def.settings_attr) is None:
+            setattr(sc_settings, field_def.settings_attr, _default_for_field_type(field_def.type))
+
+
 def write_legacy_maps_from_settings(cfg: ConfigObj, maps) -> None:
-    """Persist settings.* into [extensions] and drop legacy sections when allowed."""
+    """Persist settings.* into [NOTIFIERS] / [extensions] and drop legacy sections when allowed."""
     from sickchill import settings as sc_settings
 
     for legacy_map in maps:
@@ -330,7 +485,10 @@ def write_legacy_maps_from_settings(cfg: ConfigObj, maps) -> None:
             value = _coerce_settings_value(field_def.type, raw)
             # Persist bools as real bools so later sync does not see 'True' strings.
             data[field_def.name] = value
-        write_plugin_section(cfg, kind, legacy_map.plugin_id, data)
+        if kind == PluginKind.NOTIFIER or legacy_map.kind == "notifiers":
+            write_notifier_section(cfg, legacy_map.plugin_id, data)
+        else:
+            write_plugin_section(cfg, kind, legacy_map.plugin_id, data)
         if legacy_map.delete_section and legacy_map.legacy_section in cfg:
             del cfg[legacy_map.legacy_section]
 

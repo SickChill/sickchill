@@ -7,7 +7,7 @@ from configobj import ConfigObj
 from sickchill.plugins.api import PluginKind, clear_registry
 from sickchill.plugins.manager import PluginManager
 from sickchill.plugins.notifiers.compat import sync_discord_settings_from_cfg
-from sickchill.plugins.settings import migrate_legacy_sections, read_plugin_section
+from sickchill.plugins.settings import migrate_legacy_sections, read_notifier_section
 
 
 class DiscordNotifierPluginTests(unittest.TestCase):
@@ -39,28 +39,27 @@ class DiscordNotifierPluginTests(unittest.TestCase):
         }
         self.assertTrue(migrate_legacy_sections(cfg, [self.Discord]))
         self.assertNotIn("Discord", cfg)
-        section = read_plugin_section(cfg, PluginKind.NOTIFIER, "discord")
+        self.assertNotIn("extensions", cfg)
+        section = read_notifier_section(cfg, "discord")
         self.assertTrue(section.get("enabled") in (True, "1", 1, "True") or str(section.get("enabled")).lower() in {"1", "true"})
         # migrator stores raw config values
         self.assertEqual(section.get("webhook"), "https://discord.example/hook")
         self.assertEqual(section.get("bot_name"), "SCBot")
         self.assertFalse(migrate_legacy_sections(cfg, [self.Discord]))
 
-    def test_enabled_instance_uses_extensions(self):
+    def test_enabled_instance_uses_notifiers(self):
         cfg = ConfigObj()
         cfg.indent_type = "  "
-        cfg["extensions"] = {
-            "notifiers": {
-                "discord": {
-                    "enabled": True,
-                    "webhook": "https://discord.example/hook",
-                    "bot_name": "SCBot",
-                    "notify_snatch": True,
-                    "notify_download": False,
-                    "tts": False,
-                    "avatar_url": "",
-                    "notify_subtitle_download": False,
-                }
+        cfg["NOTIFIERS"] = {
+            "discord": {
+                "enabled": True,
+                "webhook": "https://discord.example/hook",
+                "bot_name": "SCBot",
+                "notify_snatch": True,
+                "notify_download": False,
+                "tts": False,
+                "avatar_url": "",
+                "notify_subtitle_download": False,
             }
         }
         self.manager._cfg = cfg
@@ -70,26 +69,24 @@ class DiscordNotifierPluginTests(unittest.TestCase):
         self.assertEqual(plugin.ctx.get("webhook"), "https://discord.example/hook")
         self.assertEqual(len(self.manager.enabled(PluginKind.NOTIFIER)), 1)
 
-    def test_sync_settings_from_extensions(self):
+    def test_sync_settings_from_notifiers(self):
         from sickchill import settings
         from sickchill.plugins.bootstrap import sync_all_plugin_runtime_settings
 
         cfg = ConfigObj()
-        cfg["extensions"] = {
-            "notifiers": {
-                "discord": {
-                    "enabled": True,
-                    "webhook": "https://hooks.example/x",
-                    "bot_name": "Bot",
-                    "avatar_url": "https://img",
-                    "tts": True,
-                    "notify_snatch": True,
-                    "notify_download": True,
-                    "notify_subtitle_download": False,
-                }
+        cfg["NOTIFIERS"] = {
+            "discord": {
+                "enabled": True,
+                "webhook": "https://hooks.example/x",
+                "bot_name": "Bot",
+                "avatar_url": "https://img",
+                "tts": True,
+                "notify_snatch": True,
+                "notify_download": True,
+                "notify_subtitle_download": False,
             }
         }
-        # Simulate empty legacy load wiping globals, then one-shot sync from extensions.
+        # Simulate empty legacy load wiping globals, then one-shot sync from NOTIFIERS.
         settings.USE_DISCORD = False
         settings.DISCORD_WEBHOOK = ""
         settings.DISCORD_NAME = ""
@@ -98,8 +95,8 @@ class DiscordNotifierPluginTests(unittest.TestCase):
         self.assertEqual(settings.DISCORD_WEBHOOK, "https://hooks.example/x")
         self.assertEqual(settings.DISCORD_NAME, "Bot")
 
-    def test_sync_before_save_preserves_extensions(self):
-        """Regression: save_config after migrate must not write empty settings over extensions."""
+    def test_sync_before_save_preserves_notifiers(self):
+        """Regression: save_config after migrate must not write empty settings over NOTIFIERS."""
         from sickchill import settings
         from sickchill.plugins.notifiers.compat import write_discord_settings_to_cfg
 
@@ -122,7 +119,8 @@ class DiscordNotifierPluginTests(unittest.TestCase):
         out = ConfigObj()
         out.indent_type = "  "
         write_discord_settings_to_cfg(out)
-        section = read_plugin_section(out, PluginKind.NOTIFIER, "discord")
+        section = read_notifier_section(out, "discord")
         self.assertEqual(section.get("webhook"), "https://discord.example/hook")
         enabled = section.get("enabled")
         self.assertTrue(enabled is True or str(enabled).lower() in {"1", "true", "yes", "on"})
+        self.assertNotIn("extensions", out)

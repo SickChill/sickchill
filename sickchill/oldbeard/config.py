@@ -232,11 +232,13 @@ def change_nzb_dir(nzb_dir):
     :param nzb_dir: New NZB Folder location
     :return: True on success, False on failure
     """
+    if nzb_dir is None:
+        return True
     if nzb_dir == "":
         settings.NZB_DIR = ""
         return True
 
-    if os.path.normpath(settings.NZB_DIR) != os.path.normpath(nzb_dir):
+    if os.path.normpath(settings.NZB_DIR or "") != os.path.normpath(nzb_dir):
         if helpers.makeDir(nzb_dir):
             settings.NZB_DIR = os.path.normpath(nzb_dir)
             logger.info("Changed NZB folder to " + nzb_dir)
@@ -253,11 +255,13 @@ def change_torrent_dir(torrent_dir):
     :param torrent_dir: New torrent directory
     :return: True on success, False on failure
     """
+    if torrent_dir is None:
+        return True
     if torrent_dir == "":
         settings.TORRENT_DIR = ""
         return True
 
-    if os.path.normpath(settings.TORRENT_DIR) != os.path.normpath(torrent_dir):
+    if os.path.normpath(settings.TORRENT_DIR or "") != os.path.normpath(torrent_dir):
         if helpers.makeDir(torrent_dir):
             settings.TORRENT_DIR = os.path.normpath(torrent_dir)
             logger.info("Changed torrent folder to " + torrent_dir)

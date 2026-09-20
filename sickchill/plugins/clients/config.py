@@ -61,7 +61,7 @@ _DSM_FIELDS: tuple[tuple[str, str, str], ...] = (
 )
 
 _LEGACY_CLIENT_SECTIONS = ("TORRENT", "SABnzbd", "NZBget", "Blackhole")
-# DSM keys plus use_synoindex (owned by extensions[[notifiers]][[[synoindex]]]).
+# DSM keys plus use_synoindex (owned by [NOTIFIERS][[synoindex]]).
 _DSM_KEYS = ("host", "username", "password", "path", "use_synoindex")
 
 
@@ -90,16 +90,27 @@ def _settings_to_section(fields: tuple[tuple[str, str, str], ...], *, include: s
     return data
 
 
+def _merge_client_section(existing: dict[str, Any], incoming: dict[str, Any]) -> dict[str, Any]:
+    """Prefer incoming values, but do not blank existing CLIENTS keys with empty settings.*."""
+    merged = dict(existing or {})
+    for key, value in incoming.items():
+        if value in (None, "") and merged.get(key) not in (None, ""):
+            continue
+        merged[key] = value
+    return merged
+
+
 def sync_clients_from_settings(cfg: ConfigObj) -> None:
     """Push [CLIENTS] into settings.* for Mako / snatch / legacy client classes."""
     from sickchill import settings as sc_settings
 
+    # Blackhole serves both NZB and torrent methods with independent dirs.
     blackhole = read_client_section(cfg, "blackhole")
     if blackhole:
-        if "nzb_dir" in blackhole:
-            sc_settings.NZB_DIR = blackhole.get("nzb_dir") or ""
-        if "torrent_dir" in blackhole:
-            sc_settings.TORRENT_DIR = blackhole.get("torrent_dir") or ""
+        if blackhole.get("nzb_dir") not in (None, ""):
+            sc_settings.NZB_DIR = _coerce_settings_value("str", blackhole.get("nzb_dir"))
+        if blackhole.get("torrent_dir") not in (None, ""):
+            sc_settings.TORRENT_DIR = _coerce_settings_value("str", blackhole.get("torrent_dir"))
 
     _apply_section_to_settings(read_client_section(cfg, "sabnzbd"), _SAB_FIELDS)
     _apply_section_to_settings(read_client_section(cfg, "nzbget"), _NZBGET_FIELDS)
@@ -109,14 +120,30 @@ def sync_clients_from_settings(cfg: ConfigObj) -> None:
 
     method = getattr(sc_settings, "TORRENT_METHOD", None) or ""
     if method == "download_station":
-        _apply_section_to_settings(download_station, _TORRENT_FIELDS)
+        # Torrent Search tab binds torrent_host etc. — mirror DSM keys only (not qbit leftovers).
+        if download_station:
+            if download_station.get("host") not in (None, ""):
+                sc_settings.TORRENT_HOST = _coerce_settings_value("str", download_station.get("host"))
+            if download_station.get("username") not in (None, ""):
+                sc_settings.TORRENT_USERNAME = _coerce_settings_value("str", download_station.get("username"))
+            if download_station.get("password") not in (None, ""):
+                sc_settings.TORRENT_PASSWORD = _coerce_settings_value("str", download_station.get("password"))
+            if download_station.get("path") not in (None, ""):
+                sc_settings.TORRENT_PATH = _coerce_settings_value("str", download_station.get("path"))
     elif method and method != "blackhole" and method in TORRENT_CLIENT_IDS:
         _apply_section_to_settings(read_client_section(cfg, method), _TORRENT_FIELDS)
 
     nzb_method = getattr(sc_settings, "NZB_METHOD", None) or ""
-    if nzb_method == "download_station" and download_station:
-        # Keep TORRENT_* mirrors available when NZB uses Download Station.
-        _apply_section_to_settings(download_station, _TORRENT_FIELDS)
+    if nzb_method == "download_station" and method != "download_station" and download_station:
+        # NZB-only DS: still expose host on TORRENT_* for shared client code paths.
+        if download_station.get("host") not in (None, ""):
+            sc_settings.TORRENT_HOST = _coerce_settings_value("str", download_station.get("host"))
+        if download_station.get("username") not in (None, ""):
+            sc_settings.TORRENT_USERNAME = _coerce_settings_value("str", download_station.get("username"))
+        if download_station.get("password") not in (None, ""):
+            sc_settings.TORRENT_PASSWORD = _coerce_settings_value("str", download_station.get("password"))
+        if download_station.get("path") not in (None, ""):
+            sc_settings.TORRENT_PATH = _coerce_settings_value("str", download_station.get("path"))
 
 
 def write_clients_to_cfg(cfg: ConfigObj) -> None:
@@ -126,26 +153,37 @@ def write_clients_to_cfg(cfg: ConfigObj) -> None:
     write_client_section(
         cfg,
         "blackhole",
-        {
-            "nzb_dir": getattr(sc_settings, "NZB_DIR", None) or "",
-            "torrent_dir": getattr(sc_settings, "TORRENT_DIR", None) or "",
-        },
+        _merge_client_section(
+            read_client_section(cfg, "blackhole"),
+            {
+                "nzb_dir": getattr(sc_settings, "NZB_DIR", None) or "",
+                "torrent_dir": getattr(sc_settings, "TORRENT_DIR", None) or "",
+            },
+        ),
     )
-    write_client_section(cfg, "sabnzbd", _settings_to_section(_SAB_FIELDS))
-    write_client_section(cfg, "nzbget", _settings_to_section(_NZBGET_FIELDS))
+    write_client_section(cfg, "sabnzbd", _merge_client_section(read_client_section(cfg, "sabnzbd"), _settings_to_section(_SAB_FIELDS)))
+    write_client_section(cfg, "nzbget", _merge_client_section(read_client_section(cfg, "nzbget"), _settings_to_section(_NZBGET_FIELDS)))
 
     method = getattr(sc_settings, "TORRENT_METHOD", None) or ""
     nzb_method = getattr(sc_settings, "NZB_METHOD", None) or ""
+    # download_station stores only DSM keys (host/user/pass/path). Do not copy
+    # unrelated TORRENT_* leftovers (labels, seed_time, incomplete path, …).
     ds_data = _settings_to_section(_DSM_FIELDS)
-    # Prefer DSM values; fill gaps from TORRENT_* when Download Station is active.
-    if method == "download_station" or nzb_method == "download_station":
-        torrent_shared = _settings_to_section(_TORRENT_FIELDS, include={name for name, _, _ in _TORRENT_FIELDS[:10]})
-        for name, value in torrent_shared.items():
-            if name in ds_data and ds_data[name] not in (None, ""):
-                continue
+    if method == "download_station":
+        # Torrent tab is authoritative while DS is the torrent method.
+        torrent_dsm = _settings_to_section(_TORRENT_FIELDS, include={"host", "username", "password", "path"})
+        for name, value in torrent_dsm.items():
             if value not in (None, ""):
                 ds_data[name] = value
-    write_client_section(cfg, "download_station", ds_data)
+    elif nzb_method == "download_station":
+        # Fill empty DSM keys from TORRENT_* only when NZB tab owns DS.
+        torrent_dsm = _settings_to_section(_TORRENT_FIELDS, include={"host", "username", "password", "path"})
+        for name, value in torrent_dsm.items():
+            if ds_data.get(name) in (None, "") and value not in (None, ""):
+                ds_data[name] = value
+    # Replace section with DSM-only keys (drop polluted qbit fields if present).
+    existing_ds = {k: v for k, v in read_client_section(cfg, "download_station").items() if k in {"host", "username", "password", "path"}}
+    write_client_section(cfg, "download_station", _merge_client_section(existing_ds, ds_data))
 
     if method and method not in ("blackhole", "download_station") and method in TORRENT_CLIENT_IDS:
         include = {name for name, _, _ in _TORRENT_FIELDS[:10]}
@@ -153,7 +191,11 @@ def write_clients_to_cfg(cfg: ConfigObj) -> None:
             include.update({"rpcurl", "high_bandwidth"})
         elif method == "rtorrent":
             include.add("auth_type")
-        write_client_section(cfg, method, _settings_to_section(_TORRENT_FIELDS, include=include))
+        write_client_section(
+            cfg,
+            method,
+            _merge_client_section(read_client_section(cfg, method), _settings_to_section(_TORRENT_FIELDS, include=include)),
+        )
 
     for section_name in _LEGACY_CLIENT_SECTIONS:
         if section_name in cfg:

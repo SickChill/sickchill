@@ -331,6 +331,14 @@ class ConfigProviders(Config):
         settings.PROVIDER_ORDER = enabled_provider_list + disabled_provider_list
 
         self.log_configuration_save("Search Providers")
+        # save_config → write_providers_to_cfg persists [PROVIDERS][[id]] (no legacy [ID] / blobs).
+        try:
+            from sickchill.plugins.providers.config import write_providers_to_cfg
+
+            if settings.CFG is not None:
+                write_providers_to_cfg(settings.CFG)
+        except Exception:
+            pass
         sickchill.start.save_config()
 
         # Add a site_message if no providers are enabled for daily and/or backlog

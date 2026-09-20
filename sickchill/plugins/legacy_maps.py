@@ -5,7 +5,7 @@ from dataclasses import dataclass
 
 @dataclass(frozen=True)
 class LegacyField:
-    name: str  # key under [extensions][[kind]][[[id]]]
+    name: str  # key under [NOTIFIERS][[id]] (notifiers) or [extensions][[kind]][[[id]]]
     settings_attr: str  # attribute on sickchill.settings
     legacy_keys: tuple[str, ...] = ()
     type: str = "str"  # str|bool|int
@@ -19,6 +19,9 @@ class LegacyMap:
     fields: tuple[LegacyField, ...] = ()
     # False when the INI section is shared with non-notifier settings (e.g. Synology DSM).
     delete_section: bool = True
+
+
+# Notifier LegacyMap fields persist under top-level [NOTIFIERS][[plugin_id]], not [extensions].
 
 
 DISCORD_MAP = LegacyMap(
@@ -581,7 +584,8 @@ CLIENT_SECTION_MAPS: tuple[LegacyMap, ...] = tuple(_torrent_client_map(cid) for 
     _torrent_client_map("download_station"),
 )
 
-# Kept empty on purpose: client maps must not go through migrate_legacy_maps → [extensions].
+# Kept empty on purpose: client maps must not go through migrate_legacy_maps.
+# Clients use migrate_client_maps → [CLIENTS]; notifiers use [NOTIFIERS].
 CLIENT_LEGACY_MAPS: tuple[LegacyMap, ...] = ()
 METADATA_LEGACY_MAPS: tuple[LegacyMap, ...] = ()
 PROVIDER_LEGACY_MAPS: tuple[LegacyMap, ...] = ()

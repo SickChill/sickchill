@@ -303,7 +303,7 @@
                                     <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                         <div class="row">
                                             <div class="col-md-12">
-                                                <input type="text" name="plex_server_host" id="plex_server_host" value="${re.sub(r'\b,\b', ', ', settings.PLEX_SERVER_HOST)}" class="form-control input-sm input350" autocapitalize="off" />
+                                                <input type="text" name="plex_server_host" id="plex_server_host" value="${re.sub(r'\b,\b', ', ', settings.PLEX_SERVER_HOST or '')}" class="form-control input-sm input350" autocapitalize="off" />
                                             </div>
                                         </div>
                                         <div class="row">

@@ -6,7 +6,7 @@ from configobj import ConfigObj
 
 from sickchill.plugins.api import Field, clear_registry, register
 from sickchill.plugins.kinds.notifier import NotifierPlugin
-from sickchill.plugins.settings import migrate_legacy_sections, read_plugin_section
+from sickchill.plugins.settings import migrate_legacy_sections, read_notifier_section
 
 
 class MigratorTests(unittest.TestCase):
@@ -26,11 +26,13 @@ class MigratorTests(unittest.TestCase):
         cfg["Discord"] = {"webhook": "https://hooks.example/discord", "noise": "drop-me"}
 
         self.assertTrue(migrate_legacy_sections(cfg, [Fake]))
-        section = read_plugin_section(cfg, Fake.kind, Fake.id)
+        section = read_notifier_section(cfg, Fake.id)
         self.assertEqual(section.get("webhook"), "https://hooks.example/discord")
         self.assertNotIn("Discord", cfg)
+        self.assertNotIn("extensions", cfg)
+        self.assertIn("NOTIFIERS", cfg)
 
         # Second migrate: no error, Discord stays gone
         self.assertFalse(migrate_legacy_sections(cfg, [Fake]))
         self.assertNotIn("Discord", cfg)
-        self.assertEqual(read_plugin_section(cfg, Fake.kind, Fake.id).get("webhook"), "https://hooks.example/discord")
+        self.assertEqual(read_notifier_section(cfg, Fake.id).get("webhook"), "https://hooks.example/discord")

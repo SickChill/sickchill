@@ -2114,9 +2114,63 @@ const SICKCHILL = {
                 }
             });
 
-            $('#nzb_method').on('change', $(this).nzbMethodHandler);
+            $.loadNzbClientSettings = method => {
+                method = (method || $('#nzb_method :selected').val() || '').toLowerCase();
+                if (!method) {
+                    return;
+                }
+                $.getJSON(scRoot + '/config/search/getNzbClientSettings', {
+                    nzb_method: method, // eslint-disable-line camelcase
+                }).done(data => {
+                    if (!data) {
+                        return;
+                    }
+                    if (method === 'blackhole') {
+                        if (Object.prototype.hasOwnProperty.call(data, 'nzb_dir')) {
+                            $('#nzb_dir').val(data.nzb_dir || '');
+                        }
+                        return;
+                    }
+                    if (method === 'download_station') {
+                        $('#syno_dsm_host').val(data.host || '');
+                        $('#syno_dsm_user').val(data.username || '');
+                        $('#syno_dsm_pass').val(data.password || '');
+                        $('#syno_dsm_path').val(data.path || '');
+                        return;
+                    }
+                    if (method === 'sabnzbd') {
+                        $('#sab_host').val(data.host || '');
+                        $('#sab_username').val(data.username || '');
+                        $('#sab_password').val(data.password || '');
+                        $('#sab_apikey').val(data.apikey || '');
+                        $('#sab_category').val(data.category || 'tv');
+                        $('#sab_category_backlog').val(data.category_backlog || '');
+                        $('#sab_category_anime').val(data.category_anime || 'anime');
+                        $('#sab_category_anime_backlog').val(data.category_anime_backlog || '');
+                        $('#sab_forced').prop('checked', !!data.forced);
+                        return;
+                    }
+                    if (method === 'nzbget') {
+                        $('#nzbget_host').val(data.host || '');
+                        $('#nzbget_username').val(data.username || 'nzbget');
+                        $('#nzbget_password').val(data.password || '');
+                        $('#nzbget_category').val(data.category || 'tv');
+                        $('#nzbget_category_backlog').val(data.category_backlog || '');
+                        $('#nzbget_category_anime').val(data.category_anime || 'anime');
+                        $('#nzbget_category_anime_backlog').val(data.category_anime_backlog || '');
+                        $('#nzbget_use_https').prop('checked', !!data.use_https);
+                        $('#nzbget_priority').val(data.priority != null ? data.priority : 100);
+                    }
+                });
+            };
 
-            $(this).nzbMethodHandler();
+            $('#nzb_method').on('change', () => {
+                const method = $('#nzb_method :selected').val();
+                $.loadNzbClientSettings(method);
+                $(document).nzbMethodHandler();
+            });
+
+            $(document).nzbMethodHandler();
 
             $('#testSABnzbd').on('click', () => {
                 const sab = {};
@@ -2152,7 +2206,44 @@ const SICKCHILL = {
                 });
             });
 
-            $('#torrent_method').on('change', $.torrentMethodHandler);
+            $.loadTorrentClientSettings = method => {
+                method = (method || $('#torrent_method :selected').val() || '').toLowerCase();
+                if (!method) {
+                    return;
+                }
+                $.getJSON(scRoot + '/config/search/getTorrentClientSettings', {
+                    torrent_method: method, // eslint-disable-line camelcase
+                }).done(data => {
+                    if (!data) {
+                        return;
+                    }
+                    if (method === 'blackhole') {
+                        if (Object.prototype.hasOwnProperty.call(data, 'torrent_dir')) {
+                            $('#torrent_dir').val(data.torrent_dir || '');
+                        }
+                        return;
+                    }
+                    $('#torrent_host').val(data.host || '');
+                    $('#torrent_username').val(data.username || '');
+                    $('#torrent_password').val(data.password || '');
+                    $('#torrent_path').val(data.path || '');
+                    $('#torrent_path_incomplete').val(data.path_incomplete || '');
+                    $('#torrent_label').val(data.label || '');
+                    $('#torrent_label_anime').val(data.label_anime || '');
+                    $('#torrent_seed_time').val(data.seed_time != null ? data.seed_time : 0);
+                    $('#torrent_rpcurl').val(data.rpcurl || 'transmission');
+                    $('#torrent_auth_type').val(data.auth_type || 'none');
+                    $('#torrent_paused').prop('checked', !!data.paused);
+                    $('#torrent_verify_cert').prop('checked', !!data.verify_cert);
+                    $('#torrent_high_bandwidth').prop('checked', !!data.high_bandwidth);
+                });
+            };
+
+            $('#torrent_method').on('change', () => {
+                const method = $('#torrent_method :selected').val();
+                $.loadTorrentClientSettings(method);
+                $.torrentMethodHandler();
+            });
 
             $.torrentMethodHandler();
 

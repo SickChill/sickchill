@@ -56,8 +56,8 @@ def initialize(console_logging: bool = True, debug: bool = False, dbdebug: bool 
             return False
 
         check_section(settings.CFG, "General")
-        # Migrated notifiers live under [extensions]; clients under [CLIENTS]; metadata under [METADATA].
-        # Do not recreate empty legacy KODI/Plex/.../SABnzbd/Blackhole/Synology sections.
+        # Migrated notifiers/clients/metadata/providers live under [NOTIFIERS]/[CLIENTS]/[METADATA]/[PROVIDERS].
+        # Do not recreate empty legacy KODI/Plex/.../SABnzbd/Blackhole/Synology/ABNORMAL sections.
         check_section(settings.CFG, "Newzbin")
         check_section(settings.CFG, "Subtitles")
 
@@ -457,7 +457,24 @@ def initialize(console_logging: bool = True, debug: bool = False, dbdebug: bool 
         if isinstance(_clients, dict) and settings.TORRENT_METHOD and settings.TORRENT_METHOD not in ("blackhole",):
             _torrent_client = _clients.get(settings.TORRENT_METHOD)
 
-        if isinstance(_torrent_client, dict) and (_torrent_client.get("host") or _torrent_client.get("username") or _torrent_client.get("password")):
+        if settings.TORRENT_METHOD == "download_station" and isinstance(_torrent_client, dict):
+            # DSM section is host/user/pass/path only — do not pull qbit-style leftovers.
+            settings.TORRENT_HOST = _torrent_client.get("host") or ""
+            settings.TORRENT_USERNAME = _torrent_client.get("username") or ""
+            settings.TORRENT_PASSWORD = _torrent_client.get("password") or ""
+            settings.TORRENT_PATH = _torrent_client.get("path") or ""
+            settings.TORRENT_PATH_INCOMPLETE = ""
+            settings.TORRENT_SEED_TIME = 0
+            settings.TORRENT_PAUSED = False
+            settings.TORRENT_HIGH_BANDWIDTH = False
+            settings.TORRENT_LABEL = ""
+            settings.TORRENT_LABEL_ANIME = ""
+            settings.TORRENT_VERIFY_CERT = False
+            settings.TORRENT_RPCURL = "transmission"
+            settings.TORRENT_AUTH_TYPE = ""
+            if settings.TORRENT_PASSWORD:
+                logger.censored_items[("CLIENTS", "download_station.password")] = settings.TORRENT_PASSWORD
+        elif isinstance(_torrent_client, dict) and (_torrent_client.get("host") or _torrent_client.get("username") or _torrent_client.get("password")):
             settings.TORRENT_USERNAME = _torrent_client.get("username") or ""
             settings.TORRENT_PASSWORD = _torrent_client.get("password") or ""
             settings.TORRENT_HOST = _torrent_client.get("host") or ""
@@ -516,7 +533,7 @@ def initialize(console_logging: bool = True, debug: bool = False, dbdebug: bool 
 
         helpers.manage_torrents_url(reset=True)
 
-        # Notifier / Trakt / media-server settings come from [extensions] via bootstrap_plugins()
+        # Notifier / Trakt / media-server settings come from [NOTIFIERS] via bootstrap_plugins()
         # (sync_legacy_maps_to_settings). Do not check_setting_* legacy sections here — that recreates empties.
         # use_synoindex may still linger under [Synology] until migrate; peek only.
         settings.USE_SYNOINDEX = peek_setting_bool(settings.CFG, "Synology", "use_synoindex")
@@ -626,95 +643,22 @@ def initialize(console_logging: bool = True, debug: bool = False, dbdebug: bool 
         # initialize NZB and TORRENT providers
         settings.providerList = providers.makeProviderList()
 
-        settings.NEWZNAB_DATA = check_setting_str(settings.CFG, "Newznab", "newznab_data")
-        settings.newznab_provider_list = NewznabProvider.providers_list(settings.NEWZNAB_DATA)
+        # Prefer [PROVIDERS] customs (type=newznab/torrentrss); fall back to legacy blobs via peek (no create).
+        from sickchill.plugins.providers.config import custom_providers_from_cfg, providers_section_has_customs
 
-        TORRENTRSS_DATA = check_setting_str(settings.CFG, "TorrentRss", "torrentrss_data")
-        settings.torrent_rss_provider_list = TorrentRssProvider.providers_list(TORRENTRSS_DATA)
+        if providers_section_has_customs(settings.CFG):
+            settings.newznab_provider_list, settings.torrent_rss_provider_list = custom_providers_from_cfg(settings.CFG)
+            settings.NEWZNAB_DATA = "!!!".join(x.config_string() for x in settings.newznab_provider_list)
+        else:
+            settings.NEWZNAB_DATA = peek_setting_str(settings.CFG, "Newznab", "newznab_data", "")
+            settings.newznab_provider_list = NewznabProvider.providers_list(settings.NEWZNAB_DATA)
+            torrentrss_data = peek_setting_str(settings.CFG, "TorrentRss", "torrentrss_data", "")
+            settings.torrent_rss_provider_list = TorrentRssProvider.providers_list(torrentrss_data)
 
-        # dynamically load provider settings
-        for curProvider in providers.sorted_provider_list():
-            curProvider.enabled = (curProvider.can_daily or curProvider.can_backlog) and check_setting_bool(
-                settings.CFG, curProvider.get_id().upper(), curProvider.get_id()
-            )
-            if hasattr(curProvider, "custom_url"):
-                # Keep provider-defined defaults (e.g. Jackett http://127.0.0.1:9117) when unset in config
-                curProvider.custom_url = check_setting_str(
-                    settings.CFG,
-                    curProvider.get_id().upper(),
-                    curProvider.get_id("_custom_url"),
-                    getattr(curProvider, "custom_url", "") or "",
-                    censor_log=True,
-                )
-            if hasattr(curProvider, "api_key"):
-                curProvider.api_key = check_setting_str(
-                    settings.CFG,
-                    curProvider.get_id().upper(),
-                    curProvider.get_id("_api_key"),
-                    getattr(curProvider, "api_key", "") or "",
-                    censor_log=True,
-                )
-            if hasattr(curProvider, "hash"):
-                curProvider.hash = check_setting_str(settings.CFG, curProvider.get_id().upper(), curProvider.get_id("_hash"), censor_log=True)
-            if hasattr(curProvider, "digest"):
-                curProvider.digest = check_setting_str(settings.CFG, curProvider.get_id().upper(), curProvider.get_id("_digest"), censor_log=True)
-            if hasattr(curProvider, "username"):
-                curProvider.username = check_setting_str(settings.CFG, curProvider.get_id().upper(), curProvider.get_id("_username"), censor_log=True)
-            if hasattr(curProvider, "password"):
-                curProvider.password = check_setting_str(settings.CFG, curProvider.get_id().upper(), curProvider.get_id("_password"), censor_log=True)
-            if hasattr(curProvider, "passkey"):
-                curProvider.passkey = check_setting_str(settings.CFG, curProvider.get_id().upper(), curProvider.get_id("_passkey"), censor_log=True)
-            if hasattr(curProvider, "pin"):
-                curProvider.pin = check_setting_str(settings.CFG, curProvider.get_id().upper(), curProvider.get_id("_pin"), censor_log=True)
-            if hasattr(curProvider, "confirmed"):
-                curProvider.confirmed = check_setting_bool(settings.CFG, curProvider.get_id().upper(), curProvider.get_id("_confirmed"), True)
-            if hasattr(curProvider, "ranked"):
-                curProvider.ranked = check_setting_bool(settings.CFG, curProvider.get_id().upper(), curProvider.get_id("_ranked"), True)
-            if hasattr(curProvider, "engrelease"):
-                curProvider.engrelease = check_setting_bool(settings.CFG, curProvider.get_id().upper(), curProvider.get_id("_engrelease"))
-            if hasattr(curProvider, "only_spanish_search"):
-                curProvider.only_spanish_search = check_setting_bool(settings.CFG, curProvider.get_id().upper(), curProvider.get_id("_only_spanish_search"))
-            if hasattr(curProvider, "sorting"):
-                curProvider.sorting = check_setting_str(settings.CFG, curProvider.get_id().upper(), curProvider.get_id("_sorting"), "seeders")
-            if hasattr(curProvider, "options"):
-                curProvider.options = check_setting_str(settings.CFG, curProvider.get_id().upper(), curProvider.get_id("_options"), "")
-            if hasattr(curProvider, "ratio"):
-                curProvider.ratio = check_setting_str(settings.CFG, curProvider.get_id().upper(), curProvider.get_id("_ratio"), "")
-            if hasattr(curProvider, "minseed"):
-                curProvider.minseed = check_setting_int(settings.CFG, curProvider.get_id().upper(), curProvider.get_id("_minseed"), 1, min_val=0)
-            if hasattr(curProvider, "minleech"):
-                curProvider.minleech = check_setting_int(settings.CFG, curProvider.get_id().upper(), curProvider.get_id("_minleech"), min_val=0)
-            if hasattr(curProvider, "freeleech"):
-                curProvider.freeleech = check_setting_bool(settings.CFG, curProvider.get_id().upper(), curProvider.get_id("_freeleech"))
-            if hasattr(curProvider, "search_mode"):
-                curProvider.search_mode = check_setting_str(settings.CFG, curProvider.get_id().upper(), curProvider.get_id("_search_mode"), "episode")
-            if hasattr(curProvider, "search_fallback"):
-                curProvider.search_fallback = check_setting_bool(settings.CFG, curProvider.get_id().upper(), curProvider.get_id("_search_fallback"))
-            if hasattr(curProvider, "enable_daily"):
-                curProvider.enable_daily = curProvider.can_daily and check_setting_bool(
-                    settings.CFG, curProvider.get_id().upper(), curProvider.get_id("_enable_daily"), True
-                )
-            if hasattr(curProvider, "enable_backlog"):
-                curProvider.enable_backlog = curProvider.can_backlog and check_setting_bool(
-                    settings.CFG, curProvider.get_id().upper(), curProvider.get_id("_enable_backlog"), curProvider.can_backlog
-                )
-            if hasattr(curProvider, "cat"):
-                curProvider.cat = check_setting_int(settings.CFG, curProvider.get_id().upper(), curProvider.get_id("_cat"))
-            if hasattr(curProvider, "subtitle"):
-                curProvider.subtitle = check_setting_bool(settings.CFG, curProvider.get_id().upper(), curProvider.get_id("_subtitle"))
-            if hasattr(curProvider, "cookies"):
-                curProvider.cookies = check_setting_str(settings.CFG, curProvider.get_id().upper(), curProvider.get_id("_cookies"), censor_log=True)
-            if hasattr(curProvider, "indexer"):
-                curProvider.indexer = check_setting_str(settings.CFG, curProvider.get_id().upper(), curProvider.get_id("_indexer"), "all")
-            # Newznab + Jackett-SC only. Other torrent providers keep hardcoded
-            # categories (ints/lists/dicts/query strings) — #9148 TorrentDay regression.
-            if getattr(curProvider, "uses_configurable_categories", False):
-                curProvider.categories = check_setting_str(
-                    settings.CFG,
-                    curProvider.get_id().upper(),
-                    curProvider.get_id("_categories"),
-                    getattr(curProvider, "categories", "") or "5000,5030,5040,5045,5050,5060,5070",
-                )
+        # Apply [PROVIDERS][[id]] (peek legacy [ID] without recreating empty sections).
+        from sickchill.plugins.providers.config import apply_providers_from_cfg
+
+        apply_providers_from_cfg(settings.CFG)
 
         try:
             from sickchill.oldbeard.providers.jackett import warn_jackett_newznab_overlap
@@ -749,7 +693,7 @@ def initialize(console_logging: bool = True, debug: bool = False, dbdebug: bool 
         migrator = ConfigMigrator(settings.CFG)
         migrator.migrate_config()
 
-        # One-shot plugin bootstrap: discover → migrate → [extensions]/[CLIENTS]/[METADATA] → sync settings.*
+        # One-shot plugin bootstrap: discover → migrate → [NOTIFIERS]/[CLIENTS]/[METADATA] → sync settings.*
         try:
             from sickchill.plugins.bootstrap import bootstrap_plugins
 
@@ -758,7 +702,7 @@ def initialize(console_logging: bool = True, debug: bool = False, dbdebug: bool 
         except Exception as error:
             logger.exception(f"Plugin manager failed to start: {error}")
 
-        # After extensions sync: blank revoked stock Trakt Client IDs from older installs.
+        # After NOTIFIERS sync: blank revoked stock Trakt Client IDs from older installs.
         try:
             from sickchill.oldbeard.trakt_api.trakt import clear_revoked_trakt_defaults, refresh_trakt_pin_url
 
@@ -1013,64 +957,7 @@ def save_config():
     new_config = ConfigObj(settings.CONFIG_FILE, encoding="UTF-8", indent_type="  ")
 
     # For passwords, you must include the word `password` in the item_name and add `helpers.encrypt(settings.ITEM_NAME, settings.ENCRYPTION_VERSION)` in save_config()
-    # dynamically save provider settings
-    for curProvider in providers.sorted_provider_list():
-        new_config[curProvider.get_id().upper()] = {}
-        new_config[curProvider.get_id().upper()][curProvider.get_id()] = int(curProvider.enabled)
-        if hasattr(curProvider, "custom_url"):
-            new_config[curProvider.get_id().upper()][curProvider.get_id("_custom_url")] = curProvider.custom_url
-        if hasattr(curProvider, "indexer"):
-            new_config[curProvider.get_id().upper()][curProvider.get_id("_indexer")] = curProvider.indexer
-        if getattr(curProvider, "uses_configurable_categories", False):
-            new_config[curProvider.get_id().upper()][curProvider.get_id("_categories")] = curProvider.categories
-        if hasattr(curProvider, "digest"):
-            new_config[curProvider.get_id().upper()][curProvider.get_id("_digest")] = curProvider.digest
-        if hasattr(curProvider, "hash"):
-            new_config[curProvider.get_id().upper()][curProvider.get_id("_hash")] = curProvider.hash
-        if hasattr(curProvider, "api_key"):
-            new_config[curProvider.get_id().upper()][curProvider.get_id("_api_key")] = curProvider.api_key
-        if hasattr(curProvider, "username"):
-            new_config[curProvider.get_id().upper()][curProvider.get_id("_username")] = curProvider.username
-        if hasattr(curProvider, "password"):
-            new_config[curProvider.get_id().upper()][curProvider.get_id("_password")] = helpers.encrypt(curProvider.password, settings.ENCRYPTION_VERSION)
-        if hasattr(curProvider, "passkey"):
-            new_config[curProvider.get_id().upper()][curProvider.get_id("_passkey")] = curProvider.passkey
-        if hasattr(curProvider, "pin"):
-            new_config[curProvider.get_id().upper()][curProvider.get_id("_pin")] = curProvider.pin
-        if hasattr(curProvider, "confirmed"):
-            new_config[curProvider.get_id().upper()][curProvider.get_id("_confirmed")] = int(curProvider.confirmed)
-        if hasattr(curProvider, "ranked"):
-            new_config[curProvider.get_id().upper()][curProvider.get_id("_ranked")] = int(curProvider.ranked)
-        if hasattr(curProvider, "engrelease"):
-            new_config[curProvider.get_id().upper()][curProvider.get_id("_engrelease")] = int(curProvider.engrelease)
-        if hasattr(curProvider, "only_spanish_search"):
-            new_config[curProvider.get_id().upper()][curProvider.get_id("_only_spanish_search")] = int(curProvider.only_spanish_search)
-        if hasattr(curProvider, "sorting"):
-            new_config[curProvider.get_id().upper()][curProvider.get_id("_sorting")] = curProvider.sorting
-        if hasattr(curProvider, "ratio"):
-            new_config[curProvider.get_id().upper()][curProvider.get_id("_ratio")] = curProvider.ratio
-        if hasattr(curProvider, "minseed"):
-            new_config[curProvider.get_id().upper()][curProvider.get_id("_minseed")] = int(curProvider.minseed)
-        if hasattr(curProvider, "minleech"):
-            new_config[curProvider.get_id().upper()][curProvider.get_id("_minleech")] = int(curProvider.minleech)
-        if hasattr(curProvider, "options"):
-            new_config[curProvider.get_id().upper()][curProvider.get_id("_options")] = curProvider.options
-        if hasattr(curProvider, "freeleech"):
-            new_config[curProvider.get_id().upper()][curProvider.get_id("_freeleech")] = int(curProvider.freeleech)
-        if hasattr(curProvider, "search_mode"):
-            new_config[curProvider.get_id().upper()][curProvider.get_id("_search_mode")] = curProvider.search_mode
-        if hasattr(curProvider, "search_fallback"):
-            new_config[curProvider.get_id().upper()][curProvider.get_id("_search_fallback")] = int(curProvider.search_fallback)
-        if hasattr(curProvider, "enable_daily"):
-            new_config[curProvider.get_id().upper()][curProvider.get_id("_enable_daily")] = int(curProvider.enable_daily and curProvider.can_daily)
-        if hasattr(curProvider, "enable_backlog"):
-            new_config[curProvider.get_id().upper()][curProvider.get_id("_enable_backlog")] = int(curProvider.enable_backlog and curProvider.can_backlog)
-        if hasattr(curProvider, "cat"):
-            new_config[curProvider.get_id().upper()][curProvider.get_id("_cat")] = int(curProvider.cat)
-        if hasattr(curProvider, "subtitle"):
-            new_config[curProvider.get_id().upper()][curProvider.get_id("_subtitle")] = int(curProvider.subtitle)
-        if hasattr(curProvider, "cookies"):
-            new_config[curProvider.get_id().upper()][curProvider.get_id("_cookies")] = curProvider.cookies
+    # Provider settings live under [PROVIDERS][[id]]; write_providers_to_cfg owns them.
 
     new_config.update(
         {
@@ -1208,8 +1095,9 @@ def save_config():
             },
             "Cloudflare": {"auth_domain": settings.CF_AUTH_DOMAIN, "audience_policy": settings.CF_POLICY_AUD},
             "Shares": settings.WINDOWS_SHARES,
-            # Blackhole / SABnzbd / NZBget / TORRENT / notifier / metadata sections live under
-            # [CLIENTS] / [extensions] / [METADATA]; write_all_plugin_settings_to_cfg owns them.
+            # Blackhole / SABnzbd / NZBget / TORRENT / notifier / metadata / provider sections live under
+            # [CLIENTS] / [NOTIFIERS] / [METADATA] / [PROVIDERS]; write_all_plugin_settings_to_cfg owns them.
+            # Newznab / TorrentRss blobs are no longer written — customs live in PROVIDERS with type=.
             "NZBs": {
                 "nzbs": int(settings.NZBS),
                 "nzbs_uid": settings.NZBS_UID,
@@ -1220,8 +1108,6 @@ def save_config():
                 "newzbin_username": settings.NEWZBIN_USERNAME,
                 "newzbin_password": helpers.encrypt(settings.NEWZBIN_PASSWORD, settings.ENCRYPTION_VERSION),
             },
-            "Newznab": {"newznab_data": settings.NEWZNAB_DATA},
-            "TorrentRss": {"torrentrss_data": "!!!".join([x.config_string() for x in settings.torrent_rss_provider_list])},
             "GUI": {
                 "gui_name": settings.GUI_NAME,
                 "language": settings.GUI_LANG,
@@ -1294,17 +1180,22 @@ def save_config():
             },
         }
     )
-    # Plugin-backed settings live under [extensions] / [CLIENTS] / [METADATA].
+    # Plugin-backed settings live under [NOTIFIERS] / [CLIENTS] / [METADATA] / [PROVIDERS].
     try:
         from sickchill.plugins.bootstrap import write_all_plugin_settings_to_cfg
         from sickchill.plugins.manager import plugin_manager
 
-        if "extensions" in settings.CFG:
-            new_config["extensions"] = settings.CFG["extensions"]
+        if "NOTIFIERS" in settings.CFG:
+            new_config["NOTIFIERS"] = settings.CFG["NOTIFIERS"]
         if "CLIENTS" in settings.CFG:
             new_config["CLIENTS"] = settings.CFG["CLIENTS"]
         if "METADATA" in settings.CFG:
             new_config["METADATA"] = settings.CFG["METADATA"]
+        if "PROVIDERS" in settings.CFG:
+            new_config["PROVIDERS"] = settings.CFG["PROVIDERS"]
+        # Leftover non-migrated kinds may still use [extensions].
+        if "extensions" in settings.CFG:
+            new_config["extensions"] = settings.CFG["extensions"]
         write_all_plugin_settings_to_cfg(new_config)
         # Keep runtime CFG / plugin manager in sync with what we just wrote so snatch
         # does not reuse a stale ClientPlugin ctx (empty username after save).

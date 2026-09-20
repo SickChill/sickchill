@@ -6,7 +6,7 @@ from configobj import ConfigObj
 
 from sickchill.plugins.api import PluginKind, clear_registry, register
 from sickchill.plugins.manager import PluginManager
-from sickchill.plugins.settings import migrate_legacy_sections, read_plugin_section
+from sickchill.plugins.settings import migrate_legacy_sections, read_notifier_section
 
 
 class WebhookNotifierBatchTests(unittest.TestCase):
@@ -32,17 +32,18 @@ class WebhookNotifierBatchTests(unittest.TestCase):
         self.assertTrue(migrate_legacy_sections(cfg, self.classes))
         for section in ("Slack", "Telegram", "Gotify"):
             self.assertNotIn(section, cfg)
+        self.assertNotIn("extensions", cfg)
 
         self.manager._cfg = cfg
         self.manager.discover()
         enabled = {p.id for p in self.manager.enabled(PluginKind.NOTIFIER)}
         self.assertEqual(enabled, {"slack", "telegram", "gotify"})
 
-        slack = read_plugin_section(cfg, PluginKind.NOTIFIER, "slack")
+        slack = read_notifier_section(cfg, "slack")
         self.assertIn("hooks.slack.com", slack.get("webhook", ""))
-        telegram = read_plugin_section(cfg, PluginKind.NOTIFIER, "telegram")
+        telegram = read_notifier_section(cfg, "telegram")
         self.assertEqual(telegram.get("id"), "123")
-        gotify = read_plugin_section(cfg, PluginKind.NOTIFIER, "gotify")
+        gotify = read_notifier_section(cfg, "gotify")
         self.assertEqual(gotify.get("host"), "http://gotify.local/")
 
     def test_all_first_party_notifiers_load(self):

@@ -156,6 +156,110 @@ class ClientPluginTests(unittest.TestCase):
         self.assertEqual(read_client_section(cfg, "blackhole").get("nzb_dir"), "/nzb")
         self.assertEqual(read_client_section(cfg, "blackhole").get("torrent_dir"), "/torrent")
 
+    def test_blackhole_dirs_survive_empty_inactive_panel_write(self):
+        """Hidden blackhole panel must not wipe the other method's dir on CLIENTS write."""
+        from sickchill import settings as sc_settings
+        from sickchill.plugins.clients.config import sync_clients_from_settings, write_clients_to_cfg
+
+        cfg = ConfigObj()
+        cfg.indent_type = "  "
+        write_client_section(
+            cfg,
+            "blackhole",
+            {"nzb_dir": "/nzb/blackhole", "torrent_dir": "/torrent/blackhole"},
+        )
+        sc_settings.TORRENT_METHOD = "qbittorrent"
+        sc_settings.NZB_METHOD = "sabnzbd"
+        # Simulate inactive panels posting empty dirs into settings before save_config.
+        sc_settings.NZB_DIR = ""
+        sc_settings.TORRENT_DIR = ""
+        write_clients_to_cfg(cfg)
+        bh = read_client_section(cfg, "blackhole")
+        self.assertEqual(bh.get("nzb_dir"), "/nzb/blackhole")
+        self.assertEqual(bh.get("torrent_dir"), "/torrent/blackhole")
+
+        sync_clients_from_settings(cfg)
+        self.assertEqual(sc_settings.NZB_DIR, "/nzb/blackhole")
+        self.assertEqual(sc_settings.TORRENT_DIR, "/torrent/blackhole")
+
+    def test_download_station_write_uses_torrent_fields_and_strips_pollution(self):
+        """Torrent-method DS must persist torrent_host into DSM keys and drop qbit leftovers."""
+        from sickchill import settings as sc_settings
+        from sickchill.plugins.clients.config import sync_clients_from_settings, write_clients_to_cfg
+
+        cfg = ConfigObj()
+        cfg.indent_type = "  "
+        write_client_section(
+            cfg,
+            "download_station",
+            {
+                "host": "http://old-qbit:8080/",
+                "username": "qbit",
+                "password": "qbit",
+                "path": "/qbt",
+                "path_incomplete": "/qbt2",
+                "label": "tv",
+                "seed_time": "5",
+            },
+        )
+        sc_settings.TORRENT_METHOD = "download_station"
+        sc_settings.NZB_METHOD = "blackhole"
+        sc_settings.TORRENT_HOST = "http://nas:5000/"
+        sc_settings.TORRENT_USERNAME = "dsmuser"
+        sc_settings.TORRENT_PASSWORD = "dsmpass"
+        sc_settings.TORRENT_PATH = "/volume1/downloads"
+        sc_settings.SYNOLOGY_DSM_HOST = "http://stale-hidden-form:8080/"
+        sc_settings.SYNOLOGY_DSM_USERNAME = "stale"
+        sc_settings.SYNOLOGY_DSM_PASSWORD = "stale"
+        sc_settings.SYNOLOGY_DSM_PATH = "/stale"
+
+        write_clients_to_cfg(cfg)
+        ds = read_client_section(cfg, "download_station")
+        self.assertEqual(ds.get("host"), "http://nas:5000/")
+        self.assertEqual(ds.get("username"), "dsmuser")
+        self.assertEqual(ds.get("password"), "dsmpass")
+        self.assertEqual(ds.get("path"), "/volume1/downloads")
+        self.assertNotIn("path_incomplete", ds)
+        self.assertNotIn("label", ds)
+        self.assertNotIn("seed_time", ds)
+
+        sc_settings.TORRENT_HOST = ""
+        sc_settings.SYNOLOGY_DSM_HOST = ""
+        sync_clients_from_settings(cfg)
+        self.assertEqual(sc_settings.TORRENT_HOST, "http://nas:5000/")
+        self.assertEqual(sc_settings.SYNOLOGY_DSM_HOST, "http://nas:5000/")
+
+    def test_write_clients_does_not_blank_existing_torrent_section(self):
+        """Regression: empty settings.TORRENT_* must not wipe [CLIENTS][[qbittorrent]] on save."""
+        from sickchill import settings as sc_settings
+        from sickchill.plugins.clients.config import write_clients_to_cfg
+
+        cfg = ConfigObj()
+        cfg.indent_type = "  "
+        write_client_section(
+            cfg,
+            "qbittorrent",
+            {
+                "host": "http://localhost:8080/",
+                "username": "sickchill",
+                "password": "sickchill",
+                "path": "/QBT1",
+                "path_incomplete": "/QBT2",
+            },
+        )
+        sc_settings.TORRENT_METHOD = "qbittorrent"
+        sc_settings.TORRENT_HOST = ""
+        sc_settings.TORRENT_USERNAME = ""
+        sc_settings.TORRENT_PASSWORD = ""
+        sc_settings.TORRENT_PATH = ""
+        sc_settings.TORRENT_PATH_INCOMPLETE = ""
+        sc_settings.NZB_METHOD = "blackhole"
+        write_clients_to_cfg(cfg)
+        section = read_client_section(cfg, "qbittorrent")
+        self.assertEqual(section.get("host"), "http://localhost:8080/")
+        self.assertEqual(section.get("username"), "sickchill")
+        self.assertEqual(section.get("path"), "/QBT1")
+
     def test_synology_dsm_moves_to_download_station_keeps_use_synoindex(self):
         cfg = ConfigObj()
         cfg.indent_type = "  "

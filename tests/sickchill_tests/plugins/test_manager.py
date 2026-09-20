@@ -37,7 +37,7 @@ class ManagerTests(unittest.TestCase):
         self.assertEqual(self.manager.enabled(PluginKind.NOTIFIER), [])
         self.assertIsNone(self.manager.instance(PluginKind.NOTIFIER, "fake"))
 
-        cfg["extensions"] = {"notifiers": {"fake": {"enabled": True, "webhook": "https://example.test"}}}
+        cfg["NOTIFIERS"] = {"fake": {"enabled": True, "webhook": "https://example.test"}}
         first = self.manager.instance(PluginKind.NOTIFIER, "fake")
         second = self.manager.instance(PluginKind.NOTIFIER, "fake")
         self.assertIsNotNone(first)
@@ -47,11 +47,9 @@ class ManagerTests(unittest.TestCase):
     def test_context_isolation(self):
         cfg = ConfigObj()
         cfg.indent_type = "  "
-        cfg["extensions"] = {
-            "notifiers": {
-                "fake": {"enabled": True, "webhook": "https://a.test"},
-                "other": {"enabled": True, "webhook": "https://b.test"},
-            }
+        cfg["NOTIFIERS"] = {
+            "fake": {"enabled": True, "webhook": "https://a.test"},
+            "other": {"enabled": True, "webhook": "https://b.test"},
         }
 
         @register
@@ -68,8 +66,18 @@ class ManagerTests(unittest.TestCase):
         self.assertEqual(fake.ctx.get("webhook"), "https://a.test")
         self.assertNotIn("https://b.test", fake.ctx.settings.values())
         fake.ctx.update(webhook="https://updated.test")
-        self.assertEqual(cfg["extensions"]["notifiers"]["fake"]["webhook"], "https://updated.test")
-        self.assertEqual(cfg["extensions"]["notifiers"]["other"]["webhook"], "https://b.test")
+        self.assertEqual(cfg["NOTIFIERS"]["fake"]["webhook"], "https://updated.test")
+        self.assertEqual(cfg["NOTIFIERS"]["other"]["webhook"], "https://b.test")
+
+    def test_instance_reads_from_notifiers(self):
+        cfg = ConfigObj()
+        cfg.indent_type = "  "
+        cfg["NOTIFIERS"] = {"fake": {"enabled": True, "webhook": "https://notifiers-section"}}
+        self.manager._cfg = cfg
+        self.manager.discover()
+        plugin = self.manager.instance(PluginKind.NOTIFIER, "fake")
+        self.assertIsNotNone(plugin)
+        self.assertEqual(plugin.ctx.get("webhook"), "https://notifiers-section")
 
     def test_import_does_not_load_providers(self):
         import ast
