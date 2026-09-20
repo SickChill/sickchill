@@ -54,7 +54,6 @@ ADDIC7ED_USER = None
 ADD_SHOWS_WITH_YEAR = False
 ADD_SHOWS_WO_DIR = False
 AIRDATE_EPISODES = False
-# Include common subtitle formats (ass/ssa/srt) so MOVE_ASSOCIATED_FILES keeps them by default.
 ALLOWED_EXTENSIONS = "srt,ass,ssa,nfo,srr,sfv"
 ALLOW_HIGH_PRIORITY = False
 ANIDB_PASSWORD = None

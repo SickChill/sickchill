@@ -198,8 +198,6 @@ class PostProcessor(object):
             # Define associated files (all, allowed, and non-allowed)
             if os.path.isfile(associated_file_path):
                 # check if allowed or not during post-processing
-                # Compare real extension (Path.suffix, no leading dot). Empty ALLOWED_EXTENSIONS
-                # means allow all — same as the old endswith(()) quirk when the list was empty.
                 allowed_exts = {ext.strip().lstrip(".").lower() for ext in settings.ALLOWED_EXTENSIONS.split(",") if ext.strip()}
                 file_ext = Path(associated_file_path).suffix.lstrip(".").lower()
                 if settings.MOVE_ASSOCIATED_FILES and (not allowed_exts or file_ext in allowed_exts):
