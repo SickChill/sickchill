@@ -4,7 +4,7 @@ import os
 from tornado.web import addslash
 
 import sickchill.start
-from sickchill import settings
+from sickchill import logger, settings
 from sickchill.helper.common import try_float
 from sickchill.oldbeard import config, ui
 from sickchill.oldbeard.providers.newznab import NewznabProvider
@@ -337,8 +337,8 @@ class ConfigProviders(Config):
 
             if settings.CFG is not None:
                 write_providers_to_cfg(settings.CFG)
-        except Exception:
-            pass
+        except Exception as error:
+            logger.debug("Could not pre-write provider settings to CFG before save_config: %s", error)
         sickchill.start.save_config()
 
         # Add a site_message if no providers are enabled for daily and/or backlog

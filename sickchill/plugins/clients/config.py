@@ -134,8 +134,10 @@ def sync_clients_from_settings(cfg: ConfigObj) -> None:
         _apply_section_to_settings(read_client_section(cfg, method), _TORRENT_FIELDS)
 
     nzb_method = getattr(sc_settings, "NZB_METHOD", None) or ""
-    if nzb_method == "download_station" and method != "download_station" and download_station:
-        # NZB-only DS: still expose host on TORRENT_* for shared client code paths.
+    # Do not overwrite TORRENT_* when an actual torrent client (qbit/transmission/…) is active.
+    torrent_client_active = bool(method) and method not in ("blackhole", "download_station") and method in TORRENT_CLIENT_IDS
+    if nzb_method == "download_station" and not torrent_client_active and download_station:
+        # NZB DS with no competing torrent client: expose host on TORRENT_* for shared paths.
         if download_station.get("host") not in (None, ""):
             sc_settings.TORRENT_HOST = _coerce_settings_value("str", download_station.get("host"))
         if download_station.get("username") not in (None, ""):

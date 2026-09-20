@@ -177,13 +177,16 @@ class ConfigSearch(Config):
             section = read_client_section(cfg, "blackhole") if cfg is not None else {}
             return json.dumps({"torrent_dir": section.get("torrent_dir") or settings.TORRENT_DIR or ""})
 
+        def _secret(value):
+            return filters.hide(value or "")
+
         if method == "download_station":
             section = read_client_section(cfg, "download_station") if cfg is not None else {}
             return json.dumps(
                 {
                     "host": section.get("host") or default_host.get(method, ""),
                     "username": section.get("username") or "",
-                    "password": section.get("password") or "",
+                    "password": _secret(section.get("password")),
                     "path": section.get("path") or "",
                     "path_incomplete": "",
                     "label": "",
@@ -209,7 +212,7 @@ class ConfigSearch(Config):
             {
                 "host": _get("host", default_host.get(method, "")),
                 "username": _get("username", ""),
-                "password": _get("password", ""),
+                "password": _secret(_get("password", "")),
                 "path": _get("path", ""),
                 "path_incomplete": _get("path_incomplete", ""),
                 "label": _get("label", ""),
@@ -239,13 +242,16 @@ class ConfigSearch(Config):
             section = read_client_section(cfg, "blackhole") if cfg is not None else {}
             return json.dumps({"nzb_dir": section.get("nzb_dir") or settings.NZB_DIR or ""})
 
+        def _secret(value):
+            return filters.hide(value or "")
+
         if method == "download_station":
             section = read_client_section(cfg, "download_station") if cfg is not None else {}
             return json.dumps(
                 {
                     "host": section.get("host") or default_host.get(method, ""),
                     "username": section.get("username") or "",
-                    "password": section.get("password") or "",
+                    "password": _secret(section.get("password")),
                     "path": section.get("path") or "",
                 }
             )
@@ -263,8 +269,8 @@ class ConfigSearch(Config):
                 {
                     "host": _get("host", ""),
                     "username": _get("username", ""),
-                    "password": _get("password", ""),
-                    "apikey": _get("apikey", ""),
+                    "password": _secret(_get("password", "")),
+                    "apikey": _secret(_get("apikey", "")),
                     "category": _get("category", "tv"),
                     "category_backlog": _get("category_backlog", ""),
                     "category_anime": _get("category_anime", "anime"),
@@ -278,7 +284,7 @@ class ConfigSearch(Config):
                 {
                     "host": _get("host", ""),
                     "username": _get("username", "nzbget"),
-                    "password": _get("password", ""),
+                    "password": _secret(_get("password", "")),
                     "category": _get("category", "tv"),
                     "category_backlog": _get("category_backlog", ""),
                     "category_anime": _get("category_anime", "anime"),

@@ -403,9 +403,20 @@ def apply_providers_from_cfg(cfg: ConfigObj) -> None:
             default = getattr(provider, "api_key", "") or ""
             provider.api_key = _section_or_peek(cfg, provider, "api_key", default, "str")
 
-        for field in ("hash", "digest", "username", "password", "passkey", "pin", "cookies"):
+        for field in ("hash", "digest", "username", "passkey", "pin", "cookies"):
             if hasattr(provider, field):
                 setattr(provider, field, _section_or_peek(cfg, provider, field, "", "str"))
+
+        if hasattr(provider, "password"):
+            section = read_provider_section(cfg, provider_id)
+            if "password" in section and section.get("password") not in (None, ""):
+                from sickchill import settings as sc_settings
+                from sickchill.oldbeard import helpers
+
+                provider.password = helpers.decrypt(section.get("password") or "", sc_settings.ENCRYPTION_VERSION)
+            else:
+                # Legacy [ID] peek still decrypts via peek_setting_str (*password* item name).
+                provider.password = _section_or_peek(cfg, provider, "password", "", "str")
 
         if hasattr(provider, "confirmed"):
             provider.confirmed = _section_or_peek(cfg, provider, "confirmed", True, "bool")

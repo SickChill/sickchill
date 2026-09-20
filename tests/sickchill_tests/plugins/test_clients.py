@@ -44,6 +44,13 @@ class ClientPluginTests(unittest.TestCase):
         "TORRENT_PATH",
         "TORRENT_PATH_INCOMPLETE",
         "TORRENT_RPCURL",
+        "TORRENT_LABEL",
+        "TORRENT_LABEL_ANIME",
+        "TORRENT_PAUSED",
+        "TORRENT_SEED_TIME",
+        "TORRENT_VERIFY_CERT",
+        "TORRENT_HIGH_BANDWIDTH",
+        "TORRENT_AUTH_TYPE",
         "NZB_METHOD",
         "NZB_DIR",
         "TORRENT_DIR",
@@ -51,12 +58,24 @@ class ClientPluginTests(unittest.TestCase):
         "SAB_USERNAME",
         "SAB_PASSWORD",
         "SAB_APIKEY",
+        "SAB_CATEGORY",
+        "SAB_CATEGORY_BACKLOG",
+        "SAB_CATEGORY_ANIME",
+        "SAB_CATEGORY_ANIME_BACKLOG",
+        "SAB_FORCED",
         "NZBGET_HOST",
         "NZBGET_USERNAME",
         "NZBGET_PASSWORD",
+        "NZBGET_CATEGORY",
+        "NZBGET_CATEGORY_BACKLOG",
+        "NZBGET_CATEGORY_ANIME",
+        "NZBGET_CATEGORY_ANIME_BACKLOG",
+        "NZBGET_USE_HTTPS",
+        "NZBGET_PRIORITY",
         "SYNOLOGY_DSM_HOST",
         "SYNOLOGY_DSM_USERNAME",
         "SYNOLOGY_DSM_PASSWORD",
+        "SYNOLOGY_DSM_PATH",
     )
 
     def setUp(self):
@@ -155,6 +174,30 @@ class ClientPluginTests(unittest.TestCase):
         self.assertEqual(read_client_section(cfg, "nzbget").get("username"), "nzb")
         self.assertEqual(read_client_section(cfg, "blackhole").get("nzb_dir"), "/nzb")
         self.assertEqual(read_client_section(cfg, "blackhole").get("torrent_dir"), "/torrent")
+
+    def test_nzb_download_station_does_not_overwrite_active_torrent_client(self):
+        """NZB DS sync must not clobber TORRENT_* when qBittorrent (etc.) is selected."""
+        from sickchill import settings as sc_settings
+        from sickchill.plugins.clients.config import sync_clients_from_settings
+
+        cfg = ConfigObj()
+        cfg.indent_type = "  "
+        write_client_section(
+            cfg,
+            "qbittorrent",
+            {"host": "http://qbit:8080", "username": "quser", "password": "qpass", "path": "/qbit"},
+        )
+        write_client_section(
+            cfg,
+            "download_station",
+            {"host": "http://dsm:5000", "username": "dsm", "password": "dsmpass", "path": "/volume1"},
+        )
+        sc_settings.TORRENT_METHOD = "qbittorrent"
+        sc_settings.NZB_METHOD = "download_station"
+        sync_clients_from_settings(cfg)
+        self.assertEqual(sc_settings.TORRENT_HOST, "http://qbit:8080")
+        self.assertEqual(sc_settings.TORRENT_USERNAME, "quser")
+        self.assertEqual(sc_settings.SYNOLOGY_DSM_HOST, "http://dsm:5000")
 
     def test_blackhole_dirs_survive_empty_inactive_panel_write(self):
         """Hidden blackhole panel must not wipe the other method's dir on CLIENTS write."""
