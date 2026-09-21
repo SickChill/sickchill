@@ -373,113 +373,161 @@ def _section_or_peek(cfg: ConfigObj, provider, field: str, default: Any, kind: s
     return _peek_legacy_field(cfg, provider_id, field, default, kind)
 
 
-def apply_providers_from_cfg(cfg: ConfigObj) -> None:
-    """Push [PROVIDERS][[id]] (peek legacy fallback) onto live provider objects."""
+# True after apply_providers_from_cfg(..., enabled_only=False). When False, write keeps
+# existing PROVIDERS fields for disabled providers so startup-enabled-only load cannot wipe them.
+_providers_full_settings_applied = False
+
+
+def _apply_provider_enabled(cfg: ConfigObj, provider) -> None:
+    """Always set ``provider.enabled`` from [PROVIDERS] (legacy peek fallback)."""
+    if not hasattr(provider, "enabled"):
+        return
+    provider_id = provider.get_id()
+    section = read_provider_section(cfg, provider_id)
+    if section and "enabled" in section:
+        enabled = _as_bool(section.get("enabled"), False)
+    else:
+        enabled = _peek_legacy_field(cfg, provider_id, "enabled", False, "bool")
+    can = bool(getattr(provider, "can_daily", True) or getattr(provider, "can_backlog", True))
+    provider.enabled = can and enabled
+
+
+def _apply_provider_options(cfg: ConfigObj, provider) -> None:
+    """Push credentials/options from [PROVIDERS] (legacy peek fallback) onto one provider."""
+    provider_id = provider.get_id()
+    section = read_provider_section(cfg, provider_id)
+
+    if hasattr(provider, "custom_url"):
+        default = getattr(provider, "custom_url", "") or ""
+        provider.custom_url = _section_or_peek(cfg, provider, "custom_url", default, "str")
+
+    if hasattr(provider, "api_key"):
+        default = getattr(provider, "api_key", "") or ""
+        provider.api_key = _section_or_peek(cfg, provider, "api_key", default, "str")
+
+    for field in ("hash", "digest", "username", "passkey", "pin", "cookies"):
+        if hasattr(provider, field):
+            setattr(provider, field, _section_or_peek(cfg, provider, field, "", "str"))
+
+    if hasattr(provider, "password"):
+        section = read_provider_section(cfg, provider_id)
+        if "password" in section and section.get("password") not in (None, ""):
+            from sickchill import settings as sc_settings
+            from sickchill.oldbeard import helpers
+
+            provider.password = helpers.decrypt(section.get("password") or "", sc_settings.ENCRYPTION_VERSION)
+        else:
+            # Legacy [ID] peek still decrypts via peek_setting_str (*password* item name).
+            provider.password = _section_or_peek(cfg, provider, "password", "", "str")
+
+    if hasattr(provider, "confirmed"):
+        provider.confirmed = _section_or_peek(cfg, provider, "confirmed", True, "bool")
+    if hasattr(provider, "ranked"):
+        provider.ranked = _section_or_peek(cfg, provider, "ranked", True, "bool")
+    if hasattr(provider, "engrelease"):
+        provider.engrelease = _section_or_peek(cfg, provider, "engrelease", False, "bool")
+    if hasattr(provider, "only_spanish_search"):
+        provider.only_spanish_search = _section_or_peek(cfg, provider, "only_spanish_search", False, "bool")
+    if hasattr(provider, "sorting"):
+        provider.sorting = _section_or_peek(cfg, provider, "sorting", "seeders", "str")
+    if hasattr(provider, "options"):
+        provider.options = _section_or_peek(cfg, provider, "options", "", "str")
+    if hasattr(provider, "ratio"):
+        provider.ratio = _section_or_peek(cfg, provider, "ratio", "", "str")
+    if hasattr(provider, "minseed"):
+        provider.minseed = _section_or_peek(cfg, provider, "minseed", 10, "int")
+    if hasattr(provider, "minleech"):
+        provider.minleech = _section_or_peek(cfg, provider, "minleech", 0, "int")
+    if hasattr(provider, "freeleech"):
+        provider.freeleech = _section_or_peek(cfg, provider, "freeleech", False, "bool")
+    if hasattr(provider, "search_mode"):
+        provider.search_mode = _section_or_peek(cfg, provider, "search_mode", "episode", "str")
+    if hasattr(provider, "search_fallback"):
+        provider.search_fallback = _section_or_peek(cfg, provider, "search_fallback", False, "bool")
+
+    if hasattr(provider, "enable_daily"):
+        raw = _section_or_peek(cfg, provider, "enable_daily", True, "bool")
+        provider.enable_daily = bool(getattr(provider, "can_daily", True)) and bool(raw)
+    if hasattr(provider, "enable_backlog"):
+        default_bl = bool(getattr(provider, "can_backlog", False))
+        raw = _section_or_peek(cfg, provider, "enable_backlog", default_bl, "bool")
+        provider.enable_backlog = bool(getattr(provider, "can_backlog", True)) and bool(raw)
+
+    if hasattr(provider, "cat"):
+        provider.cat = _section_or_peek(cfg, provider, "cat", 0, "int")
+    if hasattr(provider, "subtitle"):
+        provider.subtitle = _section_or_peek(cfg, provider, "subtitle", False, "bool")
+    if hasattr(provider, "indexer"):
+        provider.indexer = _section_or_peek(cfg, provider, "indexer", "all", "str")
+
+    if getattr(provider, "uses_configurable_categories", False):
+        default_cats = getattr(provider, "categories", "") or _DEFAULT_CATEGORIES
+        provider.categories = _section_or_peek(cfg, provider, "categories", default_cats, "str")
+
+    # Custom-only fields when present on the object
+    if getattr(provider, "provider_type", None) is not None:
+        section_type = section.get("type") if section else None
+        if section_type == "newznab":
+            if hasattr(provider, "url") and "url" in section:
+                provider.url = section.get("url") or provider.url
+            if hasattr(provider, "key") and "key" in section:
+                provider.key = section.get("key") or ""
+                provider.needs_auth = bool(provider.key) and provider.key != "0"
+            if hasattr(provider, "name") and section.get("name"):
+                provider.name = section["name"]
+        elif section_type == "torrentrss":
+            if hasattr(provider, "url") and "url" in section:
+                provider.url = (section.get("url") or provider.url or "").rstrip("/")
+            if hasattr(provider, "titleTAG") and "titleTAG" in section:
+                provider.titleTAG = section.get("titleTAG") or "title"
+            if hasattr(provider, "name") and section.get("name"):
+                provider.name = section["name"]
+
+
+def _normalize_provider_order() -> None:
+    """Keep PROVIDER_ORDER as enabled-only ids that still exist (strip stale / disabled / id:flag)."""
+    from sickchill import settings as sc_settings
+
+    provider_dict: dict[str, Any] = {x.get_id(): x for x in (sc_settings.providerList or [])}
+    reserved_ids = set(provider_dict)
+    for custom in (sc_settings.newznab_provider_list or []) + (sc_settings.torrent_rss_provider_list or []):
+        custom_id = custom.get_id()
+        if custom_id and custom_id not in reserved_ids:
+            provider_dict[custom_id] = custom
+
+    normalized: list[str] = []
+    for entry in sc_settings.PROVIDER_ORDER or []:
+        provider_id = entry.split(":", 1)[0] if entry else ""
+        if not provider_id or provider_id in normalized:
+            continue
+        provider = provider_dict.get(provider_id)
+        if provider is not None and getattr(provider, "enabled", False):
+            normalized.append(provider_id)
+    sc_settings.PROVIDER_ORDER = normalized
+
+
+def apply_providers_from_cfg(cfg: ConfigObj, *, enabled_only: bool = True) -> None:
+    """Push [PROVIDERS][[id]] (peek legacy fallback) onto live provider objects.
+
+    Always sets ``.enabled``. When ``enabled_only`` (startup default), credentials/options
+    are applied only for enabled providers. Pass ``enabled_only=False`` when opening the
+    Providers config UI so disabled providers show saved fields.
+    """
+    global _providers_full_settings_applied
+
     if cfg is None:
         return
 
     from sickchill.oldbeard.providers import sorted_provider_list
 
     for provider in sorted_provider_list():
-        provider_id = provider.get_id()
-        section = read_provider_section(cfg, provider_id)
-        has_providers = bool(section)
+        _apply_provider_enabled(cfg, provider)
+        if enabled_only and not getattr(provider, "enabled", False):
+            continue
+        _apply_provider_options(cfg, provider)
 
-        # enabled
-        if hasattr(provider, "enabled"):
-            default_enabled = False
-            if has_providers and "enabled" in section:
-                enabled = _as_bool(section.get("enabled"), False)
-            else:
-                enabled = _peek_legacy_field(cfg, provider_id, "enabled", default_enabled, "bool")
-            can = bool(getattr(provider, "can_daily", True) or getattr(provider, "can_backlog", True))
-            provider.enabled = can and enabled
-
-        if hasattr(provider, "custom_url"):
-            default = getattr(provider, "custom_url", "") or ""
-            provider.custom_url = _section_or_peek(cfg, provider, "custom_url", default, "str")
-
-        if hasattr(provider, "api_key"):
-            default = getattr(provider, "api_key", "") or ""
-            provider.api_key = _section_or_peek(cfg, provider, "api_key", default, "str")
-
-        for field in ("hash", "digest", "username", "passkey", "pin", "cookies"):
-            if hasattr(provider, field):
-                setattr(provider, field, _section_or_peek(cfg, provider, field, "", "str"))
-
-        if hasattr(provider, "password"):
-            section = read_provider_section(cfg, provider_id)
-            if "password" in section and section.get("password") not in (None, ""):
-                from sickchill import settings as sc_settings
-                from sickchill.oldbeard import helpers
-
-                provider.password = helpers.decrypt(section.get("password") or "", sc_settings.ENCRYPTION_VERSION)
-            else:
-                # Legacy [ID] peek still decrypts via peek_setting_str (*password* item name).
-                provider.password = _section_or_peek(cfg, provider, "password", "", "str")
-
-        if hasattr(provider, "confirmed"):
-            provider.confirmed = _section_or_peek(cfg, provider, "confirmed", True, "bool")
-        if hasattr(provider, "ranked"):
-            provider.ranked = _section_or_peek(cfg, provider, "ranked", True, "bool")
-        if hasattr(provider, "engrelease"):
-            provider.engrelease = _section_or_peek(cfg, provider, "engrelease", False, "bool")
-        if hasattr(provider, "only_spanish_search"):
-            provider.only_spanish_search = _section_or_peek(cfg, provider, "only_spanish_search", False, "bool")
-        if hasattr(provider, "sorting"):
-            provider.sorting = _section_or_peek(cfg, provider, "sorting", "seeders", "str")
-        if hasattr(provider, "options"):
-            provider.options = _section_or_peek(cfg, provider, "options", "", "str")
-        if hasattr(provider, "ratio"):
-            provider.ratio = _section_or_peek(cfg, provider, "ratio", "", "str")
-        if hasattr(provider, "minseed"):
-            provider.minseed = _section_or_peek(cfg, provider, "minseed", 10, "int")
-        if hasattr(provider, "minleech"):
-            provider.minleech = _section_or_peek(cfg, provider, "minleech", 0, "int")
-        if hasattr(provider, "freeleech"):
-            provider.freeleech = _section_or_peek(cfg, provider, "freeleech", False, "bool")
-        if hasattr(provider, "search_mode"):
-            provider.search_mode = _section_or_peek(cfg, provider, "search_mode", "episode", "str")
-        if hasattr(provider, "search_fallback"):
-            provider.search_fallback = _section_or_peek(cfg, provider, "search_fallback", False, "bool")
-
-        if hasattr(provider, "enable_daily"):
-            raw = _section_or_peek(cfg, provider, "enable_daily", True, "bool")
-            provider.enable_daily = bool(getattr(provider, "can_daily", True)) and bool(raw)
-        if hasattr(provider, "enable_backlog"):
-            default_bl = bool(getattr(provider, "can_backlog", False))
-            raw = _section_or_peek(cfg, provider, "enable_backlog", default_bl, "bool")
-            provider.enable_backlog = bool(getattr(provider, "can_backlog", True)) and bool(raw)
-
-        if hasattr(provider, "cat"):
-            provider.cat = _section_or_peek(cfg, provider, "cat", 0, "int")
-        if hasattr(provider, "subtitle"):
-            provider.subtitle = _section_or_peek(cfg, provider, "subtitle", False, "bool")
-        if hasattr(provider, "indexer"):
-            provider.indexer = _section_or_peek(cfg, provider, "indexer", "all", "str")
-
-        if getattr(provider, "uses_configurable_categories", False):
-            default_cats = getattr(provider, "categories", "") or _DEFAULT_CATEGORIES
-            provider.categories = _section_or_peek(cfg, provider, "categories", default_cats, "str")
-
-        # Custom-only fields when present on the object
-        if getattr(provider, "provider_type", None) is not None:
-            section_type = section.get("type") if section else None
-            if section_type == "newznab":
-                if hasattr(provider, "url") and "url" in section:
-                    provider.url = section.get("url") or provider.url
-                if hasattr(provider, "key") and "key" in section:
-                    provider.key = section.get("key") or ""
-                    provider.needs_auth = bool(provider.key) and provider.key != "0"
-                if hasattr(provider, "name") and section.get("name"):
-                    provider.name = section["name"]
-            elif section_type == "torrentrss":
-                if hasattr(provider, "url") and "url" in section:
-                    provider.url = (section.get("url") or provider.url or "").rstrip("/")
-                if hasattr(provider, "titleTAG") and "titleTAG" in section:
-                    provider.titleTAG = section.get("titleTAG") or "title"
-                if hasattr(provider, "name") and section.get("name"):
-                    provider.name = section["name"]
+    _providers_full_settings_applied = not enabled_only
+    _normalize_provider_order()
 
 
 def _provider_to_section(provider) -> dict[str, Any]:
@@ -551,7 +599,11 @@ def _provider_to_section(provider) -> dict[str, Any]:
 
 
 def write_providers_to_cfg(cfg: ConfigObj) -> None:
-    """Persist live providers into [PROVIDERS]; drop legacy [ID] / Newznab / TorrentRss."""
+    """Persist live providers into [PROVIDERS]; drop legacy [ID] / Newznab / TorrentRss.
+
+    After writing live ``seen_ids``, delete any ``PROVIDERS[[id]]`` not in that set
+    (skip ``#`` comment keys) so deleted custom Newznab/TorrentRSS cannot resurrect.
+    """
     if cfg is None:
         return
 
@@ -563,7 +615,24 @@ def write_providers_to_cfg(cfg: ConfigObj) -> None:
         if not provider_id:
             continue
         seen_ids.add(provider_id)
+        # Startup may have loaded credentials only for enabled providers; keep existing
+        # PROVIDERS fields for disabled ones until a full apply (Providers UI) has run.
+        if not getattr(provider, "enabled", False) and not _providers_full_settings_applied:
+            existing = read_provider_section(cfg, provider_id)
+            if existing:
+                data = dict(existing)
+                data["enabled"] = False
+                write_provider_section(cfg, provider_id, data)
+                continue
         write_provider_section(cfg, provider_id, _provider_to_section(provider))
+
+    # Prune deleted customs / stale PROVIDERS[[id]] entries
+    if "PROVIDERS" in cfg and hasattr(cfg["PROVIDERS"], "keys"):
+        for provider_id in list(cfg["PROVIDERS"].keys()):
+            if str(provider_id).startswith("#"):
+                continue
+            if provider_id not in seen_ids:
+                del cfg["PROVIDERS"][provider_id]
 
     # Remove leftover legacy per-provider sections for known ids
     for provider_id in list(seen_ids) + list(_first_party_provider_ids()):

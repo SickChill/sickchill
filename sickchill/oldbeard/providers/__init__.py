@@ -152,23 +152,33 @@ def sorted_provider_list(randomize=False, only_enabled=False) -> List[Union[Torr
         provider_dict[custom_id] = custom
 
     new_provider_list: provider_types = []
+    seen: set = set()
 
-    # add all modules in the priority list, in order
+    # Enabled providers: PROVIDER_ORDER priority, then any other enabled not listed
     for provider_id in settings.PROVIDER_ORDER:
-        if provider_id in provider_dict:
-            new_provider_list.append(provider_dict[provider_id])
+        provider_id = provider_id.split(":", 1)[0] if provider_id else ""
+        module = provider_dict.get(provider_id)
+        if module is None or not getattr(module, "enabled", False):
+            continue
+        if provider_id in seen:
+            continue
+        new_provider_list.append(module)
+        seen.add(provider_id)
 
-    # add all enabled providers first
     for module in provider_dict.values():
-        if module not in new_provider_list and module.is_active:
-            new_provider_list.append(module)
+        provider_id = module.get_id()
+        if provider_id in seen or not getattr(module, "enabled", False):
+            continue
+        new_provider_list.append(module)
+        seen.add(provider_id)
 
-    # add any modules that are missing from that list
-    for module in provider_dict.values():
-        if module not in new_provider_list:
-            new_provider_list.append(module)
+    # Disabled providers: alphabetical by display name after the enabled block
+    disabled = [module for module in provider_dict.values() if module.get_id() not in seen]
+    disabled.sort(key=lambda provider: (provider.name or provider.get_id() or "").lower())
+    new_provider_list.extend(disabled)
 
     if only_enabled:
+        # Media-type filter (USE_NZBS / USE_TORRENTS), not checkbox-enabled
         new_provider_list = [
             module
             for module in new_provider_list

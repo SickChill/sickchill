@@ -800,18 +800,25 @@
                                     <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                         <div class="row">
                                             <div class="col-md-12">
-                                                <select id="newznab_cap" multiple="multiple" style="min-width:10em;"></select>
-                                                <select id="newznab_cat" multiple="multiple" style="min-width:10em;"></select>
+                                                <select id="newznab_cap" multiple="multiple" style="min-width:12em; min-height:8em;" title="${_('Available categories')}"></select>
+                                                <select id="newznab_cat" multiple="multiple" style="min-width:12em; min-height:8em;" title="${_('Selected categories')}"></select>
                                             </div>
                                         </div>
                                         <div class="row">
                                             <div class="col-md-12">
-                                                <label><b>${_('select your Newznab categories on the left, and click the "update categories" button to use them for searching.) <b>don\'t forget to to save the form!')}</b></label>
+                                                <label><b>${_('Select TV categories on the left, then click Update Categories. Don\'t forget to save the form.')}</b></label>
                                             </div>
                                         </div>
                                         <div class="row">
                                             <div class="col-md-12">
+                                                <input class="btn" type="button" id="newznab_cat_fetch" value="${_('Fetch Categories')}" disabled />
                                                 <input class="btn newznab_cat_update" type="button" id="newznab_cat_update" value="${_('Update Categories')}" disabled />
+                                                <span class="updating_categories"></span>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <label>${_('Saved category ids')}: <code id="newznab_categories_display"></code></label>
                                             </div>
                                         </div>
                                     </div>

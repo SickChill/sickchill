@@ -19,6 +19,15 @@ from sickchill.views.routes import Route
 class ConfigProviders(Config):
     @addslash
     def index(self):
+        # Lazy full load so disabled providers show real saved credentials/options in the UI.
+        if settings.CFG is not None:
+            try:
+                from sickchill.plugins.providers.config import apply_providers_from_cfg
+
+                apply_providers_from_cfg(settings.CFG, enabled_only=False)
+            except Exception as error:
+                logger.debug("Could not fully apply provider settings for Providers UI: %s", error)
+
         t = PageTemplate(rh=self, filename="config_providers.mako")
 
         return t.render(
@@ -261,9 +270,8 @@ class ConfigProviders(Config):
             settings.torrent_rss_provider_list = [provider for provider in settings.torrent_rss_provider_list if provider.get_id() in keep_ids]
             torrent_rss_provider_dict = {provider.get_id(): provider for provider in settings.torrent_rss_provider_list}
 
-        # do the enable/disable
+        # do the enable/disable — POST still uses id:0/id:1 for all list items; persist enabled-only order
         enabled_provider_list = []
-        disabled_provider_list = []
         known_provider_ids = {provider.get_id() for provider in sickchill.oldbeard.providers.sorted_provider_list()}
         known_provider_ids.update(newznab_provider_dict)
         known_provider_ids.update(torrent_rss_provider_dict)
@@ -284,8 +292,6 @@ class ConfigProviders(Config):
 
             if enabled:
                 enabled_provider_list.append(provider_id)
-            else:
-                disabled_provider_list.append(provider_id)
 
             if provider_id in newznab_provider_dict:
                 newznab_provider_dict[provider_id].enabled = enabled
@@ -328,7 +334,7 @@ class ConfigProviders(Config):
             provider.check_set_option(self, "ratio", 0, cast=lambda x: max(try_float(x), -1))
 
         settings.NEWZNAB_DATA = "!!!".join([x.config_string() for x in settings.newznab_provider_list])
-        settings.PROVIDER_ORDER = enabled_provider_list + disabled_provider_list
+        settings.PROVIDER_ORDER = enabled_provider_list
 
         self.log_configuration_save("Search Providers")
         # save_config → write_providers_to_cfg persists [PROVIDERS][[id]] (no legacy [ID] / blobs).

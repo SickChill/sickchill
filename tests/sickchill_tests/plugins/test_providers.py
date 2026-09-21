@@ -11,7 +11,7 @@ from sickchill import settings
 from sickchill.oldbeard.config import peek_setting_bool, peek_setting_str
 from sickchill.plugins.api import PluginKind, clear_registry
 from sickchill.plugins.manager import PluginManager
-from sickchill.plugins.providers import load_first_party_providers
+from sickchill.plugins.providers import config as providers_config, load_first_party_providers
 from sickchill.plugins.providers.config import (
     apply_providers_from_cfg,
     migrate_provider_sections,
@@ -32,18 +32,23 @@ class ProviderPluginTests(unittest.TestCase):
             "NEWZNAB_DATA": settings.NEWZNAB_DATA,
             "CFG": settings.CFG,
             "ENCRYPTION_VERSION": settings.ENCRYPTION_VERSION,
+            "USE_NZBS": settings.USE_NZBS,
+            "USE_TORRENTS": settings.USE_TORRENTS,
         }
+        self._saved_full_applied = providers_config._providers_full_settings_applied
         settings.providerList = []
         settings.newznab_provider_list = []
         settings.torrent_rss_provider_list = []
         settings.PROVIDER_ORDER = []
         settings.NEWZNAB_DATA = ""
         settings.ENCRYPTION_VERSION = 0
+        providers_config._providers_full_settings_applied = False
 
     def tearDown(self):
         clear_registry()
         for key, value in self._saved.items():
             setattr(settings, key, value)
+        providers_config._providers_full_settings_applied = self._saved_full_applied
 
     def test_migrate_abnormal_legacy_section_to_providers(self):
         cfg = ConfigObj()
@@ -252,6 +257,154 @@ class ProviderPluginTests(unittest.TestCase):
         self.assertEqual(read_provider_section(cfg, "eztv").get("minseed"), 1)
         self.assertIn("PROVIDERS", cfg)
         self.assertNotIn("extensions", cfg)
+
+    def test_apply_enabled_only_skips_disabled_credentials(self):
+        cfg = ConfigObj()
+        cfg.indent_type = "  "
+        write_provider_section(
+            cfg,
+            "abnormal",
+            {"enabled": False, "username": "secret_user", "password": "secret_pw", "minseed": 7},
+        )
+
+        from sickchill.oldbeard.providers.abnormal import Provider as AbnormalProvider
+
+        provider = AbnormalProvider()
+        provider.enabled = True
+        provider.username = "init_user"
+        provider.password = "init_pw"
+        provider.minseed = 0
+
+        settings.providerList = [provider]
+        settings.PROVIDER_ORDER = ["abnormal"]
+
+        apply_providers_from_cfg(cfg, enabled_only=True)
+
+        self.assertFalse(provider.enabled)
+        self.assertEqual(provider.username, "init_user")
+        self.assertEqual(provider.password, "init_pw")
+        self.assertEqual(provider.minseed, 0)
+        self.assertEqual(settings.PROVIDER_ORDER, [])
+        self.assertFalse(providers_config._providers_full_settings_applied)
+
+        apply_providers_from_cfg(cfg, enabled_only=False)
+
+        self.assertFalse(provider.enabled)
+        self.assertEqual(provider.username, "secret_user")
+        self.assertEqual(provider.password, "secret_pw")
+        self.assertEqual(provider.minseed, 7)
+        self.assertTrue(providers_config._providers_full_settings_applied)
+
+    def test_apply_normalizes_provider_order_to_enabled_existing(self):
+        cfg = ConfigObj()
+        cfg.indent_type = "  "
+        write_provider_section(cfg, "abnormal", {"enabled": True, "username": "u"})
+        write_provider_section(cfg, "eztv", {"enabled": False})
+
+        from sickchill.oldbeard.providers.abnormal import Provider as AbnormalProvider
+        from sickchill.oldbeard.providers.eztv import Provider as EztvProvider
+
+        abnormal = AbnormalProvider()
+        eztv = EztvProvider()
+        settings.providerList = [abnormal, eztv]
+        settings.PROVIDER_ORDER = ["eztv:0", "abnormal", "missing_provider", "abnormal:1"]
+
+        apply_providers_from_cfg(cfg, enabled_only=True)
+
+        self.assertTrue(abnormal.enabled)
+        self.assertFalse(eztv.enabled)
+        self.assertEqual(settings.PROVIDER_ORDER, ["abnormal"])
+
+    def test_sorted_provider_list_enabled_order_then_disabled_alpha(self):
+        from sickchill.oldbeard.providers import sorted_provider_list
+        from sickchill.oldbeard.providers.abnormal import Provider as AbnormalProvider
+        from sickchill.oldbeard.providers.eztv import Provider as EztvProvider
+        from sickchill.oldbeard.providers.nyaa import Provider as NyaaProvider
+
+        alpha = AbnormalProvider()
+        alpha.enabled = True
+        alpha.name = "Zulu Enabled"
+        beta = EztvProvider()
+        beta.enabled = True
+        beta.name = "Alpha Enabled"
+        disabled_b = NyaaProvider()
+        disabled_b.enabled = False
+        disabled_b.name = "Bravo Disabled"
+        # Second disabled via a duplicate-style fake using torrentrss custom
+        from sickchill.oldbeard.providers.rsstorrent import TorrentRssProvider
+
+        disabled_a = TorrentRssProvider("Alpha Disabled", "https://a.example/rss", "", "title")
+        disabled_a.enabled = False
+
+        settings.USE_TORRENTS = True
+        settings.USE_NZBS = True
+        settings.providerList = [alpha, beta, disabled_b]
+        settings.torrent_rss_provider_list = [disabled_a]
+        settings.newznab_provider_list = []
+        # Priority: Zulu before Alpha among enabled
+        settings.PROVIDER_ORDER = [alpha.get_id(), beta.get_id()]
+
+        ordered = sorted_provider_list()
+        ids = [p.get_id() for p in ordered]
+        self.assertEqual(ids[:2], [alpha.get_id(), beta.get_id()])
+        disabled_ids = ids[2:]
+        disabled_names = [p.name for p in ordered[2:]]
+        self.assertEqual(disabled_names, sorted(disabled_names, key=str.lower))
+        self.assertEqual(set(disabled_ids), {disabled_a.get_id(), disabled_b.get_id()})
+
+    def test_write_providers_prunes_orphan_sections(self):
+        cfg = ConfigObj()
+        cfg.indent_type = "  "
+        write_provider_section(cfg, "abnormal", {"enabled": True, "username": "u"})
+        write_provider_section(
+            cfg,
+            "orphan_custom",
+            {"type": "newznab", "name": "Orphan", "url": "https://orphan.example/", "key": "k", "enabled": False},
+        )
+
+        from sickchill.oldbeard.providers.abnormal import Provider as AbnormalProvider
+
+        provider = AbnormalProvider()
+        provider.enabled = True
+        provider.username = "u"
+        settings.providerList = [provider]
+        settings.newznab_provider_list = []
+        settings.torrent_rss_provider_list = []
+        settings.PROVIDER_ORDER = ["abnormal"]
+        providers_config._providers_full_settings_applied = True
+
+        write_providers_to_cfg(cfg)
+
+        self.assertIn("abnormal", cfg["PROVIDERS"])
+        self.assertNotIn("orphan_custom", cfg["PROVIDERS"])
+
+    def test_write_preserves_disabled_credentials_when_not_fully_loaded(self):
+        cfg = ConfigObj()
+        cfg.indent_type = "  "
+        write_provider_section(
+            cfg,
+            "abnormal",
+            {"enabled": False, "username": "keep_me", "password": "keep_pw", "minseed": 9},
+        )
+
+        from sickchill.oldbeard.providers.abnormal import Provider as AbnormalProvider
+
+        provider = AbnormalProvider()
+        provider.enabled = False
+        provider.username = None
+        provider.password = None
+        provider.minseed = 0
+        settings.providerList = [provider]
+        settings.PROVIDER_ORDER = []
+        providers_config._providers_full_settings_applied = False
+
+        write_providers_to_cfg(cfg)
+
+        section = read_provider_section(cfg, "abnormal")
+        self.assertEqual(section.get("username"), "keep_me")
+        self.assertEqual(section.get("password"), "keep_pw")
+        self.assertEqual(str(section.get("minseed")), "9")
+        self.assertTrue(section.get("enabled") in (False, "False", "false", 0, "0"))
 
 
 if __name__ == "__main__":
