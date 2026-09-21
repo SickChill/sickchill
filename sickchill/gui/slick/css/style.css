@@ -767,10 +767,10 @@ div.button {
 
 div.buttontext {
     display: table-cell;
+    width: 100%;
     padding-left: 20px;
     text-align: left;
     white-space: normal;
-    width: 100%;
 }
 
 div.buttontext h3 {
@@ -804,14 +804,14 @@ div.buttontext p {
     position: relative;
     top: 0;
     display: inline-flex;
+    width: 64px;
+    height: 72px;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 4px;
-    width: 64px;
-    height: 72px;
-    float: left;
     background: none;
+    float: left;
+    gap: 4px;
 }
 
 .add-list-icon-tmdb-tvmaze .add-list-logo {
@@ -931,16 +931,16 @@ home_trendingShows.mako
 /* Discovery list toolbars (Popular / Trending): title left, filters centered on same line */
 .discovery-toolbar {
     display: flex;
-    align-items: center;
     flex-wrap: wrap;
-    gap: 0.5em 1em;
+    align-items: center;
     margin-bottom: 0.75em;
+    gap: 0.5em 1em;
 }
 
 .discovery-toolbar .header,
 .discovery-toolbar .title {
-    margin: 0;
     flex: 0 0 auto;
+    margin: 0;
 }
 
 .discovery-filters {
@@ -2104,6 +2104,15 @@ config_postProcessing.mako
     background-color: #DFDEDE;
 }
 
+#notifier_enable_list .notifier_enable_list,
+.notifier_enable_list {
+    width: 100%;
+    max-width: 100%;
+    padding-left: 0;
+    margin-bottom: 0;
+    list-style-type: none;
+}
+
 .legend {
     position: relative;
     top: 2px;
@@ -2112,6 +2121,93 @@ config_postProcessing.mako
 /* =======================================================================
 config_notifications.mako
 ========================================================================== */
+
+#notifier_enable_list {
+    max-width: 100%;
+}
+
+#notifier_enable_list .notifier_enable_list li,
+.notifier_enable_list li {
+    overflow: hidden;
+    width: 70%;
+    box-sizing: border-box;
+    padding: 5px;
+    margin: 5px 0;
+    font-size: 14px;
+    line-height: 32px;
+}
+
+#notifier_enable_list .notifier_enable_list input,
+.notifier_enable_list input {
+    margin: 0 6px 0 2px;
+    vertical-align: middle;
+}
+
+#notifier_enable_list .notifier_enable_list label,
+.notifier_enable_list label {
+    margin: 0;
+    font-weight: normal;
+    vertical-align: middle;
+}
+
+#notifier_enable_list .notifier_enable_list [class^="icon-notifiers-"],
+#notifier_enable_list .notifier_enable_list [class*=" icon-notifiers-"],
+.notifier_enable_list [class^="icon-notifiers-"],
+.notifier_enable_list [class*=" icon-notifiers-"] {
+    top: 0;
+    right: 0;
+    margin: 0 6px 0 0;
+    float: none;
+    vertical-align: middle;
+}
+
+.notifier-list-section {
+    margin-bottom: 18px;
+}
+
+.notifier-section-heading {
+    margin: 0 0 8px;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+@media (max-width: 767px) {
+    .notifier-list-section {
+        margin-bottom: 24px;
+    }
+}
+
+#notifier-settings {
+    font-size: 12px;
+}
+
+#notifier-settings .component-title {
+    font-size: 12px;
+}
+
+#notifier-settings {
+    padding-left: 24px;
+    padding-right: 24px;
+}
+
+.notifier-settings-box {
+    box-sizing: border-box;
+    width: 100%;
+    overflow: hidden;
+    padding: 10px 12px;
+    margin: 8px 0 16px;
+    border: none;
+    background: transparent;
+}
+
+#notifier-settings-empty {
+    margin: 10px 0;
+}
+
+#notifier-settings .component-group-desc p {
+    font-size: 12px;
+    line-height: 1.4;
+}
 
 div.metadata_options {
     overflow: auto;
@@ -2265,7 +2361,8 @@ div.metadataDiv .disabled {
 }
 
 .icon-notifiers-twitter {
-    background-position: -624px 0;
+    background: url("../images/32px_x_notifier.png");
+    background-position: 0 0;
 }
 
 .icon-notifiers-twilio {
