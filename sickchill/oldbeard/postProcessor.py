@@ -198,7 +198,9 @@ class PostProcessor(object):
             # Define associated files (all, allowed, and non-allowed)
             if os.path.isfile(associated_file_path):
                 # check if allowed or not during post-processing
-                if settings.MOVE_ASSOCIATED_FILES and associated_file_path.endswith(tuple(settings.ALLOWED_EXTENSIONS.split(","))):
+                allowed_exts = {ext.strip().lstrip(".").lower() for ext in settings.ALLOWED_EXTENSIONS.split(",") if ext.strip()}
+                file_ext = Path(associated_file_path).suffix.lstrip(".").lower()
+                if settings.MOVE_ASSOCIATED_FILES and (not allowed_exts or file_ext in allowed_exts):
                     file_path_list_to_allow.append(associated_file_path)
                 elif settings.DELETE_NON_ASSOCIATED_FILES:
                     file_path_list_to_delete.append(associated_file_path)

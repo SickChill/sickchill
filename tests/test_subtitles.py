@@ -266,3 +266,52 @@ class TestForcedSubtitles(unittest.TestCase):
         pool.download_best_subtitles.assert_called_once()
         call_kwargs = pool.download_best_subtitles.call_args[1]
         self.assertTrue(call_kwargs.get("foreign_only"))
+
+
+class TestSubtitleFileExtensions(unittest.TestCase):
+    """Ensure .ass is supported (not srt-only) and language-tagged names are required."""
+
+    def test_subtitle_extensions_include_ass(self):
+        from sickchill.helper.common import SUBTITLE_EXTENSIONS
+
+        self.assertIn("ass", SUBTITLE_EXTENSIONS)
+        self.assertIn("ssa", SUBTITLE_EXTENSIONS)
+        self.assertIn("srt", SUBTITLE_EXTENSIONS)
+
+    def test_default_allowed_extensions_include_ass(self):
+        """Post-processing MOVE_ASSOCIATED_FILES uses ALLOWED_EXTENSIONS; default must keep .ass.
+
+        Read the shipped default from settings.py — runtime settings.ALLOWED_EXTENSIONS is
+        cleared by other tests (e.g. test_pp sets it to "").
+        """
+        import re
+        from pathlib import Path
+
+        settings_path = Path(__file__).resolve().parents[1] / "sickchill" / "settings.py"
+        match = re.search(r'^ALLOWED_EXTENSIONS = "([^"]+)"', settings_path.read_text(encoding="utf-8"), re.MULTILINE)
+        self.assertIsNotNone(match, "ALLOWED_EXTENSIONS default not found in settings.py")
+        default = match.group(1)
+        allowed = {ext.strip() for ext in default.split(",") if ext.strip()}
+        self.assertIn("ass", allowed)
+        self.assertIn("ssa", allowed)
+        self.assertIn("srt", allowed)
+
+    def test_language_tagged_ass_detected_like_srt(self):
+        """show.S01E01.en.ass must be detected as eng the same way as .en.srt."""
+        import tempfile
+        from pathlib import Path
+
+        from subliminal.core import search_external_subtitles
+
+        tmp = Path(tempfile.mkdtemp())
+        video = tmp / "Show.S01E01.mkv"
+        video.write_bytes(b"\x00" * 1024)
+        (tmp / "Show.S01E01.en.ass").write_text("[Script Info]\nScriptType: v4.00+\n", encoding="utf-8")
+        (tmp / "Show.S01E01.en.srt").write_text("1\n00:00:01,000 --> 00:00:02,000\nhi\n", encoding="utf-8")
+        (tmp / "Show.S01E01.ass").write_text("[Script Info]\nScriptType: v4.00+\n", encoding="utf-8")
+
+        found = search_external_subtitles(str(video))
+        self.assertEqual(found["Show.S01E01.en.ass"].language.opensubtitles, "eng")
+        self.assertEqual(found["Show.S01E01.en.srt"].language.opensubtitles, "eng")
+        # Untagged basename.ass is undetermined — callers should use basename.en.ass
+        self.assertEqual(found["Show.S01E01.ass"].language.opensubtitles, "und")
