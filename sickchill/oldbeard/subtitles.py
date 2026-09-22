@@ -12,12 +12,52 @@ from guessit import guessit
 
 import sickchill.oldbeard.helpers
 from sickchill import logger, settings
-from sickchill.helper.common import dateTimeFormat, episode_num, is_media_file
+from sickchill.helper.common import MEDIA_EXTENSIONS, dateTimeFormat, episode_num, is_media_file
 from sickchill.oldbeard import db
 from sickchill.oldbeard.common import Quality
 from sickchill.oldbeard.network_timezones import sc_now, sc_timezone
 from sickchill.show.History import History
 from sickchill.show.Show import Show
+
+# Extensions subliminal (and others) may write for sidecars — not only .srt
+SUBTITLE_SAVE_EXTS = (".srt", ".ass", ".ssa", ".sub", ".idx", ".smi", ".vtt")
+
+
+def _video_stem(video_path: str) -> str:
+    """Basename stem for sidecar lookup without eating tags like [eztv.re]."""
+    root, ext = os.path.splitext(video_path)
+    if ext and ext.lower().lstrip(".") in MEDIA_EXTENSIONS:
+        return root
+    return video_path
+
+
+def resolve_saved_subtitle_path(video, subtitle, subtitles_path, single: bool) -> str | None:
+    """
+    Locate the subtitle file that was actually written on disk.
+
+    Prefer an explicit path on the subtitle object; otherwise probe common
+    sidecar extensions next to the video (or under SUBTITLES_DIR).
+    """
+    for attr in ("path", "subtitle_path"):
+        candidate = getattr(subtitle, attr, None)
+        if candidate and os.path.isfile(candidate):
+            return candidate
+
+    stem = os.path.basename(_video_stem(video.name))
+    suffix = "" if single else f".{subtitle.language.alpha2}"
+    directory = subtitles_path or os.path.dirname(video.name)
+    for ext in SUBTITLE_SAVE_EXTS:
+        candidate = os.path.join(directory, f"{stem}{suffix}{ext}")
+        if os.path.isfile(candidate):
+            return candidate
+
+    # Misconfigured MULTI: file may have been written without a language suffix
+    if not single:
+        for ext in SUBTITLE_SAVE_EXTS:
+            candidate = os.path.join(directory, f"{stem}{ext}")
+            if os.path.isfile(candidate):
+                return candidate
+    return None
 
 # https://github.com/Diaoul/subliminal/issues/536
 # provider_manager.register('napiprojekt = subliminal.providers.napiprojekt:NapiProjektProvider')
@@ -247,7 +287,9 @@ def download_subtitles(episode, force_lang=None):
             only_one=not settings.SUBTITLES_MULTI,
         )
 
-        subliminal.save_subtitles(video, found_subtitles, directory=subtitles_path, single=not settings.SUBTITLES_MULTI, encoding="utf8")
+        saved = subliminal.save_subtitles(
+            video, found_subtitles, directory=subtitles_path, single=not settings.SUBTITLES_MULTI, encoding="utf8"
+        )
     except IOError as error:
         if "No space left on device" in f"{error}":
             logger.warning("Not enough space on the drive to save subtitles")
@@ -259,20 +301,30 @@ def download_subtitles(episode, force_lang=None):
         logger.exception(traceback.format_exc())
         return existing_subtitles, None
 
-    for subtitle in found_subtitles:
-        subtitle_path = subliminal.subtitle.get_subtitle_path(video.name, "" if not settings.SUBTITLES_MULTI else f".{subtitle.language.alpha2}")
-        if subtitles_path is not None:
-            subtitle_path = os.path.join(subtitles_path, os.path.split(subtitle_path)[1])
+    # Older subliminal may return None; still chmod whatever was written to disk.
+    written = saved or found_subtitles
+    single = not settings.SUBTITLES_MULTI
 
-        sickchill.oldbeard.helpers.chmodAsParent(subtitle_path)
-        sickchill.oldbeard.helpers.fixSetGroupID(subtitle_path)
+    for subtitle in written:
+        subtitle_path = resolve_saved_subtitle_path(video, subtitle, subtitles_path, single=single)
+        if not subtitle_path:
+            logger.warning(
+                f"Saved subtitle for {episode.pretty_name} but could not locate sidecar "
+                f"(looked for .srt/.ass/… next to {video.name})"
+            )
+        else:
+            try:
+                sickchill.oldbeard.helpers.chmodAsParent(subtitle_path)
+                sickchill.oldbeard.helpers.fixSetGroupID(subtitle_path)
+            except OSError as error:
+                logger.debug(f"Could not set permissions on {subtitle_path}: {error}")
 
         History().log_subtitle(
             episode.show.indexerid, episode.season, episode.episode, episode.status, subtitle, log_scores(subtitle, video, user_score=user_score)
         )
 
         if settings.SUBTITLES_EXTRA_SCRIPTS and is_media_file(video_path) and not settings.EMBEDDED_SUBTITLES_ALL:
-            run_subs_extra_scripts(episode, subtitle, video, single=not settings.SUBTITLES_MULTI)
+            run_subs_extra_scripts(episode, subtitle, video, single=single, subtitle_path=subtitle_path)
 
     new_subtitles = sorted({subtitle.language.opensubtitles for subtitle in found_subtitles})
     current_subtitles = sorted({subtitle for subtitle in new_subtitles + existing_subtitles}) if existing_subtitles else new_subtitles
@@ -452,7 +504,8 @@ class SubtitlesFinder(object):
                 try:
                     new_subtitles = episode_object.download_subtitles()
                 except Exception as error:
-                    logger.error(f"Unable to find subtitles for {ep_show_name} {ep_string}. Error: {error}")
+                    # May be post-download (chmod/path) rather than a failed search
+                    logger.error(f"Subtitle post-download failed for {ep_show_name} {ep_string}: {error}")
                     continue
 
                 if new_subtitles:
@@ -466,17 +519,20 @@ class SubtitlesFinder(object):
         self.amActive = False
 
 
-def run_subs_extra_scripts(episode, subtitle, video, single=False):
+def run_subs_extra_scripts(episode, subtitle, video, single=False, subtitle_path=None):
     for script_name in settings.SUBTITLES_EXTRA_SCRIPTS:
         script_cmd = [piece for piece in re.split("( |\\\".*?\\\"|'.*?')", script_name) if piece.strip()]
         script_cmd[0] = os.path.abspath(script_cmd[0])
         logger.debug(f"Absolute path to script: {script_cmd[0]}")
 
-        subtitle_path = subliminal.subtitle.get_subtitle_path(video.name, "" if single else f".{subtitle.language.alpha2}")
+        resolved = subtitle_path or resolve_saved_subtitle_path(video, subtitle, None, single=single)
+        if not resolved:
+            logger.warning(f"Skipping extra subtitle script; could not locate sidecar for {video.name}")
+            continue
 
         inner_cmd = script_cmd + [
             video.name,
-            subtitle_path,
+            resolved,
             subtitle.language.opensubtitles,
             episode.show.name,
             str(episode.season),
