@@ -59,6 +59,7 @@ def resolve_saved_subtitle_path(video, subtitle, subtitles_path, single: bool) -
                 return candidate
     return None
 
+
 # https://github.com/Diaoul/subliminal/issues/536
 # provider_manager.register('napiprojekt = subliminal.providers.napiprojekt:NapiProjektProvider')
 # 'legendastv' closed down
@@ -287,9 +288,7 @@ def download_subtitles(episode, force_lang=None):
             only_one=not settings.SUBTITLES_MULTI,
         )
 
-        saved = subliminal.save_subtitles(
-            video, found_subtitles, directory=subtitles_path, single=not settings.SUBTITLES_MULTI, encoding="utf8"
-        )
+        saved = subliminal.save_subtitles(video, found_subtitles, directory=subtitles_path, single=not settings.SUBTITLES_MULTI, encoding="utf8")
     except IOError as error:
         if "No space left on device" in f"{error}":
             logger.warning("Not enough space on the drive to save subtitles")
@@ -308,10 +307,7 @@ def download_subtitles(episode, force_lang=None):
     for subtitle in written:
         subtitle_path = resolve_saved_subtitle_path(video, subtitle, subtitles_path, single=single)
         if not subtitle_path:
-            logger.warning(
-                f"Saved subtitle for {episode.pretty_name} but could not locate sidecar "
-                f"(looked for .srt/.ass/… next to {video.name})"
-            )
+            logger.warning(f"Saved subtitle for {episode.pretty_name} but could not locate sidecar (looked for .srt/.ass/… next to {video.name})")
         else:
             try:
                 sickchill.oldbeard.helpers.chmodAsParent(subtitle_path)
