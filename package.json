@@ -55,7 +55,7 @@
     "webpack-cli": "^7.2.3",
     "webpack-dev-server": "^6.0.0",
     "workbox-webpack-plugin": "^7.0.0",
-    "xo": "^2.0.2"
+    "xo": "^5.0.1"
   },
   "ava": {
     "nodeArguments": [
