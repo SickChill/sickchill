@@ -515,6 +515,9 @@ def chmodAsParent(childPath):
         return
 
     childPath = os.path.join(parentPath, os.path.basename(childPath))
+    if not os.path.lexists(childPath):
+        logger.debug(_("Path does not exist, skipping chmod: {childPath}").format(childPath=childPath))
+        return
 
     parentPathStat = os.stat(parentPath)
     parentMode = stat.S_IMODE(parentPathStat[stat.ST_MODE])
@@ -565,6 +568,9 @@ def fixSetGroupID(childPath):
         parentMode = stat.S_IMODE(parentStat[stat.ST_MODE])
 
         childPath = os.path.join(parentPath, os.path.basename(childPath))
+        if not os.path.lexists(childPath):
+            logger.debug(_("Path does not exist, skipping set-group-ID: {childPath}").format(childPath=childPath))
+            return
 
         if parentMode & stat.S_ISGID:
             parentGID = parentStat[stat.ST_GID]

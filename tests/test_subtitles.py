@@ -1,6 +1,7 @@
 """Tests for subliminal 2.x compatibility in the subtitles module."""
 
 import unittest
+from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 
 import subliminal
@@ -315,3 +316,101 @@ class TestSubtitleFileExtensions(unittest.TestCase):
         self.assertEqual(found["Show.S01E01.en.srt"].language.opensubtitles, "eng")
         # Untagged basename.ass is undetermined — callers should use basename.en.ass
         self.assertEqual(found["Show.S01E01.ass"].language.opensubtitles, "und")
+
+
+class TestResolveSavedSubtitlePath(unittest.TestCase):
+    """resolve_saved_subtitle_path must find the sidecar actually written (.ass/.srt)."""
+
+    def _video(self, path: str):
+        return SimpleNamespace(name=path)
+
+    def _subtitle(self, alpha2="en", path=None):
+        return SimpleNamespace(language=SimpleNamespace(alpha2=alpha2), path=path, subtitle_path=None)
+
+    def test_prefers_ass_when_srt_missing(self):
+        import tempfile
+        from pathlib import Path
+
+        from sickchill.oldbeard.subtitles import resolve_saved_subtitle_path
+
+        tmp = Path(tempfile.mkdtemp())
+        video = tmp / "Show.S01E01.mkv"
+        video.write_bytes(b"\x00")
+        ass = tmp / "Show.S01E01.en.ass"
+        ass.write_text("[Script Info]\n", encoding="utf-8")
+
+        found = resolve_saved_subtitle_path(self._video(str(video)), self._subtitle("en"), None, single=False)
+        self.assertEqual(found, str(ass))
+
+    def test_prefers_srt_when_present(self):
+        import tempfile
+        from pathlib import Path
+
+        from sickchill.oldbeard.subtitles import resolve_saved_subtitle_path
+
+        tmp = Path(tempfile.mkdtemp())
+        video = tmp / "Show.S01E01.mkv"
+        video.write_bytes(b"\x00")
+        srt = tmp / "Show.S01E01.en.srt"
+        srt.write_text("1\n", encoding="utf-8")
+
+        found = resolve_saved_subtitle_path(self._video(str(video)), self._subtitle("en"), None, single=False)
+        self.assertEqual(found, str(srt))
+
+    def test_eztv_re_bracket_does_not_eat_suffix(self):
+        import tempfile
+        from pathlib import Path
+
+        from sickchill.oldbeard.subtitles import resolve_saved_subtitle_path
+
+        tmp = Path(tempfile.mkdtemp())
+        stem = "Show - S01E01 - Title - AFG[eztv.re]"
+        video = tmp / f"{stem}.mkv"
+        video.write_bytes(b"\x00")
+        ass = tmp / f"{stem}.en.ass"
+        ass.write_text("[Script Info]\n", encoding="utf-8")
+
+        found = resolve_saved_subtitle_path(self._video(str(video)), self._subtitle("en"), None, single=False)
+        self.assertEqual(found, str(ass))
+        self.assertNotIn("eztv.en", found)
+
+    def test_video_name_without_media_ext_keeps_bracket(self):
+        from sickchill.oldbeard.subtitles import _video_stem
+
+        # subliminal may pass a name already without .mkv ending in [eztv.re]
+        self.assertEqual(_video_stem("/tv/Show - S01E01 - AFG[eztv.re]"), "/tv/Show - S01E01 - AFG[eztv.re]")
+        self.assertEqual(_video_stem("/tv/Show - S01E01 - AFG[eztv.re].mkv"), "/tv/Show - S01E01 - AFG[eztv.re]")
+
+    def test_missing_sidecar_returns_none(self):
+        import tempfile
+        from pathlib import Path
+
+        from sickchill.oldbeard.subtitles import resolve_saved_subtitle_path
+
+        tmp = Path(tempfile.mkdtemp())
+        video = tmp / "Show.S01E01.mkv"
+        video.write_bytes(b"\x00")
+
+        found = resolve_saved_subtitle_path(self._video(str(video)), self._subtitle("en"), None, single=False)
+        self.assertIsNone(found)
+
+    def test_uses_subtitle_path_attr_when_present(self):
+        import tempfile
+        from pathlib import Path
+
+        from sickchill.oldbeard.subtitles import resolve_saved_subtitle_path
+
+        tmp = Path(tempfile.mkdtemp())
+        video = tmp / "Show.S01E01.mkv"
+        video.write_bytes(b"\x00")
+        real = tmp / "custom.ass"
+        real.write_text("[Script Info]\n", encoding="utf-8")
+
+        found = resolve_saved_subtitle_path(self._video(str(video)), self._subtitle("en", path=str(real)), None, single=False)
+        self.assertEqual(found, str(real))
+
+    def test_chmod_as_parent_missing_path_does_not_raise(self):
+        from sickchill.oldbeard.helpers import chmodAsParent
+
+        # Should no-op rather than FileNotFoundError
+        chmodAsParent("/tmp/sickchill-missing-subtitle-does-not-exist.en.srt")
