@@ -506,6 +506,30 @@ def _normalize_provider_order() -> None:
     sc_settings.PROVIDER_ORDER = normalized
 
 
+def enabled_provider_ids_from_cfg(cfg: ConfigObj | None) -> set[str]:
+    """Ids that should be instantiated at startup (enabled in [PROVIDERS] and/or PROVIDER_ORDER)."""
+    from sickchill import settings as sc_settings
+
+    ids: set[str] = set()
+    for entry in sc_settings.PROVIDER_ORDER or []:
+        provider_id = str(entry).split(":")[0].strip()
+        if provider_id:
+            ids.add(provider_id)
+
+    if cfg is None or "PROVIDERS" not in cfg:
+        return ids
+
+    for provider_id in cfg["PROVIDERS"]:
+        if str(provider_id).startswith("#"):
+            continue
+        section = cfg["PROVIDERS"][provider_id]
+        if not hasattr(section, "get"):
+            continue
+        if _as_bool(section.get("enabled"), False):
+            ids.add(str(provider_id))
+    return ids
+
+
 def apply_providers_from_cfg(cfg: ConfigObj, *, enabled_only: bool = True) -> None:
     """Push [PROVIDERS][[id]] (peek legacy fallback) onto live provider objects.
 
@@ -653,8 +677,11 @@ def write_providers_to_cfg(cfg: ConfigObj) -> None:
         del cfg["TorrentRss"]
 
 
-def custom_providers_from_cfg(cfg: ConfigObj) -> tuple[list, list]:
-    """Build newznab / torrentrss provider lists from PROVIDERS entries with type=…"""
+def custom_providers_from_cfg(cfg: ConfigObj, enabled_ids: set[str] | None = None) -> tuple[list, list]:
+    """Build newznab / torrentrss provider lists from PROVIDERS entries with type=…
+
+    When ``enabled_ids`` is set, only those custom providers are constructed (startup).
+    """
     from sickchill.oldbeard.providers.newznab import NewznabProvider
     from sickchill.oldbeard.providers.rsstorrent import TorrentRssProvider
 
@@ -671,6 +698,10 @@ def custom_providers_from_cfg(cfg: ConfigObj) -> tuple[list, list]:
         if not hasattr(section, "get"):
             continue
         ptype = str(section.get("type") or "").lower()
+        if ptype not in {"newznab", "torrentrss"}:
+            continue
+        if enabled_ids is not None and str(provider_id) not in enabled_ids:
+            continue
         name = section.get("name") or provider_id
         if ptype == "newznab":
             provider = NewznabProvider(

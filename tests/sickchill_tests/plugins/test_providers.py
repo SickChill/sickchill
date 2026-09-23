@@ -409,3 +409,31 @@ class ProviderPluginTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+    def test_make_provider_list_enabled_only_and_lazy_load(self):
+        from sickchill.oldbeard import providers as providers_mod
+
+        settings.providerList = providers_mod.makeProviderList(enabled_ids={"eztv", "jackett_sc"})
+        ids = {p.get_id() for p in settings.providerList}
+        self.assertEqual(ids, {"eztv", "jackett_sc"})
+
+        providers_mod.ensure_provider_loaded("limetorrents")
+        self.assertIn("limetorrents", {p.get_id() for p in settings.providerList})
+
+        before = len(settings.providerList)
+        providers_mod.ensure_all_builtin_providers_loaded()
+        self.assertGreater(len(settings.providerList), before)
+        self.assertIn("thepiratebay", {p.get_id() for p in settings.providerList})
+
+    def test_enabled_provider_ids_from_cfg(self):
+        from sickchill.plugins.providers.config import enabled_provider_ids_from_cfg
+
+        settings.PROVIDER_ORDER = ["eztv", "btn"]
+        cfg = ConfigObj()
+        cfg.indent_type = "  "
+        write_provider_section(cfg, "btn", {"enabled": False})
+        write_provider_section(cfg, "nyaa", {"enabled": True})
+        ids = enabled_provider_ids_from_cfg(cfg)
+        self.assertIn("eztv", ids)
+        self.assertIn("btn", ids)  # still in PROVIDER_ORDER
+        self.assertIn("nyaa", ids)

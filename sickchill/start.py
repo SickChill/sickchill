@@ -640,23 +640,35 @@ def initialize(console_logging: bool = True, debug: bool = False, dbdebug: bool 
         if check_section(settings.CFG, "Shares"):
             settings.WINDOWS_SHARES.update(settings.CFG["Shares"])
 
-        # initialize NZB and TORRENT providers
-        settings.providerList = providers.makeProviderList()
+        # Migrate provider INI → [PROVIDERS] before choosing which instances to construct.
+        from sickchill.plugins.providers.config import (
+            apply_providers_from_cfg,
+            custom_providers_from_cfg,
+            enabled_provider_ids_from_cfg,
+            migrate_provider_sections,
+            providers_section_has_customs,
+        )
 
-        # Prefer [PROVIDERS] customs (type=newznab/torrentrss); fall back to legacy blobs via peek (no create).
-        from sickchill.plugins.providers.config import custom_providers_from_cfg, providers_section_has_customs
+        try:
+            if settings.CFG is not None and migrate_provider_sections(settings.CFG):
+                # Persist after full bootstrap save as well; keep memory consistent now.
+                pass
+        except Exception as error:
+            logger.debug(f"Provider section migrate before load skipped: {error}")
+
+        # Instantiate only enabled providers at startup; Providers UI loads the rest on demand.
+        enabled_ids = enabled_provider_ids_from_cfg(settings.CFG)
+        settings.providerList = providers.makeProviderList(enabled_ids=enabled_ids)
 
         if providers_section_has_customs(settings.CFG):
-            settings.newznab_provider_list, settings.torrent_rss_provider_list = custom_providers_from_cfg(settings.CFG)
+            settings.newznab_provider_list, settings.torrent_rss_provider_list = custom_providers_from_cfg(settings.CFG, enabled_ids=enabled_ids)
             settings.NEWZNAB_DATA = "!!!".join(x.config_string() for x in settings.newznab_provider_list)
         else:
             settings.NEWZNAB_DATA = peek_setting_str(settings.CFG, "Newznab", "newznab_data", "")
-            settings.newznab_provider_list = NewznabProvider.providers_list(settings.NEWZNAB_DATA)
-            torrentrss_data = peek_setting_str(settings.CFG, "TorrentRss", "torrentrss_data", "")
-            settings.torrent_rss_provider_list = TorrentRssProvider.providers_list(torrentrss_data)
-
-        # Apply [PROVIDERS][[id]] (peek legacy [ID] without recreating empty sections).
-        from sickchill.plugins.providers.config import apply_providers_from_cfg
+            all_nn = NewznabProvider.providers_list(settings.NEWZNAB_DATA)
+            all_tr = TorrentRssProvider.providers_list(peek_setting_str(settings.CFG, "TorrentRss", "torrentrss_data", ""))
+            settings.newznab_provider_list = [p for p in all_nn if p.get_id() in enabled_ids]
+            settings.torrent_rss_provider_list = [p for p in all_tr if p.get_id() in enabled_ids]
 
         apply_providers_from_cfg(settings.CFG)
 

@@ -19,14 +19,22 @@ from sickchill.views.routes import Route
 class ConfigProviders(Config):
     @addslash
     def index(self):
-        # Lazy full load so disabled providers show real saved credentials/options in the UI.
+        # Lazy-load disabled providers when the Providers UI opens, then apply all settings.
         if settings.CFG is not None:
             try:
-                from sickchill.plugins.providers.config import apply_providers_from_cfg
+                from sickchill.oldbeard import providers as providers_mod
+                from sickchill.plugins.providers.config import apply_providers_from_cfg, custom_providers_from_cfg
 
+                providers_mod.ensure_all_builtin_providers_loaded()
+                # Merge any disabled customs not instantiated at startup
+                all_nn, all_tr = custom_providers_from_cfg(settings.CFG, enabled_ids=None)
+                have_nn = {p.get_id() for p in (settings.newznab_provider_list or [])}
+                have_tr = {p.get_id() for p in (settings.torrent_rss_provider_list or [])}
+                settings.newznab_provider_list = (settings.newznab_provider_list or []) + [p for p in all_nn if p.get_id() not in have_nn]
+                settings.torrent_rss_provider_list = (settings.torrent_rss_provider_list or []) + [p for p in all_tr if p.get_id() not in have_tr]
                 apply_providers_from_cfg(settings.CFG, enabled_only=False)
             except Exception as error:
-                logger.debug("Could not fully apply provider settings for Providers UI: %s", error)
+                logger.debug("Could not fully load provider settings for Providers UI: %s", error)
 
         t = PageTemplate(rh=self, filename="config_providers.mako")
 
