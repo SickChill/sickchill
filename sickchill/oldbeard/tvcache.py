@@ -260,10 +260,17 @@ class TVCache(RSSTorrentMixin):
             last_time = 0
         if last_time < 0:
             last_time = 0
+
+        utc_dt = datetime.datetime(1970, 1, 1, tzinfo=datetime.timezone.utc) + datetime.timedelta(seconds=last_time)
+
+        # dteutil txloacal + windows localtime() cannot handle near-epoch
+        if last_time < 24 * 3600:
+            return utc_dt
+
         try:
-            return datetime.datetime.fromtimestamp(last_time, tz=sc_timezone)
+            return utc_dt.astimezone(sc_timezone)
         except (OSError, OverflowError, ValueError):
-            return (datetime.datetime(1970, 1, 1, tzinfo=datetime.timezone.utc) + datetime.timedelta(seconds=last_time)).astimezone(sc_timezone)
+            return utc_dt
 
     def _parse_item(self, item):
         title, url = self._get_title_and_url(item)
