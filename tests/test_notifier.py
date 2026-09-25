@@ -66,12 +66,6 @@ class NotifierTests(conftest.SickChillTestDBCase):
         """
         self._debug_spew("\n\r")
 
-    @unittest.skip("Not yet implemented")
-    def test_boxcar(self):
-        """
-        Test boxcar notifications
-        """
-
     @unittest.skip("Cannot call directly without a request")
     def test_email(self):
         """
@@ -120,12 +114,6 @@ class NotifierTests(conftest.SickChillTestDBCase):
         """
 
     @unittest.skip("Not yet implemented")
-    def test_growl(self):
-        """
-        Test growl notifications
-        """
-
-    @unittest.skip("Not yet implemented")
     def test_kodi(self):
         """
         Test kodi notifications
@@ -135,12 +123,6 @@ class NotifierTests(conftest.SickChillTestDBCase):
     def test_libnotify(self):
         """
         Test libnotify notifications
-        """
-
-    @unittest.skip("Not yet implemented")
-    def test_nma(self):
-        """
-        Test nma notifications
         """
 
     @unittest.skip("Not yet implemented")
@@ -188,12 +170,6 @@ class NotifierTests(conftest.SickChillTestDBCase):
                 self._debug_spew("\n\r")
 
         return True
-
-    @unittest.skip("Not yet implemented")
-    def test_pushalot(self):
-        """
-        Test pushalot notifications
-        """
 
     @unittest.skip("Not yet implemented")
     def test_pushbullet(self):
