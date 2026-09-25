@@ -1216,7 +1216,7 @@ class TVShow(object):
         except FuturesTimeoutError:
             if future is not None:
                 future.cancel()  # attempt to cancel
-            logger.warning(f"{self.indexerid}: IMDb refresh timed out after 25s (imdb_id={self.imdb_id})")
+            logger.info(f"{self.indexerid}: IMDb refresh timed out after 25s (imdb_id={self.imdb_id})")
         except Exception as e:
             logger.info(f"{self.indexerid}: IMDb refresh failed: {e}")
         finally:
