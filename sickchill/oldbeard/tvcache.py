@@ -288,7 +288,11 @@ class TVCache(RSSTorrentMixin):
         sql_results = cache_db_con.select("SELECT time FROM lastUpdate WHERE provider = ?", [self.provider_id])
 
         if sql_results:
-            last_time = int(sql_results[0]["time"])
+            try:
+                last_time = int(sql_results[0]["time"])
+            except (TypeError, ValueError):
+                last_time = 0
+
             if last_time > int(time.mktime(sc_now().timetuple())):
                 last_time = 0
         else:
@@ -302,7 +306,11 @@ class TVCache(RSSTorrentMixin):
         sql_results = cache_db_con.select("SELECT time FROM lastSearch WHERE provider = ?", [self.provider_id])
 
         if sql_results:
-            last_time = int(sql_results[0]["time"])
+            try:
+                last_time = int(sql_results[0]["time"])
+            except (TypeError, ValueError):
+                last_time = 0
+
             if last_time > int(time.mktime(sc_now().timetuple())):
                 last_time = 0
         else:
