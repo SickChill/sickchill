@@ -63,19 +63,21 @@ def get_windows_drives() -> List[str]:
 
     if win32com_client:
         # Add Network Locations (not the same as network shares, these are shortcut files possibly to shares)
-        net_shortcuts_location = Path(os.getenv("APPDATA"))
-        net_shortcuts_location /= "Microsoft\\Windows\\Network Shortcuts"
-        network_shortcuts = []
-        for location in net_shortcuts_location.iterdir():
-            if location.is_file() and location.suffix == ".lnk":
-                network_shortcuts.append(location)
-        shell = win32com_client.Dispatch("WScript.Shell")
-        for network_shortcut in network_shortcuts:
-            shortcut = shell.CreateShortCut(str(network_shortcut))
-            drives.append(shortcut.Targetpath)
+        appdata = os.getenv("APPDATA")
+        if appdata:
+            net_shortcuts_location = Path(appdata) / "Microsoft" / "Windows" / "Network Shortcuts"
+            if net_shortcuts_location.is_dir():
+                shell = win32com_client.Dispatch("WScript.Shell")
+                for location in net_shortcuts_location.iterdir():
+                    if location.is_file() and location.suffix.lower() == ".lnk":
+                        try:
+                            shortcut = shell.CreateShortCut(str(location))
+                            if shortcut.Targetpath:
+                                drives.append(shortcut.Targetpath)
+                        except Exception:
+                            logger.debug("Skipping bad network shortcut %s", location, exc_info=True)
 
     configure_com()
-
     return drives
 
 

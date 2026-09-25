@@ -252,6 +252,19 @@ class TVCache(RSSTorrentMixin):
     def _translate_link_url(url):
         return url.replace("&amp;", "&")
 
+    @staticmethod
+    def _ts_to_dt(last_time) -> datetime.datetime:
+        try:
+            last_time = int(last_time or 0)
+        except (TypeError, ValueError):
+            last_time = 0
+        if last_time < 0:
+            last_time = 0
+        try:
+            return datetime.datetime.fromtimestamp(last_time, tz=sc_timezone)
+        except (OSError, OverflowError, ValueError):
+            return (datetime.datetime(1970, 1, 1, tzinfo=datetime.timezone.utc) + datetime.timedelta(seconds=last_time)).astimezone(sc_timezone)
+
     def _parse_item(self, item):
         title, url = self._get_title_and_url(item)
         size = self._get_size(item)
@@ -275,13 +288,17 @@ class TVCache(RSSTorrentMixin):
         sql_results = cache_db_con.select("SELECT time FROM lastUpdate WHERE provider = ?", [self.provider_id])
 
         if sql_results:
-            last_time = int(sql_results[0]["time"])
+            try:
+                last_time = int(sql_results[0]["time"])
+            except (TypeError, ValueError):
+                last_time = 0
+
             if last_time > int(time.mktime(sc_now().timetuple())):
                 last_time = 0
         else:
             last_time = 0
 
-        return datetime.datetime.fromtimestamp(last_time, tz=sc_timezone)
+        return self._ts_to_dt(last_time)
 
     @property
     def last_search(self):
@@ -289,13 +306,17 @@ class TVCache(RSSTorrentMixin):
         sql_results = cache_db_con.select("SELECT time FROM lastSearch WHERE provider = ?", [self.provider_id])
 
         if sql_results:
-            last_time = int(sql_results[0]["time"])
+            try:
+                last_time = int(sql_results[0]["time"])
+            except (TypeError, ValueError):
+                last_time = 0
+
             if last_time > int(time.mktime(sc_now().timetuple())):
                 last_time = 0
         else:
             last_time = 0
 
-        return datetime.datetime.fromtimestamp(last_time, tz=sc_timezone)
+        return self._ts_to_dt(last_time)
 
     def set_last_update(self, to_date=None):
         """
