@@ -197,7 +197,7 @@ def pick_best_result(results, show):
         if not show_name_helpers.filter_bad_releases(result.name, parse=False, show=show):
             continue
 
-        if hasattr(result, "size") and settings.USE_FAILED_DOWNLOADS and History().has_failed(result.name, result.size, result.provider.name):
+        if settings.USE_FAILED_DOWNLOADS and History().has_failed(result.name):
             logger.info(f"{result.name} has previously failed, rejecting it")
             continue
 
