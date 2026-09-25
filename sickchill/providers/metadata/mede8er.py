@@ -156,7 +156,7 @@ class Mede8erMetadata(mediabrowser.MediaBrowserMetadata):
 
         if getattr(indexer_show, "runtime", None):
             runtime_element = ElementTree.SubElement(tv_node, "runtime")
-            runtime_element.text = indexer_show.runtime
+            runtime_element.text = str(indexer_show.runtime)
 
         indexer_show_actors = show_obj.idxr.actors(indexer_show)
         if indexer_show_actors:
