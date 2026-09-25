@@ -260,17 +260,7 @@ class TVCache(RSSTorrentMixin):
             last_time = 0
         if last_time < 0:
             last_time = 0
-
-        utc_dt = datetime.datetime(1970, 1, 1, tzinfo=datetime.timezone.utc) + datetime.timedelta(seconds=last_time)
-
-        # dteutil txloacal + windows localtime() cannot handle near-epoch
-        if last_time < 24 * 3600:
-            return utc_dt
-
-        try:
-            return utc_dt.astimezone(sc_timezone)
-        except (OSError, OverflowError, ValueError):
-            return utc_dt
+        return datetime.datetime(1970, 1, 1, tzinfo=datetime.timezone.utc) + datetime.timedelta(seconds=last_time)
 
     def _parse_item(self, item):
         title, url = self._get_title_and_url(item)
@@ -293,36 +283,26 @@ class TVCache(RSSTorrentMixin):
     def last_update(self):
         cache_db_con = self.get_db()
         sql_results = cache_db_con.select("SELECT time FROM lastUpdate WHERE provider = ?", [self.provider_id])
-
-        if sql_results:
-            try:
-                last_time = int(sql_results[0]["time"])
-            except (TypeError, ValueError):
-                last_time = 0
-
-            if last_time > int(time.mktime(sc_now().timetuple())):
-                last_time = 0
-        else:
+        last_time = sql_results[0]["time"] if sql_results else 0
+        try:
+            last_time = int(last_time or 0)
+        except (TypeError, ValueError):
             last_time = 0
-
+        if last_time > int(time.mktime(sc_now().timetuple())):
+            last_time = 0
         return self._ts_to_dt(last_time)
 
     @property
     def last_search(self):
         cache_db_con = self.get_db()
         sql_results = cache_db_con.select("SELECT time FROM lastSearch WHERE provider = ?", [self.provider_id])
-
-        if sql_results:
-            try:
-                last_time = int(sql_results[0]["time"])
-            except (TypeError, ValueError):
-                last_time = 0
-
-            if last_time > int(time.mktime(sc_now().timetuple())):
-                last_time = 0
-        else:
+        last_time = sql_results[0]["time"] if sql_results else 0
+        try:
+            last_time = int(last_time or 0)
+        except (TypeError, ValueError):
             last_time = 0
-
+        if last_time > int(time.mktime(sc_now().timetuple())):
+            last_time = 0
         return self._ts_to_dt(last_time)
 
     def set_last_update(self, to_date=None):
