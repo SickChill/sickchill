@@ -179,6 +179,53 @@ class MetadataPluginTests(unittest.TestCase):
         self.assertTrue(settings.metadata_provider_dict["KODI"].show_metadata)
         self.assertEqual(len(settings.metadata_provider_dict), 6)
 
+    def test_metadata_writer_syncs_packed_settings(self):
+        load_first_party_metadata()
+        cfg = ConfigObj()
+        cfg.indent_type = "  "
+        write_metadata_section(cfg, "kodi", unpack_packed_config(DEFAULT_PACKED))
+        self.manager._cfg = cfg
+        self.manager.discover()
+        plugin = self.manager.get(PluginKind.METADATA, "kodi")
+        self.assertIsNotNone(plugin)
+        settings.METADATA_KODI = DEFAULT_PACKED
+        plugin.ctx.update(show_metadata=True)
+        self.assertEqual(settings.METADATA_KODI, "1|0|0|0|0|0|0|0|0|0")
+        self.assertEqual(pack_flags(read_metadata_section(cfg, "kodi")), "1|0|0|0|0|0|0|0|0|0")
+
+    def test_refresh_includes_discovered_metadata_plugins(self):
+        from sickchill.plugins.api import register
+        from sickchill.plugins.kinds.metadata import MetadataPlugin
+        from sickchill.plugins.manager import plugin_manager
+
+        class ExtraGen:
+            name = "ExtraMeta"
+
+        @register
+        class ExtraMetadata(MetadataPlugin):
+            id = "extra_meta"
+            name = "ExtraMeta"
+            schema = ()
+
+            def generator(self):
+                return ExtraGen()
+
+        saved_classes = list(plugin_manager._classes)
+        saved_instances = dict(plugin_manager._instances)
+        saved_cfg = plugin_manager._cfg
+        self.addCleanup(lambda: setattr(plugin_manager, "_classes", saved_classes))
+        self.addCleanup(lambda: (plugin_manager._instances.clear(), plugin_manager._instances.update(saved_instances)))
+        self.addCleanup(lambda: setattr(plugin_manager, "_cfg", saved_cfg))
+
+        plugin_manager.discover()
+        for _plugin_id, attr, *_rest in METADATA_GENERATORS:
+            setattr(settings, attr, DEFAULT_PACKED)
+        refresh_metadata_provider_dict()
+        self.assertIn("KODI", settings.metadata_provider_dict)
+        self.assertIn("Sony PS3", settings.metadata_provider_dict)
+        self.assertIn("ExtraMeta", settings.metadata_provider_dict)
+        self.assertEqual(len(settings.metadata_provider_dict), 7)
+
     def test_pack_unpack_flag_order(self):
         flags = {name: False for name in METADATA_FLAG_NAMES}
         flags["episode_metadata"] = True

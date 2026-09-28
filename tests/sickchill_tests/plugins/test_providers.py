@@ -245,6 +245,9 @@ class ProviderPluginTests(unittest.TestCase):
         self.assertIn("abnormal", ids)
         self.assertIn("jackett_sc", ids)
         self.assertNotIn("jackett", ids)  # module name is jackett; id is jackett_sc
+        jackett_plugin = next(cls for cls in classes if cls.id == "jackett_sc")
+        self.assertEqual(jackett_plugin.provider_module, "jackett")
+        self.assertTrue(jackett_plugin.name)
         self.assertTrue(all(cls.kind == PluginKind.PROVIDER for cls in classes))
         self.assertGreaterEqual(len(ids), 50)
 

@@ -145,18 +145,45 @@ def write_metadata_to_cfg(cfg: ConfigObj) -> None:
 
 
 def refresh_metadata_provider_dict() -> None:
-    """Rebuild settings.metadata_provider_dict from modules + current packed settings."""
+    """Rebuild settings.metadata_provider_dict from packed settings and discovered plugins."""
     import importlib
 
     from sickchill import settings as sc_settings
+    from sickchill.plugins.api import PluginKind
 
     result = {}
-    for _plugin_id, settings_attr, _general_key, _name, module_path in METADATA_GENERATORS:
+    known_ids: set[str] = set()
+    for plugin_id, settings_attr, _general_key, _name, module_path in METADATA_GENERATORS:
+        known_ids.add(plugin_id)
         mod = importlib.import_module(module_path)
         generator = mod.metadata_class()
         packed = getattr(sc_settings, settings_attr, None) or DEFAULT_PACKED
         generator.set_config(str(packed))
         result[generator.name] = generator
+
+    try:
+        from sickchill.plugins.manager import plugin_manager
+
+        extra_classes = plugin_manager.classes(PluginKind.METADATA)
+    except Exception:
+        extra_classes = []
+
+    for cls in extra_classes:
+        if getattr(cls, "id", None) in known_ids:
+            continue
+        try:
+            plugin = plugin_manager.get(PluginKind.METADATA, cls.id)
+        except Exception as error:
+            logger.debug("Skipping discovered metadata plugin %s: %s", getattr(cls, "id", cls), error)
+            continue
+        if plugin is None:
+            continue
+        generator_factory = getattr(plugin, "generator", None)
+        generator = generator_factory() if callable(generator_factory) else None
+        if generator is None:
+            continue
+        result[getattr(generator, "name", None) or plugin.name] = generator
+
     sc_settings.metadata_provider_dict = result
 
 

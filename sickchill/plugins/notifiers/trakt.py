@@ -5,6 +5,7 @@ from typing import ClassVar
 from sickchill import settings
 from sickchill.plugins.api import Field, register
 from sickchill.plugins.kinds.notifier import NotifierPlugin
+from sickchill.plugins.settings import _as_bool
 
 
 @register
@@ -27,7 +28,7 @@ class TraktNotifier(NotifierPlugin):
         Field(name="method_add", type="int", default=0, legacy_keys=("trakt_method_add",)),
         Field(name="start_paused", type="bool", default=False, legacy_keys=("trakt_start_paused",)),
         Field(name="use_recommended", type="bool", default=False, legacy_keys=("trakt_use_recommended",)),
-        Field(name="sync", type="str", default="", legacy_keys=("trakt_sync",)),
+        Field(name="sync", type="bool", default=False, legacy_keys=("trakt_sync",)),
         Field(name="sync_remove", type="bool", default=False, legacy_keys=("trakt_sync_remove",)),
         Field(name="default_indexer", type="int", default=0, legacy_keys=("trakt_default_indexer",)),
         Field(name="timeout", type="int", default=0, legacy_keys=("trakt_timeout",)),
@@ -51,7 +52,7 @@ class TraktNotifier(NotifierPlugin):
             settings.TRAKT_METHOD_ADD = 0
         settings.TRAKT_START_PAUSED = bool(self.ctx.get("start_paused"))
         settings.TRAKT_USE_RECOMMENDED = bool(self.ctx.get("use_recommended"))
-        settings.TRAKT_SYNC = self.ctx.get("sync") or ""
+        settings.TRAKT_SYNC = _as_bool(self.ctx.get("sync"), False)
         settings.TRAKT_SYNC_REMOVE = bool(self.ctx.get("sync_remove"))
         try:
             settings.TRAKT_DEFAULT_INDEXER = int(self.ctx.get("default_indexer") or 0)

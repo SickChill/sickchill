@@ -73,6 +73,9 @@ class PluginManager:
             write_client_section(self._cfg, plugin_id, data)
         elif kind == PluginKind.METADATA:
             write_metadata_section(self._cfg, plugin_id, data)
+            from sickchill.plugins.metadata.config import sync_metadata_from_settings
+
+            sync_metadata_from_settings(self._cfg)
         elif kind == PluginKind.NOTIFIER:
             write_notifier_section(self._cfg, plugin_id, data)
         elif kind == PluginKind.PROVIDER:

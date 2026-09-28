@@ -1,7 +1,7 @@
 """First-party search provider plugins.
 
-Dynamic registration: import each ``oldbeard.providers.<mod>``, build a
-``ProviderPlugin`` subclass with ``id`` from ``Provider().get_id()``.
+Dynamic registration: import each ``oldbeard.providers.<mod>`` and register a
+``ProviderPlugin`` subclass whose ``id`` comes from ``provider_id_for_module``.
 """
 
 from __future__ import annotations
@@ -27,6 +27,7 @@ def load_first_party_providers() -> None:
     """Import oldbeard provider modules and @register thin ProviderPlugin wrappers."""
     global FIRST_PARTY_PROVIDER_MODULES
 
+    from sickchill.oldbeard.providers import provider_id_for_module
     from sickchill.plugins.api import register
     from sickchill.plugins.kinds.provider import ProviderPlugin
 
@@ -37,25 +38,26 @@ def load_first_party_providers() -> None:
         full = f"sickchill.oldbeard.providers.{module_name}"
         try:
             if full in sys.modules:
-                mod = importlib.reload(sys.modules[full])
+                mod = sys.modules[full]
             else:
                 mod = importlib.import_module(full)
             provider_cls = getattr(mod, "Provider", None)
             if provider_cls is None:
                 logger.warning("Provider module %s has no Provider class", module_name)
                 continue
-            sample = provider_cls()
-            provider_id = sample.get_id()
+            provider_id = provider_id_for_module(module_name)
             if not provider_id or provider_id in registered_ids:
                 continue
             registered_ids.add(provider_id)
+            class_name = getattr(provider_cls, "name", None)
+            plugin_name = class_name if isinstance(class_name, str) and class_name else module_name
 
             plugin_cls = type(
                 f"{provider_id.title().replace('_', '')}ProviderPlugin",
                 (ProviderPlugin,),
                 {
                     "id": provider_id,
-                    "name": sample.name,
+                    "name": plugin_name,
                     "provider_module": module_name,
                     "version": "1.0.0",
                 },

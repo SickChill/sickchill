@@ -195,6 +195,20 @@ class LegacyMapsMigratorTests(unittest.TestCase):
         self.assertIs(section.get("sync"), True)
         self.assertNotIn("extensions", out)
 
+    def test_trakt_plugin_sync_coerces_legacy_string_zero(self):
+        from sickchill import settings
+        from sickchill.plugins.api import PluginContext, PluginKind, clear_registry
+        from sickchill.plugins.notifiers.trakt import TraktNotifier
+
+        saved = {"TRAKT_SYNC": settings.TRAKT_SYNC, "USE_TRAKT": settings.USE_TRAKT}
+        self.addCleanup(lambda: [setattr(settings, k, v) for k, v in saved.items()])
+        self.addCleanup(clear_registry)
+
+        plugin = TraktNotifier(PluginContext(kind=PluginKind.NOTIFIER, plugin_id="trakt", _data={"enabled": True, "sync": "0"}))
+        plugin._sync_settings()
+        self.assertIs(settings.TRAKT_SYNC, False)
+        self.assertFalse(settings.TRAKT_SYNC)
+
     def test_notifiers_and_clients_do_not_recreate_legacy_sections(self):
         """Migrated-only config must not grow empty legacy KODI/SABnzbd/Blackhole/General.metadata_* shells."""
         from sickchill.oldbeard.config import peek_setting_str
