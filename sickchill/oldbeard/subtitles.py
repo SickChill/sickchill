@@ -469,7 +469,8 @@ class SubtitlesFinder(object):
             try:
                 lastsearched = datetime.datetime.strptime(ep_to_sub["lastsearch"], dateTimeFormat).replace(tzinfo=sc_timezone)
             except ValueError:
-                lastsearched = datetime.datetime(1970, 1, 1, tzinfo=datetime.timezone.utc).astimezone(sc_timezone)
+                # Attach tz; do not astimezone() epoch 0 (Windows localtime cannot represent it).
+                lastsearched = datetime.datetime(1970, 1, 1, tzinfo=sc_timezone)
 
             try:
                 if not force:
