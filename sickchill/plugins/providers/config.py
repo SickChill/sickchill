@@ -115,22 +115,17 @@ def _dest_nonempty(section: dict[str, Any], key: str) -> bool:
 
 
 def _first_party_provider_ids() -> dict[str, str]:
-    """Map provider_id → legacy section name (UPPER)."""
-    from sickchill.oldbeard.providers import __all__ as provider_all, broken_providers, getProviderModule
+    """Map provider_id → legacy section name (UPPER) without instantiating Provider()."""
+    from sickchill.oldbeard.providers import __all__ as provider_all, broken_providers, provider_id_for_module
 
     broken = set(broken_providers or [])
     result: dict[str, str] = {}
     for module_name in provider_all:
         if module_name in broken:
             continue
-        try:
-            mod = getProviderModule(module_name)
-            provider_id = mod.Provider().get_id()
-            if provider_id:
-                result[provider_id] = provider_id.upper()
-        except Exception as error:
-            logger.debug("Skipping provider module %s while listing ids: %s", module_name, error)
-            continue
+        provider_id = provider_id_for_module(module_name)
+        if provider_id:
+            result[provider_id] = provider_id.upper()
     return result
 
 
@@ -625,14 +620,18 @@ def _provider_to_section(provider) -> dict[str, Any]:
 def write_providers_to_cfg(cfg: ConfigObj) -> None:
     """Persist live providers into [PROVIDERS]; drop legacy [ID] / Newznab / TorrentRss.
 
-    After writing live ``seen_ids``, delete any ``PROVIDERS[[id]]`` not in that set
-    (skip ``#`` comment keys) so deleted custom Newznab/TorrentRSS cannot resurrect.
+    Built-in [PROVIDERS][[id]] sections are never deleted just because that provider
+    is not in memory (startup loads enabled-only). Custom Newznab/TorrentRSS sections
+    are pruned only after a full Providers-UI load, when we know the live custom lists
+    are complete.
     """
     if cfg is None:
         return
 
+    from sickchill import settings as sc_settings
     from sickchill.oldbeard.providers import sorted_provider_list
 
+    builtin_ids = set(_first_party_provider_ids())
     seen_ids: set[str] = set()
     for provider in sorted_provider_list():
         provider_id = provider.get_id()
@@ -650,12 +649,18 @@ def write_providers_to_cfg(cfg: ConfigObj) -> None:
                 continue
         write_provider_section(cfg, provider_id, _provider_to_section(provider))
 
-    # Prune deleted customs / stale PROVIDERS[[id]] entries
-    if "PROVIDERS" in cfg and hasattr(cfg["PROVIDERS"], "keys"):
+    # Never drop built-in config. Only prune custom type=newznab/torrentrss after a
+    # full UI load (deleted customs are then absent from the live lists).
+    live_custom_ids = {p.get_id() for p in (sc_settings.newznab_provider_list or []) + (sc_settings.torrent_rss_provider_list or []) if p}
+    if _providers_full_settings_applied and "PROVIDERS" in cfg and hasattr(cfg["PROVIDERS"], "keys"):
         for provider_id in list(cfg["PROVIDERS"].keys()):
             if str(provider_id).startswith("#"):
                 continue
-            if provider_id not in seen_ids:
+            if provider_id in builtin_ids:
+                continue
+            section = cfg["PROVIDERS"][provider_id]
+            ptype = str(section.get("type") or "").lower() if hasattr(section, "get") else ""
+            if ptype in {"newznab", "torrentrss"} and provider_id not in live_custom_ids:
                 del cfg["PROVIDERS"][provider_id]
 
     # Remove leftover legacy per-provider sections for known ids

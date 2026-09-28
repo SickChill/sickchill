@@ -406,9 +406,29 @@ class ProviderPluginTests(unittest.TestCase):
         self.assertEqual(str(section.get("minseed")), "9")
         self.assertTrue(section.get("enabled") in (False, "False", "false", 0, "0"))
 
+    def test_write_keeps_unloaded_builtin_provider_sections(self):
+        """Startup save must not delete disabled built-in [PROVIDERS] entries not in memory."""
+        cfg = ConfigObj()
+        cfg.indent_type = "  "
+        write_provider_section(cfg, "abnormal", {"enabled": True, "username": "live"})
+        write_provider_section(cfg, "nyaa", {"enabled": False, "username": "keep_nyaa", "minseed": 10})
 
-if __name__ == "__main__":
-    unittest.main()
+        from sickchill.oldbeard.providers.abnormal import Provider as AbnormalProvider
+
+        provider = AbnormalProvider()
+        provider.enabled = True
+        provider.username = "live"
+        settings.providerList = [provider]
+        settings.newznab_provider_list = []
+        settings.torrent_rss_provider_list = []
+        settings.PROVIDER_ORDER = ["abnormal"]
+        providers_config._providers_full_settings_applied = False
+
+        write_providers_to_cfg(cfg)
+
+        self.assertIn("abnormal", cfg["PROVIDERS"])
+        self.assertIn("nyaa", cfg["PROVIDERS"])
+        self.assertEqual(read_provider_section(cfg, "nyaa").get("username"), "keep_nyaa")
 
     def test_make_provider_list_enabled_only_and_lazy_load(self):
         from sickchill.oldbeard import providers as providers_mod
@@ -437,3 +457,7 @@ if __name__ == "__main__":
         self.assertIn("eztv", ids)
         self.assertIn("btn", ids)  # still in PROVIDER_ORDER
         self.assertIn("nyaa", ids)
+
+
+if __name__ == "__main__":
+    unittest.main()
