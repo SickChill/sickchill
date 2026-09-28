@@ -96,22 +96,27 @@ class TorrentClientPlugin(ClientPlugin):
         reload_client_ctx(self)
 
     def _sync_settings(self) -> None:
+        if getattr(settings, "TORRENT_METHOD", None) != self.id:
+            return
         sync_torrent_ctx_to_settings(self.ctx, overwrite_empty=False)
 
     def _resolve_credentials(self, host=None, username=None, password=None) -> tuple[Any, Any, Any]:
         """explicit args → CLIENTS ctx → settings.* (never blank a filled source)."""
         self._reload_ctx_from_cfg()
-        self._sync_settings()
-        host = _nonempty(host, self.ctx.get("host"), settings.TORRENT_HOST)
-        username = _nonempty(username, self.ctx.get("username"), settings.TORRENT_USERNAME)
-        password = _nonempty(password, self.ctx.get("password"), settings.TORRENT_PASSWORD)
+        method_matches = getattr(settings, "TORRENT_METHOD", None) == self.id
+        if method_matches:
+            self._sync_settings()
+        host = _nonempty(host, self.ctx.get("host"), settings.TORRENT_HOST if method_matches else None)
+        username = _nonempty(username, self.ctx.get("username"), settings.TORRENT_USERNAME if method_matches else None)
+        password = _nonempty(password, self.ctx.get("password"), settings.TORRENT_PASSWORD if method_matches else None)
         # Keep settings in sync for GenericClient code paths that read globals (path/label/etc.).
-        if host:
-            settings.TORRENT_HOST = host
-        if username:
-            settings.TORRENT_USERNAME = username
-        if password:
-            settings.TORRENT_PASSWORD = password
+        if method_matches:
+            if host:
+                settings.TORRENT_HOST = host
+            if username:
+                settings.TORRENT_USERNAME = username
+            if password:
+                settings.TORRENT_PASSWORD = password
         return host, username, password
 
     def _impl(self, host=None, username=None, password=None):

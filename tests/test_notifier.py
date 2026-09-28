@@ -213,12 +213,6 @@ class NotifierTests(conftest.SickChillTestDBCase):
         Test tweet notifications
         """
 
-    @unittest.skip("Not yet implemented")
-    def test_twilio(self):
-        """
-        Test twilio notifications
-        """
-
     @staticmethod
     def _debug_spew(text):
         """

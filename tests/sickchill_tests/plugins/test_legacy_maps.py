@@ -292,3 +292,26 @@ class LegacyMapsMigratorTests(unittest.TestCase):
         sync_legacy_maps_to_settings(out, (DISCORD_MAP,))
         self.assertTrue(settings.USE_DISCORD)
         self.assertEqual(settings.DISCORD_WEBHOOK, "https://roundtrip")
+
+    def test_notifier_password_encrypted_on_write_decrypted_on_sync(self):
+        from sickchill import settings
+        from sickchill.oldbeard import helpers
+        from sickchill.plugins.legacy_maps import KODI_MAP
+
+        saved = {
+            "USE_KODI": settings.USE_KODI,
+            "KODI_PASSWORD": settings.KODI_PASSWORD,
+            "ENCRYPTION_VERSION": settings.ENCRYPTION_VERSION,
+        }
+        self.addCleanup(lambda: [setattr(settings, k, v) for k, v in saved.items()])
+        settings.ENCRYPTION_VERSION = 1
+        settings.USE_KODI = True
+        settings.KODI_PASSWORD = "kodi-secret"
+        out = ConfigObj()
+        write_legacy_maps_from_settings(out, (KODI_MAP,))
+        stored = out["NOTIFIERS"]["kodi"]["password"]
+        self.assertNotEqual(stored, "kodi-secret")
+        self.assertEqual(helpers.decrypt(stored, 1), "kodi-secret")
+        settings.KODI_PASSWORD = ""
+        sync_legacy_maps_to_settings(out, (KODI_MAP,))
+        self.assertEqual(settings.KODI_PASSWORD, "kodi-secret")

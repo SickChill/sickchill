@@ -1,6 +1,6 @@
 from sickchill import logger, settings
 from sickchill.oldbeard import helpers
-from sickchill.oldbeard.notifiers import (  # twilio_notify,
+from sickchill.oldbeard.notifiers import (
     discord,
     emailnotify,
     emby,
@@ -53,7 +53,6 @@ gotify_notifier = gotify.Notifier()
 
 # social
 twitter_notifier = tweet.Notifier()
-# twilio_notifier = twilio_notify.Notifier()
 trakt_notifier = trakt.Notifier()
 email_notifier = emailnotify.Notifier()
 slack_notifier = slack.Notifier()

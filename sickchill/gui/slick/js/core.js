@@ -794,15 +794,6 @@ const SICKCHILL = {
                 });
             });
 
-            $('#testTwilio').on('click', () => {
-                $('#testTwilio').addClass('disabled');
-                $.post(scRoot + '/home/testTwilio', data => {
-                    $('#testTwilio-result').html(data);
-                }).always(() => {
-                    $('#testTwilio').removeClass('disabled');
-                });
-            });
-
             $('#testSlack').on('click', () => {
                 $.post(scRoot + '/home/testSlack', data => {
                     $('#testSlack-result').html(data);

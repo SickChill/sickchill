@@ -382,11 +382,11 @@ $(document).ready(function () {
             isDefault = 0;
             $('#newznab_add_div').show();
             $('#newznab_update_div').hide();
-            $('#newznab_cat').attr('disabled', 'disabled');
-            $('#newznab_cap').attr('disabled', 'disabled');
-            $('#newznab_cat_fetch').attr('disabled', 'disabled');
-            $('#newznab_cat_update').attr('disabled', 'disabled');
-            $('#newznabcapdiv').hide();
+            $('#newznab_cat').removeAttr('disabled');
+            $('#newznab_cap').removeAttr('disabled');
+            $('#newznab_cat_fetch').removeAttr('disabled');
+            $('#newznab_cat_update').removeAttr('disabled');
+            $('#newznabcapdiv').show();
             $('#newznab_cap').empty();
             $('#newznab_cat').empty();
             $('#newznab_categories_display').text('');
@@ -732,7 +732,7 @@ $(document).ready(function () {
 
     $('#newznab_cat_fetch').on('click', function () {
         const selectedProvider = $('#editANewznabProvider :selected').val();
-        if (!selectedProvider || selectedProvider === 'addNewznab') {
+        if (!selectedProvider) {
             return;
         }
 
@@ -757,7 +757,7 @@ $(document).ready(function () {
 
     $('#newznab_cat_update').on('click', function () {
         const selectedProvider = $('#editANewznabProvider :selected').val();
-        if (!selectedProvider || selectedProvider === 'addNewznab') {
+        if (!selectedProvider) {
             return;
         }
 
@@ -765,6 +765,13 @@ $(document).ready(function () {
         // If nothing selected on the left, keep using the right-hand list as-is
         const cats = selected.length > 0 ? selected : $('#newznab_cat option').map((i, opt) => $(opt).val()).toArray();
         const joined = cats.filter(Boolean).join(',');
+
+        if (selectedProvider === 'addNewznab') {
+            const selectedOptions = cats.filter(Boolean).map(cat => ({text: cat, value: cat}));
+            $('#newznab_cat').replaceOptions(selectedOptions);
+            $('#newznab_categories_display').text(joined);
+            return;
+        }
 
         const name = $('#newznab_name').val();
         const url = $('#newznab_url').val();

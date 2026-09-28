@@ -12,6 +12,8 @@ from sickchill.plugins.settings import migrate_legacy_sections, read_notifier_se
 
 class DiscordNotifierPluginTests(unittest.TestCase):
     def setUp(self):
+        from sickchill import settings
+
         clear_registry()
         import sickchill.plugins.notifiers.discord as discord_mod
 
@@ -21,6 +23,17 @@ class DiscordNotifierPluginTests(unittest.TestCase):
 
         register(self.Discord)
         self.manager = PluginManager()
+        saved = {
+            "USE_DISCORD": settings.USE_DISCORD,
+            "DISCORD_WEBHOOK": settings.DISCORD_WEBHOOK,
+            "DISCORD_NAME": settings.DISCORD_NAME,
+            "DISCORD_AVATAR_URL": settings.DISCORD_AVATAR_URL,
+            "DISCORD_TTS": settings.DISCORD_TTS,
+            "DISCORD_NOTIFY_SNATCH": settings.DISCORD_NOTIFY_SNATCH,
+            "DISCORD_NOTIFY_DOWNLOAD": settings.DISCORD_NOTIFY_DOWNLOAD,
+            "DISCORD_NOTIFY_SUBTITLEDOWNLOAD": settings.DISCORD_NOTIFY_SUBTITLEDOWNLOAD,
+        }
+        self.addCleanup(lambda: [setattr(settings, key, value) for key, value in saved.items()])
 
     def tearDown(self):
         clear_registry()

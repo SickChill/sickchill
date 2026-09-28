@@ -109,15 +109,6 @@ class ConfigNotifications(Config):
         settings.TWITTER_USEDM = config.checkbox_to_value(self.get_body_argument("twitter_usedm", default=None))
         settings.TWITTER_DMTO = self.get_body_argument("twitter_dmto", default=None)
 
-        settings.USE_TWILIO = config.checkbox_to_value(self.get_body_argument("use_twilio", default=None))
-        settings.TWILIO_NOTIFY_ONSNATCH = config.checkbox_to_value(self.get_body_argument("twilio_notify_onsnatch", default=None))
-        settings.TWILIO_NOTIFY_ONDOWNLOAD = config.checkbox_to_value(self.get_body_argument("twilio_notify_ondownload", default=None))
-        settings.TWILIO_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(self.get_body_argument("twilio_notify_onsubtitledownload", default=None))
-        settings.TWILIO_PHONE_SID = self.get_body_argument("twilio_phone_sid", default=None)
-        settings.TWILIO_ACCOUNT_SID = self.get_body_argument("twilio_account_sid", default=None)
-        settings.TWILIO_AUTH_TOKEN = self.get_body_argument("twilio_auth_token", default=None)
-        settings.TWILIO_TO_NUMBER = self.get_body_argument("twilio_to_number", default=None)
-
         settings.USE_SLACK = config.checkbox_to_value(self.get_body_argument("use_slack", default="False"))
         settings.SLACK_NOTIFY_SNATCH = config.checkbox_to_value(self.get_body_argument("slack_notify_snatch", default=None))
         settings.SLACK_NOTIFY_DOWNLOAD = config.checkbox_to_value(self.get_body_argument("slack_notify_download", default=None))

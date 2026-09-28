@@ -7,6 +7,7 @@ Import individual modules for @register side effects (avoid circular package imp
 from __future__ import annotations
 
 import importlib
+import inspect
 import logging
 
 logger = logging.getLogger("sickchill.plugins.notifiers")
@@ -28,7 +29,6 @@ FIRST_PARTY_NOTIFIER_MODULES = (
     "matrix",
     "email",
     "twitter",
-    "twilio",
     "synologynotifier",
     "kodi",
     "plex",
@@ -45,11 +45,28 @@ FIRST_PARTY_NOTIFIER_MODULES = (
 def load_first_party_notifiers() -> None:
     import sys
 
+    from sickchill.plugins.api import Plugin, register
+
     for name in FIRST_PARTY_NOTIFIER_MODULES:
         full = f"sickchill.plugins.notifiers.{name}"
         try:
             if full in sys.modules:
-                importlib.reload(sys.modules[full])
+                # Re-register classes from the already-imported module so identities stay
+                # stable across clear_registry() in tests (reload would create new classes).
+                module = sys.modules[full]
+                for obj in vars(module).values():
+                    if not inspect.isclass(obj):
+                        continue
+                    try:
+                        if not issubclass(obj, Plugin) or obj is Plugin:
+                            continue
+                    except TypeError:
+                        continue
+                    if getattr(obj, "__module__", None) != full:
+                        continue
+                    if not getattr(obj, "id", None):
+                        continue
+                    register(obj)
             else:
                 importlib.import_module(full)
         except Exception as error:

@@ -401,7 +401,7 @@ def initialize(console_logging: bool = True, debug: bool = False, dbdebug: bool 
         _sab_client = _clients.get("sabnzbd") if isinstance(_clients, dict) else None
         if isinstance(_sab_client, dict) and (_sab_client.get("host") or _sab_client.get("apikey") or _sab_client.get("username") or "category" in _sab_client):
             settings.SAB_USERNAME = _sab_client.get("username") or ""
-            settings.SAB_PASSWORD = _sab_client.get("password") or ""
+            settings.SAB_PASSWORD = helpers.decrypt(_sab_client.get("password") or "", settings.ENCRYPTION_VERSION) or ""
             settings.SAB_APIKEY = _sab_client.get("apikey") or ""
             settings.SAB_CATEGORY = _sab_client.get("category") or "tv"
             settings.SAB_CATEGORY_BACKLOG = _sab_client.get("category_backlog") or settings.SAB_CATEGORY
@@ -427,7 +427,7 @@ def initialize(console_logging: bool = True, debug: bool = False, dbdebug: bool 
         _nzbget_client = _clients.get("nzbget") if isinstance(_clients, dict) else None
         if isinstance(_nzbget_client, dict) and (_nzbget_client.get("host") or _nzbget_client.get("username") or "category" in _nzbget_client):
             settings.NZBGET_USERNAME = _nzbget_client.get("username") or "nzbget"
-            settings.NZBGET_PASSWORD = _nzbget_client.get("password") or "tegbzn6789"
+            settings.NZBGET_PASSWORD = helpers.decrypt(_nzbget_client.get("password") or "", settings.ENCRYPTION_VERSION) or "tegbzn6789"
             settings.NZBGET_CATEGORY = _nzbget_client.get("category") or "tv"
             settings.NZBGET_CATEGORY_BACKLOG = _nzbget_client.get("category_backlog") or settings.NZBGET_CATEGORY
             settings.NZBGET_CATEGORY_ANIME = _nzbget_client.get("category_anime") or "anime"
@@ -461,7 +461,7 @@ def initialize(console_logging: bool = True, debug: bool = False, dbdebug: bool 
             # DSM section is host/user/pass/path only — do not pull qbit-style leftovers.
             settings.TORRENT_HOST = _torrent_client.get("host") or ""
             settings.TORRENT_USERNAME = _torrent_client.get("username") or ""
-            settings.TORRENT_PASSWORD = _torrent_client.get("password") or ""
+            settings.TORRENT_PASSWORD = helpers.decrypt(_torrent_client.get("password") or "", settings.ENCRYPTION_VERSION) or ""
             settings.TORRENT_PATH = _torrent_client.get("path") or ""
             settings.TORRENT_PATH_INCOMPLETE = ""
             settings.TORRENT_SEED_TIME = 0
@@ -476,7 +476,7 @@ def initialize(console_logging: bool = True, debug: bool = False, dbdebug: bool 
                 logger.censored_items[("CLIENTS", "download_station.password")] = settings.TORRENT_PASSWORD
         elif isinstance(_torrent_client, dict) and (_torrent_client.get("host") or _torrent_client.get("username") or _torrent_client.get("password")):
             settings.TORRENT_USERNAME = _torrent_client.get("username") or ""
-            settings.TORRENT_PASSWORD = _torrent_client.get("password") or ""
+            settings.TORRENT_PASSWORD = helpers.decrypt(_torrent_client.get("password") or "", settings.ENCRYPTION_VERSION) or ""
             settings.TORRENT_HOST = _torrent_client.get("host") or ""
             settings.TORRENT_PATH = _torrent_client.get("path") or ""
             settings.TORRENT_PATH_INCOMPLETE = _torrent_client.get("path_incomplete") or ""
@@ -521,7 +521,7 @@ def initialize(console_logging: bool = True, debug: bool = False, dbdebug: bool 
         if isinstance(_ds_client, dict) and (_ds_client.get("host") or _ds_client.get("username")):
             settings.SYNOLOGY_DSM_HOST = _ds_client.get("host") or ""
             settings.SYNOLOGY_DSM_USERNAME = _ds_client.get("username") or ""
-            settings.SYNOLOGY_DSM_PASSWORD = _ds_client.get("password") or ""
+            settings.SYNOLOGY_DSM_PASSWORD = helpers.decrypt(_ds_client.get("password") or "", settings.ENCRYPTION_VERSION) or ""
             settings.SYNOLOGY_DSM_PATH = _ds_client.get("path") or ""
             if settings.SYNOLOGY_DSM_PASSWORD:
                 logger.censored_items[("CLIENTS", "download_station.password")] = settings.SYNOLOGY_DSM_PASSWORD

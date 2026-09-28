@@ -9,6 +9,8 @@ from configobj import ConfigObj
 from sickchill.plugins.legacy_maps import TORRENT_CLIENT_IDS
 from sickchill.plugins.settings import (
     _coerce_settings_value,
+    decrypt_stored_password,
+    encrypt_stored_password,
     read_client_section,
     write_client_section,
 )
@@ -75,7 +77,10 @@ def _apply_section_to_settings(section: dict[str, Any], fields: tuple[tuple[str,
             continue
         if not hasattr(sc_settings, attr):
             continue
-        setattr(sc_settings, attr, _coerce_settings_value(field_type, section.get(name)))
+        value = _coerce_settings_value(field_type, section.get(name))
+        if "password" in name:
+            value = decrypt_stored_password(value)
+        setattr(sc_settings, attr, value)
 
 
 def _settings_to_section(fields: tuple[tuple[str, str, str], ...], *, include: set[str] | None = None) -> dict[str, Any]:
@@ -86,18 +91,49 @@ def _settings_to_section(fields: tuple[tuple[str, str, str], ...], *, include: s
         if include is not None and name not in include:
             continue
         raw = getattr(sc_settings, attr, None)
-        data[name] = _coerce_settings_value(field_type, raw)
+        value = _coerce_settings_value(field_type, raw)
+        if "password" in name:
+            value = encrypt_stored_password(value)
+        data[name] = value
     return data
 
 
-def _merge_client_section(existing: dict[str, Any], incoming: dict[str, Any]) -> dict[str, Any]:
-    """Prefer incoming values, but do not blank existing CLIENTS keys with empty settings.*."""
-    merged = dict(existing or {})
+def _client_connection_unloaded(existing: dict[str, Any], incoming: dict[str, Any]) -> bool:
+    """True when incoming has no connection identity while existing still has one (settings not loaded)."""
+    identity_keys = ("host", "username", "nzb_dir", "torrent_dir")
+    keys = [key for key in identity_keys if key in existing or key in incoming]
+    if not keys:
+        return False
+    has_existing = any(existing.get(key) not in (None, "") for key in keys)
+    has_incoming = any(incoming.get(key) not in (None, "") for key in keys)
+    return bool(has_existing and not has_incoming)
+
+
+def _merge_client_section(existing: dict[str, Any], incoming: dict[str, Any], *, unloaded: bool | None = None) -> dict[str, Any]:
+    """Replace with incoming values unless settings look unloaded, then keep existing non-empty keys."""
+    existing = dict(existing or {})
+    incoming = dict(incoming or {})
+    if unloaded is None:
+        unloaded = _client_connection_unloaded(existing, incoming)
+    if not unloaded:
+        return incoming
+    merged = dict(existing)
     for key, value in incoming.items():
         if value in (None, "") and merged.get(key) not in (None, ""):
             continue
         merged[key] = value
     return merged
+
+
+def stored_client_password(cfg: ConfigObj | None, client_id: str, fallback: str | None = "") -> str:
+    """Decrypted [CLIENTS][[id]].password, or fallback when that client has no stored password."""
+    if not client_id or cfg is None:
+        return fallback or ""
+    section = read_client_section(cfg, client_id)
+    stored = section.get("password")
+    if stored in (None, ""):
+        return fallback or ""
+    return decrypt_stored_password(stored) or (fallback or "")
 
 
 def sync_clients_from_settings(cfg: ConfigObj) -> None:
@@ -152,22 +188,45 @@ def write_clients_to_cfg(cfg: ConfigObj) -> None:
     """Persist settings.* into [CLIENTS] and drop migratable legacy client sections."""
     from sickchill import settings as sc_settings
 
-    write_client_section(
-        cfg,
-        "blackhole",
-        _merge_client_section(
-            read_client_section(cfg, "blackhole"),
-            {
-                "nzb_dir": getattr(sc_settings, "NZB_DIR", None) or "",
-                "torrent_dir": getattr(sc_settings, "TORRENT_DIR", None) or "",
-            },
-        ),
-    )
-    write_client_section(cfg, "sabnzbd", _merge_client_section(read_client_section(cfg, "sabnzbd"), _settings_to_section(_SAB_FIELDS)))
-    write_client_section(cfg, "nzbget", _merge_client_section(read_client_section(cfg, "nzbget"), _settings_to_section(_NZBGET_FIELDS)))
-
     method = getattr(sc_settings, "TORRENT_METHOD", None) or ""
     nzb_method = getattr(sc_settings, "NZB_METHOD", None) or ""
+    torrent_client_active = bool(method) and method not in ("blackhole", "download_station") and method in TORRENT_CLIENT_IDS
+
+    bh_existing = read_client_section(cfg, "blackhole")
+    bh_incoming = {
+        "nzb_dir": getattr(sc_settings, "NZB_DIR", None) or "",
+        "torrent_dir": getattr(sc_settings, "TORRENT_DIR", None) or "",
+    }
+    # Dual dirs: preserve the inactive method's directory when its panel posted empty.
+    if nzb_method != "blackhole" and bh_incoming["nzb_dir"] in (None, "") and bh_existing.get("nzb_dir") not in (None, ""):
+        bh_incoming["nzb_dir"] = bh_existing.get("nzb_dir")
+    if method != "blackhole" and bh_incoming["torrent_dir"] in (None, "") and bh_existing.get("torrent_dir") not in (None, ""):
+        bh_incoming["torrent_dir"] = bh_existing.get("torrent_dir")
+    write_client_section(cfg, "blackhole", bh_incoming)
+
+    sab_existing = read_client_section(cfg, "sabnzbd")
+    sab_incoming = _settings_to_section(_SAB_FIELDS)
+    write_client_section(
+        cfg,
+        "sabnzbd",
+        _merge_client_section(
+            sab_existing,
+            sab_incoming,
+            unloaded=nzb_method != "sabnzbd" or _client_connection_unloaded(sab_existing, sab_incoming),
+        ),
+    )
+    nzbget_existing = read_client_section(cfg, "nzbget")
+    nzbget_incoming = _settings_to_section(_NZBGET_FIELDS)
+    write_client_section(
+        cfg,
+        "nzbget",
+        _merge_client_section(
+            nzbget_existing,
+            nzbget_incoming,
+            unloaded=nzb_method != "nzbget" or _client_connection_unloaded(nzbget_existing, nzbget_incoming),
+        ),
+    )
+
     # download_station stores only DSM keys (host/user/pass/path). Do not copy
     # unrelated TORRENT_* leftovers (labels, seed_time, incomplete path, …).
     ds_data = _settings_to_section(_DSM_FIELDS)
@@ -177,8 +236,8 @@ def write_clients_to_cfg(cfg: ConfigObj) -> None:
         for name, value in torrent_dsm.items():
             if value not in (None, ""):
                 ds_data[name] = value
-    elif nzb_method == "download_station":
-        # Fill empty DSM keys from TORRENT_* only when NZB tab owns DS.
+    elif nzb_method == "download_station" and not torrent_client_active:
+        # Fill empty DSM keys from TORRENT_* only when no other torrent client is active.
         torrent_dsm = _settings_to_section(_TORRENT_FIELDS, include={"host", "username", "password", "path"})
         for name, value in torrent_dsm.items():
             if ds_data.get(name) in (None, "") and value not in (None, ""):

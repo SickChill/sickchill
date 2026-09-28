@@ -334,7 +334,10 @@ class Home(WebRoot):
         torrent_method = self.get_body_argument("torrent_method")
         host = config.clean_url(self.get_body_argument("host"))
         username = self.get_body_argument("username")
-        password = filters.unhide(settings.TORRENT_PASSWORD, self.get_body_argument("password"))
+        from sickchill.plugins.clients.config import stored_client_password
+
+        stored = stored_client_password(settings.CFG, torrent_method, fallback=settings.TORRENT_PASSWORD)
+        password = filters.unhide(stored, self.get_body_argument("password"))
         return self.__torrent_test(host, username, password, torrent_method)
 
     def testFreeMobile(self):
@@ -418,26 +421,6 @@ class Home(WebRoot):
             return _("Tweet successful, check your twitter to make sure it worked")
 
         return _("Error sending tweet")
-
-    @staticmethod
-    def testTwilio():
-        # if not notifiers.twilio_notifier.account_regex.match(settings.TWILIO_ACCOUNT_SID):
-        #     return _("Please enter a valid account sid")
-        #
-        # if not notifiers.twilio_notifier.auth_regex.match(settings.TWILIO_AUTH_TOKEN):
-        #     return _("Please enter a valid auth token")
-        #
-        # if not notifiers.twilio_notifier.phone_regex.match(settings.TWILIO_PHONE_SID):
-        #     return _("Please enter a valid phone sid")
-        #
-        # if not notifiers.twilio_notifier.number_regex.match(settings.TWILIO_TO_NUMBER):
-        #     return _('Please format the phone number as "+1-###-###-####"')
-        #
-        # result = notifiers.twilio_notifier.test_notify()
-        # if result:
-        #     return _("Authorization successful and number ownership verified")
-        # else:
-        return _("Error sending sms")
 
     @staticmethod
     def testSlack():

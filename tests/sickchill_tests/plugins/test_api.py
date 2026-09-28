@@ -46,3 +46,33 @@ class RegisterTests(unittest.TestCase):
 
         with self.assertRaises(TypeError):
             register(NotAPlugin)  # type: ignore[arg-type]
+
+    def test_register_replaces_same_kind_and_id(self):
+        from sickchill.plugins.api import registered_classes
+
+        @register
+        class First(NotifierPlugin):
+            id = "replace_me"
+            name = "First"
+
+        @register
+        class Second(NotifierPlugin):
+            id = "replace_me"
+            name = "Second"
+
+        classes = registered_classes()
+        matching = [cls for cls in classes if getattr(cls, "id", None) == "replace_me"]
+        self.assertEqual(len(matching), 1)
+        self.assertIs(matching[0], Second)
+        self.assertIsNot(matching[0], First)
+
+    def test_base_notifier_hooks_accept_broadcast_args(self):
+        class Bare(NotifierPlugin):
+            id = "bare"
+            name = "Bare"
+
+        plugin = Bare(PluginContext(kind=PluginKind.NOTIFIER, plugin_id="bare", _data={}))
+        plugin.notify_update("1.2.3")
+        plugin.notify_login("10.0.0.1")
+        plugin.notify_logged_error(object())
+        plugin.notify_subtitle_download("Show.S01E01", "en")

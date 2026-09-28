@@ -135,22 +135,6 @@ TWITTER_MAP = LegacyMap(
     ),
 )
 
-TWILIO_MAP = LegacyMap(
-    kind="notifiers",
-    plugin_id="twilio",
-    legacy_section="Twilio",
-    fields=(
-        LegacyField("enabled", "USE_TWILIO", ("use_twilio",), "bool"),
-        LegacyField("notify_onsnatch", "TWILIO_NOTIFY_ONSNATCH", ("twilio_notify_onsnatch",), "bool"),
-        LegacyField("notify_ondownload", "TWILIO_NOTIFY_ONDOWNLOAD", ("twilio_notify_ondownload",), "bool"),
-        LegacyField("notify_onsubtitledownload", "TWILIO_NOTIFY_ONSUBTITLEDOWNLOAD", ("twilio_notify_onsubtitledownload",), "bool"),
-        LegacyField("phone_sid", "TWILIO_PHONE_SID", ("twilio_phone_sid",), "str"),
-        LegacyField("account_sid", "TWILIO_ACCOUNT_SID", ("twilio_account_sid",), "str"),
-        LegacyField("auth_token", "TWILIO_AUTH_TOKEN", ("twilio_auth_token",), "str"),
-        LegacyField("to_number", "TWILIO_TO_NUMBER", ("twilio_to_number",), "str"),
-    ),
-)
-
 NMJ_MAP = LegacyMap(
     kind="notifiers",
     plugin_id="nmj",
@@ -442,7 +426,6 @@ NOTIFIER_LEGACY_MAPS: tuple[LegacyMap, ...] = (
     JELLYFIN_MAP,
     PROWL_MAP,
     TWITTER_MAP,
-    TWILIO_MAP,
     NMJ_MAP,
     NMJV2_MAP,
     SYNOLOGYNOTIFIER_MAP,

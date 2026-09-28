@@ -303,6 +303,63 @@ class ClientPluginTests(unittest.TestCase):
         self.assertEqual(section.get("username"), "sickchill")
         self.assertEqual(section.get("path"), "/QBT1")
 
+    def test_write_clients_replaces_loaded_torrent_including_empty_path(self):
+        """When the active client is loaded (host set), empty fields replace stored values."""
+        from sickchill import settings as sc_settings
+        from sickchill.plugins.clients.config import write_clients_to_cfg
+
+        cfg = ConfigObj()
+        cfg.indent_type = "  "
+        write_client_section(
+            cfg,
+            "qbittorrent",
+            {
+                "host": "http://localhost:8080/",
+                "username": "sickchill",
+                "password": "sickchill",
+                "path": "/QBT1",
+                "path_incomplete": "/QBT2",
+            },
+        )
+        sc_settings.TORRENT_METHOD = "qbittorrent"
+        sc_settings.TORRENT_HOST = "http://localhost:8080/"
+        sc_settings.TORRENT_USERNAME = "sickchill"
+        sc_settings.TORRENT_PASSWORD = "sickchill"
+        sc_settings.TORRENT_PATH = ""
+        sc_settings.TORRENT_PATH_INCOMPLETE = ""
+        sc_settings.NZB_METHOD = "blackhole"
+        write_clients_to_cfg(cfg)
+        section = read_client_section(cfg, "qbittorrent")
+        self.assertEqual(section.get("host"), "http://localhost:8080/")
+        self.assertEqual(section.get("username"), "sickchill")
+        self.assertEqual(section.get("path"), "")
+        self.assertEqual(section.get("path_incomplete"), "")
+
+    def test_client_password_encrypted_on_write_decrypted_on_sync(self):
+        from sickchill import settings as sc_settings
+        from sickchill.oldbeard import helpers
+        from sickchill.plugins.clients.config import sync_clients_from_settings, write_clients_to_cfg
+
+        saved_version = sc_settings.ENCRYPTION_VERSION
+        self.addCleanup(lambda: setattr(sc_settings, "ENCRYPTION_VERSION", saved_version))
+        sc_settings.ENCRYPTION_VERSION = 1
+        cfg = ConfigObj()
+        cfg.indent_type = "  "
+        sc_settings.TORRENT_METHOD = "qbittorrent"
+        sc_settings.NZB_METHOD = "blackhole"
+        sc_settings.TORRENT_HOST = "http://localhost:8080/"
+        sc_settings.TORRENT_USERNAME = "sickchill"
+        sc_settings.TORRENT_PASSWORD = "plain-secret"
+        sc_settings.TORRENT_PATH = "/dl"
+        sc_settings.TORRENT_PATH_INCOMPLETE = ""
+        write_clients_to_cfg(cfg)
+        stored = read_client_section(cfg, "qbittorrent").get("password")
+        self.assertNotEqual(stored, "plain-secret")
+        self.assertEqual(helpers.decrypt(stored, 1), "plain-secret")
+        sc_settings.TORRENT_PASSWORD = ""
+        sync_clients_from_settings(cfg)
+        self.assertEqual(sc_settings.TORRENT_PASSWORD, "plain-secret")
+
     def test_synology_dsm_moves_to_download_station_keeps_use_synoindex(self):
         cfg = ConfigObj()
         cfg.indent_type = "  "

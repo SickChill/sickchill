@@ -8,25 +8,25 @@ from sickchill.plugins.api import Plugin, PluginKind
 class NotifierPlugin(Plugin):
     kind: ClassVar[PluginKind] = PluginKind.NOTIFIER
 
-    def notify_snatch(self, title: str, message: str = "") -> None:
+    def notify_snatch(self, *args, **kwargs) -> None:
         return None
 
-    def notify_download(self, title: str, message: str = "") -> None:
+    def notify_download(self, *args, **kwargs) -> None:
         return None
 
-    def notify_postprocess(self, title: str, message: str = "") -> None:
+    def notify_postprocess(self, *args, **kwargs) -> None:
         return None
 
-    def notify_subtitle_download(self, title: str, message: str = "") -> None:
+    def notify_subtitle_download(self, *args, **kwargs) -> None:
         return None
 
-    def notify_update(self, title: str, message: str = "") -> None:
+    def notify_update(self, *args, **kwargs) -> None:
         return None
 
-    def notify_login(self, title: str, message: str = "") -> None:
+    def notify_login(self, *args, **kwargs) -> None:
         return None
 
-    def notify_logged_error(self, title: str, message: str = "") -> None:
+    def notify_logged_error(self, *args, **kwargs) -> None:
         return None
 
     def test(self) -> tuple[bool, str]:

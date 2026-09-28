@@ -126,8 +126,15 @@ def _validate_type(field_def: Field, value: Any) -> str | None:
 def register(cls: type[Plugin]) -> type[Plugin]:
     if not issubclass(cls, Plugin):
         raise TypeError(f"{cls!r} is not a Plugin subclass")
-    if cls not in _REGISTERED:
-        _REGISTERED.append(cls)
+    kind = getattr(cls, "kind", None)
+    plugin_id = getattr(cls, "id", None)
+    if plugin_id:
+        # Reloaded modules define a new class object; replace by (kind, id) so discovery
+        # uses the new class rather than keeping the previous identity.
+        _REGISTERED[:] = [existing for existing in _REGISTERED if not (getattr(existing, "kind", None) == kind and getattr(existing, "id", None) == plugin_id)]
+    elif cls in _REGISTERED:
+        return cls
+    _REGISTERED.append(cls)
     return cls
 
 

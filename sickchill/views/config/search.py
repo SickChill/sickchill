@@ -102,7 +102,10 @@ class ConfigSearch(Config):
         settings.NZBGET_PRIORITY = try_int(self.get_body_argument("nzbget_priority", default="100"))
 
         settings.TORRENT_USERNAME = self.get_body_argument("torrent_username", default=None)
-        settings.TORRENT_PASSWORD = filters.unhide(settings.TORRENT_PASSWORD, self.get_body_argument("torrent_password", default=None))
+        from sickchill.plugins.clients.config import stored_client_password
+
+        stored_torrent_password = stored_client_password(settings.CFG, settings.TORRENT_METHOD, fallback=settings.TORRENT_PASSWORD)
+        settings.TORRENT_PASSWORD = filters.unhide(stored_torrent_password, self.get_body_argument("torrent_password", default=None))
         settings.TORRENT_LABEL = self.get_body_argument("torrent_label", default=None)
         settings.TORRENT_LABEL_ANIME = self.get_body_argument("torrent_label_anime", default=None)
         settings.TORRENT_VERIFY_CERT = config.checkbox_to_value(self.get_body_argument("torrent_verify_cert", default=None))
@@ -136,8 +139,8 @@ class ConfigSearch(Config):
                 settings.SYNOLOGY_DSM_PASSWORD = settings.TORRENT_PASSWORD
             if settings.TORRENT_PATH:
                 settings.SYNOLOGY_DSM_PATH = settings.TORRENT_PATH
-        elif settings.NZB_METHOD == "download_station":
-            # NZB tab uses syno_dsm_* — mirror into TORRENT_* for the shared client.
+        elif settings.NZB_METHOD == "download_station" and (not settings.TORRENT_METHOD or settings.TORRENT_METHOD == "blackhole"):
+            # NZB tab uses syno_dsm_* — mirror into TORRENT_* only when no other torrent client is active.
             if settings.SYNOLOGY_DSM_HOST:
                 settings.TORRENT_HOST = settings.SYNOLOGY_DSM_HOST
             if settings.SYNOLOGY_DSM_USERNAME:
@@ -177,8 +180,10 @@ class ConfigSearch(Config):
             section = read_client_section(cfg, "blackhole") if cfg is not None else {}
             return json.dumps({"torrent_dir": section.get("torrent_dir") or settings.TORRENT_DIR or ""})
 
+        from sickchill.plugins.settings import decrypt_stored_password
+
         def _secret(value):
-            return filters.hide(value or "")
+            return filters.hide(decrypt_stored_password(value) if value not in (None, "") else "")
 
         if method == "download_station":
             section = read_client_section(cfg, "download_station") if cfg is not None else {}
@@ -242,8 +247,10 @@ class ConfigSearch(Config):
             section = read_client_section(cfg, "blackhole") if cfg is not None else {}
             return json.dumps({"nzb_dir": section.get("nzb_dir") or settings.NZB_DIR or ""})
 
+        from sickchill.plugins.settings import decrypt_stored_password
+
         def _secret(value):
-            return filters.hide(value or "")
+            return filters.hide(decrypt_stored_password(value) if value not in (None, "") else "")
 
         if method == "download_station":
             section = read_client_section(cfg, "download_station") if cfg is not None else {}

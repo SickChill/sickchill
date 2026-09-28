@@ -44,16 +44,19 @@ class MigratorTests(unittest.TestCase):
         cfg["Boxcar2"] = {"use_boxcar2": "0"}
         cfg["Pushalot"] = {"use_pushalot": "0"}
         cfg["NMA"] = {"use_nma": "0"}
+        cfg["Twilio"] = {"use_twilio": "1", "twilio_account_sid": "ACdead"}
         cfg["NOTIFIERS"] = {
             "growl": {"enabled": False},
+            "twilio": {"enabled": True, "account_sid": "ACdead"},
             "discord": {"enabled": True, "webhook": "https://keep"},
         }
         cfg["extensions"] = {"notifiers": {"pushalot": {"enabled": False}, "slack": {"enabled": True}}}
 
         self.assertTrue(remove_retired_notifier_sections(cfg))
-        for section in ("Growl", "Boxcar2", "Pushalot", "NMA"):
+        for section in ("Growl", "Boxcar2", "Pushalot", "NMA", "Twilio"):
             self.assertNotIn(section, cfg)
         self.assertNotIn("growl", cfg["NOTIFIERS"])
+        self.assertNotIn("twilio", cfg["NOTIFIERS"])
         self.assertIn("discord", cfg["NOTIFIERS"])
         self.assertEqual(cfg["NOTIFIERS"]["discord"].get("webhook"), "https://keep")
         self.assertNotIn("pushalot", cfg["extensions"]["notifiers"])
@@ -69,9 +72,11 @@ class MigratorTests(unittest.TestCase):
         disk["Growl"] = {"use_growl": "0"}
         disk["Boxcar2"] = {"use_boxcar2": "0"}
         disk["Pushalot"] = {"use_pushalot": "0"}
-        disk["NOTIFIERS"] = {"discord": {"enabled": True, "webhook": "https://keep"}}
+        disk["Twilio"] = {"use_twilio": "0"}
+        disk["NOTIFIERS"] = {"discord": {"enabled": True, "webhook": "https://keep"}, "twilio": {"enabled": False}}
 
         self.assertTrue(remove_retired_notifier_sections(disk))
-        for section in ("Growl", "Boxcar2", "Pushalot"):
+        for section in ("Growl", "Boxcar2", "Pushalot", "Twilio"):
             self.assertNotIn(section, disk)
+        self.assertNotIn("twilio", disk.get("NOTIFIERS", {}))
         self.assertIn("discord", disk.get("NOTIFIERS", {}))

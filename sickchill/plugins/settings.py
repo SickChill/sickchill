@@ -349,6 +349,7 @@ RETIRED_NOTIFIER_LEGACY_SECTIONS: tuple[str, ...] = (
     "Pushalot",
     "NMA",
     "NotifyMyAndroid",
+    "Twilio",
 )
 RETIRED_NOTIFIER_IDS: tuple[str, ...] = (
     "growl",
@@ -357,13 +358,14 @@ RETIRED_NOTIFIER_IDS: tuple[str, ...] = (
     "pushalot",
     "nma",
     "notifymyandroid",
+    "twilio",
 )
 
 
 def remove_retired_notifier_sections(cfg: ConfigObj) -> bool:
     """
     Delete discontinued notifier sections from config.ini:
-      - legacy [Growl] / [Boxcar2] / [Pushalot] / [NMA] / …
+      - legacy [Growl] / [Boxcar2] / [Pushalot] / [NMA] / [Twilio] / …
       - [NOTIFIERS][[growl]] etc. if present
       - extensions.notifiers.growl etc. if still lingering
     INFO only when something is actually removed.
@@ -480,6 +482,57 @@ def _coerce_settings_value(field_type: str, raw: Any) -> Any:
     return raw
 
 
+def _is_password_field(name: str, field_type: str = "") -> bool:
+    if field_type == "password":
+        return True
+    return "password" in (name or "").lower()
+
+
+def decrypt_stored_password(value: Any, encryption_version: int | None = None) -> str:
+    """Decrypt a [NOTIFIERS]/[CLIENTS]/[extensions] password for settings.*."""
+    from sickchill import settings as sc_settings
+    from sickchill.oldbeard import helpers
+
+    if value in (None, ""):
+        return ""
+    version = sc_settings.ENCRYPTION_VERSION if encryption_version is None else encryption_version
+    try:
+        decrypted = helpers.decrypt(str(value), version)
+    except Exception:
+        return str(value)
+    if decrypted in (None, "", "None"):
+        return ""
+    return str(decrypted)
+
+
+def encrypt_stored_password(value: Any, encryption_version: int | None = None) -> str:
+    """Encrypt a runtime password before writing [NOTIFIERS]/[CLIENTS]/[extensions]."""
+    from sickchill import settings as sc_settings
+    from sickchill.oldbeard import helpers
+
+    if value in (None, ""):
+        return ""
+    version = sc_settings.ENCRYPTION_VERSION if encryption_version is None else encryption_version
+    try:
+        return helpers.encrypt(str(value), version) or ""
+    except Exception:
+        return str(value)
+
+
+def _settings_value_from_section(field_def, section: dict[str, Any]) -> Any:
+    value = _coerce_settings_value(field_def.type, section.get(field_def.name))
+    if _is_password_field(field_def.name, field_def.type):
+        value = decrypt_stored_password(value)
+    return value
+
+
+def _section_value_from_settings(field_def, raw: Any) -> Any:
+    value = _coerce_settings_value(field_def.type, raw)
+    if _is_password_field(field_def.name, field_def.type):
+        value = encrypt_stored_password(value)
+    return value
+
+
 # Notifier enable-style fields: presence marks the section as a configured component.
 _NOTIFIER_ENABLE_FIELDS = frozenset({"enabled", "use_plex_server", "use_plex_client"})
 
@@ -521,8 +574,7 @@ def sync_legacy_maps_to_settings(cfg: ConfigObj, maps) -> None:
             for field_def in legacy_map.fields:
                 if not hasattr(sc_settings, field_def.settings_attr):
                     continue
-                value = _coerce_settings_value(field_def.type, section.get(field_def.name))
-                setattr(sc_settings, field_def.settings_attr, value)
+                setattr(sc_settings, field_def.settings_attr, _settings_value_from_section(field_def, section))
             continue
 
         if not section:
@@ -530,8 +582,7 @@ def sync_legacy_maps_to_settings(cfg: ConfigObj, maps) -> None:
         for field_def in legacy_map.fields:
             if not hasattr(sc_settings, field_def.settings_attr):
                 continue
-            value = _coerce_settings_value(field_def.type, section.get(field_def.name))
-            setattr(sc_settings, field_def.settings_attr, value)
+            setattr(sc_settings, field_def.settings_attr, _settings_value_from_section(field_def, section))
 
 
 def _ensure_settings_defaults(sc_settings, fields) -> None:
@@ -552,9 +603,9 @@ def write_legacy_maps_from_settings(cfg: ConfigObj, maps) -> None:
         data = {}
         for field_def in legacy_map.fields:
             raw = getattr(sc_settings, field_def.settings_attr, None)
-            value = _coerce_settings_value(field_def.type, raw)
             # Persist bools as real bools so later sync does not see 'True' strings.
-            data[field_def.name] = value
+            # Password fields are encrypted; migration copies stay encrypted as-is.
+            data[field_def.name] = _section_value_from_settings(field_def, raw)
         if kind == PluginKind.NOTIFIER or legacy_map.kind == "notifiers":
             write_notifier_section(cfg, legacy_map.plugin_id, data)
         else:
