@@ -1,6 +1,5 @@
 // Avoid `console` errors in browsers that lack a console.
-(function () {
-    let method;
+{
     const noop = function () {};
 
     const methods = [
@@ -32,20 +31,16 @@
 
     while (length > 0) {
         length--;
-        method = methods[length];
+        const method = methods[length];
 
         // Only stub undefined methods.
         console[method] ||= noop;
     }
-})();
+}
 
 $(document).ready(() => {
     function setDefault(which, force) {
-        if (which === undefined || which.length === 0) {
-            return;
-        }
-
-        if ($('#whichDefaultRootDir').val() === which && force !== true) {
+        if (which === undefined || which.length === 0 || ($('#whichDefaultRootDir').val() === which && force !== true)) {
             return;
         }
 
@@ -100,10 +95,9 @@ $(document).ready(() => {
         $('#editRootDir').prop('disabled', doDisable);
 
         let logString = '';
-        let directoryString = '';
-        if ($('#whichDefaultRootDir').val().length >= 4) {
-            directoryString = $('#whichDefaultRootDir').val().slice(3);
-        }
+        let directoryString = $('#whichDefaultRootDir').val().length >= 4
+            ? $('#whichDefaultRootDir').val().slice(3)
+            : '';
 
         $('#rootDirs option').each(function () {
             logString += $(this).val() + '=' + $(this).text() + '->' + $(this).attr('id') + '\n';
@@ -130,10 +124,7 @@ $(document).ready(() => {
         }
 
         // Check if it's the first one
-        let isDefault = false;
-        if ($('#whichDefaultRootDir').val().length === 0) {
-            isDefault = true;
-        }
+        const isDefault = $('#whichDefaultRootDir').val().length === 0;
 
         $('#rootDirs').append('<option value="' + path + '">' + path + '</option>');
 
@@ -178,13 +169,13 @@ $(document).ready(() => {
     $('#deleteRootDir').on('click', () => {
         if ($('#rootDirs option:selected').length > 0) {
             const toDelete = $('#rootDirs option:selected');
-            const newDefault = (toDelete.attr('id') === $('#whichDefaultRootDir').val());
+            const isNewDefault = (toDelete.attr('id') === $('#whichDefaultRootDir').val());
             const deletedNumber = $('#rootDirs option:selected').attr('id').slice(3);
 
             toDelete.remove();
             syncOptionIDs();
 
-            if (newDefault) {
+            if (isNewDefault) {
                 console.log('new default when deleting');
 
                 // We deleted the default so this isn't valid anymore

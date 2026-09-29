@@ -63,10 +63,10 @@
             list = $('<ul>').appendTo(listContainer.appendTo(fileBrowserDialog));
             $.each(innerData, (i, entry) => {
                 /**
-                 * @param entry
-                 * @param entry.isFile
-                 * @param entry.isImage
-                 * @param entry.isAllowed
+                 @param entry
+                 @param entry.isFile
+                 @param entry.isImage
+                 @param entry.isAllowed
                  */
                 // noinspection OverlyComplexBooleanExpressionJS
                 if (entry.isFile && fileTypes && fileTypes.length > 0) {
@@ -221,12 +221,12 @@
             newOptions.field.val(path);
         }
 
-        callback = function (path, newOptions) {
-            newOptions.field.val(path);
+        callback = function (selectedPath, fieldOptions) {
+            fieldOptions.field.val(selectedPath);
 
             // Use a localStorage to remember for next time -- no ie6/7
-            if (hasLocalStorage && newOptions.key) {
-                localStorage['fileBrowser-' + newOptions.key] = path;
+            if (hasLocalStorage && fieldOptions.key) {
+                localStorage['fileBrowser-' + fieldOptions.key] = selectedPath;
             }
         };
 
