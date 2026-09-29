@@ -515,6 +515,39 @@ class ProviderPluginTests(unittest.TestCase):
         self.assertEqual(provider.minseed, 4)
         self.assertIn("abnormal", providers_config.loaded_provider_ids())
 
+    def test_provider_settings_for_ui_masks_secrets_not_hash(self):
+        from sickchill.oldbeard.filters import hide
+        from sickchill.oldbeard.providers.abnormal import Provider as AbnormalProvider
+        from sickchill.plugins.providers.config import provider_settings_for_ui
+
+        provider = AbnormalProvider()
+        provider.username = "visible_user"
+        provider.password = "secret_pw"
+        provider.api_key = "secret_api"
+        provider.passkey = "secret_passkey"
+        provider.pin = "secret_pin"
+        provider.hash = "keep_hash"
+        provider.digest = "keep_digest"
+
+        data = provider_settings_for_ui(provider)
+        self.assertEqual(data["password"], hide("secret_pw"))
+        self.assertEqual(data["api_key"], hide("secret_api"))
+        self.assertEqual(data["passkey"], hide("secret_passkey"))
+        self.assertEqual(data["pin"], hide("secret_pin"))
+        self.assertEqual(data["hash"], "keep_hash")
+        self.assertEqual(data["digest"], "keep_digest")
+        self.assertEqual(data["username"], "visible_user")
+
+        provider.password = ""
+        provider.api_key = ""
+        provider.passkey = ""
+        provider.pin = ""
+        empty = provider_settings_for_ui(provider)
+        self.assertEqual(empty["password"], "")
+        self.assertEqual(empty["api_key"], "")
+        self.assertEqual(empty["passkey"], "")
+        self.assertEqual(empty["pin"], "")
+
     def test_write_prunes_custom_when_flag_set_without_full_apply(self):
         cfg = ConfigObj()
         cfg.indent_type = "  "

@@ -333,13 +333,12 @@ class ConfigProviders(Config):
         from sickchill.plugins.providers import config as providers_config
 
         posted_loaded = {part.strip() for part in (self.get_body_argument("provider_settings_loaded", default="") or "").split() if part.strip()}
-        safe_ids = posted_loaded | providers_config.loaded_provider_ids()
         for provider_id in posted_loaded:
             providers_config.mark_provider_settings_loaded(provider_id)
 
         # dynamically load provider settings only for providers whose fields were applied
         for provider in sickchill.oldbeard.providers.sorted_provider_list():
-            if provider.get_id() not in safe_ids:
+            if provider.get_id() not in posted_loaded:
                 continue
             provider.check_set_option(self, "custom_url")
             provider.check_set_option(self, "cookies")

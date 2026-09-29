@@ -408,9 +408,15 @@ def provider_settings_for_ui(provider) -> dict[str, Any]:
     """JSON-friendly live settings for filling the Providers config form."""
     if provider is None:
         return {}
+    from sickchill.oldbeard.filters import hide
+
     data = _provider_to_section(provider)
     if hasattr(provider, "password"):
-        data["password"] = getattr(provider, "password", "") or ""
+        data["password"] = hide(getattr(provider, "password", "") or "")
+    for field in ("api_key", "passkey", "pin"):
+        value = data.get(field)
+        if value:
+            data[field] = hide(value)
     return data
 
 

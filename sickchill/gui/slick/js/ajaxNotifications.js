@@ -59,6 +59,7 @@ function notificationPollDelay(hadMessages) {
 }
 
 function checkNotifications() {
+    clearTimeout(notificationTimer);
     if (document.hidden) {
         notificationTimer = setTimeout(checkNotifications, 15_000);
         return;
@@ -69,6 +70,7 @@ function checkNotifications() {
         $.each(messages, (name, message) => {
             displayPNotify(message.type, message.title, message.message, message.hash);
         });
+        clearTimeout(notificationTimer);
         notificationTimer = setTimeout(checkNotifications, notificationPollDelay(Object.keys(messages).length > 0));
     })
         .fail(() => {

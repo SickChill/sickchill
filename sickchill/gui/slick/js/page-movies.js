@@ -19,7 +19,8 @@ window.SICKCHILL.movies = {
             $('.movie-grid').isotope({
                 filter() {
                     const name = $(this).find('.movie-title').html().trim().toLowerCase();
-                    return name.includes($('#filterShowName').val().toLowerCase());
+                    const term = ($('#filterMovieName').val() ?? '').toLowerCase();
+                    return name.includes(term);
                 },
             });
         }, 500));

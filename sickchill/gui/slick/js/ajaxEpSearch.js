@@ -236,6 +236,7 @@ document.addEventListener('visibilitychange', () => {
                 parent.siblings('.col-status').html('<span class="status pill-wanted">' + imageResult + '</span>');
                 // Only if the queuing was successful, disable the onClick event of the loading image
                 disableLink(link);
+                resumeManualSearchPolling();
             }
 
             // Put the corresponding image as the result of queuing of the manual search
@@ -270,7 +271,6 @@ document.addEventListener('visibilitychange', () => {
                 return false;
             }
 
-            resumeManualSearchPolling();
             selectedEpisode = $(this);
 
             if ($(this).hasClass('epRetry')) {
