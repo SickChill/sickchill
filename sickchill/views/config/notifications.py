@@ -254,4 +254,4 @@ class ConfigNotifications(Config):
         else:
             ui.notifications.message(_("Configuration Saved"), os.path.join(settings.CONFIG_FILE))
 
-        return self.redirect("/config/notifications/")
+        return self.config_save_response("/config/notifications/")

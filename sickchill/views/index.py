@@ -423,6 +423,7 @@ class UI(WebRoot):
 
         if os.path.isfile(locale_file):
             self.set_header("Content-Type", "application/json")
+            self.set_header("Cache-Control", "public, max-age=86400")
             with open(locale_file) as content:
                 return content.read()
         else:

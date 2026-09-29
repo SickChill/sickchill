@@ -12,6 +12,61 @@ $(document).ready(function () {
         });
     };
 
+    const loadedProviderIds = function () {
+        const raw = $('#provider_settings_loaded').val() || '';
+        return new Set(raw.split(/\s+/).filter(Boolean));
+    };
+
+    const markProviderLoaded = function (providerId) {
+        if (!providerId) {
+            return;
+        }
+
+        const ids = loadedProviderIds();
+        ids.add(providerId);
+        $('#provider_settings_loaded').val([...ids].join(' '));
+    };
+
+    const applyProviderSettingsToForm = function (providerId, data) {
+        const $div = $('#' + providerId + 'Div');
+        if ($div.length === 0 || !data) {
+            return;
+        }
+
+        $.each(data, (field, value) => {
+            const name = providerId + '_' + field;
+            const $input = $div.find('[name="' + name + '"]');
+            if ($input.length === 0) {
+                return;
+            }
+
+            const type = ($input.attr('type') || '').toLowerCase();
+            if (type === 'checkbox') {
+                $input.prop('checked', Boolean(value) && value !== 'False' && value !== 'false' && value !== '0');
+            } else if (type === 'radio') {
+                $input.filter('[value="' + value + '"]').prop('checked', true);
+            } else {
+                $input.val(value ?? '');
+            }
+        });
+    };
+
+    const ensureProviderSettingsLoaded = function (providerId) {
+        if (!providerId || loadedProviderIds().has(providerId)) {
+            return Promise.resolve();
+        }
+
+        return $.getJSON(scRoot + '/config/providers/getProviderSettings', {provider: providerId})
+            .done(response => {
+                if (!(response && response.settings)) {
+                    return;
+                }
+
+                applyProviderSettingsToForm(providerId, response.settings);
+                markProviderLoaded(providerId);
+            });
+    };
+
     const ifExists = function (loopThroughArray, searchFor) {
         let isFound = false;
 
@@ -690,8 +745,10 @@ $(document).ready(function () {
     };
 
     $('body').on('change', '#editAProvider', function () {
+        const selected = $('#editAProvider').val();
         $(this).showHideProviders();
-        if ($('#editAProvider').val() !== 'jackett_sc') {
+        ensureProviderSettingsLoaded(selected);
+        if (selected !== 'jackett_sc') {
             return;
         }
 
@@ -722,6 +779,11 @@ $(document).ready(function () {
     });
 
     $(document).on('change', '.provider_enabler', function () {
+        const providerId = this.id.replace(/^enable_/, '');
+        if (this.checked) {
+            ensureProviderSettingsLoaded(providerId);
+        }
+
         $(this).resortProviderList();
         $(this).refreshProviderList();
     });
@@ -876,6 +938,7 @@ $(document).ready(function () {
     };
 
     $(this).showHideProviders();
+    ensureProviderSettingsLoaded($('#editAProvider').val());
 
     $('#provider_order_list').sortable({
         placeholder: 'ui-state-highlight',

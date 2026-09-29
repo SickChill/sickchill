@@ -3329,26 +3329,24 @@
 <%block name="scripts">
     <script>
     (function () {
-    function syncNotifierSettingsVisibility() {
-    let any = false;
-    $('.notifier-settings-box').each(function () {
-    const id = $(this).data('notifier');
-    const on = $('#' + id).is(':checked');
-    $(this).toggle(on);
-    if (on) any = true;
-    });
-    $('#notifier-settings-empty').toggle(!any);
-    }
-    $(document).on('change', '#notifier-list .enabler', function () {
-    const id = this.id;
-    const on = this.checked;
-    $('#content_' + id).toggle(on);
-    $('#notifier-settings-box-' + id).toggle(on);
-    syncNotifierSettingsVisibility();
-    });
-    $(function () {
-    syncNotifierSettingsVisibility();
-    });
+        function syncNotifierSettingsVisibility() {
+            let any = false;
+            $('#notifier_enable_list li').removeClass('notifier-selected');
+            $('.notifier-settings-box').each(function () {
+                const $box = $(this);
+                const id = $box.data('notifier');
+                const on = $('#' + id).is(':checked');
+                $box.prop('hidden', !on).css('display', '');
+                if (on) {
+                    any = true;
+                    $('#notifier-enable-' + id).addClass('notifier-selected');
+                }
+            });
+            $('#notifier-settings-empty').prop('hidden', any);
+        }
+
+        $(document).on('change', '#notifier-list .enabler', syncNotifierSettingsVisibility);
+        $(syncNotifierSettingsVisibility);
     })();
     </script>
 </%block>

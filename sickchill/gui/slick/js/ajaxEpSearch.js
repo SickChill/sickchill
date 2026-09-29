@@ -122,29 +122,77 @@ function updateImages(data) {
     });
 }
 
+let manualSearchPollTimer;
+let manualSearchIdleStreak = 0;
+let manualSearchPollingStopped = false;
+const manualSearchIdleStopAfter = 3;
+
+function episodeListFromStatus(data) {
+    const episodes = (data && data.episodes) || [];
+    return Array.isArray(episodes) ? episodes : Object.values(episodes).map(value => value);
+}
+
+function hasActiveManualSearch(data) {
+    return episodeListFromStatus(data).some(episode => {
+        const status = (episode.searchstatus || '').toLowerCase();
+        return status === 'searching' || status === 'queued';
+    });
+}
+
+function scheduleManualSearchPoll(delay) {
+    clearTimeout(manualSearchPollTimer);
+    manualSearchPollingStopped = false;
+    manualSearchPollTimer = setTimeout(checkManualSearches, delay);
+}
+
+function resumeManualSearchPolling() {
+    manualSearchIdleStreak = 0;
+    scheduleManualSearchPoll(1000);
+}
+
 function checkManualSearches() {
-    let pollInterval = 5000;
+    if (document.hidden) {
+        scheduleManualSearchPoll(15_000);
+        return;
+    }
+
     const showId = $('#showID').val();
     const url = showId ? searchStatusUrl + '?show=' + showId : searchStatusUrl;
     $.ajax({
         url,
         success(data) {
-            pollInterval = data.episodes ? 5000 : 15_000;
             updateImages(data);
+            if (hasActiveManualSearch(data)) {
+                manualSearchIdleStreak = 0;
+                scheduleManualSearchPoll(5000);
+                return;
+            }
+
+            manualSearchIdleStreak += 1;
+            if (manualSearchIdleStreak >= manualSearchIdleStopAfter) {
+                manualSearchPollingStopped = true;
+                return;
+            }
+
+            scheduleManualSearchPoll(15_000);
         },
         error() {
-            pollInterval = 30_000;
+            scheduleManualSearchPoll(30_000);
         },
         type: 'GET',
         dataType: 'json',
-        complete() {
-            setTimeout(checkManualSearches, pollInterval);
-        },
         timeout: 15_000, // Timeout every 15 secs
     });
 }
 
 $(document).ready(checkManualSearches);
+document.addEventListener('visibilitychange', () => {
+    if (document.hidden || manualSearchPollingStopped) {
+        return;
+    }
+
+    scheduleManualSearchPoll(1000);
+});
 
 {
     let stupidOptions;
@@ -222,6 +270,7 @@ $(document).ready(checkManualSearches);
                 return false;
             }
 
+            resumeManualSearchPolling();
             selectedEpisode = $(this);
 
             if ($(this).hasClass('epRetry')) {

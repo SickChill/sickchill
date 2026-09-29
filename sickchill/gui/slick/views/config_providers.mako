@@ -97,6 +97,7 @@
                             % endfor
                         </ul>
                         <input type="hidden" name="provider_order" id="provider_order" value="${" ".join([x.get_id(':'+str(int(x.is_enabled))) for x in providers.sorted_provider_list()])}" />
+                        <input type="hidden" name="provider_settings_loaded" id="provider_settings_loaded" value="${" ".join(x.get_id() for x in providers.sorted_provider_list() if getattr(x, 'enabled', False))}" />
                     </fieldset>
                 </div>
             </div>

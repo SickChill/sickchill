@@ -380,6 +380,38 @@ def _section_or_peek(cfg: ConfigObj, provider, field: str, default: Any, kind: s
 # True after apply_providers_from_cfg(..., enabled_only=False). When False, write keeps
 # existing PROVIDERS fields for disabled providers so startup-enabled-only load cannot wipe them.
 _providers_full_settings_applied = False
+# Provider ids whose credentials/options have been applied from cfg (or posted from the UI).
+_providers_settings_loaded: set[str] = set()
+# After saveProviders reconciles custom Newznab/TorrentRSS lists, prune orphans of those types only.
+_prune_custom_providers_on_write = False
+
+
+def mark_provider_settings_loaded(provider_id: str) -> None:
+    if provider_id:
+        _providers_settings_loaded.add(str(provider_id))
+
+
+def loaded_provider_ids() -> set[str]:
+    return set(_providers_settings_loaded)
+
+
+def apply_one_provider_from_cfg(cfg: ConfigObj, provider) -> None:
+    """Apply [PROVIDERS][[id]] onto one live provider and mark its settings loaded."""
+    if cfg is None or provider is None:
+        return
+    _apply_provider_enabled(cfg, provider)
+    _apply_provider_options(cfg, provider)
+    mark_provider_settings_loaded(provider.get_id())
+
+
+def provider_settings_for_ui(provider) -> dict[str, Any]:
+    """JSON-friendly live settings for filling the Providers config form."""
+    if provider is None:
+        return {}
+    data = _provider_to_section(provider)
+    if hasattr(provider, "password"):
+        data["password"] = getattr(provider, "password", "") or ""
+    return data
 
 
 def _apply_provider_enabled(cfg: ConfigObj, provider) -> None:
@@ -538,8 +570,8 @@ def apply_providers_from_cfg(cfg: ConfigObj, *, enabled_only: bool = True) -> No
     """Push [PROVIDERS][[id]] (peek legacy fallback) onto live provider objects.
 
     Always sets ``.enabled``. When ``enabled_only`` (startup default), credentials/options
-    are applied only for enabled providers. Pass ``enabled_only=False`` when opening the
-    Providers config UI so disabled providers show saved fields.
+    are applied only for enabled providers. Disabled providers are applied on demand via
+    ``apply_one_provider_from_cfg`` when selected in the Providers UI.
     """
     global _providers_full_settings_applied
 
@@ -553,6 +585,7 @@ def apply_providers_from_cfg(cfg: ConfigObj, *, enabled_only: bool = True) -> No
         if enabled_only and not getattr(provider, "enabled", False):
             continue
         _apply_provider_options(cfg, provider)
+        mark_provider_settings_loaded(provider.get_id())
 
     _providers_full_settings_applied = not enabled_only
     _normalize_provider_order()
@@ -630,9 +663,10 @@ def write_providers_to_cfg(cfg: ConfigObj) -> None:
     """Persist live providers into [PROVIDERS]; drop legacy [ID] / Newznab / TorrentRss.
 
     Built-in [PROVIDERS][[id]] sections are never deleted just because that provider
-    is not in memory (startup loads enabled-only). Custom Newznab/TorrentRSS sections
-    are pruned only after a full Providers-UI load, when we know the live custom lists
-    are complete.
+    is not in memory (startup loads enabled-only). Settings for providers that have
+    not been loaded are merged (enabled flag only). Custom Newznab/TorrentRSS sections
+    are pruned only after saveProviders reconciles the live custom lists, or after a
+    full Providers-UI load.
     """
     if cfg is None:
         return
@@ -647,13 +681,14 @@ def write_providers_to_cfg(cfg: ConfigObj) -> None:
         if not provider_id:
             continue
         seen_ids.add(provider_id)
-        # Startup may have loaded credentials only for enabled providers; keep existing
-        # PROVIDERS fields for disabled ones until a full apply (Providers UI) has run.
-        if not getattr(provider, "enabled", False) and not _providers_full_settings_applied:
+        loaded = provider_id in _providers_settings_loaded or _providers_full_settings_applied
+        if not loaded:
+            # Keep existing INI credentials; only persist the live enabled flag.
             existing = read_provider_section(cfg, provider_id)
             if existing:
                 data = dict(existing)
-                data["enabled"] = False
+                if hasattr(provider, "enabled"):
+                    data["enabled"] = bool(provider.enabled)
                 write_provider_section(cfg, provider_id, data)
                 continue
         write_provider_section(cfg, provider_id, _provider_to_section(provider))
@@ -661,7 +696,8 @@ def write_providers_to_cfg(cfg: ConfigObj) -> None:
     # Never drop built-in config. Only prune custom type=newznab/torrentrss after a
     # full UI load (deleted customs are then absent from the live lists).
     live_custom_ids = {p.get_id() for p in (sc_settings.newznab_provider_list or []) + (sc_settings.torrent_rss_provider_list or []) if p}
-    if _providers_full_settings_applied and "PROVIDERS" in cfg and hasattr(cfg["PROVIDERS"], "keys"):
+    prune_custom = _providers_full_settings_applied or _prune_custom_providers_on_write
+    if prune_custom and "PROVIDERS" in cfg and hasattr(cfg["PROVIDERS"], "keys"):
         for provider_id in list(cfg["PROVIDERS"].keys()):
             if str(provider_id).startswith("#"):
                 continue

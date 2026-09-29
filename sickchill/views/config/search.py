@@ -162,7 +162,7 @@ class ConfigSearch(Config):
         else:
             ui.notifications.message(_("Configuration Saved"), os.path.join(settings.CONFIG_FILE))
 
-        return self.redirect("/config/search/")
+        return self.config_save_response("/config/search/")
 
     def getTorrentClientSettings(self):
         """Return [CLIENTS][[method]] fields for the Search Settings torrent form (JSON)."""

@@ -36,6 +36,8 @@ class ProviderPluginTests(unittest.TestCase):
             "USE_TORRENTS": settings.USE_TORRENTS,
         }
         self._saved_full_applied = providers_config._providers_full_settings_applied
+        self._saved_loaded = set(providers_config._providers_settings_loaded)
+        self._saved_prune = providers_config._prune_custom_providers_on_write
         settings.providerList = []
         settings.newznab_provider_list = []
         settings.torrent_rss_provider_list = []
@@ -43,12 +45,16 @@ class ProviderPluginTests(unittest.TestCase):
         settings.NEWZNAB_DATA = ""
         settings.ENCRYPTION_VERSION = 0
         providers_config._providers_full_settings_applied = False
+        providers_config._providers_settings_loaded = set()
+        providers_config._prune_custom_providers_on_write = False
 
     def tearDown(self):
         clear_registry()
         for key, value in self._saved.items():
             setattr(settings, key, value)
         providers_config._providers_full_settings_applied = self._saved_full_applied
+        providers_config._providers_settings_loaded = self._saved_loaded
+        providers_config._prune_custom_providers_on_write = self._saved_prune
 
     def test_migrate_abnormal_legacy_section_to_providers(self):
         cfg = ConfigObj()
@@ -454,6 +460,88 @@ class ProviderPluginTests(unittest.TestCase):
         self.assertIn("abnormal", cfg["PROVIDERS"])
         self.assertIn("nyaa", cfg["PROVIDERS"])
         self.assertEqual(read_provider_section(cfg, "nyaa").get("username"), "keep_nyaa")
+
+    def test_write_merges_enabled_without_wiping_unloaded_credentials(self):
+        cfg = ConfigObj()
+        cfg.indent_type = "  "
+        write_provider_section(
+            cfg,
+            "abnormal",
+            {"enabled": False, "username": "keep_me", "password": "keep_pw", "minseed": 9},
+        )
+
+        from sickchill.oldbeard.providers.abnormal import Provider as AbnormalProvider
+
+        provider = AbnormalProvider()
+        provider.enabled = True
+        provider.username = None
+        provider.password = None
+        provider.minseed = 0
+        settings.providerList = [provider]
+        settings.PROVIDER_ORDER = ["abnormal"]
+        providers_config._providers_full_settings_applied = False
+        providers_config._providers_settings_loaded = set()
+
+        write_providers_to_cfg(cfg)
+
+        section = read_provider_section(cfg, "abnormal")
+        self.assertEqual(section.get("username"), "keep_me")
+        self.assertEqual(section.get("password"), "keep_pw")
+        self.assertEqual(str(section.get("minseed")), "9")
+        self.assertTrue(section.get("enabled") in (True, "True", "true", 1, "1"))
+
+    def test_apply_one_provider_from_cfg_marks_loaded(self):
+        cfg = ConfigObj()
+        cfg.indent_type = "  "
+        write_provider_section(
+            cfg,
+            "abnormal",
+            {"enabled": False, "username": "lazy_user", "minseed": 4},
+        )
+
+        from sickchill.oldbeard.providers.abnormal import Provider as AbnormalProvider
+        from sickchill.plugins.providers.config import apply_one_provider_from_cfg
+
+        provider = AbnormalProvider()
+        provider.enabled = True
+        provider.username = "init_user"
+        provider.minseed = 0
+        settings.providerList = [provider]
+
+        apply_one_provider_from_cfg(cfg, provider)
+
+        self.assertFalse(provider.enabled)
+        self.assertEqual(provider.username, "lazy_user")
+        self.assertEqual(provider.minseed, 4)
+        self.assertIn("abnormal", providers_config.loaded_provider_ids())
+
+    def test_write_prunes_custom_when_flag_set_without_full_apply(self):
+        cfg = ConfigObj()
+        cfg.indent_type = "  "
+        write_provider_section(cfg, "abnormal", {"enabled": True, "username": "u"})
+        write_provider_section(
+            cfg,
+            "orphan_custom",
+            {"type": "newznab", "name": "Orphan", "url": "https://orphan.example/", "key": "k", "enabled": False},
+        )
+
+        from sickchill.oldbeard.providers.abnormal import Provider as AbnormalProvider
+
+        provider = AbnormalProvider()
+        provider.enabled = True
+        provider.username = "u"
+        settings.providerList = [provider]
+        settings.newznab_provider_list = []
+        settings.torrent_rss_provider_list = []
+        settings.PROVIDER_ORDER = ["abnormal"]
+        providers_config._providers_full_settings_applied = False
+        providers_config._providers_settings_loaded = {"abnormal"}
+        providers_config._prune_custom_providers_on_write = True
+
+        write_providers_to_cfg(cfg)
+
+        self.assertIn("abnormal", cfg["PROVIDERS"])
+        self.assertNotIn("orphan_custom", cfg["PROVIDERS"])
 
     def test_make_provider_list_enabled_only_and_lazy_load(self):
         from sickchill.oldbeard import providers as providers_mod

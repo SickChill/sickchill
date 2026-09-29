@@ -451,8 +451,13 @@ home.mako
     line-height: 18px;
 }
 
-.ui-progressbar .ui-progressbar-value {
+.ui-progressbar .ui-progressbar-value,
+.progressbar-value {
     box-sizing: content-box !important;
+}
+
+.progressbar-value {
+    height: 100%;
 }
 
 .progressbarText {
@@ -623,7 +628,9 @@ span.movie-option {
 .movie-container .progress-20,
 .movie-container .progress-40,
 .movie-container .progress-60,
-.movie-container .progress-80 {
+.movie-container .progress-80,
+.show-container .progressbar-value,
+.movie-container .progressbar-value {
     height: 7px;
     border-radius: 0;
 }
@@ -2198,6 +2205,18 @@ config_notifications.mako
     margin: 8px 0 16px;
     border: none;
     background: transparent;
+    content-visibility: auto;
+    contain-intrinsic-size: 0 640px;
+}
+
+.notifier-settings-box + .notifier-settings-box {
+    border-top: 1px solid #555555;
+    padding-top: 20px;
+    margin-top: 20px;
+}
+
+#notifier_enable_list li.notifier-selected {
+    background-color: rgba(21, 82, 143, 0.12);
 }
 
 #notifier-settings-empty {
