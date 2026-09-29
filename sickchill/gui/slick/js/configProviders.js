@@ -41,17 +41,11 @@ $(document).ready(function () {
         return providerRenameTokens[providerId];
     };
 
-    /**
-     Gets categories for the provided newznab provider.
-     @param {string} isDefault Whether this is the default provider selection.
-     @param {Array} selectedProvider Provider name, URL, and API key.
-     */
     $.fn.populateNewznabSelectedCategories = function () {
         const selectedProvider = $('#editANewznabProvider :selected').val();
-        let saved = '';
-        if (selectedProvider && selectedProvider !== 'addNewznab' && newznabProviders[selectedProvider]) {
-            saved = newznabProviders[selectedProvider][1][3] || '';
-        }
+        let saved = selectedProvider && selectedProvider !== 'addNewznab' && Object.hasOwn(newznabProviders, selectedProvider)
+            ? (newznabProviders[selectedProvider][1][3] || '')
+            : '';
 
         if (typeof saved !== 'string') {
             saved = Array.isArray(saved) ? saved.join(',') : '';
@@ -69,6 +63,11 @@ $(document).ready(function () {
         $('#newznab_categories_display').text(saved);
     };
 
+    /**
+     Gets categories for the provided newznab provider.
+     @param {string} isDefault Whether this is the default provider selection.
+     @param {Array} selectedProvider Provider name, URL, and API key.
+     */
     $.fn.getCategories = function (isDefault, selectedProvider) {
         const name = selectedProvider[0];
         const url = selectedProvider[1];
@@ -421,13 +420,15 @@ $(document).ready(function () {
             $('#newznab_delete').removeAttr('disabled');
         }
 
-        if (selectedProvider !== 'addNewznab') {
-            $(this).populateNewznabSelectedCategories();
-            $(this).updateNewznabCaps(null, data);
-            // Auto-fetch caps when name/url/key are set and not already cached
-            if (data[0] && data[1] && data[2] && !ifExists(newznabProvidersCapabilities, data[0])) {
-                $(this).getCategories(isDefault, data);
-            }
+        if (selectedProvider === 'addNewznab') {
+            return;
+        }
+
+        $(this).populateNewznabSelectedCategories();
+        $(this).updateNewznabCaps(null, data);
+        // Auto-fetch caps when name/url/key are set and not already cached
+        if (data[0] && data[1] && data[2] && !ifExists(newznabProvidersCapabilities, data[0])) {
+            $(this).getCategories(isDefault, data);
         }
     };
 
@@ -523,11 +524,9 @@ $(document).ready(function () {
 
     function providerListItemName(li) {
         const $label = $(li).children('label');
-        if ($label.length > 0) {
-            return $.trim($label.text()).toLowerCase();
-        }
-
-        return $.trim($(li).clone().children().remove().end().text()).toLowerCase();
+        return $label.length > 0
+            ? $.trim($label.text()).toLowerCase()
+            : $.trim($(li).clone().children().remove().end().text()).toLowerCase();
     }
 
     // Enabled keep current relative order; disabled re-sorted alphabetically by name.
@@ -544,19 +543,7 @@ $(document).ready(function () {
             }
         });
 
-        disabled.sort((a, b) => {
-            const nameA = providerListItemName(a);
-            const nameB = providerListItemName(b);
-            if (nameA < nameB) {
-                return -1;
-            }
-
-            if (nameA > nameB) {
-                return 1;
-            }
-
-            return 0;
-        });
+        disabled.sort((a, b) => providerListItemName(a).localeCompare(providerListItemName(b)));
 
         $list.append(enabled);
         $list.append(disabled);
@@ -760,7 +747,7 @@ $(document).ready(function () {
             }
         }
 
-        const isDefault = newznabProviders[selectedProvider] ? newznabProviders[selectedProvider][0] : 0;
+        const isDefault = Object.hasOwn(newznabProviders, selectedProvider) ? newznabProviders[selectedProvider][0] : 0;
         $(this).getCategories(isDefault, [name, url, key]);
     });
 

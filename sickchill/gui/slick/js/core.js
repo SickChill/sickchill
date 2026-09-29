@@ -2134,7 +2134,7 @@ const SICKCHILL = {
             };
 
             const applyNzbgetSettings = data => {
-                const priority = data.priority === undefined || data.priority === null ? 100 : data.priority;
+                const priority = data.priority ?? 100;
                 $('#nzbget_host').val(data.host || '');
                 $('#nzbget_username').val(data.username || 'nzbget');
                 $('#nzbget_password').val(data.password || '');
@@ -2241,7 +2241,7 @@ const SICKCHILL = {
                     return;
                 }
 
-                const seedTime = data.seed_time === undefined || data.seed_time === null ? 0 : data.seed_time;
+                const seedTime = data.seed_time ?? 0;
                 $('#torrent_host').val(data.host || '');
                 $('#torrent_username').val(data.username || '');
                 $('#torrent_password').val(data.password || '');
