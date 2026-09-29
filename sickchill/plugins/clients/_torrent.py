@@ -39,6 +39,13 @@ def _nonempty(*values: Any) -> Any:
     return ""
 
 
+def _plaintext_client_password(value: Any) -> str:
+    """Decrypt a stored [CLIENTS] password; plaintext and missing values pass through."""
+    from sickchill.plugins.settings import decrypt_stored_password
+
+    return decrypt_stored_password(value)
+
+
 def sync_torrent_ctx_to_settings(ctx, *, overwrite_empty: bool = False) -> None:
     """
     Push client ctx into settings.TORRENT_*.
@@ -64,7 +71,7 @@ def sync_torrent_ctx_to_settings(ctx, *, overwrite_empty: bool = False) -> None:
 
     _set("TORRENT_HOST", ctx.get("host"))
     _set("TORRENT_USERNAME", ctx.get("username"))
-    _set("TORRENT_PASSWORD", ctx.get("password"))
+    _set("TORRENT_PASSWORD", _plaintext_client_password(ctx.get("password")))
     _set("TORRENT_PATH", ctx.get("path"))
     _set("TORRENT_PATH_INCOMPLETE", ctx.get("path_incomplete"))
     _set("TORRENT_LABEL", ctx.get("label"))
@@ -108,7 +115,7 @@ class TorrentClientPlugin(ClientPlugin):
             self._sync_settings()
         host = _nonempty(host, self.ctx.get("host"), settings.TORRENT_HOST if method_matches else None)
         username = _nonempty(username, self.ctx.get("username"), settings.TORRENT_USERNAME if method_matches else None)
-        password = _nonempty(password, self.ctx.get("password"), settings.TORRENT_PASSWORD if method_matches else None)
+        password = _nonempty(password, _plaintext_client_password(self.ctx.get("password")), settings.TORRENT_PASSWORD if method_matches else None)
         # Keep settings in sync for GenericClient code paths that read globals (path/label/etc.).
         if method_matches:
             if host:

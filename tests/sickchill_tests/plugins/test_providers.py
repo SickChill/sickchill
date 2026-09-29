@@ -88,6 +88,28 @@ class ProviderPluginTests(unittest.TestCase):
         # Idempotent second pass
         self.assertFalse(migrate_provider_sections(cfg))
 
+    def test_legacy_notifier_sections_not_treated_as_providers(self):
+        """Leftover [KODI]/[NMJ]/[XBMC] look provider-shaped (UPPER + id_*) but must stay put."""
+        cfg = ConfigObj()
+        cfg.indent_type = "  "
+        cfg["KODI"] = {"kodi": True, "kodi_host": "http://kodi:8080", "kodi_username": "kodi"}
+        cfg["NMJ"] = {"nmj": True, "nmj_host": "http://nmj", "nmj_database": "db"}
+        cfg["XBMC"] = {"xbmc": True, "xbmc_host": "http://xbmc", "xbmc_username": "xbmc"}
+        cfg["General"] = {"use_torrents": 1}
+
+        self.assertFalse(migrate_provider_sections(cfg))
+        for section_name, provider_id in (("KODI", "kodi"), ("NMJ", "nmj"), ("XBMC", "xbmc")):
+            self.assertIn(section_name, cfg)
+            self.assertNotIn(provider_id, cfg.get("PROVIDERS") or {})
+
+        settings.providerList = []
+        settings.newznab_provider_list = []
+        settings.torrent_rss_provider_list = []
+        write_providers_to_cfg(cfg)
+        for section_name, provider_id in (("KODI", "kodi"), ("NMJ", "nmj"), ("XBMC", "xbmc")):
+            self.assertIn(section_name, cfg)
+            self.assertNotIn(provider_id, cfg.get("PROVIDERS") or {})
+
     def test_migrate_newznab_blob_to_providers(self):
         cfg = ConfigObj()
         cfg.indent_type = "  "

@@ -7,7 +7,9 @@ from typing import Any
 
 from configobj import ConfigObj
 
+from sickchill.plugins.legacy_maps import ALL_LEGACY_MAPS, CLIENT_SECTION_MAPS
 from sickchill.plugins.settings import (
+    RETIRED_NOTIFIER_LEGACY_SECTIONS,
     _as_bool,
     _coerce_settings_value,
     _legacy_has_values,
@@ -73,32 +75,39 @@ _INT_FIELDS = frozenset({"minseed", "minleech", "cat"})
 _DEFAULT_CATEGORIES = "5000,5030,5040,5045,5050,5060,5070"
 
 # Top-level config sections that are never search-provider legacy sections.
-_NON_PROVIDER_SECTIONS = frozenset(
-    {
-        "General",
-        "GUI",
-        "Cloudflare",
-        "Shares",
-        "NZBs",
-        "Newzbin",
-        "Newznab",
-        "TorrentRss",
-        "Subtitles",
-        "FailedDownloads",
-        "ANIDB",
-        "ANIME",
-        "Localization",
-        "Synology",
-        "NOTIFIERS",
-        "CLIENTS",
-        "METADATA",
-        "PROVIDERS",
-        "extensions",
-        "TORRENT",
-        "SABnzbd",
-        "NZBget",
-        "Blackhole",
-    }
+# Leftover notifier/client INI names (KODI, NMJ, XBMC, …) are UPPER with id_* keys
+# and would otherwise match _looks_like_provider_section during migrate/save.
+_NON_PROVIDER_SECTIONS = (
+    frozenset(
+        {
+            "General",
+            "GUI",
+            "Cloudflare",
+            "Shares",
+            "NZBs",
+            "Newzbin",
+            "Newznab",
+            "TorrentRss",
+            "Subtitles",
+            "FailedDownloads",
+            "ANIDB",
+            "ANIME",
+            "Localization",
+            "Synology",
+            "NOTIFIERS",
+            "CLIENTS",
+            "METADATA",
+            "PROVIDERS",
+            "extensions",
+            "TORRENT",
+            "SABnzbd",
+            "NZBget",
+            "Blackhole",
+            "XBMC",  # pre-v6 Kodi; ConfigMigrator peeks but does not delete
+        }
+    )
+    | frozenset(item.legacy_section for item in (*ALL_LEGACY_MAPS, *CLIENT_SECTION_MAPS))
+    | frozenset(RETIRED_NOTIFIER_LEGACY_SECTIONS)
 )
 
 

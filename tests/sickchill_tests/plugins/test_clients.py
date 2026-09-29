@@ -360,6 +360,53 @@ class ClientPluginTests(unittest.TestCase):
         sync_clients_from_settings(cfg)
         self.assertEqual(sc_settings.TORRENT_PASSWORD, "plain-secret")
 
+    def test_resolve_credentials_decrypts_stored_password(self):
+        """reload_client_ctx leaves ciphertext in ctx; send/test must decrypt before Client()."""
+        from sickchill import settings as sc_settings
+        from sickchill.oldbeard import helpers
+        from sickchill.plugins.manager import plugin_manager
+
+        saved_version = sc_settings.ENCRYPTION_VERSION
+        self.addCleanup(lambda: setattr(sc_settings, "ENCRYPTION_VERSION", saved_version))
+        sc_settings.ENCRYPTION_VERSION = 1
+        load_first_party_clients()
+        cfg = ConfigObj()
+        cfg.indent_type = "  "
+        ciphertext = helpers.encrypt("plain-secret", 1)
+        self.assertNotEqual(ciphertext, "plain-secret")
+        write_client_section(
+            cfg,
+            "qbittorrent",
+            {"host": "http://localhost:8080", "username": "sickchill", "password": ciphertext},
+        )
+        write_client_section(
+            cfg,
+            "download_station",
+            {"host": "http://dsm:5000", "username": "admin", "password": ciphertext},
+        )
+        plugin_manager._cfg = cfg
+        plugin_manager.discover()
+        plugin_manager._instances.clear()
+
+        for client_id, host in (("qbittorrent", "http://localhost:8080"), ("download_station", "http://dsm:5000")):
+            with self.subTest(client_id=client_id):
+                plugin_manager._instances.clear()
+                sc_settings.TORRENT_METHOD = client_id
+                sc_settings.TORRENT_HOST = ""
+                sc_settings.TORRENT_USERNAME = ""
+                sc_settings.TORRENT_PASSWORD = ""
+                sc_settings.SYNOLOGY_DSM_HOST = ""
+                sc_settings.SYNOLOGY_DSM_USERNAME = ""
+                sc_settings.SYNOLOGY_DSM_PASSWORD = ""
+
+                plugin = plugin_manager.get(PluginKind.CLIENT, client_id)
+                self.assertIsNotNone(plugin, client_id)
+                resolved_host, username, password = plugin._resolve_credentials(None, None, None)
+                self.assertEqual(resolved_host, host, client_id)
+                self.assertEqual(password, "plain-secret", client_id)
+                self.assertEqual(sc_settings.TORRENT_PASSWORD, "plain-secret", client_id)
+                self.assertEqual(plugin.ctx.get("password"), ciphertext, client_id)
+
     def test_synology_dsm_moves_to_download_station_keeps_use_synoindex(self):
         cfg = ConfigObj()
         cfg.indent_type = "  "
