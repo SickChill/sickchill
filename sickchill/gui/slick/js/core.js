@@ -20,7 +20,7 @@ function configSuccess(reload = true) {
     });
     $('#email_show').trigger('notify');
     $('#prowl_show').trigger('notify');
-    if (reload === true) {
+    if (reload) {
         window.location.reload();
     }
 }
@@ -35,7 +35,7 @@ function metaToBool(pythonVariable) {
     meta = (Number.isNaN(meta) ? meta.toLowerCase() : meta.toString());
     meta = meta.toLowerCase();
 
-    return !(meta === 'false' || meta === 'none' || meta === '0');
+    return !['false', 'none', '0'].includes(meta);
 }
 
 function isMeta(pythonVariable, result) {
@@ -51,14 +51,16 @@ function notifyModal(message) {
 function addSiteMessage(level = 'danger', tag = '', message = '') {
     $.post(scRoot + '/ui/set_site_message', {level, tag, message}, siteMessages => {
         const messagesDiv = $('#site-messages');
-        if (messagesDiv !== undefined) {
-            messagesDiv.empty();
-            for (const key in siteMessages) {
-                if (Object.hasOwn(siteMessages, key)) {
-                    messagesDiv.append('<div class="alert alert-' + siteMessages[key].level + ' upgrade-notification hidden-print" id="site-message-' + key + '" role="alert">'
-                        + '<span>' + siteMessages[key].message + '</span><span class="glyphicon glyphicon-check site-message-dismiss pull-right" data-id="' + key + '"/>'
-                        + '</div>');
-                }
+        if (messagesDiv === undefined) {
+            return;
+        }
+
+        messagesDiv.empty();
+        for (const key in siteMessages) {
+            if (Object.hasOwn(siteMessages, key)) {
+                messagesDiv.append('<div class="alert alert-' + siteMessages[key].level + ' upgrade-notification hidden-print" id="site-message-' + key + '" role="alert">'
+                    + '<span>' + siteMessages[key].message + '</span><span class="glyphicon glyphicon-check site-message-dismiss pull-right" data-id="' + key + '"/>'
+                    + '</div>');
             }
         }
     });
@@ -90,7 +92,7 @@ window._ = function (string) {
 const SICKCHILL = {
     common: {
         init() {
-            (function () {
+            {
                 const imgDefer = document.querySelectorAll('img');
                 for (const element of imgDefer) {
                     if (element.dataset.src) {
@@ -102,7 +104,7 @@ const SICKCHILL = {
                     $.backstretch(scRoot + '/ui/sickchill_background');
                     $('.backstretch').css('opacity', getMeta('settings.FANART_BACKGROUND_OPACITY')).fadeIn('500');
                 }
-            })();
+            }
 
             addSiteMessage(); // Show existing messages on ready.
 
@@ -112,7 +114,7 @@ const SICKCHILL = {
                 dialogClass: 'modal-dialog',
                 post: false,
                 confirm(event) {
-                    location.href = event.context.href;
+                    location.assign(event.context.href);
                 },
             };
 
@@ -133,7 +135,7 @@ const SICKCHILL = {
                     + '<input type="checkbox" id="deleteFiles" name="deleteFiles"/>&nbsp;'
                     + '<label for="deleteFiles" class="red-text">Check to delete files as well. IRREVERSIBLE</label>',
                 confirm(event) {
-                    location.href = event.context.href + ($('#deleteFiles')[0].checked ? '&full=1' : '&full=0');
+                    location.assign(event.context.href + ($('#deleteFiles')[0].checked ? '&full=1' : '&full=0'));
                 },
             });
 
@@ -193,7 +195,7 @@ const SICKCHILL = {
                 $('.dropdown-toggle').on('click', function () {
                     const element = $(this);
                     if (element.prop('ariaExpanded') === 'true') {
-                        window.location.href = element.prop('href');
+                        window.location.assign(element.prop('href'));
                     }
                 });
             }
@@ -311,10 +313,12 @@ const SICKCHILL = {
 
             let traktDevicePollTimer = null;
             const stopTraktDevicePolling = () => {
-                if (traktDevicePollTimer) {
-                    clearTimeout(traktDevicePollTimer);
-                    traktDevicePollTimer = null;
+                if (!traktDevicePollTimer) {
+                    return;
                 }
+
+                clearTimeout(traktDevicePollTimer);
+                traktDevicePollTimer = null;
             };
 
             const pollTraktDevice = (deviceCode, intervalSeconds, expiresAt) => {
@@ -847,13 +851,13 @@ const SICKCHILL = {
             });
 
             $('#settingsNMJ').on('click', () => {
-                const nmj = {};
                 if (!$('#nmj_host').val()) {
                     $('#nmj_host').focus();
                     notifyModal('Please fill in the Popcorn IP address');
                     return;
                 }
 
+                const nmj = {};
                 $('#testNMJ-result').html(loading);
                 nmj.host = $('#nmj_host').val();
 
@@ -907,12 +911,13 @@ const SICKCHILL = {
             });
 
             $('#settingsNMJv2').on('click', () => {
-                const nmjv2 = {};
                 if (!$('#nmjv2_host').val()) {
                     $('#nmjv2_host').focus();
                     notifyModal('Please fill in the Popcorn IP address', 'modal');
                     return;
                 }
+
+                const nmjv2 = {};
 
                 $('#testNMJv2-result').html(loading);
                 nmjv2.host = $('#nmjv2_host').val();
@@ -1083,7 +1088,7 @@ const SICKCHILL = {
                     return;
                 }
 
-                if (/\s/g.test(trakt.trendingBlacklist)) {
+                if (/\s/.test(trakt.trendingBlacklist)) {
                     $('#testTrakt-result').html(_('Check blacklist name; the value needs to be a trakt slug'));
                     $('#trakt_blacklist_name').addClass('warning');
                     return;
@@ -1312,17 +1317,7 @@ const SICKCHILL = {
                         }
                     }
 
-                    const sortedList = notifyList.sort((a, b) => {
-                        if (a.name < b.name) {
-                            return -1;
-                        }
-
-                        if (a.name > b.name) {
-                            return 1;
-                        }
-
-                        return 0;
-                    });
+                    const sortedList = notifyList.sort((a, b) => a.name.localeCompare(b.name));
                     let html = '<option value="-1">-- Select --</option>';
                     for (const sortedListKey in sortedList) {
                         if (Object.hasOwn(sortedList, sortedListKey) && sortedList[sortedListKey].id && sortedList[sortedListKey].name) {
@@ -1382,7 +1377,7 @@ const SICKCHILL = {
             $('#tv_download_dir').fileBrowser({title: _('Select TV Download Directory')});
             $('#unpack_dir').fileBrowser({title: _('Select Unpack Directory')});
 
-            // http://stackoverflow.com/questions/2219924/idiomatic-jquery-delayed-event-only-after-a-short-pause-in-typing-e-g-timew
+            // https://stackoverflow.com/questions/2219924/idiomatic-jquery-delayed-event-only-after-a-short-pause-in-typing-e-g-timew
             const typewatch = (function () {
                 let timer;
                 return function (callback, ms) {
@@ -1393,14 +1388,16 @@ const SICKCHILL = {
 
             function isRarSupported() {
                 $.post(scRoot + '/config/postProcessing/isRarSupported', data => {
-                    if (data !== 'supported') {
-                        $('#unpack').qtip('option', {
-                            'content.text': 'Unrar Executable not found.',
-                            'style.classes': 'qtip-rounded qtip-shadow qtip-red',
-                        });
-                        $('#unpack').qtip('toggle', true);
-                        $('#unpack').css('background-color', '#FFFFDD');
+                    if (data === 'supported') {
+                        return;
                     }
+
+                    $('#unpack').qtip('option', {
+                        'content.text': 'Unrar Executable not found.',
+                        'style.classes': 'qtip-rounded qtip-shadow qtip-red',
+                    });
+                    $('#unpack').qtip('toggle', true);
+                    $('#unpack').css('background-color', '#FFFFDD');
                 });
             }
 
@@ -1701,10 +1698,12 @@ const SICKCHILL = {
                 }
 
                 // 'Unpack'
-                if (value === 1) {
-                    $('#content_unpack').fadeIn('fast', 'linear');
-                    isRarSupported();
+                if (value !== 1) {
+                    return;
                 }
+
+                $('#content_unpack').fadeIn('fast', 'linear');
+                isRarSupported();
             });
 
             // @TODO all of these on change functions should be able to be rolled into a generic jQuery function or maybe we could
@@ -1851,10 +1850,12 @@ const SICKCHILL = {
                     $('#' + generatorName + '_data').val(configArray.join('|'));
                 });
 
-                if (currentMostProvider !== '' && first) {
-                    $('#metadataType option[value=' + currentMostProvider + ']').attr('selected', 'selected');
-                    $(this).showHideMetadata();
+                if (currentMostProvider === '' || !first) {
+                    return;
                 }
+
+                $('#metadataType option[value=' + currentMostProvider + ']').attr('selected', 'selected');
+                $(this).showHideMetadata();
             };
 
             $(this).refreshMetadataConfig(true);
@@ -2086,22 +2087,24 @@ const SICKCHILL = {
             };
 
             $('#torrent_host').on('input', () => {
-                if ($('#torrent_method :selected').val().toLowerCase().startsWith('rtorrent')) {
-                    const hostname = $('#torrent_host').val();
-                    const isMatch = hostname.slice(0, 7) === 'scgi://';
+                if (!$('#torrent_method :selected').val().toLowerCase().startsWith('rtorrent')) {
+                    return;
+                }
 
-                    if (isMatch) {
-                        $('#torrent_username_option').hide();
-                        $('#torrent_username').prop('value', '');
-                        $('#torrent_password_option').hide();
-                        $('#torrent_password').prop('value', '');
-                        $('#torrent_auth_type_option').hide();
-                        $('#torrent_auth_type option[value=none]').attr('selected', 'selected');
-                    } else {
-                        $('#torrent_username_option').show();
-                        $('#torrent_password_option').show();
-                        $('#torrent_auth_type_option').show();
-                    }
+                const hostname = $('#torrent_host').val();
+                const isMatch = hostname.slice(0, 7) === 'scgi://';
+
+                if (isMatch) {
+                    $('#torrent_username_option').hide();
+                    $('#torrent_username').prop('value', '');
+                    $('#torrent_password_option').hide();
+                    $('#torrent_password').prop('value', '');
+                    $('#torrent_auth_type_option').hide();
+                    $('#torrent_auth_type option[value=none]').attr('selected', 'selected');
+                } else {
+                    $('#torrent_username_option').show();
+                    $('#torrent_password_option').show();
+                    $('#torrent_auth_type_option').show();
                 }
             });
 
@@ -2346,17 +2349,19 @@ const SICKCHILL = {
                     url += '/';
                 }
 
-                if ($('#service_order_list > #' + id).length === 0 && showService !== false) {
-                    let toAdd = '';
-                    toAdd += '<li class="ui-state-default" id="' + id + '"> ';
-                    toAdd += '<input type="checkbox" id="enable_' + id + '" class="service_enabler" checked> ';
-                    toAdd += '<a href="' + anonURL + url + '" class="imgLink" target="_new">';
-                    toAdd += '<img src="' + scRoot + '/images/services/newznab.gif" alt="' + name + '" width="16" height="16"></a> ';
-                    toAdd += name + '</li>';
-
-                    $('#service_order_list').append(toAdd);
-                    $('#service_order_list').sortable('refresh');
+                if ($('#service_order_list > #' + id).length > 0 || showService === false) {
+                    return;
                 }
+
+                let toAdd = '';
+                toAdd += '<li class="ui-state-default" id="' + id + '"> ';
+                toAdd += '<input type="checkbox" id="enable_' + id + '" class="service_enabler" checked> ';
+                toAdd += '<a href="' + anonURL + url + '" class="imgLink" target="_new">';
+                toAdd += '<img src="' + scRoot + '/images/services/newznab.gif" alt="' + name + '" width="16" height="16"></a> ';
+                toAdd += name + '</li>';
+
+                $('#service_order_list').append(toAdd);
+                $('#service_order_list').sortable('refresh');
             };
 
             $.fn.deleteService = function (id) {
@@ -2531,9 +2536,9 @@ const SICKCHILL = {
                     },
                     5(node) {
                         const progress = $(node).find('div').attr('data-progress-percentage');
-                        const progressResult = progress === undefined ? Number.NEGATIVE_INFINITY : (progress.length > 0 && Number.parseFloat(progress)) || 0;
+                        const progressResult = progress === undefined ? -Infinity : (progress.length > 0 && Number.parseFloat(progress)) || 0;
                         const total = $(node).find('div').attr('data-progress-total');
-                        const totalTesult = total === undefined ? Number.NEGATIVE_INFINITY : (total.length > 0 && Number.parseInt(total, 10)) || 0;
+                        const totalTesult = total === undefined ? -Infinity : (total.length > 0 && Number.parseInt(total, 10)) || 0;
                         return (progressResult * 100 * 1000) + totalTesult;
                     },
                     6(node) {
@@ -2561,7 +2566,7 @@ const SICKCHILL = {
                     filter_functions: { // eslint-disable-line camelcase
                         // HOWTO: https://mottie.github.io/tablesorter/docs/example-widget-filter-custom.html#notes
                         5(exact, normalized, filterInput) {
-                            let test = false;
+                            let isTest = false;
                             const pct = Math.floor((normalized % 1) * 1000);
                             const doCompare = {
                                 '<'(a, b) {
@@ -2579,33 +2584,33 @@ const SICKCHILL = {
                             };
 
                             if (filterInput === '') {
-                                test = true;
+                                isTest = true;
                             } else {
-                                let result = filterInput.match(/(<|<=|>=|>)\s?(\d+)/i);
+                                let result = filterInput.match(/(<|<=|>=|>)\s?(\d+)/);
                                 if (result) {
                                     // Compare using the matched operator
                                     const comp = doCompare[result[1]];
                                     if (comp(pct, Number.parseInt(result[2], 10))) {
-                                        test = true;
+                                        isTest = true;
                                     }
                                 }
 
                                 result = filterInput.match(/(\d+)\s(-|to)\s+(\d+)/i);
                                 if (result && ((result[2] === '-') || (result[2] === 'to')) && (pct >= Number.parseInt(result[1], 10)) && (pct <= Number.parseInt(result[3], 10))) {
-                                    test = true;
+                                    isTest = true;
                                 }
 
-                                result = filterInput.match(/(=)?\s?(\d+)\s?(=)?/i);
+                                result = filterInput.match(/(=)?\s?(\d+)\s?(=)?/);
                                 if (result && ((result[1] === '=') || (result[3] === '=')) && Number.parseInt(result[2], 10) === pct) {
-                                    test = true;
+                                    isTest = true;
                                 }
 
                                 if (!Number.isNaN(Number.parseFloat(filterInput)) && Number.isFinite(filterInput) && Number.parseInt(filterInput, 10) === pct) {
-                                    test = true;
+                                    isTest = true;
                                 }
                             }
 
-                            return test;
+                            return isTest;
                         },
                     },
                     columnSelector_mediaquery: false, // eslint-disable-line camelcase
@@ -2657,7 +2662,7 @@ const SICKCHILL = {
                         network: '[data-network]',
                         date(itemElement) {
                             const date = $(itemElement).attr('data-date');
-                            return (date.length > 0 && Number.parseInt(date, 10)) || Number.POSITIVE_INFINITY;
+                            return (date.length > 0 && Number.parseInt(date, 10)) || Infinity;
                         },
                         progress(itemElement) {
                             const progress = $(itemElement).attr('data-progress');
@@ -2753,7 +2758,7 @@ const SICKCHILL = {
             });
 
             $('#layout').on('change', function () {
-                window.location.href = $(this).find('option:selected').val();
+                window.location.assign($(this).find('option:selected').val());
             });
 
             $('#postersort').on('change', function () {
@@ -2796,7 +2801,7 @@ const SICKCHILL = {
                         network: '[data-network]',
                         date(itemElement) {
                             const date = $(itemElement).attr('data-date');
-                            return (date.length > 0 && Number.parseInt(date, 10)) || Number.POSITIVE_INFINITY;
+                            return (date.length > 0 && Number.parseInt(date, 10)) || Infinity;
                         },
                         progress(itemElement) {
                             const progress = $(itemElement).attr('data-progress');
@@ -2829,7 +2834,7 @@ const SICKCHILL = {
                         network: '[data-network]',
                         date(itemElement) {
                             const date = $(itemElement).attr('data-date');
-                            return (date.length > 0 && Number.parseInt(date, 10)) || Number.POSITIVE_INFINITY;
+                            return (date.length > 0 && Number.parseInt(date, 10)) || Infinity;
                         },
                         progress(itemElement) {
                             const progress = $(itemElement).attr('data-progress');
@@ -3116,7 +3121,7 @@ const SICKCHILL = {
                     return;
                 }
 
-                window.location.href = scRoot + '/home/displayShow?show=' + value;
+                window.location.assign(scRoot + '/home/displayShow?show=' + value);
             });
 
             // Show/hide different types of rows when the checkboxes are changed
@@ -3232,11 +3237,11 @@ const SICKCHILL = {
 
             $('.sceneSeasonXEpisode').on('change', function () {
                 // Strip non-numeric characters
-                $(this).val($(this).val().replaceAll(/[^\dxX]*/g, ''));
+                $(this).val($(this).val().replaceAll(/[^\dx]*/gi, ''));
                 const forSeason = $(this).attr('data-for-season');
                 const forEpisode = $(this).attr('data-for-episode');
                 const m = $(this).val().match(/^(\d+)x(\d+)$/i);
-                const onlyEpisode = $(this).val().match(/^(\d+)$/i);
+                const onlyEpisode = $(this).val().match(/^(\d+)$/);
 
                 let sceneSeason = null;
                 let sceneEpisode = null;
@@ -3262,14 +3267,11 @@ const SICKCHILL = {
 
             $('.sceneAbsolute').on('change', function () {
                 // Strip non-numeric characters
-                $(this).val($(this).val().replaceAll(/[^\dxX]*/g, ''));
+                $(this).val($(this).val().replaceAll(/[^\dx]*/gi, ''));
                 const forAbsolute = $(this).attr('data-for-absolute');
 
-                const m = $(this).val().match(/^(\d{1,3})$/i);
-                let sceneAbsolute = null;
-                if (m) {
-                    sceneAbsolute = m[1];
-                }
+                const m = $(this).val().match(/^(\d{1,3})$/);
+                const sceneAbsolute = m ? m[1] : null;
 
                 setAbsoluteSceneNumbering(forAbsolute, sceneAbsolute);
             });
@@ -3306,13 +3308,11 @@ const SICKCHILL = {
             // Season to Show Episodes or Hide Episodes.
             $(() => {
                 $('.collapse.toggle').on('hide.bs.collapse', function () {
-                    const reg = /collapseSeason-(\d+)/g;
-                    const result = reg.exec(this.id);
+                    const result = /collapseSeason-(\d+)/.exec(this.id);
                     $('#showseason-' + result[1]).text(_('Show Episodes'));
                 });
                 $('.collapse.toggle').on('show.bs.collapse', function () {
-                    const reg = /collapseSeason-(\d+)/g;
-                    const result = reg.exec(this.id);
+                    const result = /collapseSeason-(\d+)/.exec(this.id);
                     $('#showseason-' + result[1]).text(_('Hide Episodes'));
                 });
             });
@@ -3336,11 +3336,7 @@ const SICKCHILL = {
                         return encodeURIComponent(exception);
                     }).join('|');
 
-                    if (exceptions.length === 0) {
-                        return null;
-                    }
-
-                    return [season, exceptions].join(':');
+                    return exceptions.length === 0 ? null : [season, exceptions].join(':');
                 }).filter(Boolean);
 
                 $('#exceptions').val(allExceptions);
@@ -3449,22 +3445,24 @@ const SICKCHILL = {
                             $('#shut_down_success').show();
                         }
 
-                        if (data !== undefined && data.msg !== 'nope' && data.msg !== currentPid) {
-                            clearInterval(checkIsAlive);
-                            $('#restart_loading').hide();
-                            $('#restart_success').show();
-                            $('#refresh_message').show();
-                            scPID = data.msg;
-                            currentPid = data.msg;
-                            checkIsAlive = setInterval(() => {
-                                $.post(scRoot + '/home/is-alive/', () => { // eslint-disable-line max-nested-callbacks
-                                    clearInterval(checkIsAlive);
-                                    setTimeout(() => { // eslint-disable-line max-nested-callbacks
-                                        window.location = scRoot + '/' + scDefaultPage + '/';
-                                    }, 3000);
-                                }, 'jsonp');
-                            }, 1000);
+                        if (data === undefined || data.msg === 'nope' || data.msg === currentPid) {
+                            return;
                         }
+
+                        clearInterval(checkIsAlive);
+                        $('#restart_loading').hide();
+                        $('#restart_success').show();
+                        $('#refresh_message').show();
+                        scPID = data.msg;
+                        currentPid = data.msg;
+                        checkIsAlive = setInterval(() => {
+                            $.post(scRoot + '/home/is-alive/', () => { // eslint-disable-line max-nested-callbacks
+                                clearInterval(checkIsAlive);
+                                setTimeout(() => { // eslint-disable-line max-nested-callbacks
+                                    window.location = scRoot + '/' + scDefaultPage + '/';
+                                }, 3000);
+                            }, 'jsonp');
+                        }, 1000);
                     }, 'jsonp').fail(() => {
                         $('#restart_message').show();
                         $('#shut_down_loading').hide();
@@ -3649,7 +3647,7 @@ const SICKCHILL = {
                 headers: {3: {sorter: false}},
             });
             $('#limit').on('change', event => {
-                window.location.href = scRoot + '/manage/failedDownloads/?limit=' + $(event.currentTarget).val();
+                window.location.assign(scRoot + '/manage/failedDownloads/?limit=' + $(event.currentTarget).val());
             });
 
             $('#submitMassRemove').on('click', () => {
@@ -3657,7 +3655,7 @@ const SICKCHILL = {
 
                 $('.removeCheck').each(function () {
                     if (this.checked === true) {
-                        removeArray.push($(this).attr('id').split('-')[1]);
+                        removeArray.push($(this).attr('id').split('-', 2)[1]);
                     }
                 });
 
@@ -3731,7 +3729,7 @@ const SICKCHILL = {
         },
         episodeStatuses() {
             $('.allCheck').on('click', function () {
-                const indexerId = $(this).attr('id').split('-')[1];
+                const indexerId = $(this).attr('id').split('-', 2)[1];
                 $('.' + indexerId + '-epcheck').prop('checked', this.checked);
             });
 
@@ -3786,7 +3784,7 @@ const SICKCHILL = {
         },
         subtitleMissed() {
             $('.allCheck').on('click', function () {
-                const indexerId = $(this).attr('id').split('-')[1];
+                const indexerId = $(this).attr('id').split('-', 2)[1];
                 $('.' + indexerId + '-epcheck').prop('checked', this.checked);
             });
 
@@ -3803,8 +3801,8 @@ const SICKCHILL = {
                         whichSubs: $('#selectSubLang').val(),
                     }, data => {
                         $.each(data, (season, eps) => {
-                            $.each(eps, (episode, data) => {
-                                lastRow.after($.makeSubtitleRow(indexerId, season, episode, data.name, data.subtitles, checked));
+                            $.each(eps, (episode, episodeData) => {
+                                lastRow.after($.makeSubtitleRow(indexerId, season, episode, episodeData.name, episodeData.subtitles, checked));
                             });
                         });
                     });
@@ -3918,11 +3916,11 @@ const SICKCHILL = {
             });
 
             $('#layout').on('change', function () {
-                window.location.href = $(this).find('option:selected').val();
+                window.location.assign($(this).find('option:selected').val());
             });
 
             $('#history_limit').on('change', function () {
-                window.location.href = scRoot + '/history/?limit=' + $(this).val();
+                window.location.assign(scRoot + '/history/?limit=' + $(this).val());
             });
 
             $('a.removehistory').on('click', () => {
@@ -3930,10 +3928,12 @@ const SICKCHILL = {
                 let removeCount = 0;
 
                 $('.removeCheck').each(function () {
-                    if (this.checked === true) {
-                        removeArray.push(shiftReturn($(this).attr('id').split('-')));
-                        removeCount++;
+                    if (this.checked !== true) {
+                        return;
                     }
+
+                    removeArray.push(shiftReturn($(this).attr('id').split('-')));
+                    removeCount++;
                 });
 
                 if (removeCount < 1) {
@@ -4045,7 +4045,7 @@ const SICKCHILL = {
                     network: [[6, 0], [0, 0], [2, 0], [4, 0]],
                 };
                 const sort = getMeta('settings.COMING_EPS_SORT');
-                const sortList = (sort in sortLists) ? sortLists[sort] : [[0, 0], [2, 0], [4, 0]];
+                const sortList = Object.hasOwn(sortLists, sort) ? sortLists[sort] : [[0, 0], [2, 0], [4, 0]];
 
                 $('#showListTable:has(tbody tr)').tablesorter({
                     widgets: ['stickyHeaders', 'filter', 'columnSelector', 'saveSort'],
@@ -4109,7 +4109,7 @@ const SICKCHILL = {
             });
 
             $('#sort, #viewpaused, #viewsnatched, #layout').on('change', function () {
-                window.location.href = $(this).find('option:selected').val();
+                window.location.assign($(this).find('option:selected').val());
             });
         },
     },
@@ -4435,7 +4435,7 @@ const SICKCHILL = {
 
                 // If they've picked a radio button then use that
                 if ($('input:radio[name=whichSeries]:checked').length > 0) {
-                    object.showName = $('input:radio[name=whichSeries]:checked').val().split('|')[4];
+                    object.showName = $('input:radio[name=whichSeries]:checked').val().split('|', 5)[4];
                 } else if ($('input:hidden[name=whichSeries]').length > 0 && $('input:hidden[name=whichSeries]').val().length > 0) {
                     // If we provided a show in the hidden field, use that
                     object.showName = $('#providedName').val();
@@ -4476,13 +4476,9 @@ const SICKCHILL = {
 
                 $('#desc-quality-name').text($('#qualityPreset option:selected').text());
 
-                // If show has been selected
-                if (!($('input:radio[name=whichSeries]:checked').val() || $('input:hidden[name=whichSeries]').val())) {
-                    return $('#addShowButton').attr('disabled', true);
-                }
-
-                // If root dir has been set properly
-                if (!($('#rootDirs option:selected').val() || $('#fullShowPath').val())) {
+                // If show has been selected and root dir has been set properly
+                if (!($('input:radio[name=whichSeries]:checked').val() || $('input:hidden[name=whichSeries]').val())
+                    || !($('#rootDirs option:selected').val() || $('#fullShowPath').val())) {
                     return $('#addShowButton').attr('disabled', true);
                 }
 
@@ -4574,7 +4570,7 @@ const SICKCHILL = {
                     : searchTerm;
                 const searchingFor = _(searchingLabel + ' on ' + $('#providedIndexer option:selected').text() + ' in ' + $('#indexerLangSelect option:selected').text());
                 // Build status with text nodes so displayName / ids cannot be interpreted as HTML
-                const statusText = _('searching {searchingFor}...').replace(/{searchingFor}/, searchingFor);
+                const statusText = _('searching {searchingFor}...').replaceAll('{searchingFor}', () => searchingFor);
                 $('#searchResults').empty().append(
                     $('<img>', {
                         id: 'searchingAnim',
@@ -4729,21 +4725,23 @@ const SICKCHILL = {
 
             $('#submitShowDirs').on('click', () => {
                 const submitForm = $('#addShowForm');
-                let selectedShows = false;
+                let isSelectedShows = false;
                 $('.dirCheck').each(function () {
-                    if (this.checked === true) {
-                        const show = $(this).attr('id');
-                        const indexer = $(this).closest('tr').find('select').val();
-                        $('<input>', {
-                            type: 'hidden',
-                            name: 'shows_to_add',
-                            value: indexer + '|' + show,
-                        }).appendTo(submitForm);
-                        selectedShows = true;
+                    if (this.checked !== true) {
+                        return;
                     }
+
+                    const show = $(this).attr('id');
+                    const indexer = $(this).closest('tr').find('select').val();
+                    $('<input>', {
+                        type: 'hidden',
+                        name: 'shows_to_add',
+                        value: indexer + '|' + show,
+                    }).appendTo(submitForm);
+                    isSelectedShows = true;
                 });
 
-                if (selectedShows === false) {
+                if (isSelectedShows === false) {
                     return false;
                 }
 
@@ -4759,13 +4757,15 @@ const SICKCHILL = {
             function loadContent() {
                 let url = '';
                 $('.dir_check').each((i, w) => {
-                    if ($(w).is(':checked')) {
-                        if (url.length > 0) {
-                            url += '&';
-                        }
-
-                        url += 'rootDir=' + encodeURIComponent($(w).attr('id'));
+                    if (!$(w).is(':checked')) {
+                        return;
                     }
+
+                    if (url.length > 0) {
+                        url += '&';
+                    }
+
+                    url += 'rootDir=' + encodeURIComponent($(w).attr('id'));
                 });
 
                 $('#tableDiv').html('<img id="searchingAnim" src="' + scRoot + '/images/loading32.gif" alt="loading" height="32" width="32" /> ' + _('loading folders...'));
@@ -4816,13 +4816,7 @@ const SICKCHILL = {
         },
         trendingShows() {
             const discoverySource = () => ($('#discoverySource').val() || 'tmdb');
-            const listParameter = () => {
-                if (discoverySource() === 'trakt') {
-                    return $('#traktList').val() || 'anticipated';
-                }
-
-                return $('#tmdbList').val() || 'trending';
-            };
+            const listParameter = () => discoverySource() === 'trakt' ? $('#traktList').val() || 'anticipated' : $('#tmdbList').val() || 'trending';
 
             const listQueryParameter = () => (discoverySource() === 'trakt' ? 'traktList' : 'tmdbList');
             const syncPremiereFilters = listKey => {
@@ -5025,7 +5019,7 @@ const UTIL = {
         const ns = SICKCHILL;
         action = (action === undefined) ? 'init' : action;
 
-        if (controller !== '' && ns[controller] && typeof ns[controller][action] === 'function') {
+        if (controller !== '' && Object.hasOwn(ns, controller) && typeof ns[controller][action] === 'function') {
             ns[controller][action]();
         }
     },

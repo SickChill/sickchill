@@ -12,13 +12,15 @@ $(document).ready(() => {
             const name = $(item).attr('name');
             let value = $(item).val();
 
-            if (name !== undefined && value !== undefined && name !== value && value) {
-                if ($.isArray(value)) {
-                    value = value.join('|');
-                }
-
-                url += '&' + name + '=' + value;
+            if (!(name !== undefined && value !== undefined && name !== value && value)) {
+                return;
             }
+
+            if ($.isArray(value)) {
+                value = value.join('|');
+            }
+
+            url += '&' + name + '=' + value;
         });
 
         if (profile) {
@@ -60,19 +62,22 @@ $(document).ready(() => {
     $('[data-action="update-episodes"]').on('change', function () {
         const command = $(this).data('command');
         const select = $('[data-command="' + command + '"][name="episode"]');
+
+        if (select === undefined) {
+            return;
+        }
+
         const season = $(this).val();
         const show = $('[data-command="' + command + '"][name="indexerid"]').val();
 
-        if (select !== undefined) {
-            select.removeClass('hidden');
-            select.find('option:gt(0)').remove();
+        select.removeClass('hidden');
+        select.find('option:gt(0)').remove();
 
-            for (const episode in episodes[show][season]) { // eslint-disable-line no-undef,guard-for-in
-                select.append($('<option>', {
-                    value: episodes[show][season][episode], // eslint-disable-line no-undef
-                    label: 'Episode ' + episodes[show][season][episode], // eslint-disable-line no-undef
-                }));
-            }
+        for (const episode in episodes[show][season]) { // eslint-disable-line no-undef,guard-for-in
+            select.append($('<option>', {
+                value: episodes[show][season][episode], // eslint-disable-line no-undef
+                label: 'Episode ' + episodes[show][season][episode], // eslint-disable-line no-undef
+            }));
         }
     });
 
@@ -80,18 +85,21 @@ $(document).ready(() => {
     $('[data-action="update-seasons"]').on('change', function () {
         const command = $(this).data('command');
         const select = $('[data-command="' + command + '"][name="season"]');
+
+        if (select === undefined) {
+            return;
+        }
+
         const show = $(this).val();
 
-        if (select !== undefined) {
-            select.removeClass('hidden');
-            select.find('option:gt(0)').remove();
+        select.removeClass('hidden');
+        select.find('option:gt(0)').remove();
 
-            for (const season in episodes[show]) { // eslint-disable-line no-undef,guard-for-in
-                select.append($('<option>', {
-                    value: season,
-                    label: (season === 0) ? 'Specials' : 'Season ' + season,
-                }));
-            }
+        for (const season in episodes[show]) { // eslint-disable-line no-undef,guard-for-in
+            select.append($('<option>', {
+                value: season,
+                label: (season === 0) ? 'Specials' : 'Season ' + season,
+            }));
         }
     });
 
@@ -108,14 +116,15 @@ $(document).ready(() => {
     });
     $('#command-search').on('change', function () {
         const command = $(this).typeahead('getActive');
-
-        if (command) {
-            const commandObject = $('[href="#command-' + command.replace('.', '-') + '"]');
-            commandObject.click();
-
-            setTimeout(() => {
-                commandObject.goTo();
-            }, 250);
+        if (!command) {
+            return;
         }
+
+        const commandObject = $('[href="#command-' + command.replace('.', '-') + '"]');
+        commandObject.click();
+
+        setTimeout(() => {
+            commandObject.goTo();
+        }, 250);
     });
 });
