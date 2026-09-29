@@ -11,6 +11,73 @@ const loading = '<img src="' + scRoot + '/images/loading16' + themeSpinner + '.g
 
 let scPID = getMeta('scPID');
 
+function configTabHashFromHref(href) {
+    if (!href) {
+        return '';
+    }
+
+    const hashAt = href.lastIndexOf('#');
+    return hashAt === -1 ? '' : href.slice(hashAt);
+}
+
+function persistConfigTabHash($tabs) {
+    if (!$tabs || $tabs.length === 0 || !$tabs.data('ui-tabs')) {
+        return;
+    }
+
+    const href = $tabs.children('ul').find('li.ui-tabs-active a').attr('href');
+    const nextHash = configTabHashFromHref(href);
+    if (!nextHash) {
+        return;
+    }
+
+    if (window.history.replaceState) {
+        window.history.replaceState(null, '', window.location.pathname + window.location.search + nextHash);
+    } else {
+        window.location.hash = nextHash.slice(1);
+    }
+}
+
+function initConfigComponentTabs() {
+    const $tabs = $('#config-components').first();
+    if ($tabs.length === 0) {
+        return $tabs;
+    }
+
+    const {hash} = window.location;
+    let active;
+    if (hash && hash.length > 1) {
+        const $link = $tabs.children('ul').find('a').filter(function () {
+            return configTabHashFromHref(this.getAttribute('href') || this.href) === hash;
+        });
+        if ($link.length > 0) {
+            active = $link.parent().index();
+        }
+    }
+
+    const options = {};
+    if (active !== undefined) {
+        options.active = active;
+    }
+
+    if ($tabs.data('ui-tabs')) {
+        if (active !== undefined) {
+            $tabs.tabs('option', 'active', active);
+        }
+    } else {
+        $tabs.tabs(options);
+    }
+
+    if (!$tabs.data('configTabHash')) {
+        $tabs.data('configTabHash', true);
+        $tabs.on('tabsactivate', () => {
+            persistConfigTabHash($tabs);
+        });
+    }
+
+    return $tabs;
+}
+
 function configSuccess(reload = true) {
     // Restore all save buttons once — do not reload inside .each() (Search Settings has 3 submitters)
     $('.config_submitter, .config_submitter_refresh').each(function () {
@@ -20,9 +87,12 @@ function configSuccess(reload = true) {
     });
     $('#email_show').trigger('notify');
     $('#prowl_show').trigger('notify');
-    if (reload) {
-        window.location.reload();
+    if (!reload) {
+        return;
     }
+
+    persistConfigTabHash($('#config-components').first());
+    window.location.reload();
 }
 
 function metaToBool(pythonVariable) {
@@ -156,7 +226,8 @@ const SICKCHILL = {
                     + ' this error with debug enabled before submitting</span>',
             });
 
-            $('#config-components').tabs({
+            initConfigComponentTabs();
+            $('#config-components').first().tabs({
                 activate(event, ui) {
                     let lastOpenedPanel = $(this).data('lastOpenedPanel');
 
@@ -303,7 +374,7 @@ const SICKCHILL = {
     },
     config: {
         init() {
-            $('#config-components').tabs();
+            initConfigComponentTabs();
 
             // Trakt account auth (Config → General → Indexer / Data)
             $('#TraktGetPin').on('click', () => {
@@ -558,7 +629,7 @@ const SICKCHILL = {
             $('#backupFile').fileBrowser({
                 title: _('Select backup files to restore'), key: 'backupFile', includeFiles: 1, fileTypes: ['zip'],
             });
-            $('#config-components').tabs();
+            initConfigComponentTabs();
         },
         notifications() {
             $('#testProwl').on('click', function () {
@@ -1373,7 +1444,7 @@ const SICKCHILL = {
             });
         },
         postProcessing() {
-            $('#config-components').tabs();
+            initConfigComponentTabs();
             $('#tv_download_dir').fileBrowser({title: _('Select TV Download Directory')});
             $('#unpack_dir').fileBrowser({title: _('Select Unpack Directory')});
 
@@ -1909,7 +1980,7 @@ const SICKCHILL = {
             });
         },
         search() {
-            $('#config-components').tabs();
+            initConfigComponentTabs();
             $('#nzb_dir').fileBrowser({title: _('Select .nzb black hole/watch location')});
             $('#torrent_dir').fileBrowser({title: _('Select torrent black hole/watch location')});
             $('#torrent_path').fileBrowser({title: _('Select torrent download location')});

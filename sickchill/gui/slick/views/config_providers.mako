@@ -11,7 +11,7 @@
     <script type="text/javascript" src="${static_url('js/configProviders.js')}"></script>
     <script type="text/javascript">
         $(document).ready(function() {
-            $('#config-components').tabs();
+            initConfigComponentTabs();
             $('#config-components').on( "tabsactivate", function( event, ui ){
                 if(ui.newPanel.selector === '#provider-options') {
                     //TODO: Reload provider options list
