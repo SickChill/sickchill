@@ -55,24 +55,28 @@ $('#removeB').on('click', () => {
 
 $('#addToWhite').on('click', () => {
     const group = $('#addToPoolText').val();
-    if (group !== '') {
-        const option = $('<option>');
-        option.attr('value', group);
-        option.html(group);
-        option.appendTo('#white');
-        $('#addToPoolText').val('');
-        $('#saveDefaultsButton').attr('disabled', false);
+    if (group === '') {
+        return;
     }
+
+    const option = $('<option>');
+    option.attr('value', group);
+    option.html(group);
+    option.appendTo('#white');
+    $('#addToPoolText').val('');
+    $('#saveDefaultsButton').attr('disabled', false);
 });
 
 $('#addToBlack').on('click', () => {
     const group = $('#addToPoolText').val();
-    if (group !== '') {
-        const option = $('<option>');
-        option.attr('value', group);
-        option.html(group);
-        option.appendTo('#black');
-        $('#addToPoolText').val('');
-        $('#saveDefaultsButton').attr('disabled', false);
+    if (group === '') {
+        return;
     }
+
+    const option = $('<option>');
+    option.attr('value', group);
+    option.html(group);
+    option.appendTo('#black');
+    $('#addToPoolText').val('');
+    $('#saveDefaultsButton').attr('disabled', false);
 });

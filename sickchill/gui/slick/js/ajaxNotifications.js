@@ -1,4 +1,4 @@
-const test = false;
+const isTest = false;
 
 function displayPNotify(type, title, message, id) {
     PNotify.desktop.permission();
@@ -33,7 +33,7 @@ function displayPNotify(type, title, message, id) {
         width: '340px',
         destroy: true,
     });
-    if (test === true) {
+    if (isTest) {
         console.log('sent pnotify with tag: ' + notice.options.desktop.tag);
     }
 }
@@ -47,8 +47,8 @@ const notificationDown = {
 
 function checkNotifications() {
     $.getJSON(scRoot + '/ui/get_messages', data => {
-        $.each(data, (name, data) => {
-            displayPNotify(data.type, data.title, data.message, data.hash);
+        $.each(data, (name, message) => {
+            displayPNotify(message.type, message.title, message.message, message.hash);
         });
     })
         .fail(() => {
@@ -62,7 +62,7 @@ function checkNotifications() {
 
 $(document).ready(() => {
     checkNotifications();
-    if (test) {
+    if (isTest) {
         displayPNotify('notice', 'test', 'test<br><i class="test-class">hello <b>world</b></i><ul><li>item 1</li><li>item 2</li></ul>', 'notification-test');
     }
 });
