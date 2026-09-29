@@ -1084,15 +1084,6 @@ window.SICKCHILL.config = {
         $('#tv_download_dir').fileBrowser({title: _('Select TV Download Directory')});
         $('#unpack_dir').fileBrowser({title: _('Select Unpack Directory')});
 
-        // https://stackoverflow.com/questions/2219924/idiomatic-jquery-delayed-event-only-after-a-short-pause-in-typing-e-g-timew
-        const typewatch = (function () {
-            let timer;
-            return function (callback, ms) {
-                clearTimeout(timer);
-                timer = setTimeout(callback, ms);
-            };
-        })();
-
         function isRarSupported() {
             $.post(scRoot + '/config/postProcessing/isRarSupported', data => {
                 if (data === 'supported') {
@@ -1341,54 +1332,31 @@ window.SICKCHILL.config = {
             });
         }
 
-        // @TODO all of these setup functions should be able to be rolled into a generic jQuery function
-
-        function setupNaming() {
-            // If it is a custom selection then show the text box
-            if ($('#name_presets :selected').val().toLowerCase() === 'custom...') {
-                $('#naming_custom').show();
+        function setupNamingPattern(presetSelector, customSelector, patternSelector, fill) {
+            if ($(presetSelector + ' :selected').val().toLowerCase() === 'custom...') {
+                $(customSelector).show();
             } else {
-                $('#naming_custom').hide();
-                $('#naming_pattern').val($('#name_presets :selected').attr('id'));
+                $(customSelector).hide();
+                $(patternSelector).val($(presetSelector + ' :selected').attr('id'));
             }
 
-            fillExamples();
+            fill();
+        }
+
+        function setupNaming() {
+            setupNamingPattern('#name_presets', '#naming_custom', '#naming_pattern', fillExamples);
         }
 
         function setupAbdNaming() {
-            // If it is a custom selection then show the text box
-            if ($('#name_abd_presets :selected').val().toLowerCase() === 'custom...') {
-                $('#naming_abd_custom').show();
-            } else {
-                $('#naming_abd_custom').hide();
-                $('#naming_abd_pattern').val($('#name_abd_presets :selected').attr('id'));
-            }
-
-            fillAbdExamples();
+            setupNamingPattern('#name_abd_presets', '#naming_abd_custom', '#naming_abd_pattern', fillAbdExamples);
         }
 
         function setupSportsNaming() {
-            // If it is a custom selection then show the text box
-            if ($('#name_sports_presets :selected').val().toLowerCase() === 'custom...') {
-                $('#naming_sports_custom').show();
-            } else {
-                $('#naming_sports_custom').hide();
-                $('#naming_sports_pattern').val($('#name_sports_presets :selected').attr('id'));
-            }
-
-            fillSportsExamples();
+            setupNamingPattern('#name_sports_presets', '#naming_sports_custom', '#naming_sports_pattern', fillSportsExamples);
         }
 
         function setupAnimeNaming() {
-            // If it is a custom selection then show the text box
-            if ($('#name_anime_presets :selected').val().toLowerCase() === 'custom...') {
-                $('#naming_anime_custom').show();
-            } else {
-                $('#naming_anime_custom').hide();
-                $('#naming_anime_pattern').val($('#name_anime_presets :selected').attr('id'));
-            }
-
-            fillAnimeExamples();
+            setupNamingPattern('#name_anime_presets', '#naming_anime_custom', '#naming_anime_pattern', fillAnimeExamples);
         }
 
         if (Number.parseInt($('#unpack').val(), 10) !== 1) {
@@ -1413,9 +1381,6 @@ window.SICKCHILL.config = {
             isRarSupported();
         });
 
-        // @TODO all of these on change functions should be able to be rolled into a generic jQuery function or maybe we could
-        //       move all of the setup functions into these handlers?
-
         $('#name_presets').on('change', setupNaming);
         $('#name_abd_presets').on('change', setupAbdNaming);
         $('#naming_custom_abd').on('change', setupAbdNaming);
@@ -1425,30 +1390,19 @@ window.SICKCHILL.config = {
         $('#naming_custom_anime').on('change', setupAnimeNaming);
         $('input[name="naming_anime"]').on('click', setupAnimeNaming);
 
-        // @TODO We might be able to change these from typewatch to __.debounce like we've done on the log page
-        //       The main reason for doing this would be to use only open source stuff that's still being maintained
-
         $('#naming_multi_ep').on('change', fillExamples);
         $('#naming_pattern').on('focusout', fillExamples);
-        $('#naming_pattern').on('keyup', () => {
-            typewatch(fillExamples, 500);
-        });
+        $('#naming_pattern').on('keyup', __.debounce(fillExamples, 500));
 
         $('#naming_anime_multi_ep').on('change', fillAnimeExamples);
         $('#naming_anime_pattern').on('focusout', fillAnimeExamples);
-        $('#naming_anime_pattern').on('keyup', () => {
-            typewatch(fillAnimeExamples, 500);
-        });
+        $('#naming_anime_pattern').on('keyup', __.debounce(fillAnimeExamples, 500));
 
         $('#naming_abd_pattern').on('focusout', fillAbdExamples);
-        $('#naming_abd_pattern').on('keyup', () => {
-            typewatch(fillAbdExamples, 500);
-        });
+        $('#naming_abd_pattern').on('keyup', __.debounce(fillAbdExamples, 500));
 
         $('#naming_sports_pattern').on('focusout', fillSportsExamples);
-        $('#naming_sports_pattern').on('keyup', () => {
-            typewatch(fillSportsExamples, 500);
-        });
+        $('#naming_sports_pattern').on('keyup', __.debounce(fillSportsExamples, 500));
 
         // Anime pattern already bound to fillAnimeExamples above — do not also call fillExamples
 
@@ -1470,7 +1424,6 @@ window.SICKCHILL.config = {
             $('#naming_pattern').focus();
         });
 
-        // @TODO We should see if these can be added with the on click or if we need to even call them on load
         setupNaming();
         setupAbdNaming();
         setupSportsNaming();
@@ -2107,9 +2060,5 @@ window.SICKCHILL.config = {
         });
 
         $('#service_order_list').disableSelection();
-    },
-    providers() {
-        // @TODO This function need to be filled with ConfigProviders.js but can't be as we've got scope issues currently.
-        console.log('This function need to be filled with ConfigProviders.js but can\'t be as we\'ve got scope issues currently.');
     },
 };

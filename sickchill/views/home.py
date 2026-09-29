@@ -1230,6 +1230,8 @@ class Home(WebRoot):
         if not (location or any_qualities or best_qualities or season_folders):
             t = PageTemplate(rh=self, filename="editShow.mako")
             groups = []
+            whitelist = []
+            blacklist = []
 
             if show_obj.is_anime:
                 whitelist = show_obj.release_groups.whitelist
@@ -1255,25 +1257,13 @@ class Home(WebRoot):
                     {"slug": "dvd", "name": "DVD Order"},
                 ]
 
-            if show_obj.is_anime:
-                return t.render(
-                    show=show_obj,
-                    scene_exceptions=show_obj.exceptions,
-                    seasonResults=seasonResults,
-                    groups=groups,
-                    whitelist=whitelist,
-                    blacklist=blacklist,
-                    season_order_types=season_order_types,
-                    title=_("Edit Show"),
-                    header=_("Edit Show"),
-                    controller="home",
-                    action="editShow",
-                )
-
             return t.render(
                 show=show_obj,
                 scene_exceptions=show_obj.exceptions,
                 seasonResults=seasonResults,
+                groups=groups,
+                whitelist=whitelist,
+                blacklist=blacklist,
                 season_order_types=season_order_types,
                 title=_("Edit Show"),
                 header=_("Edit Show"),

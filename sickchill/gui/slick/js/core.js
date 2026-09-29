@@ -321,8 +321,7 @@ SICKCHILL.common = {
             },
         });
 
-        // @TODO Replace this with a real touchscreen check
-        // hack alert: if we don't have a touchscreen, and we are already hovering the mouse, then click should link instead of toggle
+        // Second click on a hover-open dropdown follows the link on non-touch pointers.
         if ((navigator.maxTouchPoints || 0) < 2) {
             $('.dropdown-toggle').on('click', function () {
                 const element = $(this);
@@ -380,8 +379,6 @@ SICKCHILL.common = {
     },
     QualityChooser: {
         setFromPresets(preset) {
-            // @FIXME: Sometimes when switching too fast between presets,
-            // it stops updating the selection on #anyQualities
             if (Number.parseInt(preset, 10) === 0) {
                 $('#customQuality').show();
                 return;
@@ -391,12 +388,12 @@ SICKCHILL.common = {
 
             $('#anyQualities').find('option').each(function () {
                 const result = preset & $(this).val(); // eslint-disable-line no-bitwise
-                $(this).attr('selected', result > 0 ? 'selected' : false);
+                $(this).prop('selected', result > 0);
             });
 
             $('#bestQualities').find('option').each(function () {
                 const result = preset & ($(this).val() << 16); // eslint-disable-line no-bitwise
-                $(this).attr('selected', result > 0 ? 'selected' : false);
+                $(this).prop('selected', result > 0);
             });
         },
         init() {

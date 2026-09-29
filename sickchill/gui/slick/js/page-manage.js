@@ -1,4 +1,9 @@
 window.SICKCHILL ||= {};
+
+function setAllShowChecks(checked) {
+    $('.allCheck, input[class*="-epcheck"]').prop('checked', checked);
+}
+
 window.SICKCHILL.manage = {
     init() {
         $.makeEpisodeRow = function (indexerId, season, episode, name, checked) { // eslint-disable-line max-params
@@ -289,24 +294,11 @@ window.SICKCHILL.manage = {
             }
         });
 
-        // Selects all visible episode checkboxes.
         $('.selectAllShows').on('click', () => {
-            $('.allCheck').each(function () {
-                this.checked = true;
-            });
-            $('input[class*="-epcheck"]').each(function () {
-                this.checked = true;
-            });
+            setAllShowChecks(true);
         });
-
-        // Clears all visible episode checkboxes and the season selectors
         $('.deselectAllShows').on('click', () => {
-            $('.allCheck').each(function () {
-                this.checked = false;
-            });
-            $('input[class*="-epcheck"]').each(function () {
-                this.checked = false;
-            });
+            setAllShowChecks(false);
         });
     },
     subtitleMissed() {
@@ -344,26 +336,11 @@ window.SICKCHILL.manage = {
             }
         });
 
-        // @TODO these two should be able to be merged by using a generic class for the selector
-
-        // selects all visible episode checkboxes.
         $('.selectAllShows').on('click', () => {
-            $('.allCheck').each(function () {
-                this.checked = true;
-            });
-            $('input[class*="-epcheck"]').each(function () {
-                this.checked = true;
-            });
+            setAllShowChecks(true);
         });
-
-        // Clears all visible episode checkboxes and the season selectors
         $('.deselectAllShows').on('click', () => {
-            $('.allCheck').each(function () {
-                this.checked = false;
-            });
-            $('input[class*="-epcheck"]').each(function () {
-                this.checked = false;
-            });
+            setAllShowChecks(false);
         });
     },
 };

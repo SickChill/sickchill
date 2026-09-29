@@ -904,10 +904,12 @@ window.SICKCHILL.home = {
 
         SICKCHILL.common.QualityChooser.init();
 
-        // @TODO: Make anime button work like in addShow (opens the groups list without a refresh)
-        /* $('#anime').change (function() {
-                SICKCHILL.common.updateBlackWhiteList(getMeta('show.name'));
-            }); */
+        $('#anime').on('change', () => {
+            SICKCHILL.common.updateBlackWhiteList(getMeta('show.name'));
+        });
+        if (!$('#anime').is(':checked')) {
+            $('#blackwhitelist').hide();
+        }
 
         $('#submit').on('click', () => {
             const allExceptions = $('#exceptions_list').find('optgroup').get().map(group => {
@@ -923,7 +925,7 @@ window.SICKCHILL.home = {
 
             $('#exceptions').val(allExceptions);
 
-            if (metaToBool('show.is_anime')) {
+            if ($('#anime').is(':checked')) {
                 generateBlackWhiteList(); // eslint-disable-line no-undef
             }
         });
