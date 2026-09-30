@@ -5,6 +5,7 @@ from typing import ClassVar
 from sickchill import settings
 from sickchill.plugins.api import Field, register
 from sickchill.plugins.kinds.notifier import NotifierPlugin
+from sickchill.plugins.settings import decrypt_stored_password
 
 
 @register
@@ -38,7 +39,7 @@ class KodiNotifier(NotifierPlugin):
         settings.KODI_UPDATE_ONLYFIRST = bool(self.ctx.get("update_onlyfirst"))
         settings.KODI_HOST = self.ctx.get("host") or ""
         settings.KODI_USERNAME = self.ctx.get("username") or ""
-        settings.KODI_PASSWORD = self.ctx.get("password") or ""
+        settings.KODI_PASSWORD = decrypt_stored_password(self.ctx.get("password"))
 
     def _impl(self):
         from sickchill.oldbeard.notifiers import kodi as _mod

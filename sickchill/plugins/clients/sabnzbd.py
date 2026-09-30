@@ -6,6 +6,7 @@ from sickchill import settings
 from sickchill.plugins.api import Field, register
 from sickchill.plugins.clients._settings_sync import reload_client_ctx, set_if_present
 from sickchill.plugins.kinds.client import ClientPlugin
+from sickchill.plugins.settings import decrypt_stored_password
 
 
 @register
@@ -29,7 +30,7 @@ class SabnzbdClient(ClientPlugin):
         # Never blank saved SAB_* with an empty/stale ctx (same failure mode as qBittorrent).
         reload_client_ctx(self)
         set_if_present(settings, "SAB_USERNAME", self.ctx.get("username"))
-        set_if_present(settings, "SAB_PASSWORD", self.ctx.get("password"))
+        set_if_present(settings, "SAB_PASSWORD", decrypt_stored_password(self.ctx.get("password")))
         set_if_present(settings, "SAB_APIKEY", self.ctx.get("apikey"))
         set_if_present(settings, "SAB_CATEGORY", self.ctx.get("category"))
         set_if_present(settings, "SAB_CATEGORY_BACKLOG", self.ctx.get("category_backlog"))

@@ -204,31 +204,30 @@ window.SICKCHILL.manage = {
             });
         });
 
-        if ($('.removeCheck').length > 0) {
-            $('.removeCheck').each(name => {
-                let lastCheck = null;
-                $(name).on('click', function (event) {
-                    if (!lastCheck || !event.shiftKey) {
-                        lastCheck = this; // eslint-disable-line unicorn/no-this-assignment
-                        return;
+        for (const name of ['.removeCheck']) {
+            let lastCheck = null;
+
+            $(name).on('click', function (event) {
+                if (!lastCheck || !event.shiftKey) {
+                    lastCheck = this; // eslint-disable-line unicorn/no-this-assignment
+                    return;
+                }
+
+                const check = this; // eslint-disable-line unicorn/no-this-assignment
+                let found = 0;
+
+                $(name + ':visible').each(function () {
+                    if (found === 2) {
+                        return false;
                     }
 
-                    const check = this; // eslint-disable-line unicorn/no-this-assignment
-                    let found = 0;
+                    if (found === 1) {
+                        this.checked = lastCheck.checked;
+                    }
 
-                    $(name + ':visible').each(function () {
-                        if (found === 2) {
-                            return false;
-                        }
-
-                        if (found === 1) {
-                            this.checked = lastCheck.checked;
-                        }
-
-                        if (this === check || this === lastCheck) {
-                            found++;
-                        }
-                    });
+                    if (this === check || this === lastCheck) {
+                        found++;
+                    }
                 });
             });
         }

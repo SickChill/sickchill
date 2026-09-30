@@ -5,6 +5,7 @@ from typing import ClassVar
 from sickchill import settings
 from sickchill.plugins.api import Field, register
 from sickchill.plugins.kinds.notifier import NotifierPlugin
+from sickchill.plugins.settings import decrypt_stored_password
 
 
 @register
@@ -40,10 +41,10 @@ class PlexNotifier(NotifierPlugin):
         settings.PLEX_SERVER_TOKEN = self.ctx.get("server_token") or ""
         settings.PLEX_CLIENT_HOST = self.ctx.get("client_host") or ""
         settings.PLEX_SERVER_USERNAME = self.ctx.get("server_username") or ""
-        settings.PLEX_SERVER_PASSWORD = self.ctx.get("server_password") or ""
+        settings.PLEX_SERVER_PASSWORD = decrypt_stored_password(self.ctx.get("server_password"))
         settings.USE_PLEX_CLIENT = bool(self.ctx.get("use_plex_client"))
         settings.PLEX_CLIENT_USERNAME = self.ctx.get("client_username") or ""
-        settings.PLEX_CLIENT_PASSWORD = self.ctx.get("client_password") or ""
+        settings.PLEX_CLIENT_PASSWORD = decrypt_stored_password(self.ctx.get("client_password"))
         settings.PLEX_SERVER_HTTPS = bool(self.ctx.get("server_https"))
 
     def _impl(self):

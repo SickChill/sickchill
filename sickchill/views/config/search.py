@@ -18,11 +18,12 @@ class ConfigSearch(Config):
     def index(self):
         # Mako reads settings.TORRENT_* / SAB_* / etc.; keep them synced from [CLIENTS].
         try:
-            from sickchill.plugins.bootstrap import sync_all_plugin_runtime_settings
+            from sickchill.plugins.clients.config import sync_clients_from_settings
 
-            sync_all_plugin_runtime_settings(settings.CFG)
+            if settings.CFG is not None:
+                sync_clients_from_settings(settings.CFG)
         except Exception:
-            pass
+            logger.warning("Could not synchronize client settings for the search page", exc_info=True)
 
         t = PageTemplate(rh=self, filename="config_search.mako")
 

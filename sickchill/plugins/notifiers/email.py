@@ -5,6 +5,7 @@ from typing import ClassVar
 from sickchill import settings
 from sickchill.plugins.api import Field, register
 from sickchill.plugins.kinds.notifier import NotifierPlugin
+from sickchill.plugins.settings import decrypt_stored_password
 
 
 @register
@@ -42,7 +43,7 @@ class EmailNotifier(NotifierPlugin):
             settings.EMAIL_PORT = 0
         settings.EMAIL_TLS = bool(self.ctx.get("tls"))
         settings.EMAIL_USER = self.ctx.get("user") or ""
-        settings.EMAIL_PASSWORD = self.ctx.get("password") or ""
+        settings.EMAIL_PASSWORD = decrypt_stored_password(self.ctx.get("password"))
         settings.EMAIL_FROM = self.ctx.get("from") or ""
         settings.EMAIL_LIST = self.ctx.get("list") or ""
         settings.EMAIL_SUBJECT = self.ctx.get("subject") or ""
