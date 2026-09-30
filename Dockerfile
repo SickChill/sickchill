@@ -15,12 +15,8 @@ ENV DEBIAN_FRONTEND=noninteractive
 ENV PYTHONIOENCODING="UTF-8"
 ENV PYTHONUNBUFFERED=1
 
-ARG SOURCE
 ARG PIP_EXTRA_INDEX_URL="https://www.piwheels.org/simple"
 ARG HOME=${HOME:-}
-# Neutral defaults — never invent "develop" (master/local builds omit or pass real ref)
-ARG GIT_SHA=unknown
-ARG GIT_BRANCH=unknown
 
 ENV POETRY_INSTALLER_PARALLEL=false
 ENV POETRY_VIRTUALENVS_CREATE=false
@@ -71,7 +67,7 @@ ENV CARGO_TERM_VERBOSE "true"
 ENV CARGO "$CARGO_HOME/bin/cargo"
 
 # hadolint ignore=SC2215
-RUN --security=insecure curl --proto "=https" --tlsv1.2 -sSf https://sh.rustup.rs | sed "s#/proc/self/exe#$SHELL#g" | sh -s -- -y --profile minimal --default-toolchain nightly
+RUN --security=insecure curl --proto "=https" --tlsv1.2 -sSf https://sh.rustup.rs | sed "s#/proc/self/exe#$SHELL#g" | sh -s -- -y --profile minimal --default-toolchain stable
 
 ENV PATH "$RUSTUP_HOME/bin:$CARGO_HOME/bin:$PATH"
 
@@ -80,11 +76,24 @@ RUN python3 -m venv "$POETRY_VIRTUALENVS_PATH" --upgrade --upgrade-deps # upgrad
 RUN pip install -U wheel setuptools-rust
 
 WORKDIR /sickchill
+# Lockfile layer: cached until pyproject/poetry.lock (or license/readme) change.
+COPY pyproject.toml poetry.lock README.md LICENSE.md COPYING.txt ./
+RUN pip install --upgrade poetry && poetry run pip install -U setuptools-rust pycparser
+
+# SOURCE=1 in CI: install locked runtime deps here so rust/crypto is not rebuilt on every commit.
+ARG SOURCE
+# https://github.com/rust-lang/cargo/issues/8719#issuecomment-1253575253
+# hadolint ignore=SC2215,SC1089
+RUN --mount=type=tmpfs,target="$CARGO_HOME" \
+  if [ -n "$SOURCE" ]; then \
+    poetry install --only main --no-root --no-interaction --no-ansi; \
+  fi
+
 COPY . /sickchill/
 
 # Bake git revision for Help & Info. Skip placeholder "unknown" so pip-only
-ARG GIT_SHA
-ARG GIT_BRANCH
+ARG GIT_SHA=unknown
+ARG GIT_BRANCH=unknown
 RUN if [ -n "$GIT_SHA" ] && [ "$GIT_SHA" != "unknown" ]; then \
   if [ -n "$GIT_BRANCH" ] && [ "$GIT_BRANCH" != "unknown" ]; then \
     printf '%s %s\n' "$GIT_BRANCH" "$GIT_SHA" > sickchill/_revision.txt; \
@@ -93,13 +102,11 @@ RUN if [ -n "$GIT_SHA" ] && [ "$GIT_SHA" != "unknown" ]; then \
   fi; \
 fi
 
-# https://github.com/rust-lang/cargo/issues/8719#issuecomment-1253575253
 # hadolint ignore=SC2215,SC1089
 RUN --mount=type=tmpfs,target="$CARGO_HOME" if [ -z "$SOURCE" ]; then \
-  pip install --upgrade "sickchill[speedups]"; \
+  pip install --upgrade sickchill; \
 else \
-  pip install --upgrade poetry && poetry run pip install -U setuptools-rust pycparser && \
-  poetry build --no-interaction --no-ansi && pip install --upgrade "$(ls ./dist/sickchill-*.whl)[speedups]"; \
+  poetry build --no-interaction --no-ansi && pip install --upgrade "$(ls ./dist/sickchill-*.whl)"; \
 fi
 
 # Ensure installed package has _revision.txt (wheel may omit gitignored file).

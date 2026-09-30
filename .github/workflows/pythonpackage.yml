@@ -1,6 +1,6 @@
 # This workflow will install Python dependencies, run tests and lint with a variety of Python versions
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
-# Optimized for caching (pyproject.toml + yarn.lock) and Docker BuildKit
+# Optimized for caching (poetry.lock + yarn.lock) and scoped Docker BuildKit GHA cache
 
 name: Python Packaging
 
@@ -104,13 +104,14 @@ jobs:
         uses: actions/setup-python@v7
         with:
           python-version: ${{ matrix.python-version }}
+          cache: poetry
+          cache-dependency-path: poetry.lock
 
-      # Enhanced Poetry venv caching with restore-keys
       - name: Cache Poetry virtual environment
         uses: actions/cache@v6
         with:
           path: ~/.cache/pypoetry/virtualenvs
-          key: venv-${{ runner.os }}-${{ matrix.python-version }}-${{ hashFiles('pyproject.toml') }}
+          key: venv-${{ runner.os }}-${{ matrix.python-version }}-${{ hashFiles('poetry.lock', 'pyproject.toml') }}
           restore-keys: |
             venv-${{ runner.os }}-${{ matrix.python-version }}-
 
@@ -163,18 +164,18 @@ jobs:
 
   Test-Docker:
     needs: [Environment, Test]
-    runs-on: ubuntu-latest  # Updated from 22.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v4
+        with:
+          fetch-depth: 1
+          persist-credentials: false
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
         with:
           buildkitd-config-inline: |
             experimental = true
-            debug = true
             insecure-entitlements = ["security.insecure"]
 
       - name: Test Docker Build
@@ -182,17 +183,21 @@ jobs:
         with:
           platforms: linux/amd64
           push: false
-          tags: ${{ env.DOCKER_TEST_TAG }}
           load: true
+          provenance: false
+          tags: ${{ env.DOCKER_TEST_TAG }}
           labels: ${{ needs.Environment.outputs.docker_labels }}
           target: sickchill-final
-          cache-from: type=gha
-          cache-to: type=gha,mode=max  # Added for better reuse
+          cache-from: |
+            type=gha,scope=sickchill-docker-amd64
+            type=gha,scope=sickchill-docker
+          cache-to: type=gha,mode=max,scope=sickchill-docker-amd64
           # GIT_BRANCH: PR head_ref, or branch ref_name; empty on tag pushes (sha-only bake)
           build-args: |
             SOURCE=1
             GIT_SHA=${{ github.sha }}
             GIT_BRANCH=${{ github.head_ref || (startsWith(github.ref, 'refs/heads/') && github.ref_name) || '' }}
+            PIP_EXTRA_INDEX_URL=https://www.piwheels.org/simple
           allow: |
             security.insecure
 
@@ -243,9 +248,13 @@ jobs:
       github.actor != 'dependabot[bot]' &&
       (github.event_name == 'push' ||
        github.event.pull_request.head.repo.full_name == github.repository)
-    runs-on: ubuntu-latest  # Updated from 22.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v4
 
@@ -254,7 +263,6 @@ jobs:
         with:
           buildkitd-config-inline: |
             experimental = true
-            debug = true
             insecure-entitlements = ["security.insecure"]
 
       - if: success() && !env.ACT && github.actor != 'dependabot[bot]'
@@ -281,54 +289,64 @@ jobs:
           tags: ${{ needs.Environment.outputs.docker_tags }}
           labels: ${{ needs.Environment.outputs.docker_labels }}
           target: sickchill-final
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-from: |
+            type=gha,scope=sickchill-docker
+            type=gha,scope=sickchill-docker-amd64
+          cache-to: type=gha,mode=max,scope=sickchill-docker
           # GIT_BRANCH: PR head_ref, or branch ref_name; empty on tag pushes (sha-only bake)
           build-args: |
             SOURCE=1
             GIT_SHA=${{ github.sha }}
             GIT_BRANCH=${{ github.head_ref || (startsWith(github.ref, 'refs/heads/') && github.ref_name) || '' }}
+            PIP_EXTRA_INDEX_URL=https://www.piwheels.org/simple
           allow: |
             security.insecure
 
-      - if: success()
+      # Second target build; skip on PRs (no registry push). Layer cache from the image build above.
+      - if: success() && github.event_name != 'pull_request' && !env.ACT
         name: Snag wheels
         uses: docker/build-push-action@v7
         with:
           file: Dockerfile
           platforms: ${{ env.TARGET_PLATFORMS }}
           push: false
+          provenance: false
           outputs: type=local,dest=/tmp/sickchill-wheels
           target: sickchill-wheels
-          cache-from: type=gha
-          # GIT_BRANCH: PR head_ref, or branch ref_name; empty on tag pushes (sha-only bake)
+          cache-from: |
+            type=gha,scope=sickchill-docker
+            type=gha,scope=sickchill-docker-amd64
           build-args: |
             SOURCE=1
             GIT_SHA=${{ github.sha }}
             GIT_BRANCH=${{ github.head_ref || (startsWith(github.ref, 'refs/heads/') && github.ref_name) || '' }}
+            PIP_EXTRA_INDEX_URL=https://www.piwheels.org/simple
           allow: |
             security.insecure
 
-      - name: Cache wheels
+      - if: success() && github.event_name != 'pull_request' && !env.ACT
+        name: Cache wheels
         uses: actions/cache@v6
         with:
           path: /tmp/sickchill-wheels
-          key: wheels-${{ runner.os }}-${{ hashFiles('pyproject.toml') }}-${{ github.sha }}
+          key: wheels-${{ runner.os }}-${{ hashFiles('poetry.lock', 'pyproject.toml') }}-${{ github.sha }}
           restore-keys: |
-            wheels-${{ runner.os }}-${{ hashFiles('pyproject.toml') }}-
+            wheels-${{ runner.os }}-${{ hashFiles('poetry.lock', 'pyproject.toml') }}-
 
-      - if: success()
+      - if: success() && github.event_name != 'pull_request' && !env.ACT
         name: List wheels directory
         run: |
           ls -R /tmp/sickchill-wheels
 
-      - name: Upload linux/amd64 wheels
+      - if: success() && github.event_name != 'pull_request' && !env.ACT
+        name: Upload linux/amd64 wheels
         uses: actions/upload-artifact@v4
         with:
           name: amd64
           path: /tmp/sickchill-wheels/linux_amd64
 
-      - name: Upload linux/arm64 wheels
+      - if: success() && github.event_name != 'pull_request' && !env.ACT
+        name: Upload linux/arm64 wheels
         uses: actions/upload-artifact@v4
         with:
           name: arm64
