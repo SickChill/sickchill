@@ -1,6 +1,7 @@
 # This workflow will install Python dependencies, run tests and lint with a variety of Python versions
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
-# Optimized for caching (poetry.lock + yarn.lock) and scoped Docker BuildKit GHA cache
+# Optimized for caching (pyproject.toml + yarn.lock) and scoped Docker BuildKit GHA cache
+# poetry.lock is gitignored, so cache keys must not require it on the runner.
 
 name: Python Packaging
 
@@ -105,13 +106,13 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
           cache: poetry
-          cache-dependency-path: poetry.lock
+          cache-dependency-path: pyproject.toml
 
       - name: Cache Poetry virtual environment
         uses: actions/cache@v6
         with:
           path: ~/.cache/pypoetry/virtualenvs
-          key: venv-${{ runner.os }}-${{ matrix.python-version }}-${{ hashFiles('poetry.lock', 'pyproject.toml') }}
+          key: venv-${{ runner.os }}-${{ matrix.python-version }}-${{ hashFiles('pyproject.toml') }}
           restore-keys: |
             venv-${{ runner.os }}-${{ matrix.python-version }}-
 
@@ -329,9 +330,9 @@ jobs:
         uses: actions/cache@v6
         with:
           path: /tmp/sickchill-wheels
-          key: wheels-${{ runner.os }}-${{ hashFiles('poetry.lock', 'pyproject.toml') }}-${{ github.sha }}
+          key: wheels-${{ runner.os }}-${{ hashFiles('pyproject.toml') }}-${{ github.sha }}
           restore-keys: |
-            wheels-${{ runner.os }}-${{ hashFiles('poetry.lock', 'pyproject.toml') }}-
+            wheels-${{ runner.os }}-${{ hashFiles('pyproject.toml') }}-
 
       - if: success() && github.event_name != 'pull_request' && !env.ACT
         name: List wheels directory

@@ -76,8 +76,8 @@ RUN python3 -m venv "$POETRY_VIRTUALENVS_PATH" --upgrade --upgrade-deps # upgrad
 RUN pip install -U wheel setuptools-rust
 
 WORKDIR /sickchill
-# Lockfile layer: cached until pyproject/poetry.lock (or license/readme) change.
-COPY pyproject.toml poetry.lock README.md LICENSE.md COPYING.txt ./
+# poetry.lock is gitignored, so this layer caches on pyproject.toml (plus license/readme).
+COPY pyproject.toml README.md LICENSE.md COPYING.txt ./
 RUN pip install --upgrade poetry && poetry run pip install -U setuptools-rust pycparser
 
 # SOURCE=1 in CI: install locked runtime deps here so rust/crypto is not rebuilt on every commit.
