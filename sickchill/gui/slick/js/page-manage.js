@@ -4,6 +4,10 @@ function setAllShowChecks(checked) {
     $('.allCheck, input[class*="-epcheck"]').prop('checked', checked);
 }
 
+function escapeHtml(value) {
+    return $('<div>').text(value === undefined || value === null ? '' : String(value)).html();
+}
+
 window.SICKCHILL.manage = {
     init() {
         $.makeEpisodeRow = function (indexerId, season, episode, name, checked) { // eslint-disable-line max-params
@@ -14,7 +18,7 @@ window.SICKCHILL.manage = {
                 + '<input type="checkbox" class="' + indexerId + '-epcheck" name="' + epName + '"'
                 + (checked ? ' checked' : '') + '></td>';
             row += '  <td>' + season + 'x' + episode + '</td>';
-            row += '  <td class="tableright" style="width: 100%">' + name + '</td>';
+            row += '  <td class="tableright" style="width: 100%">' + escapeHtml(name) + '</td>';
             row += ' </tr>';
 
             return row;
@@ -42,7 +46,7 @@ window.SICKCHILL.manage = {
                 row += '<td style="width: 8%;">None</td>';
             }
 
-            row += '<td>' + name + '</td>';
+            row += '<td>' + escapeHtml(name) + '</td>';
             row += '</tr>';
 
             return row;

@@ -1,3 +1,5 @@
+import threading
+
 from sickchill import logger, settings
 from sickchill.oldbeard import helpers
 from sickchill.oldbeard.notifiers import (
@@ -66,9 +68,13 @@ discord_notifier = discord.Notifier()
 # Broadcast list empty: all notifiers delivered via plugin_manager.enabled(NOTIFIER).
 # Module-level *_notifier instances remain for update_library / UI tests.
 notifiers = []
+_broadcast_guard = threading.local()
 
 
 def _broadcast_plugins(method_name, *args, **kwargs):
+    if getattr(_broadcast_guard, "active", False):
+        return
+    _broadcast_guard.active = True
     try:
         from sickchill.plugins.manager import plugin_manager
 
@@ -79,9 +85,12 @@ def _broadcast_plugins(method_name, *args, **kwargs):
             try:
                 method(*args, **kwargs)
             except Exception as error:
-                logger.exception(f"Plugin notifier {plugin.id} {method_name} failed: {error}")
+                # WARNING: ERROR would re-enter notify_logged_error via the web log handler.
+                logger.warning(f"Plugin notifier {plugin.id} {method_name} failed: {error}")
     except Exception as error:
         logger.debug(f"Plugin notifier broadcast skipped: {error}")
+    finally:
+        _broadcast_guard.active = False
 
 
 def notify_download(ep_name):

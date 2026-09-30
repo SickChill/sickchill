@@ -15,13 +15,14 @@ from sickchill.views.routes import Route
 class ConfigNotifications(Config):
     @addslash
     def index(self):
-        # Mako still reads settings.*; keep them synced from [NOTIFIERS].
+        # Mako still reads settings.*; keep notifier settings synced without touching clients/providers.
         try:
-            from sickchill.plugins.bootstrap import sync_all_plugin_runtime_settings
+            from sickchill.plugins.legacy_maps import NOTIFIER_LEGACY_MAPS
+            from sickchill.plugins.settings import sync_legacy_maps_to_settings
 
-            sync_all_plugin_runtime_settings(settings.CFG)
+            sync_legacy_maps_to_settings(settings.CFG, NOTIFIER_LEGACY_MAPS)
         except Exception:
-            pass
+            logger.warning("Could not synchronize notifier settings for the notifications page", exc_info=True)
 
         t = PageTemplate(rh=self, filename="config_notifications.mako")
 

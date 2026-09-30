@@ -82,8 +82,17 @@ def migrate_metadata_from_general(cfg: ConfigObj) -> bool:
         if general is not None and general_key in general:
             legacy_packed = general.get(general_key)
 
-        if not _section_has_flags(section) and legacy_packed not in (None, ""):
+        if legacy_packed not in (None, ""):
             flags = unpack_packed_config(str(legacy_packed))
+            if _section_has_flags(section):
+                missing = False
+                for name in METADATA_FLAG_NAMES:
+                    if name in section:
+                        flags[name] = _as_bool(section.get(name), False)
+                    else:
+                        missing = True
+                if not missing:
+                    continue
             write_metadata_section(cfg, plugin_id, flags)
             logger.info(
                 "Plugin migrator: moved General.%s -> METADATA[[%s]] (%s)",
@@ -92,10 +101,6 @@ def migrate_metadata_from_general(cfg: ConfigObj) -> bool:
                 pack_flags(flags),
             )
             mutated = True
-        elif not _section_has_flags(section):
-            # Ensure a stable empty section shape only when we already mutated elsewhere?
-            # Prefer not creating empty METADATA shells on clean installs.
-            pass
 
     if general is None:
         return mutated

@@ -153,6 +153,19 @@ class MetadataPluginTests(unittest.TestCase):
         via_get = self.manager.get(PluginKind.METADATA, "kodi")
         self.assertIs(plugin, via_get)
 
+    def test_partial_metadata_section_fills_missing_flags_from_legacy(self):
+        cfg = ConfigObj()
+        cfg.indent_type = "  "
+        cfg["METADATA"] = {"kodi": {"show_metadata": True}}
+        cfg["General"] = {"metadata_kodi": "0|1|0|1|0|0|0|0|0|0", "keep": "1"}
+
+        self.assertTrue(migrate_metadata_from_general(cfg))
+
+        kodi = read_metadata_section(cfg, "kodi")
+        self.assertEqual(pack_flags(kodi), "1|1|0|1|0|0|0|0|0|0")
+        self.assertNotIn("metadata_kodi", cfg["General"])
+        self.assertEqual(cfg["General"].get("keep"), "1")
+
     def test_idempotent_migrate_silent_mutated_false(self):
         cfg = ConfigObj()
         cfg.indent_type = "  "

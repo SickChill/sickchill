@@ -122,9 +122,18 @@ class PlexNotifier(NotifierPlugin):
             settings.USE_PLEX_SERVER = previous
 
     def test(self):
-        result = self.test_notify()
+        try:
+            result = self.test_notify()
+        except Exception as error:
+            return False, str(error)
         if isinstance(result, tuple):
             return bool(result[0]), str(result[1] if len(result) > 1 else result[0])
+        if result is None:
+            return True, "ok"
+        if result is False:
+            return False, "failed"
+        if isinstance(result, str) and result:
+            return False, result
         return bool(result), "ok" if result else "failed"
 
     def update_library(self, *args, **kwargs):

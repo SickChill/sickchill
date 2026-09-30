@@ -154,34 +154,34 @@ def sync_clients_from_settings(cfg: ConfigObj) -> None:
     download_station = read_client_section(cfg, "download_station")
     _apply_section_to_settings(download_station, _DSM_FIELDS)
 
+    def _mirror_dsm_to_torrent_settings() -> None:
+        # _apply_section_to_settings already decrypted SYNOLOGY_DSM_PASSWORD.
+        host = getattr(sc_settings, "SYNOLOGY_DSM_HOST", None)
+        username = getattr(sc_settings, "SYNOLOGY_DSM_USERNAME", None)
+        password = getattr(sc_settings, "SYNOLOGY_DSM_PASSWORD", None)
+        path = getattr(sc_settings, "SYNOLOGY_DSM_PATH", None)
+        if host not in (None, ""):
+            sc_settings.TORRENT_HOST = host
+        if username not in (None, ""):
+            sc_settings.TORRENT_USERNAME = username
+        if password not in (None, ""):
+            sc_settings.TORRENT_PASSWORD = password
+        if path not in (None, ""):
+            sc_settings.TORRENT_PATH = path
+
     method = getattr(sc_settings, "TORRENT_METHOD", None) or ""
     if method == "download_station":
         # Torrent Search tab binds torrent_host etc. — mirror DSM keys only (not qbit leftovers).
-        if download_station:
-            if download_station.get("host") not in (None, ""):
-                sc_settings.TORRENT_HOST = _coerce_settings_value("str", download_station.get("host"))
-            if download_station.get("username") not in (None, ""):
-                sc_settings.TORRENT_USERNAME = _coerce_settings_value("str", download_station.get("username"))
-            if download_station.get("password") not in (None, ""):
-                sc_settings.TORRENT_PASSWORD = _coerce_settings_value("str", download_station.get("password"))
-            if download_station.get("path") not in (None, ""):
-                sc_settings.TORRENT_PATH = _coerce_settings_value("str", download_station.get("path"))
+        _mirror_dsm_to_torrent_settings()
     elif method and method != "blackhole" and method in TORRENT_CLIENT_IDS:
         _apply_section_to_settings(read_client_section(cfg, method), _TORRENT_FIELDS)
 
     nzb_method = getattr(sc_settings, "NZB_METHOD", None) or ""
     # Do not overwrite TORRENT_* when an actual torrent client (qbit/transmission/…) is active.
     torrent_client_active = bool(method) and method not in ("blackhole", "download_station") and method in TORRENT_CLIENT_IDS
-    if nzb_method == "download_station" and not torrent_client_active and download_station:
+    if nzb_method == "download_station" and not torrent_client_active:
         # NZB DS with no competing torrent client: expose host on TORRENT_* for shared paths.
-        if download_station.get("host") not in (None, ""):
-            sc_settings.TORRENT_HOST = _coerce_settings_value("str", download_station.get("host"))
-        if download_station.get("username") not in (None, ""):
-            sc_settings.TORRENT_USERNAME = _coerce_settings_value("str", download_station.get("username"))
-        if download_station.get("password") not in (None, ""):
-            sc_settings.TORRENT_PASSWORD = _coerce_settings_value("str", download_station.get("password"))
-        if download_station.get("path") not in (None, ""):
-            sc_settings.TORRENT_PATH = _coerce_settings_value("str", download_station.get("path"))
+        _mirror_dsm_to_torrent_settings()
 
 
 def write_clients_to_cfg(cfg: ConfigObj) -> None:

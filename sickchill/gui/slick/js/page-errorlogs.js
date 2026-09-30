@@ -29,7 +29,10 @@ window.SICKCHILL.errorlogs = {
                 const url = scRoot + '/errorlogs/viewlog/';
                 $.post(url, postData, data => {
                     $('pre').html($(data).find('pre').html());
+                }).always(() => {
+                    setTimeout(updateLogData, 500);
                 });
+                return;
             }
 
             setTimeout(updateLogData, 500);

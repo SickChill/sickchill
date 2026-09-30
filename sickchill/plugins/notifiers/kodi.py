@@ -96,23 +96,19 @@ class KodiNotifier(NotifierPlugin):
 
     def test_notify(self, *args, **kwargs):
         self._sync_settings()
-        previous = settings.USE_KODI
-        settings.USE_KODI = True
-        try:
-            impl = self._impl()
-            if hasattr(impl, "test_notify"):
-                return impl.test_notify(*args, **kwargs)
-            if hasattr(impl, "test_notify_pms"):
-                return impl.test_notify_pms(*args, **kwargs)
-            return False
-        finally:
-            settings.USE_KODI = previous
-
-    def test(self):
-        result = self.test_notify()
-        if isinstance(result, tuple):
-            return bool(result[0]), str(result[1] if len(result) > 1 else result[0])
-        return bool(result), "ok" if result else "failed"
+        impl = self._impl()
+        if hasattr(impl, "test_notify"):
+            if not args and "host" not in kwargs:
+                kwargs = dict(
+                    kwargs,
+                    host=settings.KODI_HOST,
+                    username=settings.KODI_USERNAME,
+                    password=settings.KODI_PASSWORD,
+                )
+            return impl.test_notify(*args, **kwargs)
+        if hasattr(impl, "test_notify_pms"):
+            return impl.test_notify_pms(*args, **kwargs)
+        return False
 
     def update_library(self, *args, **kwargs):
         self._sync_settings()

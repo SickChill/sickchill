@@ -2500,7 +2500,7 @@
                                     <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                         <div class="row">
                                             <div class="col-md-12">
-                                                <input type="number" min="10" step="1" name="trakt_timeout" id="trakt_timeout" value="${settings.TRAKT_TIMEOUT}" class="form-control input-sm input75" autocapitalize="off" />
+                                                <input type="number" min="0" step="1" name="trakt_timeout" id="trakt_timeout" value="${settings.TRAKT_TIMEOUT}" class="form-control input-sm input75" autocapitalize="off" />
                                             </div>
                                         </div>
                                         <div class="row">

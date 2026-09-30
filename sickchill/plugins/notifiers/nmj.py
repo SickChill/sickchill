@@ -82,23 +82,19 @@ class NmjNotifier(NotifierPlugin):
 
     def test_notify(self, *args, **kwargs):
         self._sync_settings()
-        previous = settings.USE_NMJ
-        settings.USE_NMJ = True
-        try:
-            impl = self._impl()
-            if hasattr(impl, "test_notify"):
-                return impl.test_notify(*args, **kwargs)
-            if hasattr(impl, "test_notify_pms"):
-                return impl.test_notify_pms(*args, **kwargs)
-            return False
-        finally:
-            settings.USE_NMJ = previous
-
-    def test(self):
-        result = self.test_notify()
-        if isinstance(result, tuple):
-            return bool(result[0]), str(result[1] if len(result) > 1 else result[0])
-        return bool(result), "ok" if result else "failed"
+        impl = self._impl()
+        if hasattr(impl, "test_notify"):
+            if not args and "host" not in kwargs:
+                kwargs = dict(
+                    kwargs,
+                    host=settings.NMJ_HOST,
+                    database=settings.NMJ_DATABASE,
+                    mount=settings.NMJ_MOUNT,
+                )
+            return impl.test_notify(*args, **kwargs)
+        if hasattr(impl, "test_notify_pms"):
+            return impl.test_notify_pms(*args, **kwargs)
+        return False
 
     def update_library(self, *args, **kwargs):
         self._sync_settings()

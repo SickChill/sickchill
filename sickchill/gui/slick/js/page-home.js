@@ -484,7 +484,7 @@ window.SICKCHILL.home = {
             const selectedEpisode = $(this);
             const playModal = $('#playOnKodiModal');
 
-            $('#playOnKodiModal .btn.btn-success').on('click', () => {
+            $('#playOnKodiModal .btn.btn-success').off('click.playOnKodi').on('click.playOnKodi', () => {
                 disableLink(selectedEpisode);
                 playModal.modal('hide');
 

@@ -82,20 +82,20 @@ class Nmjv2Notifier(NotifierPlugin):
 
     def test_notify(self, *args, **kwargs):
         self._sync_settings()
-        previous = settings.USE_NMJv2
-        settings.USE_NMJv2 = True
-        try:
-            impl = self._impl()
-            if hasattr(impl, "test_notify"):
-                return impl.test_notify(*args, **kwargs)
-            if hasattr(impl, "test_notify_pms"):
-                return impl.test_notify_pms(*args, **kwargs)
-            return False
-        finally:
-            settings.USE_NMJv2 = previous
+        impl = self._impl()
+        if hasattr(impl, "test_notify"):
+            if not args and "host" not in kwargs:
+                kwargs = dict(kwargs, host=settings.NMJv2_HOST)
+            return impl.test_notify(*args, **kwargs)
+        if hasattr(impl, "test_notify_pms"):
+            return impl.test_notify_pms(*args, **kwargs)
+        return False
 
     def test(self):
-        result = self.test_notify()
+        try:
+            result = self.test_notify()
+        except Exception as error:
+            return False, str(error)
         if isinstance(result, tuple):
             return bool(result[0]), str(result[1] if len(result) > 1 else result[0])
         return bool(result), "ok" if result else "failed"

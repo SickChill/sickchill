@@ -12,7 +12,7 @@ from sickchill.oldbeard.common import (
     NOTIFY_UPDATE_TEXT,
     notifyStrings,
 )
-from sickchill.oldbeard.helpers import getURL, make_session
+from sickchill.oldbeard.helpers import make_session
 from sickchill.plugins.api import Field, register
 from sickchill.plugins.kinds.notifier import NotifierPlugin
 
@@ -62,8 +62,11 @@ class TelegramNotifier(NotifierPlugin):
         return self._notify("Test", "This is a test notification from SickChill", id=id, api_key=api_key, force=True)
 
     def test(self) -> tuple[bool, str]:
-        ok, message = self.test_notify()
-        return bool(ok), str(message)
+        try:
+            ok, message = self.test_notify()
+        except Exception as error:
+            return False, _redact_telegram_secret(error, self.ctx.get("apikey"))
+        return bool(ok), _redact_telegram_secret(message, self.ctx.get("apikey"))
 
     def _notify(self, title, message, id=None, api_key=None, force=False):
         if not (force or self.ctx.get("enabled")):
@@ -73,12 +76,21 @@ class TelegramNotifier(NotifierPlugin):
         token = api_key or self.ctx.get("apikey")
         self.ctx.logger.debug("Sending a Telegram message for %s", message)
         params = {"chat_id": chat_id, "text": f"{title} : {message}"}
-        response = getURL(
-            f"https://api.telegram.org/bot{token}/sendMessage",
-            params=params,
-            session=self.session,
-            returns="json",
-        )
+        url = f"https://api.telegram.org/bot{token}/sendMessage"
+        try:
+            http = self.session.get(url, params=params, timeout=30)
+            http.raise_for_status()
+            response = http.json()
+        except Exception as error:
+            self.ctx.logger.warning("Telegram request failed: %s", _redact_telegram_secret(error, token))
+            return False, "Sending Telegram message failed, check the log"
         result_message = ("Sending Telegram message failed, check the log", "Telegram message sent successfully.")[bool(response)]
         self.ctx.logger.info(result_message)
         return bool(response), result_message
+
+
+def _redact_telegram_secret(text, token) -> str:
+    message = str(text)
+    if token:
+        message = message.replace(str(token), "***")
+    return message
