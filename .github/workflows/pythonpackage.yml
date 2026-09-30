@@ -326,15 +326,6 @@ jobs:
             security.insecure
 
       - if: success() && github.event_name != 'pull_request' && !env.ACT
-        name: Cache wheels
-        uses: actions/cache@v6
-        with:
-          path: /tmp/sickchill-wheels
-          key: wheels-${{ runner.os }}-${{ hashFiles('pyproject.toml') }}-${{ github.sha }}
-          restore-keys: |
-            wheels-${{ runner.os }}-${{ hashFiles('pyproject.toml') }}-
-
-      - if: success() && github.event_name != 'pull_request' && !env.ACT
         name: List wheels directory
         run: |
           ls -R /tmp/sickchill-wheels
