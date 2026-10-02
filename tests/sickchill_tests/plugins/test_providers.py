@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import logging
 import unittest
+from io import StringIO
 
 from configobj import ConfigObj
 
@@ -38,6 +39,7 @@ class ProviderPluginTests(unittest.TestCase):
         self._saved_full_applied = providers_config._providers_full_settings_applied
         self._saved_loaded = set(providers_config._providers_settings_loaded)
         self._saved_prune = providers_config._prune_custom_providers_on_write
+        self._saved_prune_types = set(providers_config._prune_custom_provider_types)
         settings.providerList = []
         settings.newznab_provider_list = []
         settings.torrent_rss_provider_list = []
@@ -47,6 +49,7 @@ class ProviderPluginTests(unittest.TestCase):
         providers_config._providers_full_settings_applied = False
         providers_config._providers_settings_loaded = set()
         providers_config._prune_custom_providers_on_write = False
+        providers_config._prune_custom_provider_types = set()
 
     def tearDown(self):
         clear_registry()
@@ -55,6 +58,7 @@ class ProviderPluginTests(unittest.TestCase):
         providers_config._providers_full_settings_applied = self._saved_full_applied
         providers_config._providers_settings_loaded = self._saved_loaded
         providers_config._prune_custom_providers_on_write = self._saved_prune
+        providers_config._prune_custom_provider_types = self._saved_prune_types
 
     def test_migrate_abnormal_legacy_section_to_providers(self):
         cfg = ConfigObj()
@@ -137,6 +141,73 @@ class ProviderPluginTests(unittest.TestCase):
         self.assertEqual(section.get("url"), "https://nzb.example/")
         self.assertEqual(section.get("key"), "abc123")
         self.assertTrue(section.get("enabled") in (True, "True", "true", 1, "1"))
+
+    def test_migrate_unquoted_newznab_blob_from_disk(self):
+        """ConfigObj list_values splits unquoted category commas; coerce must rejoin before parse."""
+        ini = (
+            "[Newznab]\n"
+            "newznab_data = My Custom|https://nzb.example/|abc123|5030,5040|1|episode|0|1|0"
+            "!!!Jackett|http://127.0.0.1:9117/api/v2.0/indexers/all/results/torznab/|secret|5000|1|episode|0|1|0\n"
+        )
+        cfg = ConfigObj(StringIO(ini))
+        raw = cfg["Newznab"]["newznab_data"]
+        self.assertIsInstance(raw, (list, tuple))
+
+        self.assertTrue(migrate_provider_sections(cfg))
+        self.assertNotIn("Newznab", cfg)
+
+        my_custom = read_provider_section(cfg, "my_custom")
+        self.assertEqual(my_custom.get("type"), "newznab")
+        self.assertEqual(my_custom.get("name"), "My Custom")
+        self.assertEqual(my_custom.get("url"), "https://nzb.example/")
+        self.assertEqual(my_custom.get("key"), "abc123")
+        self.assertEqual(str(my_custom.get("categories")), "5030,5040")
+
+        jackett = read_provider_section(cfg, "jackett")
+        self.assertEqual(jackett.get("type"), "newznab")
+        self.assertEqual(jackett.get("name"), "Jackett")
+        self.assertEqual(jackett.get("url"), "http://127.0.0.1:9117/api/v2.0/indexers/all/results/torznab/")
+        self.assertEqual(jackett.get("key"), "secret")
+
+    def test_migrate_unquoted_torrentrss_blob_from_disk(self):
+        ini = "[TorrentRss]\ntorrentrss_data = My RSS|https://rss.example/feed?x=1,2||title|1|episode|0|0|0\n"
+        cfg = ConfigObj(StringIO(ini))
+        raw = cfg["TorrentRss"]["torrentrss_data"]
+        self.assertIsInstance(raw, (list, tuple))
+
+        self.assertTrue(migrate_provider_sections(cfg))
+        self.assertNotIn("TorrentRss", cfg)
+        section = read_provider_section(cfg, "my_rss")
+        self.assertEqual(section.get("type"), "torrentrss")
+        self.assertEqual(section.get("name"), "My RSS")
+        self.assertEqual(section.get("url"), "https://rss.example/feed?x=1,2")
+
+    def test_migrate_unparseable_newznab_blob_is_left(self):
+        cfg = ConfigObj()
+        cfg.indent_type = "  "
+        cfg["Newznab"] = {"newznab_data": "!!!"}
+        cfg["General"] = {"use_nzbs": 1}
+
+        self.assertFalse(migrate_provider_sections(cfg))
+        self.assertIn("Newznab", cfg)
+        self.assertEqual(cfg["Newznab"].get("newznab_data"), "!!!")
+        self.assertFalse(read_provider_section(cfg, "my_custom"))
+
+        write_providers_to_cfg(cfg)
+        self.assertIn("Newznab", cfg)
+
+    def test_write_drops_newznab_blob_when_providers_has_type(self):
+        cfg = ConfigObj()
+        cfg.indent_type = "  "
+        cfg["Newznab"] = {"newznab_data": "My Custom|https://nzb.example/|abc123|5030,5040|1|episode|0|1|0"}
+        write_provider_section(
+            cfg,
+            "my_custom",
+            {"type": "newznab", "name": "My Custom", "url": "https://nzb.example/", "key": "abc123"},
+        )
+        write_providers_to_cfg(cfg)
+        self.assertNotIn("Newznab", cfg)
+        self.assertEqual(read_provider_section(cfg, "my_custom").get("type"), "newznab")
 
     def test_apply_sets_enabled_and_username_from_providers(self):
         cfg = ConfigObj()

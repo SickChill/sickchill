@@ -451,8 +451,9 @@ NOTIFIER_LEGACY_MAPS: tuple[LegacyMap, ...] = (
 # Migrated via migrate_client_maps(); do not add these to ALL_LEGACY_MAPS.
 # ---------------------------------------------------------------------------
 
-# download_station is seeded from [Synology] first, then [TORRENT] only fills empty keys
-# (see CLIENT_SECTION_MAPS order) so DSM credentials win when both sections exist.
+# download_station: [Synology] first, then [TORRENT] fills empty keys — unless TORRENT_METHOD
+# is download_station, in which case migrate_client_maps applies [TORRENT] first (Torrent Search
+# tab is authoritative). See client_maps_for_migrate().
 TORRENT_CLIENT_IDS: tuple[str, ...] = (
     "transmission",
     "utorrent",
@@ -566,6 +567,30 @@ CLIENT_SECTION_MAPS: tuple[LegacyMap, ...] = tuple(_torrent_client_map(cid) for 
     # After Synology: fill any remaining empty download_station keys from shared [TORRENT]
     _torrent_client_map("download_station"),
 )
+
+
+def client_maps_for_migrate(maps: tuple[LegacyMap, ...] | list[LegacyMap] | None = None) -> list[LegacyMap]:
+    """Return client maps, with download_station sources ordered for TORRENT_METHOD.
+
+    Default order seeds [[download_station]] from [Synology] then fills empty keys from
+    [TORRENT]. When Download Station is the torrent client, Torrent Search ([TORRENT])
+    is applied first so live torrent_host/user/pass/path win over stale DSM keys.
+    """
+    ordered = list(maps if maps is not None else CLIENT_SECTION_MAPS)
+    try:
+        from sickchill import settings as sc_settings
+
+        torrent_method = getattr(sc_settings, "TORRENT_METHOD", None)
+    except Exception:
+        torrent_method = None
+    if torrent_method != "download_station":
+        return ordered
+
+    torrent_ds = [item for item in ordered if item.plugin_id == "download_station" and item.legacy_section == "TORRENT"]
+    synology_ds = [item for item in ordered if item.plugin_id == "download_station" and item.legacy_section == "Synology"]
+    rest = [item for item in ordered if not (item.plugin_id == "download_station" and item.legacy_section in {"TORRENT", "Synology"})]
+    return rest + torrent_ds + synology_ds
+
 
 # Kept empty on purpose: client maps must not go through migrate_legacy_maps.
 # Clients use migrate_client_maps → [CLIENTS]; notifiers use [NOTIFIERS].

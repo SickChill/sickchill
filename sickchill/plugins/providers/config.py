@@ -205,17 +205,61 @@ def _migrate_one_legacy_section(cfg: ConfigObj, provider_id: str, section_name: 
     return had_values
 
 
+def _ini_blob_as_str(raw) -> str:
+    """Rejoin ConfigObj list_values splits so category commas survive round-trip."""
+    if raw is None:
+        return ""
+    if isinstance(raw, (list, tuple)):
+        return ",".join(str(part) for part in raw)
+    return str(raw)
+
+
+def _providers_has_custom_type(cfg: ConfigObj, ptype: str) -> bool:
+    if cfg is None or "PROVIDERS" not in cfg or not hasattr(cfg["PROVIDERS"], "keys"):
+        return False
+    for provider_id in cfg["PROVIDERS"]:
+        if str(provider_id).startswith("#"):
+            continue
+        section = cfg["PROVIDERS"][provider_id]
+        if hasattr(section, "get") and str(section.get("type") or "").lower() == ptype:
+            return True
+    return False
+
+
+def _drop_legacy_blob_section(cfg: ConfigObj, section_name: str, ptype: str, data_key: str) -> bool:
+    """Delete [Newznab]/[TorrentRss] when empty or already represented in PROVIDERS.
+
+    Returns True when a non-empty blob was removed (caller should persist).
+    Empty-only deletes are silent and do not count as mutated.
+    Leave a non-empty blob when parse wrote nothing and PROVIDERS has no matching type.
+    """
+    if section_name not in cfg:
+        return False
+    section = cfg[section_name]
+    raw = section.get(data_key) if hasattr(section, "get") else None
+    blob = _ini_blob_as_str(raw).strip()
+    if blob and not _providers_has_custom_type(cfg, ptype):
+        return False
+    del cfg[section_name]
+    return bool(blob)
+
+
 def _migrate_newznab_blob(cfg: ConfigObj) -> bool:
     if "Newznab" not in cfg:
         return False
     section = cfg["Newznab"]
     raw = section.get("newznab_data") if hasattr(section, "get") else None
+    blob = _ini_blob_as_str(raw)
     moved = False
 
-    if raw not in (None, ""):
+    if blob:
         from sickchill.oldbeard.providers.newznab import NewznabProvider
 
-        providers = NewznabProvider.providers_list(str(raw))
+        try:
+            providers = NewznabProvider.providers_list(blob)
+        except Exception:
+            logger.exception("Plugin migrator: could not parse [Newznab] newznab_data")
+            providers = []
         for provider in providers:
             provider_id = provider.get_id()
             if not provider_id:
@@ -251,9 +295,8 @@ def _migrate_newznab_blob(cfg: ConfigObj) -> bool:
         if moved:
             logger.info("Plugin migrator: moved [Newznab] newznab_data -> PROVIDERS (type=newznab)")
 
-    # Delete Newznab section when done (empty scrub silent unless we moved).
-    del cfg["Newznab"]
-    return moved
+    dropped = _drop_legacy_blob_section(cfg, "Newznab", "newznab", "newznab_data")
+    return moved or dropped
 
 
 def _migrate_torrentrss_blob(cfg: ConfigObj) -> bool:
@@ -261,12 +304,17 @@ def _migrate_torrentrss_blob(cfg: ConfigObj) -> bool:
         return False
     section = cfg["TorrentRss"]
     raw = section.get("torrentrss_data") if hasattr(section, "get") else None
+    blob = _ini_blob_as_str(raw)
     moved = False
 
-    if raw not in (None, ""):
+    if blob:
         from sickchill.oldbeard.providers.rsstorrent import TorrentRssProvider
 
-        providers = TorrentRssProvider.providers_list(str(raw))
+        try:
+            providers = TorrentRssProvider.providers_list(blob)
+        except Exception:
+            logger.exception("Plugin migrator: could not parse [TorrentRss] torrentrss_data")
+            providers = []
         for provider in providers:
             provider_id = provider.get_id()
             if not provider_id:
@@ -301,8 +349,8 @@ def _migrate_torrentrss_blob(cfg: ConfigObj) -> bool:
         if moved:
             logger.info("Plugin migrator: moved [TorrentRss] torrentrss_data -> PROVIDERS (type=torrentrss)")
 
-    del cfg["TorrentRss"]
-    return moved
+    dropped = _drop_legacy_blob_section(cfg, "TorrentRss", "torrentrss", "torrentrss_data")
+    return moved or dropped
 
 
 def migrate_provider_sections(cfg: ConfigObj) -> bool:
@@ -384,6 +432,8 @@ _providers_full_settings_applied = False
 _providers_settings_loaded: set[str] = set()
 # After saveProviders reconciles custom Newznab/TorrentRSS lists, prune orphans of those types only.
 _prune_custom_providers_on_write = False
+# Type-specific prune from saveProviders when only one custom tab was posted (e.g. USE_NZBS=0).
+_prune_custom_provider_types: set[str] = set()
 
 
 def mark_provider_settings_loaded(provider_id: str) -> None:
@@ -666,13 +716,14 @@ def _provider_to_section(provider) -> dict[str, Any]:
 
 
 def write_providers_to_cfg(cfg: ConfigObj) -> None:
-    """Persist live providers into [PROVIDERS]; drop legacy [ID] / Newznab / TorrentRss.
+    """Persist live providers into [PROVIDERS]; drop leftover legacy [ID] sections.
 
     Built-in [PROVIDERS][[id]] sections are never deleted just because that provider
     is not in memory (startup loads enabled-only). Settings for providers that have
     not been loaded are merged (enabled flag only). Custom Newznab/TorrentRSS sections
     are pruned only after saveProviders reconciles the live custom lists, or after a
-    full Providers-UI load.
+    full Providers-UI load. Legacy [Newznab]/[TorrentRss] blobs are dropped when empty
+    or when PROVIDERS already has matching type= entries; unparsed leftover blobs stay.
     """
     if cfg is None:
         return
@@ -699,11 +750,11 @@ def write_providers_to_cfg(cfg: ConfigObj) -> None:
                 continue
         write_provider_section(cfg, provider_id, _provider_to_section(provider))
 
-    # Never drop built-in config. Only prune custom type=newznab/torrentrss after a
-    # full UI load (deleted customs are then absent from the live lists).
+    # Never drop built-in config. Only prune custom type=newznab/torrentrss after a full UI load or
+    # a saveProviders reconcile for that type (deleted customs are then absent from the live lists).
     live_custom_ids = {p.get_id() for p in (sc_settings.newznab_provider_list or []) + (sc_settings.torrent_rss_provider_list or []) if p}
-    prune_custom = _providers_full_settings_applied or _prune_custom_providers_on_write
-    if prune_custom and "PROVIDERS" in cfg and hasattr(cfg["PROVIDERS"], "keys"):
+    prune_all_custom = _providers_full_settings_applied or _prune_custom_providers_on_write
+    if "PROVIDERS" in cfg and hasattr(cfg["PROVIDERS"], "keys"):
         for provider_id in list(cfg["PROVIDERS"].keys()):
             if str(provider_id).startswith("#"):
                 continue
@@ -711,7 +762,7 @@ def write_providers_to_cfg(cfg: ConfigObj) -> None:
                 continue
             section = cfg["PROVIDERS"][provider_id]
             ptype = str(section.get("type") or "").lower() if hasattr(section, "get") else ""
-            if ptype in {"newznab", "torrentrss"} and provider_id not in live_custom_ids:
+            if ptype in {"newznab", "torrentrss"} and provider_id not in live_custom_ids and (prune_all_custom or ptype in _prune_custom_provider_types):
                 del cfg["PROVIDERS"][provider_id]
 
     # Remove leftover legacy per-provider sections for known ids
@@ -727,10 +778,8 @@ def write_providers_to_cfg(cfg: ConfigObj) -> None:
         if _looks_like_provider_section(str(section_name), cfg[section_name]):
             del cfg[section_name]
 
-    if "Newznab" in cfg:
-        del cfg["Newznab"]
-    if "TorrentRss" in cfg:
-        del cfg["TorrentRss"]
+    _drop_legacy_blob_section(cfg, "Newznab", "newznab", "newznab_data")
+    _drop_legacy_blob_section(cfg, "TorrentRss", "torrentrss", "torrentrss_data")
 
 
 def custom_providers_from_cfg(cfg: ConfigObj, enabled_ids: set[str] | None = None) -> tuple[list, list]:

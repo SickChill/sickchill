@@ -620,13 +620,14 @@ def migrate_client_maps(cfg: ConfigObj, maps) -> bool:
     Defer section delete/strip until all maps for a legacy section have been applied
     so shared sources like [TORRENT] can seed every torrent client.
     """
-    from sickchill.plugins.legacy_maps import LegacyMap
+    from sickchill.plugins.legacy_maps import LegacyMap, client_maps_for_migrate
 
     mutated = False
     sections_to_delete: set[str] = set()
     sections_to_strip: dict[str, set[str]] = {}
     # legacy_section -> (CLIENTS destinations, copied legacy keys)
     moved: dict[str, tuple[set[str], list[str]]] = {}
+    maps = client_maps_for_migrate(maps)
 
     for legacy_map in maps:
         assert isinstance(legacy_map, LegacyMap)

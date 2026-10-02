@@ -433,7 +433,10 @@ class ClientPluginTests(unittest.TestCase):
         self.assertNotIn("path", cfg["Synology"])
 
     def test_download_station_prefers_synology_over_torrent(self):
-        """When both [TORRENT] and [Synology] exist, DSM credentials win for download_station."""
+        """When torrent_method is a real client, DSM credentials win for download_station."""
+        from sickchill import settings as sc_settings
+
+        sc_settings.TORRENT_METHOD = "transmission"
         cfg = ConfigObj()
         cfg.indent_type = "  "
         cfg["TORRENT"] = {
@@ -459,6 +462,38 @@ class ClientPluginTests(unittest.TestCase):
         # Other torrent clients still get the shared TORRENT seed
         self.assertEqual(read_client_section(cfg, "transmission").get("host"), "http://torrent-shared:9091")
         self.assertEqual(cfg["Synology"].get("use_synoindex"), True)
+
+    def test_download_station_prefers_torrent_when_method_is_download_station(self):
+        """When Download Station is the torrent client, Torrent Search [TORRENT] wins."""
+        from sickchill import settings as sc_settings
+
+        sc_settings.TORRENT_METHOD = "download_station"
+        cfg = ConfigObj()
+        cfg.indent_type = "  "
+        cfg["TORRENT"] = {
+            "torrent_host": "http://torrent-shared:9091",
+            "torrent_username": "torrent-user",
+            "torrent_password": "torrent-pass",
+            "torrent_path": "/torrent-path",
+        }
+        cfg["Synology"] = {
+            "host": "http://dsm:5000",
+            "username": "admin",
+            "password": "secret",
+            "path": "/volume1/downloads",
+            "use_synoindex": True,
+        }
+
+        self.assertTrue(migrate_client_maps(cfg, CLIENT_SECTION_MAPS))
+        ds = read_client_section(cfg, "download_station")
+        self.assertEqual(ds.get("host"), "http://torrent-shared:9091")
+        self.assertEqual(ds.get("username"), "torrent-user")
+        self.assertEqual(ds.get("password"), "torrent-pass")
+        self.assertEqual(ds.get("path"), "/torrent-path")
+        self.assertEqual(read_client_section(cfg, "transmission").get("host"), "http://torrent-shared:9091")
+        self.assertEqual(read_client_section(cfg, "qbittorrent").get("host"), "http://torrent-shared:9091")
+        self.assertEqual(cfg["Synology"].get("use_synoindex"), True)
+        self.assertNotIn("host", cfg["Synology"])
 
     def test_manager_instance_client_without_enabled(self):
         load_first_party_clients()
