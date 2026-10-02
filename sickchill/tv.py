@@ -2594,7 +2594,7 @@ class TVEpisode(object):
 
         return good_name
 
-    def replace_map(self):
+    def replace_map(self, pattern=None):
         """
         Generates a replacement map for this episode which maps all possible custom naming patterns to the correct
         value for this episode.
@@ -2683,8 +2683,14 @@ class TVEpisode(object):
         else:
             relgrp = "SICKCHILL"
 
-        # try to get the release encoder to comply with scene naming standards
-        encoder = Quality.sceneQualityFromName(self.release_name.replace(release_grp[relgrp], ""), episode_quality)
+        # Scene Quality (%SQN) encoder: prefer libmediainfo from the real file, else the release name.
+        name_for_codec = (self.release_name or "").replace(release_grp[relgrp], "")
+        uses_scene_quality = bool(pattern and re.search(r"%SQ([._]?N)", pattern, flags=re.IGNORECASE))
+        if uses_scene_quality and not getattr(self, "is_naming_sample", False):
+            media_file = getattr(self, "_naming_media_file", None) or self.location
+            encoder = Quality.sceneQualityFromFile(media_file, episode_quality, name_for_codec)
+        else:
+            encoder = Quality.sceneQualityFromName(name_for_codec, episode_quality)
         if encoder and not getattr(self, "is_naming_sample", False):
             logger.debug(f"Found codec for '{show_name}: {ep_name}'.")
 
@@ -2764,7 +2770,7 @@ class TVEpisode(object):
         else:
             anime_type = 3
 
-        replace_map = self.replace_map()
+        replace_map = self.replace_map(pattern)
 
         result_name = pattern
 

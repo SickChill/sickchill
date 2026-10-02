@@ -1076,11 +1076,15 @@ class PostProcessor(object):
 
         # find the destination folder
         try:
+            # proper_path runs before the download is moved; point scene-quality codec at the source file.
+            episode_object._naming_media_file = self.directory
             proper_path = episode_object.proper_path()
             proper_absolute_path = os.path.join(episode_object.show.location, proper_path)
             dest_path = os.path.dirname(proper_absolute_path)
         except ShowDirectoryNotFoundException:
             raise EpisodePostProcessingFailedException(_("Unable to post-process an episode if the show dir doesn't exist, quitting"))
+        finally:
+            episode_object._naming_media_file = None
 
         self._log(_("Destination folder for this episode: ") + dest_path, logger.DEBUG)
 

@@ -26,6 +26,8 @@ class SaveProvidersDeleteTests(unittest.TestCase):
             "CFG": settings.CFG,
         }
         self._saved_full_applied = providers_config._providers_full_settings_applied
+        self._saved_prune = providers_config._prune_custom_providers_on_write
+        self._saved_prune_types = set(providers_config._prune_custom_provider_types)
         settings.providerList = []
         settings.PROVIDER_ORDER = []
         settings.CFG = None
@@ -38,6 +40,8 @@ class SaveProvidersDeleteTests(unittest.TestCase):
             TorrentRssProvider("RssDrop", "https://rss.example/drop", "", "title"),
         ]
         providers_config._providers_full_settings_applied = True
+        providers_config._prune_custom_providers_on_write = False
+        providers_config._prune_custom_provider_types = set()
 
     def tearDown(self):
         settings.newznab_provider_list = self._saved["newznab_provider_list"]
@@ -47,6 +51,8 @@ class SaveProvidersDeleteTests(unittest.TestCase):
         settings.providerList = self._saved["providerList"]
         settings.CFG = self._saved["CFG"]
         providers_config._providers_full_settings_applied = self._saved_full_applied
+        providers_config._prune_custom_providers_on_write = self._saved_prune
+        providers_config._prune_custom_provider_types = self._saved_prune_types
 
     def _handler(self, body: dict):
         handler = ConfigProviders.__new__(ConfigProviders)
@@ -104,6 +110,50 @@ class SaveProvidersDeleteTests(unittest.TestCase):
         handler = self._handler({"provider_order": "keepme:0"})
         handler.saveProviders()
         self.assertEqual(settings.newznab_provider_list, before)
+
+    @patch("sickchill.oldbeard.providers.check_enabled_providers")
+    @patch("sickchill.start.save_config")
+    @patch("sickchill.oldbeard.ui.notifications")
+    def test_missing_newznab_string_does_not_prune_cfg_newznab(self, _notifications, _save_config, _check):
+        # NZB tab omitted from POST: keep extra type=newznab sections when not fully applied
+        providers_config._providers_full_settings_applied = False
+        cfg = ConfigObj()
+        cfg.indent_type = "  "
+        write_provider_section(
+            cfg,
+            "keepme",
+            {"type": "newznab", "name": "KeepMe", "url": "https://keep.example/", "key": "k1", "enabled": False},
+        )
+        write_provider_section(
+            cfg,
+            "jackett",
+            {"type": "newznab", "name": "Jackett", "url": "http://127.0.0.1:9117/", "key": "secret", "enabled": False},
+        )
+        write_provider_section(
+            cfg,
+            "rsskeep",
+            {"type": "torrentrss", "name": "RssKeep", "url": "https://rss.example/feed", "enabled": False},
+        )
+        write_provider_section(
+            cfg,
+            "rssdrop",
+            {"type": "torrentrss", "name": "RssDrop", "url": "https://rss.example/drop", "enabled": False},
+        )
+        settings.CFG = cfg
+
+        handler = self._handler(
+            {
+                "torrent_rss_string": "RssKeep|https://rss.example/feed||title",
+                "provider_order": "keepme:0 rsskeep:0",
+            }
+        )
+        handler.saveProviders()
+
+        self.assertEqual([p.get_id() for p in settings.newznab_provider_list], ["keepme", "jackett"])
+        self.assertIn("keepme", cfg["PROVIDERS"])
+        self.assertIn("jackett", cfg["PROVIDERS"])
+        self.assertIn("rsskeep", cfg["PROVIDERS"])
+        self.assertNotIn("rssdrop", cfg["PROVIDERS"])
 
     @patch("sickchill.oldbeard.providers.check_enabled_providers")
     @patch("sickchill.start.save_config")

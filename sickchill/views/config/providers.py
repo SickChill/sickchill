@@ -377,16 +377,23 @@ class ConfigProviders(Config):
         settings.PROVIDER_ORDER = enabled_provider_list
 
         self.log_configuration_save("Search Providers")
+        # Prune only the custom types not listed.
+        prune_types: set[str] = set()
+        if newznab_string is not None:
+            prune_types.add("newznab")
+        if torrent_rss_string is not None:
+            prune_types.add("torrentrss")
+        providers_config._prune_custom_provider_types = prune_types
         # save_config → write_providers_to_cfg persists [PROVIDERS][[id]] (no legacy [ID] / blobs).
         try:
-            from sickchill.plugins.providers.config import write_providers_to_cfg
-
-            providers_config._prune_custom_providers_on_write = True
             if settings.CFG is not None:
-                write_providers_to_cfg(settings.CFG)
+                providers_config.write_providers_to_cfg(settings.CFG)
         except Exception as error:
             logger.debug("Could not pre-write provider settings to CFG before save_config: %s", error)
-        sickchill.start.save_config()
+        try:
+            sickchill.start.save_config()
+        finally:
+            providers_config._prune_custom_provider_types = set()
 
         # Add a site_message if no providers are enabled for daily and/or backlog
         sickchill.oldbeard.providers.check_enabled_providers()

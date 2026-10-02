@@ -38,8 +38,9 @@ ENV PIP_EXTRA_INDEX_URL=$PIP_EXTRA_INDEX_URL
 RUN mkdir -m 777 -p /sickchill "$POETRY_CACHE_DIR"
 
 RUN sed -i "s/Components: main/Components: main contrib non-free/" /etc/apt/sources.list.d/debian.sources
+# pymediainfo vendors libmediainfo; keep unrar for rarfile post-processing and curl for HEALTHCHECK.
 RUN apt-get update -qq && apt-get upgrade -yqq && \
- apt-get install -yqq curl libxml2 libxslt1.1 libffi8 libssl3 libmediainfo0v5 mediainfo unrar && \
+ apt-get install -yqq curl libxml2 libxslt1.1 libffi8 libssl3 unrar && \
  apt-get clean -yqq && \
  rm -rf /var/lib/apt/lists/*
 
@@ -71,14 +72,18 @@ RUN --security=insecure curl --proto "=https" --tlsv1.2 -sSf https://sh.rustup.r
 
 ENV PATH "$RUSTUP_HOME/bin:$CARGO_HOME/bin:$PATH"
 
-# Always just create our own virtualenv to prevent issues
+# Runtime venv (copied to the final image). Poetry lives in /opt/poetry so it is not shipped.
+# Do not put /opt/poetry/bin first: that venv's python/pip would hide the runtime venv.
+ENV POETRY_HOME="/opt/poetry"
+ENV VIRTUAL_ENV="$POETRY_VIRTUALENVS_PATH"
 RUN python3 -m venv "$POETRY_VIRTUALENVS_PATH" --upgrade --upgrade-deps # upgrade-deps requires python3.9+
-RUN pip install -U wheel setuptools-rust
+RUN python3 -m venv "$POETRY_HOME" && "$POETRY_HOME/bin/pip" install -U pip poetry
+RUN "$POETRY_VIRTUALENVS_PATH/bin/pip" install -U wheel setuptools-rust
 
 WORKDIR /sickchill
 # poetry.lock is gitignored, so this layer caches on pyproject.toml (plus license/readme).
 COPY pyproject.toml README.md LICENSE.md COPYING.txt ./
-RUN pip install --upgrade poetry && poetry run pip install -U setuptools-rust pycparser
+RUN "$POETRY_HOME/bin/poetry" run pip install -U setuptools-rust pycparser
 
 # SOURCE=1 in CI: install locked runtime deps here so rust/crypto is not rebuilt on every commit.
 ARG SOURCE
@@ -86,7 +91,7 @@ ARG SOURCE
 # hadolint ignore=SC2215,SC1089
 RUN --mount=type=tmpfs,target="$CARGO_HOME" \
   if [ -n "$SOURCE" ]; then \
-    poetry install --only main --no-root --no-interaction --no-ansi; \
+    "$POETRY_HOME/bin/poetry" install --only main --no-root --no-interaction --no-ansi; \
   fi
 
 COPY . /sickchill/
@@ -104,23 +109,23 @@ fi
 
 # hadolint ignore=SC2215,SC1089
 RUN --mount=type=tmpfs,target="$CARGO_HOME" if [ -z "$SOURCE" ]; then \
-  pip install --upgrade sickchill; \
+  "$POETRY_VIRTUALENVS_PATH/bin/pip" install --upgrade sickchill; \
 else \
-  poetry build --no-interaction --no-ansi && pip install --upgrade "$(ls ./dist/sickchill-*.whl)"; \
+  "$POETRY_HOME/bin/poetry" build --no-interaction --no-ansi && "$POETRY_VIRTUALENVS_PATH/bin/pip" install --upgrade "$(ls ./dist/sickchill-*.whl)"; \
 fi
 
 # Ensure installed package has _revision.txt (wheel may omit gitignored file).
 # Run python from /tmp so cwd (/sickchill) is not on sys.path — otherwise
 # `import sickchill` resolves to the source tree and cp is same-file.
 RUN if [ -f sickchill/_revision.txt ]; then \
-  REV_DST="$(cd /tmp && python -c 'import pathlib, sickchill; print(pathlib.Path(sickchill.__file__).parent)')" && \
+  REV_DST="$(cd /tmp && "$POETRY_VIRTUALENVS_PATH/bin/python" -c 'import pathlib, sickchill; print(pathlib.Path(sickchill.__file__).parent)')" && \
   SRC="$(realpath sickchill/_revision.txt)" && \
   DST="$(realpath -m "$REV_DST/_revision.txt")" && \
   if [ "$SRC" != "$DST" ]; then cp sickchill/_revision.txt "$REV_DST/_revision.txt"; fi; \
 fi
 
 RUN mkdir -m 777 /sickchill-wheels && \
- pip download sickchill --dest /sickchill-wheels && \
+ "$POETRY_VIRTUALENVS_PATH/bin/pip" download sickchill --dest /sickchill-wheels && \
  rm -rf /sickchill-wheels/*none-any.whl && \
  rm -rf /sickchill-wheels/*.gz;
 
@@ -128,6 +133,11 @@ RUN if [ -z "$SOURCE" ]; then \
   rm -rf /sickchill-wheels/sickchill*.whl && \
   cp dist/sickchill*.whl /sickchill-wheels/; \
 fi
+
+# Drop build-only tools and translation sources from the copied venv.
+# Keep pip: update-manager runs `sys.executable -m pip`.
+# Script file (not a shell heredoc): Dockerfile treats an unescaped `import` as an instruction.
+RUN "$POETRY_VIRTUALENVS_PATH/bin/python" /sickchill/docker/strip-venv.py
 
 FROM scratch AS sickchill-wheels
 COPY --from=builder /sickchill-wheels /
