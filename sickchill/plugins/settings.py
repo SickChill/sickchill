@@ -627,7 +627,7 @@ def migrate_client_maps(cfg: ConfigObj, maps) -> bool:
     sections_to_strip: dict[str, set[str]] = {}
     # legacy_section -> (CLIENTS destinations, copied legacy keys)
     moved: dict[str, tuple[set[str], list[str]]] = {}
-    maps = client_maps_for_migrate(maps)
+    maps = client_maps_for_migrate(maps, cfg)
 
     for legacy_map in maps:
         assert isinstance(legacy_map, LegacyMap)

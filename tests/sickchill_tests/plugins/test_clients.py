@@ -436,9 +436,11 @@ class ClientPluginTests(unittest.TestCase):
         """When torrent_method is a real client, DSM credentials win for download_station."""
         from sickchill import settings as sc_settings
 
-        sc_settings.TORRENT_METHOD = "transmission"
+        # Stale global must not win over cfg [General] torrent_method.
+        sc_settings.TORRENT_METHOD = "download_station"
         cfg = ConfigObj()
         cfg.indent_type = "  "
+        cfg["General"] = {"torrent_method": "transmission"}
         cfg["TORRENT"] = {
             "torrent_host": "http://torrent-shared:9091",
             "torrent_username": "torrent-user",
@@ -467,9 +469,11 @@ class ClientPluginTests(unittest.TestCase):
         """When Download Station is the torrent client, Torrent Search [TORRENT] wins."""
         from sickchill import settings as sc_settings
 
-        sc_settings.TORRENT_METHOD = "download_station"
+        # Stale global must not win over cfg [General] torrent_method.
+        sc_settings.TORRENT_METHOD = "transmission"
         cfg = ConfigObj()
         cfg.indent_type = "  "
+        cfg["General"] = {"torrent_method": "download_station"}
         cfg["TORRENT"] = {
             "torrent_host": "http://torrent-shared:9091",
             "torrent_username": "torrent-user",

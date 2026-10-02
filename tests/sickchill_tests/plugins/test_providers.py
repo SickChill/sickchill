@@ -209,6 +209,28 @@ class ProviderPluginTests(unittest.TestCase):
         self.assertNotIn("Newznab", cfg)
         self.assertEqual(read_provider_section(cfg, "my_custom").get("type"), "newznab")
 
+    def test_write_keeps_blob_when_unrelated_custom_type_exists(self):
+        """A leftover type=newznab/torrentrss for a different id must not drop the blob."""
+        cfg = ConfigObj()
+        cfg.indent_type = "  "
+        cfg["Newznab"] = {"newznab_data": "My Custom|https://nzb.example/|abc123|5030,5040|1|episode|0|1|0"}
+        cfg["TorrentRss"] = {"torrentrss_data": "My RSS|https://rss.example/feed||title|1|episode|0|0|0"}
+        write_provider_section(
+            cfg,
+            "keepme",
+            {"type": "newznab", "name": "KeepMe", "url": "https://keep.example/", "key": "k1"},
+        )
+        write_provider_section(
+            cfg,
+            "rsskeep",
+            {"type": "torrentrss", "name": "RssKeep", "url": "https://rss.example/keep"},
+        )
+        write_providers_to_cfg(cfg)
+        self.assertIn("Newznab", cfg)
+        self.assertIn("TorrentRss", cfg)
+        self.assertEqual(read_provider_section(cfg, "keepme").get("type"), "newznab")
+        self.assertEqual(read_provider_section(cfg, "rsskeep").get("type"), "torrentrss")
+
     def test_apply_sets_enabled_and_username_from_providers(self):
         cfg = ConfigObj()
         cfg.indent_type = "  "

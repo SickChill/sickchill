@@ -214,34 +214,59 @@ def _ini_blob_as_str(raw) -> str:
     return str(raw)
 
 
-def _providers_has_custom_type(cfg: ConfigObj, ptype: str) -> bool:
-    if cfg is None or "PROVIDERS" not in cfg or not hasattr(cfg["PROVIDERS"], "keys"):
-        return False
-    for provider_id in cfg["PROVIDERS"]:
-        if str(provider_id).startswith("#"):
+def _parsed_blob_provider_ids(blob: str, ptype: str) -> list[str] | None:
+    """Ids from a Newznab/TorrentRss blob, or None if any non-empty entry is unparseable."""
+    if ptype == "newznab":
+        from sickchill.oldbeard.providers.newznab import NewznabProvider as provider_cls
+    elif ptype == "torrentrss":
+        from sickchill.oldbeard.providers.rsstorrent import TorrentRssProvider as provider_cls
+    else:
+        return None
+
+    ids: list[str] = []
+    for piece in blob.split("!!!"):
+        piece = piece.strip()
+        if not piece:
             continue
-        section = cfg["PROVIDERS"][provider_id]
-        if hasattr(section, "get") and str(section.get("type") or "").lower() == ptype:
-            return True
-    return False
+        try:
+            providers = provider_cls.providers_list(piece)
+        except Exception:
+            return None
+        if not providers:
+            return None
+        for provider in providers:
+            provider_id = provider.get_id() if provider is not None else ""
+            if not provider_id:
+                return None
+            ids.append(provider_id)
+    return ids
 
 
 def _drop_legacy_blob_section(cfg: ConfigObj, section_name: str, ptype: str, data_key: str) -> bool:
-    """Delete [Newznab]/[TorrentRss] when empty or already represented in PROVIDERS.
+    """Delete [Newznab]/[TorrentRss] when empty or every blob entry is in PROVIDERS.
 
     Returns True when a non-empty blob was removed (caller should persist).
     Empty-only deletes are silent and do not count as mutated.
-    Leave a non-empty blob when parse wrote nothing and PROVIDERS has no matching type.
+    A leftover type= match for a different provider does not authorize deleting the blob.
+    Unparseable entries keep the whole section.
     """
     if section_name not in cfg:
         return False
     section = cfg[section_name]
     raw = section.get(data_key) if hasattr(section, "get") else None
     blob = _ini_blob_as_str(raw).strip()
-    if blob and not _providers_has_custom_type(cfg, ptype):
+    if not blob:
+        del cfg[section_name]
         return False
+    ids = _parsed_blob_provider_ids(blob, ptype)
+    if not ids:
+        return False
+    for provider_id in ids:
+        dest = read_provider_section(cfg, provider_id)
+        if str(dest.get("type") or "").lower() != ptype:
+            return False
     del cfg[section_name]
-    return bool(blob)
+    return True
 
 
 def _migrate_newznab_blob(cfg: ConfigObj) -> bool:
@@ -723,7 +748,8 @@ def write_providers_to_cfg(cfg: ConfigObj) -> None:
     not been loaded are merged (enabled flag only). Custom Newznab/TorrentRSS sections
     are pruned only after saveProviders reconciles the live custom lists, or after a
     full Providers-UI load. Legacy [Newznab]/[TorrentRss] blobs are dropped when empty
-    or when PROVIDERS already has matching type= entries; unparsed leftover blobs stay.
+    or when every blob entry is already a matching PROVIDERS[[id]]; unparsed leftover
+    blobs stay even if other customs of that type exist.
     """
     if cfg is None:
         return

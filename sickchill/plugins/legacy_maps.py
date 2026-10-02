@@ -569,20 +569,36 @@ CLIENT_SECTION_MAPS: tuple[LegacyMap, ...] = tuple(_torrent_client_map(cid) for 
 )
 
 
-def client_maps_for_migrate(maps: tuple[LegacyMap, ...] | list[LegacyMap] | None = None) -> list[LegacyMap]:
+def client_maps_for_migrate(maps: tuple[LegacyMap, ...] | list[LegacyMap] | None = None, cfg=None) -> list[LegacyMap]:
     """Return client maps, with download_station sources ordered for TORRENT_METHOD.
 
     Default order seeds [[download_station]] from [Synology] then fills empty keys from
     [TORRENT]. When Download Station is the torrent client, Torrent Search ([TORRENT])
     is applied first so live torrent_host/user/pass/path win over stale DSM keys.
+
+    torrent_method is read from the cfg being migrated ([General] torrent_method), then
+    from settings.TORRENT_METHOD if the cfg key is missing.
     """
     ordered = list(maps if maps is not None else CLIENT_SECTION_MAPS)
-    try:
-        from sickchill import settings as sc_settings
+    torrent_method = None
+    if cfg is not None:
+        try:
+            general = cfg.get("General")
+        except Exception:
+            general = None
+        if general is not None and hasattr(general, "get"):
+            torrent_method = general.get("torrent_method")
+            if torrent_method in (None, ""):
+                torrent_method = None
+            else:
+                torrent_method = str(torrent_method)
+    if torrent_method is None:
+        try:
+            from sickchill import settings as sc_settings
 
-        torrent_method = getattr(sc_settings, "TORRENT_METHOD", None)
-    except Exception:
-        torrent_method = None
+            torrent_method = getattr(sc_settings, "TORRENT_METHOD", None)
+        except Exception:
+            torrent_method = None
     if torrent_method != "download_station":
         return ordered
 
