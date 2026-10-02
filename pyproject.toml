@@ -90,6 +90,11 @@ packages = [
     { include = "SickChill.py" },
     { include = "frontend" }
 ]
+# Runtime uses messages.mo (gettext) and messages.json (browser). Keep .po/.pot out of the wheel.
+exclude = [
+    "sickchill/locale/**/*.po",
+    "sickchill/locale/**/*.pot",
+]
 
 [project.urls]
 Homepage = "https://sickchill.github.io"

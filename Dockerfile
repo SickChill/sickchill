@@ -38,8 +38,9 @@ ENV PIP_EXTRA_INDEX_URL=$PIP_EXTRA_INDEX_URL
 RUN mkdir -m 777 -p /sickchill "$POETRY_CACHE_DIR"
 
 RUN sed -i "s/Components: main/Components: main contrib non-free/" /etc/apt/sources.list.d/debian.sources
+# pymediainfo vendors libmediainfo; keep unrar for rarfile post-processing and curl for HEALTHCHECK.
 RUN apt-get update -qq && apt-get upgrade -yqq && \
- apt-get install -yqq curl libxml2 libxslt1.1 libffi8 libssl3 libmediainfo0v5 mediainfo unrar && \
+ apt-get install -yqq curl libxml2 libxslt1.1 libffi8 libssl3 unrar && \
  apt-get clean -yqq && \
  rm -rf /var/lib/apt/lists/*
 
@@ -71,14 +72,17 @@ RUN --security=insecure curl --proto "=https" --tlsv1.2 -sSf https://sh.rustup.r
 
 ENV PATH "$RUSTUP_HOME/bin:$CARGO_HOME/bin:$PATH"
 
-# Always just create our own virtualenv to prevent issues
+# Runtime venv (copied to the final image). Poetry lives in /opt/poetry so it is not shipped.
+ENV POETRY_HOME="/opt/poetry"
 RUN python3 -m venv "$POETRY_VIRTUALENVS_PATH" --upgrade --upgrade-deps # upgrade-deps requires python3.9+
+RUN python3 -m venv "$POETRY_HOME" && "$POETRY_HOME/bin/pip" install -U pip poetry
+ENV PATH="$POETRY_HOME/bin:$PATH"
 RUN pip install -U wheel setuptools-rust
 
 WORKDIR /sickchill
 # poetry.lock is gitignored, so this layer caches on pyproject.toml (plus license/readme).
 COPY pyproject.toml README.md LICENSE.md COPYING.txt ./
-RUN pip install --upgrade poetry && poetry run pip install -U setuptools-rust pycparser
+RUN poetry run pip install -U setuptools-rust pycparser
 
 # SOURCE=1 in CI: install locked runtime deps here so rust/crypto is not rebuilt on every commit.
 ARG SOURCE
@@ -128,6 +132,47 @@ RUN if [ -z "$SOURCE" ]; then \
   rm -rf /sickchill-wheels/sickchill*.whl && \
   cp dist/sickchill*.whl /sickchill-wheels/; \
 fi
+
+# Drop build-only tools and translation sources from the copied venv.
+# hadolint ignore=SC2016
+RUN python - <<'PY'
+import os
+import shutil
+import sysconfig
+from pathlib import Path
+
+root = Path(sysconfig.get_path("purelib"))
+drop_names = {
+    "pip",
+    "wheel",
+    "setuptools_rust",
+    "poetry",
+}
+for path in list(root.iterdir()):
+    name = path.name
+    pkg = name.split("-", 1)[0]
+    if name in drop_names or pkg in drop_names or name == "distutils-precedence.pth":
+        if path.is_dir():
+            shutil.rmtree(path, ignore_errors=True)
+        else:
+            path.unlink(missing_ok=True)
+
+for dirpath, dirnames, _filenames in os.walk(root, topdown=False):
+    base = os.path.basename(dirpath)
+    if base in {"__pycache__", "tests", "test", "testing"}:
+        shutil.rmtree(dirpath, ignore_errors=True)
+
+locale_dir = root / "sickchill" / "locale"
+if locale_dir.is_dir():
+    for extra in locale_dir.rglob("*"):
+        if extra.suffix in {".po", ".pot"}:
+            extra.unlink(missing_ok=True)
+
+venv = Path(os.environ["POETRY_VIRTUALENVS_PATH"])
+for binary in ("pip", "pip3", "wheel", "poetry"):
+    for path in venv.joinpath("bin").glob(binary + "*"):
+        path.unlink(missing_ok=True)
+PY
 
 FROM scratch AS sickchill-wheels
 COPY --from=builder /sickchill-wheels /
