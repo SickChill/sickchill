@@ -73,16 +73,17 @@ RUN --security=insecure curl --proto "=https" --tlsv1.2 -sSf https://sh.rustup.r
 ENV PATH "$RUSTUP_HOME/bin:$CARGO_HOME/bin:$PATH"
 
 # Runtime venv (copied to the final image). Poetry lives in /opt/poetry so it is not shipped.
+# Do not put /opt/poetry/bin first: that venv's python/pip would hide the runtime venv.
 ENV POETRY_HOME="/opt/poetry"
+ENV VIRTUAL_ENV="$POETRY_VIRTUALENVS_PATH"
 RUN python3 -m venv "$POETRY_VIRTUALENVS_PATH" --upgrade --upgrade-deps # upgrade-deps requires python3.9+
 RUN python3 -m venv "$POETRY_HOME" && "$POETRY_HOME/bin/pip" install -U pip poetry
-ENV PATH="$POETRY_HOME/bin:$PATH"
-RUN pip install -U wheel setuptools-rust
+RUN "$POETRY_VIRTUALENVS_PATH/bin/pip" install -U wheel setuptools-rust
 
 WORKDIR /sickchill
 # poetry.lock is gitignored, so this layer caches on pyproject.toml (plus license/readme).
 COPY pyproject.toml README.md LICENSE.md COPYING.txt ./
-RUN poetry run pip install -U setuptools-rust pycparser
+RUN "$POETRY_HOME/bin/poetry" run pip install -U setuptools-rust pycparser
 
 # SOURCE=1 in CI: install locked runtime deps here so rust/crypto is not rebuilt on every commit.
 ARG SOURCE
@@ -90,7 +91,7 @@ ARG SOURCE
 # hadolint ignore=SC2215,SC1089
 RUN --mount=type=tmpfs,target="$CARGO_HOME" \
   if [ -n "$SOURCE" ]; then \
-    poetry install --only main --no-root --no-interaction --no-ansi; \
+    "$POETRY_HOME/bin/poetry" install --only main --no-root --no-interaction --no-ansi; \
   fi
 
 COPY . /sickchill/
@@ -108,23 +109,23 @@ fi
 
 # hadolint ignore=SC2215,SC1089
 RUN --mount=type=tmpfs,target="$CARGO_HOME" if [ -z "$SOURCE" ]; then \
-  pip install --upgrade sickchill; \
+  "$POETRY_VIRTUALENVS_PATH/bin/pip" install --upgrade sickchill; \
 else \
-  poetry build --no-interaction --no-ansi && pip install --upgrade "$(ls ./dist/sickchill-*.whl)"; \
+  "$POETRY_HOME/bin/poetry" build --no-interaction --no-ansi && "$POETRY_VIRTUALENVS_PATH/bin/pip" install --upgrade "$(ls ./dist/sickchill-*.whl)"; \
 fi
 
 # Ensure installed package has _revision.txt (wheel may omit gitignored file).
 # Run python from /tmp so cwd (/sickchill) is not on sys.path — otherwise
 # `import sickchill` resolves to the source tree and cp is same-file.
 RUN if [ -f sickchill/_revision.txt ]; then \
-  REV_DST="$(cd /tmp && python -c 'import pathlib, sickchill; print(pathlib.Path(sickchill.__file__).parent)')" && \
+  REV_DST="$(cd /tmp && "$POETRY_VIRTUALENVS_PATH/bin/python" -c 'import pathlib, sickchill; print(pathlib.Path(sickchill.__file__).parent)')" && \
   SRC="$(realpath sickchill/_revision.txt)" && \
   DST="$(realpath -m "$REV_DST/_revision.txt")" && \
   if [ "$SRC" != "$DST" ]; then cp sickchill/_revision.txt "$REV_DST/_revision.txt"; fi; \
 fi
 
 RUN mkdir -m 777 /sickchill-wheels && \
- pip download sickchill --dest /sickchill-wheels && \
+ "$POETRY_VIRTUALENVS_PATH/bin/pip" download sickchill --dest /sickchill-wheels && \
  rm -rf /sickchill-wheels/*none-any.whl && \
  rm -rf /sickchill-wheels/*.gz;
 
@@ -134,45 +135,9 @@ RUN if [ -z "$SOURCE" ]; then \
 fi
 
 # Drop build-only tools and translation sources from the copied venv.
-# hadolint ignore=SC2016
-RUN python - <<'PY'
-import os
-import shutil
-import sysconfig
-from pathlib import Path
-
-root = Path(sysconfig.get_path("purelib"))
-drop_names = {
-    "pip",
-    "wheel",
-    "setuptools_rust",
-    "poetry",
-}
-for path in list(root.iterdir()):
-    name = path.name
-    pkg = name.split("-", 1)[0]
-    if name in drop_names or pkg in drop_names or name == "distutils-precedence.pth":
-        if path.is_dir():
-            shutil.rmtree(path, ignore_errors=True)
-        else:
-            path.unlink(missing_ok=True)
-
-for dirpath, dirnames, _filenames in os.walk(root, topdown=False):
-    base = os.path.basename(dirpath)
-    if base in {"__pycache__", "tests", "test", "testing"}:
-        shutil.rmtree(dirpath, ignore_errors=True)
-
-locale_dir = root / "sickchill" / "locale"
-if locale_dir.is_dir():
-    for extra in locale_dir.rglob("*"):
-        if extra.suffix in {".po", ".pot"}:
-            extra.unlink(missing_ok=True)
-
-venv = Path(os.environ["POETRY_VIRTUALENVS_PATH"])
-for binary in ("pip", "pip3", "wheel", "poetry"):
-    for path in venv.joinpath("bin").glob(binary + "*"):
-        path.unlink(missing_ok=True)
-PY
+# Keep pip: update-manager runs `sys.executable -m pip`.
+# Script file (not a shell heredoc): Dockerfile treats an unescaped `import` as an instruction.
+RUN "$POETRY_VIRTUALENVS_PATH/bin/python" /sickchill/docker/strip-venv.py
 
 FROM scratch AS sickchill-wheels
 COPY --from=builder /sickchill-wheels /
