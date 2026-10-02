@@ -214,21 +214,20 @@ window.SICKCHILL.manage = {
                 }
 
                 const check = this; // eslint-disable-line unicorn/no-this-assignment
-                let found = 0;
+                const checks = $(name + ':visible').get();
+                const start = checks.indexOf(lastCheck);
+                const end = checks.indexOf(check);
+                if (start === -1 || end === -1) {
+                    lastCheck = check;
+                    return;
+                }
 
-                $(name + ':visible').each(function () {
-                    if (found === 2) {
-                        return false;
-                    }
-
-                    if (found === 1) {
-                        this.checked = lastCheck.checked;
-                    }
-
-                    if (this === check || this === lastCheck) {
-                        found++;
-                    }
-                });
+                const {checked} = lastCheck;
+                const from = Math.min(start, end);
+                const to = Math.max(start, end);
+                for (let index = from; index <= to; index++) {
+                    checks[index].checked = checked;
+                }
             });
         }
     },
