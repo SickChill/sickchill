@@ -12,6 +12,61 @@ $(document).ready(function () {
         });
     };
 
+    const loadedProviderIds = function () {
+        const raw = $('#provider_settings_loaded').val() || '';
+        return new Set(raw.split(/\s+/).filter(Boolean));
+    };
+
+    const markProviderLoaded = function (providerId) {
+        if (!providerId) {
+            return;
+        }
+
+        const ids = loadedProviderIds();
+        ids.add(providerId);
+        $('#provider_settings_loaded').val([...ids].join(' '));
+    };
+
+    const applyProviderSettingsToForm = function (providerId, data) {
+        const $div = $('#' + providerId + 'Div');
+        if ($div.length === 0 || !data) {
+            return;
+        }
+
+        $.each(data, (field, value) => {
+            const name = providerId + '_' + field;
+            const $input = $div.find('[name="' + name + '"]');
+            if ($input.length === 0) {
+                return;
+            }
+
+            const type = ($input.attr('type') || '').toLowerCase();
+            if (type === 'checkbox') {
+                $input.prop('checked', Boolean(value) && value !== 'False' && value !== 'false' && value !== '0');
+            } else if (type === 'radio') {
+                $input.filter('[value="' + value + '"]').prop('checked', true);
+            } else {
+                $input.val(value ?? '');
+            }
+        });
+    };
+
+    const ensureProviderSettingsLoaded = function (providerId) {
+        if (!providerId || loadedProviderIds().has(providerId)) {
+            return Promise.resolve();
+        }
+
+        return $.getJSON(scRoot + '/config/providers/getProviderSettings', {provider: providerId})
+            .done(response => {
+                if (!(response && response.settings)) {
+                    return;
+                }
+
+                applyProviderSettingsToForm(providerId, response.settings);
+                markProviderLoaded(providerId);
+            });
+    };
+
     const ifExists = function (loopThroughArray, searchFor) {
         let isFound = false;
 
@@ -41,6 +96,28 @@ $(document).ready(function () {
         return providerRenameTokens[providerId];
     };
 
+    $.fn.populateNewznabSelectedCategories = function () {
+        const selectedProvider = $('#editANewznabProvider :selected').val();
+        let saved = selectedProvider && selectedProvider !== 'addNewznab' && Object.hasOwn(newznabProviders, selectedProvider)
+            ? (newznabProviders[selectedProvider][1][3] || '')
+            : '';
+
+        if (typeof saved !== 'string') {
+            saved = Array.isArray(saved) ? saved.join(',') : '';
+        }
+
+        const selectedOptions = [];
+        for (const cat of saved.split(',')) {
+            const trimmed = $.trim(cat);
+            if (trimmed) {
+                selectedOptions.push({text: trimmed, value: trimmed});
+            }
+        }
+
+        $('#newznab_cat').replaceOptions(selectedOptions);
+        $('#newznab_categories_display').text(saved);
+    };
+
     /**
      Gets categories for the provided newznab provider.
      @param {string} isDefault Whether this is the default provider selection.
@@ -56,14 +133,31 @@ $(document).ready(function () {
         }
 
         const parameters = {url, name, key};
+        const status = $('.updating_categories');
+        status.html('<span><img src="' + scRoot + '/images/loading16' + themeSpinner + '.gif" alt=""> ' + _('Fetching categories...') + '</span>');
 
-        $('.updating_categories').wrapInner('<span><img src="' + scRoot + '/images/loading16' + themeSpinner + '.gif"> Updating Categories ...</span>');
-        const jqxhr = $.getJSON(scRoot + '/config/providers/getNewznabCategories', parameters, function (data) {
+        const jqxhr = $.getJSON(scRoot + '/config/providers/getNewznabCategories', parameters, data => {
+            if (!data || data.success === false) {
+                const message = (data && data.error) ? data.error : _('Failed to fetch Newznab categories');
+                status.text(message);
+                alert(message); // eslint-disable-line no-alert
+                return;
+            }
+
+            // Drop cached caps for this name so updateNewznabCaps refreshes the left list
+            for (let i = newznabProvidersCapabilities.length - 1; i >= 0; i--) {
+                if (newznabProvidersCapabilities[i].name === name) {
+                    newznabProvidersCapabilities.splice(i, 1);
+                }
+            }
+
             $(this).updateNewznabCaps(data, selectedProvider);
-            console.debug(data.tv_categories);
+            $(this).populateNewznabSelectedCategories();
+            const count = Array.isArray(data.tv_categories) ? data.tv_categories.length : 0;
+            status.text(count > 0 ? _('Categories loaded. Select on the left, then Update Categories.') : _('No TV categories returned.'));
         });
-        jqxhr.always(() => {
-            $('.updating_categories').empty();
+        jqxhr.fail(() => {
+            status.text(_('Failed to fetch Newznab categories'));
         });
     };
 
@@ -335,25 +429,21 @@ $(document).ready(function () {
         const selectedProvider = $('#editANewznabProvider :selected').val();
         let data = '';
         let isDefault = '';
-        let rrcat = '';
 
         if (selectedProvider === 'addNewznab') {
-            data = ['', '', ''];
+            data = ['', '', '', ''];
             isDefault = 0;
             $('#newznab_add_div').show();
             $('#newznab_update_div').hide();
-            $('#newznab_cat').attr('disabled', 'disabled');
-            $('#newznab_cap').attr('disabled', 'disabled');
-            $('#newznab_cat_update').attr('disabled', 'disabled');
-            $('#newznabcapdiv').hide();
-
-            $('#newznab_cat option').each(function () {
-                $(this).remove();
-            });
-
-            $('#newznab_cap option').each(function () {
-                $(this).remove();
-            });
+            $('#newznab_cat').removeAttr('disabled');
+            $('#newznab_cap').removeAttr('disabled');
+            $('#newznab_cat_fetch').removeAttr('disabled');
+            $('#newznab_cat_update').removeAttr('disabled');
+            $('#newznabcapdiv').show();
+            $('#newznab_cap').empty();
+            $('#newznab_cat').empty();
+            $('#newznab_categories_display').text('');
+            $('.updating_categories').empty();
         } else {
             data = newznabProviders[selectedProvider][1];
             isDefault = newznabProviders[selectedProvider][0];
@@ -361,6 +451,7 @@ $(document).ready(function () {
             $('#newznab_update_div').show();
             $('#newznab_cat').removeAttr('disabled');
             $('#newznab_cap').removeAttr('disabled');
+            $('#newznab_cat_fetch').removeAttr('disabled');
             $('#newznab_cat_update').removeAttr('disabled');
             $('#newznabcapdiv').show();
         }
@@ -368,21 +459,6 @@ $(document).ready(function () {
         $('#newznab_name').val(data[0]);
         $('#newznab_url').val(data[1]);
         $('#newznab_key').val(data[2]);
-
-        // Check if not already array
-        rrcat = typeof data[3] === 'string' ? data[3].split(',') : data[3];
-
-        // Update the category select box (on the right)
-        const newCatOptions = [];
-        if (rrcat) {
-            for (const cat of rrcat) {
-                if (cat !== '') {
-                    newCatOptions.push({text: cat, value: cat});
-                }
-            }
-
-            $('#newznab_cat').replaceOptions(newCatOptions);
-        }
 
         if (selectedProvider === 'addNewznab') {
             $('#newznab_name').removeAttr('disabled');
@@ -392,25 +468,22 @@ $(document).ready(function () {
             $('#newznab_name').attr('disabled', 'disabled');
             $('#newznab_url').attr('disabled', 'disabled');
             $('#newznab_delete').attr('disabled', 'disabled');
-
-            // Get Categories Capabilities
-            if (data[0] && data[1] && data[2] && !ifExists(newznabProvidersCapabilities, data[0])) {
-                $(this).getCategories(isDefault, data);
-            }
-
-            $(this).updateNewznabCaps(null, data);
         } else {
             // Custom Newznab: allow rename (needed when id collides with a built-in e.g. Jackett-SC)
             $('#newznab_name').removeAttr('disabled');
             $('#newznab_url').removeAttr('disabled');
             $('#newznab_delete').removeAttr('disabled');
+        }
 
-            // Get Categories Capabilities
-            if (data[0] && data[1] && data[2] && !ifExists(newznabProvidersCapabilities, data[0])) {
-                $(this).getCategories(isDefault, data);
-            }
+        if (selectedProvider === 'addNewznab') {
+            return;
+        }
 
-            $(this).updateNewznabCaps(null, data);
+        $(this).populateNewznabSelectedCategories();
+        $(this).updateNewznabCaps(null, data);
+        // Auto-fetch caps when name/url/key are set and not already cached
+        if (data[0] && data[1] && data[2] && !ifExists(newznabProvidersCapabilities, data[0])) {
+            $(this).getCategories(isDefault, data);
         }
     };
 
@@ -502,6 +575,35 @@ $(document).ready(function () {
         }
 
         $('#torrent_rss_string').val(provStrings.join('!!!'));
+    };
+
+    function providerListItemName(li) {
+        const $label = $(li).children('label');
+        return $label.length > 0
+            ? $.trim($label.text()).toLowerCase()
+            : $.trim($(li).clone().children().remove().end().text()).toLowerCase();
+    }
+
+    // Enabled keep current relative order; disabled re-sorted alphabetically by name.
+    $.fn.resortProviderList = function () {
+        const $list = $('#provider_order_list');
+        const enabled = [];
+        const disabled = [];
+
+        $list.children('li').each(function () {
+            if ($('#enable_' + this.id).is(':checked')) {
+                enabled.push(this);
+            } else {
+                disabled.push(this);
+            }
+        });
+
+        disabled.sort((a, b) => providerListItemName(a).localeCompare(providerListItemName(b)));
+
+        $list.append(enabled);
+        $list.append(disabled);
+        $list.sortable('refresh');
+        return this;
     };
 
     $.fn.refreshProviderList = function () {
@@ -643,8 +745,10 @@ $(document).ready(function () {
     };
 
     $('body').on('change', '#editAProvider', function () {
+        const selected = $('#editAProvider').val();
         $(this).showHideProviders();
-        if ($('#editAProvider').val() !== 'jackett_sc') {
+        ensureProviderSettingsLoaded(selected);
+        if (selected !== 'jackett_sc') {
             return;
         }
 
@@ -674,32 +778,56 @@ $(document).ready(function () {
         $(this).populateTorrentRssSection();
     });
 
-    $('.provider_enabler').on('change', function () {
+    $(document).on('change', '.provider_enabler', function () {
+        const providerId = this.id.replace(/^enable_/, '');
+        if (this.checked) {
+            ensureProviderSettingsLoaded(providerId);
+        }
+
+        $(this).resortProviderList();
         $(this).refreshProviderList();
     });
 
-    $('#newznab_cat_update').on('click', function () {
-        console.debug('Clicked Button');
-
-        // Maybe check if there is anything selected?
-        $('#newznab_cat option').each(function () {
-            $(this).remove();
-        });
-
-        const newOptions = [];
-
-        // When the update botton is clicked, loop through the capabilities list
-        // and copy the selected category id's to the category list on the right.
-        $('#newznab_cap option:selected').each(function () {
-            const selectedCat = $(this).val();
-            console.debug(selectedCat);
-            newOptions.push({text: selectedCat, value: selectedCat});
-        });
-
-        $('#newznab_cat').replaceOptions(newOptions);
-
+    $('#newznab_cat_fetch').on('click', function () {
         const selectedProvider = $('#editANewznabProvider :selected').val();
+        if (!selectedProvider) {
+            return;
+        }
+
+        const name = $.trim($('#newznab_name').val());
+        const url = $.trim($('#newznab_url').val());
+        const key = $.trim($('#newznab_key').val());
+        if (!name || !url || !key) {
+            alert(_('Provider name, URL, and API key are required to fetch categories')); // eslint-disable-line no-alert
+            return;
+        }
+
+        // Force a fresh caps fetch even if this name was cached earlier
+        for (let i = newznabProvidersCapabilities.length - 1; i >= 0; i--) {
+            if (newznabProvidersCapabilities[i].name === name) {
+                newznabProvidersCapabilities.splice(i, 1);
+            }
+        }
+
+        const isDefault = Object.hasOwn(newznabProviders, selectedProvider) ? newznabProviders[selectedProvider][0] : 0;
+        $(this).getCategories(isDefault, [name, url, key]);
+    });
+
+    $('#newznab_cat_update').on('click', function () {
+        const selectedProvider = $('#editANewznabProvider :selected').val();
+        if (!selectedProvider) {
+            return;
+        }
+
+        const selected = $('#newznab_cap option:selected').map((i, opt) => $(opt).val()).toArray();
+        // If nothing selected on the left, keep using the right-hand list as-is
+        const cats = selected.length > 0 ? selected : $('#newznab_cat option').map((i, opt) => $(opt).val()).toArray();
+        const joined = cats.filter(Boolean).join(',');
+
         if (selectedProvider === 'addNewznab') {
+            const selectedOptions = cats.filter(Boolean).map(cat => ({text: cat, value: cat}));
+            $('#newznab_cat').replaceOptions(selectedOptions);
+            $('#newznab_categories_display').text(joined);
             return;
         }
 
@@ -707,11 +835,9 @@ $(document).ready(function () {
         const url = $('#newznab_url').val();
         const key = $('#newznab_key').val();
 
-        const cat = $('#newznab_cat option').map((i, opt) => $(opt).text()).toArray().join(',');
-
-        $('#newznab_cat option:not([value])').remove();
-
-        $(this).updateProvider(selectedProvider, name, url, key, cat);
+        $(this).updateProvider(selectedProvider, name, url, key, joined);
+        $(this).populateNewznabSelectedCategories();
+        $('#newznab_categories_display').text(joined);
     });
 
     $('#newznab_add').on('click', () => {
@@ -812,10 +938,13 @@ $(document).ready(function () {
     };
 
     $(this).showHideProviders();
+    ensureProviderSettingsLoaded($('#editAProvider').val());
 
     $('#provider_order_list').sortable({
         placeholder: 'ui-state-highlight',
         update() {
+            // Re-alpha any disabled items if the user dragged them among enabled ones.
+            $(this).resortProviderList();
             $(this).refreshProviderList();
         },
     });

@@ -4,7 +4,7 @@ import os
 from tornado.web import addslash
 
 import sickchill.start
-from sickchill import settings
+from sickchill import logger, settings
 from sickchill.helper.common import try_float
 from sickchill.oldbeard import config, ui
 from sickchill.oldbeard.providers.newznab import NewznabProvider
@@ -19,6 +19,23 @@ from sickchill.views.routes import Route
 class ConfigProviders(Config):
     @addslash
     def index(self):
+        # Instantiate builtins/customs for the list; apply credentials only for enabled providers.
+        if settings.CFG is not None:
+            try:
+                from sickchill.oldbeard import providers as providers_mod
+                from sickchill.plugins.providers.config import apply_providers_from_cfg, custom_providers_from_cfg
+
+                providers_mod.ensure_all_builtin_providers_loaded()
+                # Merge any disabled customs not instantiated at startup
+                all_nn, all_tr = custom_providers_from_cfg(settings.CFG, enabled_ids=None)
+                have_nn = {p.get_id() for p in (settings.newznab_provider_list or [])}
+                have_tr = {p.get_id() for p in (settings.torrent_rss_provider_list or [])}
+                settings.newznab_provider_list = (settings.newznab_provider_list or []) + [p for p in all_nn if p.get_id() not in have_nn]
+                settings.torrent_rss_provider_list = (settings.torrent_rss_provider_list or []) + [p for p in all_tr if p.get_id() not in have_tr]
+                apply_providers_from_cfg(settings.CFG, enabled_only=True)
+            except Exception as error:
+                logger.debug("Could not fully load provider settings for Providers UI: %s", error)
+
         t = PageTemplate(rh=self, filename="config_providers.mako")
 
         return t.render(
@@ -29,6 +46,30 @@ class ConfigProviders(Config):
             controller="config",
             action="providers",
         )
+
+    def getProviderSettings(self):
+        """Apply one provider's [PROVIDERS] section and return JSON for the config form."""
+        provider_id = self.get_query_argument("provider", default="")
+        self.set_header("Content-Type", "application/json")
+        self.set_header("Cache-Control", "max-age=0,no-cache,no-store")
+        if not provider_id:
+            return json.dumps({"error": "No provider specified"})
+
+        from sickchill.oldbeard import providers as providers_mod
+        from sickchill.plugins.providers.config import apply_one_provider_from_cfg, provider_settings_for_ui
+
+        provider = providers_mod.ensure_provider_loaded(provider_id) or providers_mod.getProviderClass(provider_id)
+        if provider is None:
+            return json.dumps({"error": "Unknown provider"})
+
+        if settings.CFG is not None:
+            try:
+                apply_one_provider_from_cfg(settings.CFG, provider)
+            except Exception as error:
+                logger.debug("Could not load settings for provider %s: %s", provider_id, error)
+                return json.dumps({"error": "Could not load provider settings"})
+
+        return json.dumps({"result": "success", "provider": provider_id, "settings": provider_settings_for_ui(provider)})
 
     @staticmethod
     def canAddNewznabProvider(name, exclude_id=""):
@@ -261,9 +302,8 @@ class ConfigProviders(Config):
             settings.torrent_rss_provider_list = [provider for provider in settings.torrent_rss_provider_list if provider.get_id() in keep_ids]
             torrent_rss_provider_dict = {provider.get_id(): provider for provider in settings.torrent_rss_provider_list}
 
-        # do the enable/disable
+        # do the enable/disable — POST still uses id:0/id:1 for all list items; persist enabled-only order
         enabled_provider_list = []
-        disabled_provider_list = []
         known_provider_ids = {provider.get_id() for provider in sickchill.oldbeard.providers.sorted_provider_list()}
         known_provider_ids.update(newznab_provider_dict)
         known_provider_ids.update(torrent_rss_provider_dict)
@@ -284,16 +324,22 @@ class ConfigProviders(Config):
 
             if enabled:
                 enabled_provider_list.append(provider_id)
-            else:
-                disabled_provider_list.append(provider_id)
 
             if provider_id in newznab_provider_dict:
                 newznab_provider_dict[provider_id].enabled = enabled
             elif provider_id in torrent_rss_provider_dict:
                 torrent_rss_provider_dict[provider_id].enabled = enabled
 
-        # dynamically load provider settings
+        from sickchill.plugins.providers import config as providers_config
+
+        posted_loaded = {part.strip() for part in (self.get_body_argument("provider_settings_loaded", default="") or "").split() if part.strip()}
+        for provider_id in posted_loaded:
+            providers_config.mark_provider_settings_loaded(provider_id)
+
+        # dynamically load provider settings only for providers whose fields were applied
         for provider in sickchill.oldbeard.providers.sorted_provider_list():
+            if provider.get_id() not in posted_loaded:
+                continue
             provider.check_set_option(self, "custom_url")
             provider.check_set_option(self, "cookies")
             provider.check_set_option(self, "indexer", "all")
@@ -328,9 +374,18 @@ class ConfigProviders(Config):
             provider.check_set_option(self, "ratio", 0, cast=lambda x: max(try_float(x), -1))
 
         settings.NEWZNAB_DATA = "!!!".join([x.config_string() for x in settings.newznab_provider_list])
-        settings.PROVIDER_ORDER = enabled_provider_list + disabled_provider_list
+        settings.PROVIDER_ORDER = enabled_provider_list
 
         self.log_configuration_save("Search Providers")
+        # save_config → write_providers_to_cfg persists [PROVIDERS][[id]] (no legacy [ID] / blobs).
+        try:
+            from sickchill.plugins.providers.config import write_providers_to_cfg
+
+            providers_config._prune_custom_providers_on_write = True
+            if settings.CFG is not None:
+                write_providers_to_cfg(settings.CFG)
+        except Exception as error:
+            logger.debug("Could not pre-write provider settings to CFG before save_config: %s", error)
         sickchill.start.save_config()
 
         # Add a site_message if no providers are enabled for daily and/or backlog
@@ -338,4 +393,4 @@ class ConfigProviders(Config):
 
         ui.notifications.message(_("Configuration Saved"), os.path.join(settings.CONFIG_FILE))
 
-        return self.redirect("/config/providers/")
+        return self.config_save_response("/config/providers/")

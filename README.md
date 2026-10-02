@@ -24,7 +24,7 @@ Issue/Bug tracking, feature requests, support, and developer communication is st
  - Easily see what episodes you're missing, are airing soon, and more
  - Automatic torrent/nzb searching, sending to your client, and processing at the qualities you want
  - Largest list of supported torrent, newznab, and torznab providers - both public and private
- - Can notify Kodi, XBMC, Growl, Trakt, Twitter, and more when new episodes are available
+ - Can notify Kodi, XBMC, Trakt, Twitter, and more when new episodes are available
  - Searches [TheTVDB](https://thetvdb.com), [AniDB.net](https://anidb.net), [iMDB](https://imdb.com), [FanArt.tv](https://fanart.tv), [TVmaze](https://www.tvmaze.com/) and more for shows, seasons, episodes, and metadata
  - Episode status management allows for mass failing seasons/episodes to force retrying
  - Season order from theTVDB: aired/default, DVD, absolute, platform/alternate orders

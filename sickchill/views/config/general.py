@@ -242,4 +242,4 @@ class ConfigGeneral(Config):
         else:
             ui.notifications.message(_("Configuration Saved"), os.path.join(settings.CONFIG_FILE))
 
-        return self.redirect("/config/general/")
+        return self.config_save_response("/config/general/")

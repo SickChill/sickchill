@@ -15,9 +15,7 @@
     <link rel="stylesheet" type="text/css" href="${static_url('css/imageSelector.css')}" />
 </%block>
 <%block name="scripts">
-    % if show.is_anime:
-        <script type="text/javascript" src="${static_url('js/blackwhite.js')}"></script>
-    % endif
+    <script type="text/javascript" src="${static_url('js/blackwhite.js')}"></script>
     <script type="text/javascript" src="${static_url('js/imageSelector.js')}"></script>
 </%block>
 
@@ -214,13 +212,11 @@
                                                 <label for="anime">${_('check if the show is Anime and episodes are released as Show.265 rather than Show.S02E03')}</label>
                                             </div>
                                         </div>
-                                        % if show.is_anime:
-                                            <div class="row">
-                                                <div class="col-md-12">
-                                                    <%include file="/inc_blackwhitelist.mako" />
-                                                </div>
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <%include file="/inc_blackwhitelist.mako" />
                                             </div>
-                                        % endif
+                                        </div>
                                     </div>
                                 </div>
 

@@ -134,7 +134,7 @@ class ConfigPostProcessing(Config):
         else:
             ui.notifications.message(_("Configuration Saved"), os.path.join(settings.CONFIG_FILE))
 
-        return self.redirect("/config/postProcessing/")
+        return self.config_save_response("/config/postProcessing/")
 
     def testNaming(self):
         pattern = self.get_body_argument("pattern", default=None)
