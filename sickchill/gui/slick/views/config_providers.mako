@@ -624,6 +624,24 @@
                                     </div>
                                 % endif
 
+                                % if hasattr(provider, 'tv_category_choices'):
+                                    <div class="field-pair row">
+                                        <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                            <label class="component-title">${_('Search categories')}</label>
+                                        </div>
+                                        <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                            <% selected_tv_cats = provider.selected_tv_category_ids() if hasattr(provider, 'selected_tv_category_ids') else set() %>
+                                            % for cat_id, cat_label in provider.tv_category_choices:
+                                                <div>
+                                                    <input type="checkbox" name="${provider.get_id("_tv_categories")}" id="${provider.get_id("_tv_categories_")}${cat_id}" value="${cat_id}" ${checked(cat_id in selected_tv_cats)} />
+                                                    <label for="${provider.get_id("_tv_categories_")}${cat_id}">${_(cat_label)}</label>
+                                                </div>
+                                            % endfor
+                                            <p class="note">${_('These categories are used for episode search and RSS. Season packs (14) are always included for season and RSS searches.')}</p>
+                                        </div>
+                                    </div>
+                                % endif
+
                                 % if hasattr(provider, 'enable_daily'):
                                     <div class="field-pair row">
                                         <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">

@@ -8,6 +8,27 @@ from sickchill.helper.common import convert_size, try_int
 from sickchill.oldbeard import tvcache
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
+# Runtime search() still uses self.categories as Episode/Season/RSS flag dicts (#9148).
+TV_CATEGORY_CHOICES: tuple[tuple[str, str], ...] = (
+    ("2", "TV/XviD"),
+    ("26", "TV/SD/x264"),
+    ("7", "TV/x264"),
+    ("34", "TV/x265"),
+    ("24", "TV/480p"),
+    ("29", "Anime"),
+    ("30", "Documentary"),
+    ("104", "TV/4K"),
+    ("32", "TV/Bluray"),
+    ("31", "TV/DVD-R"),
+    ("33", "TV/DVD-Rip"),
+    ("46", "TV/Mobile"),
+    ("82", "TV/Non-English"),
+)
+_DEFAULT_TV_CATEGORY_IDS = frozenset({"2", "26", "7", "34", "24", "29"})
+DEFAULT_TV_CATEGORIES = ",".join(cid for cid, _label in TV_CATEGORY_CHOICES if cid in _DEFAULT_TV_CATEGORY_IDS)
+_PACKS_ID = "14"
+_KNOWN_TV_CATEGORY_IDS = {cid for cid, _label in TV_CATEGORY_CHOICES}
+
 
 class Provider(TorrentProvider):
     def __init__(self):
@@ -28,16 +49,44 @@ class Provider(TorrentProvider):
         self.url = "https://www.torrentday.com"
         self.urls = {"login": urljoin(self.url, "/t"), "search": urljoin(self.url, "/t.json"), "download": urljoin(self.url, "/download.php/")}
 
+        self.tv_categories = DEFAULT_TV_CATEGORIES
         self.categories = {
             "Season": {"14": 1},
             "Episode": {"2": 1, "26": 1, "7": 1, "24": 1, "34": 1, "29": 1},
             "RSS": {"2": 1, "26": 1, "7": 1, "24": 1, "34": 1, "29": 1, "14": 1},
         }
+        self.set_tv_categories(DEFAULT_TV_CATEGORIES)
 
         self.enable_cookies = True
 
         # Cache
         self.cache = tvcache.TVCache(self, min_time=10)  # Only poll every 10 minutes max
+
+    @property
+    def tv_category_choices(self) -> tuple[tuple[str, str], ...]:
+        return TV_CATEGORY_CHOICES
+
+    def selected_tv_category_ids(self) -> set[str]:
+        return {part.strip() for part in (self.tv_categories or "").split(",") if part.strip()}
+
+    def set_tv_categories(self, ids) -> None:
+        """Sanitize selected ids and rebuild Episode/Season/RSS category dicts."""
+        if isinstance(ids, str):
+            raw = [part.strip() for part in ids.replace(";", ",").split(",")]
+        else:
+            raw = [str(part).strip() for part in (ids or [])]
+        chosen = [cid for cid in raw if cid in _KNOWN_TV_CATEGORY_IDS and cid != _PACKS_ID]
+        # Preserve catalog order, drop duplicates
+        ordered = [cid for cid, _label in TV_CATEGORY_CHOICES if cid in set(chosen)]
+        if not ordered:
+            ordered = [cid for cid, _label in TV_CATEGORY_CHOICES if cid in _DEFAULT_TV_CATEGORY_IDS]
+        self.tv_categories = ",".join(ordered)
+
+        episode = {cid: 1 for cid in ordered}
+        season = {_PACKS_ID: 1}
+        rss = dict(episode)
+        rss[_PACKS_ID] = 1
+        self.categories = {"Season": season, "Episode": episode, "RSS": rss}
 
     def login(self):
         cookie_dict = dict_from_cookiejar(self.session.cookies)
