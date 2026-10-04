@@ -32,12 +32,11 @@ if TYPE_CHECKING:
 # Pause after HTTP 429, then skip further requests for this provider until cooldown elapses.
 _RATE_LIMIT_SLEEP_DEFAULT = 30
 _RATE_LIMIT_SLEEP_MIN = 15
-_RATE_LIMIT_SLEEP_MAX = 60
 _RATE_LIMIT_COOLDOWN = 300
 
 
 def _retry_after_seconds(value, default: int = _RATE_LIMIT_SLEEP_DEFAULT) -> int:
-    """Parse Retry-After (seconds or HTTP-date) into a bounded sleep interval."""
+    """Parse Retry-After (seconds or HTTP-date); at least _RATE_LIMIT_SLEEP_MIN."""
     if value in (None, ""):
         seconds = default
     else:
@@ -49,7 +48,7 @@ def _retry_after_seconds(value, default: int = _RATE_LIMIT_SLEEP_DEFAULT) -> int
                 seconds = int(retry_at.timestamp() - time.time())
             except Exception:
                 seconds = default
-    return max(_RATE_LIMIT_SLEEP_MIN, min(_RATE_LIMIT_SLEEP_MAX, seconds))
+    return max(_RATE_LIMIT_SLEEP_MIN, seconds)
 
 
 class GenericProvider(object):
