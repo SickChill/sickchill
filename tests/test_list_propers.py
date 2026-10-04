@@ -248,6 +248,37 @@ class TestTorrentFindPropersCacheFirst(unittest.TestCase):
         self.assertTrue(any("S03" in q for q in queries))
         self.assertFalse(any("E01" in q or "E02" in q for q in queries))
 
+    def test_anime_seasons_share_one_search(self):
+        from sickchill.providers.torrent.TorrentProvider import TorrentProvider
+
+        provider = TorrentProvider("AnimeCombine")
+        provider.cache = mock.Mock()
+        provider.cache.list_propers.return_value = []
+        provider.search = mock.Mock(return_value=[])
+
+        show = mock.Mock()
+        show.indexerid = 99
+        show.name = "Naruto"
+        show.air_by_date = False
+        show.sports = False
+        show.anime = True
+
+        candidates = []
+        for season, ep_no in ((1, 1), (2, 5)):
+            episode = mock.Mock()
+            episode.show = show
+            episode.season = season
+            episode.scene_season = season
+            episode.episode = ep_no
+            candidates.append((show, episode))
+
+        with mock.patch.object(TorrentProvider, "_recent_proper_candidates", return_value=iter(candidates)):
+            provider.find_propers(search_date=sc_now())
+
+        self.assertEqual(provider.search.call_count, 1)
+        queries = list(provider.search.call_args[0][0]["Episode"])
+        self.assertEqual(queries, ["Naruto Season"])
+
     def test_stops_live_groups_after_429(self):
         from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 

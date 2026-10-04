@@ -83,6 +83,8 @@ class TorrentProvider(GenericProvider):
         if getattr(show, "air_by_date", False) or getattr(show, "sports", False):
             airdate = getattr(episode, "airdate", None)
             return str(airdate).split("-")[0] if airdate else str(episode.season)
+        if getattr(show, "anime", False):
+            return "Season"
         season_no = episode.scene_season if getattr(episode, "scene_season", None) is not None else episode.season
         return str(int(season_no))
 
