@@ -12,7 +12,9 @@ from sickchill.providers.result_classes import Proper, TorrentSearchResult
 from sickchill.show.History import History
 from sickchill.show.Show import Show
 
-# Cap live proper episode searches per provider per ProperFinder run (Phase 1)
+# Cap live proper season searches per provider per ProperFinder run
+_LIVE_PROPER_SEASON_CAP = 25
+# Candidate SQL still bounds episodes; grouped into one search per show+season
 _LIVE_PROPER_EPISODE_CAP = 25
 
 
@@ -41,25 +43,68 @@ class TorrentProvider(GenericProvider):
             logger.debug(f"{self.name}: using {len(results)} cached proper(s); skipping live proper search")
             return results
 
-        # Fallback: one OR'd proper term per episode, capped
-        add_string = self.proper_search_add_string()
-        live_count = 0
+        if self.is_rate_limited():
+            logger.debug(f"{self.name}: skipping live proper search (provider rate limited)")
+            return results
+
+        # Fallback: one show+season query per group (not SxxE01, E02, …)
+        groups: dict[tuple, tuple] = {}
         for show, episode in self._recent_proper_candidates(search_date):
-            if live_count >= _LIVE_PROPER_EPISODE_CAP:
-                logger.debug(f"{self.name}: live proper search capped at {_LIVE_PROPER_EPISODE_CAP} episodes")
+            season_key = self._live_proper_season_key(episode)
+            groups.setdefault((show.indexerid, season_key), (show, episode))
+
+        live_count = 0
+        for show, episode in groups.values():
+            if self.is_rate_limited():
+                logger.debug(f"{self.name}: stopping live proper searches after rate limit")
                 break
+            if live_count >= _LIVE_PROPER_SEASON_CAP:
+                logger.debug(f"{self.name}: live proper search capped at {_LIVE_PROPER_SEASON_CAP} season(s)")
+                break
+            self.show = show
             self.current_episode_object = episode
+            search_string = self._live_proper_season_search_string(episode)
+            if not search_string:
+                continue
             live_count += 1
-            for search_string in self.get_episode_search_strings(episode, add_string=add_string):
-                for item in self.search(search_string):
-                    title, url = self._get_title_and_url(item)
-                    if url and url not in seen_urls:
-                        seen_urls.add(url)
-                        results.append(Proper(title, url, sc_now(), show))
+            for item in self.search(search_string):
+                title, url = self._get_title_and_url(item)
+                if url and url not in seen_urls:
+                    seen_urls.add(url)
+                    results.append(Proper(title, url, sc_now(), show))
 
         if live_count:
-            logger.debug(f"{self.name}: live proper searches for {live_count} episode(s); results={len(results)}")
+            logger.debug(f"{self.name}: live proper searches for {live_count} season group(s); results={len(results)}")
         return results
+
+    @staticmethod
+    def _live_proper_season_key(episode) -> str:
+        show = episode.show
+        if getattr(show, "air_by_date", False) or getattr(show, "sports", False):
+            airdate = getattr(episode, "airdate", None)
+            return str(airdate).split("-")[0] if airdate else str(episode.season)
+        season_no = episode.scene_season if getattr(episode, "scene_season", None) is not None else episode.season
+        return str(int(season_no))
+
+    def _live_proper_season_search_string(self, episode) -> dict | None:
+        """Single Episode-mode query: show name + season (no E01-E04 range)."""
+        if not episode or not getattr(episode, "show", None):
+            return None
+        show = episode.show
+        show_name = (show.name or "").strip()
+        if not show_name:
+            return None
+        if getattr(show, "air_by_date", False) or getattr(show, "sports", False):
+            airdate = getattr(episode, "airdate", None)
+            season_part = str(airdate).split("-")[0] if airdate else ""
+        elif getattr(show, "anime", False):
+            season_part = "Season"
+        else:
+            season_no = episode.scene_season if getattr(episode, "scene_season", None) is not None else episode.season
+            season_part = "S{0:02d}".format(int(season_no))
+        query = f"{show_name} {season_part}".strip()
+        logger.debug(f"{self.name}: live proper season search: {query}")
+        return {"Episode": {query}}
 
     @staticmethod
     def _recent_proper_candidates(search_date=None):
