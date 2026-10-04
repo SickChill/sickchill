@@ -122,23 +122,29 @@ class GenericProvider(object):
         return time.time() < self._rate_limited_until
 
     def mark_rate_limited(self, retry_after=None) -> None:
-        """Stop further HTTP for this provider after 429; sleep once, then callers continue."""
+        """Record a cooldown after HTTP 429 so further requests for this provider are skipped."""
         delay = _retry_after_seconds(retry_after)
         cooldown = max(delay, _RATE_LIMIT_COOLDOWN)
         first = not self.is_rate_limited()
         self._rate_limited_until = max(self._rate_limited_until, time.time() + cooldown)
         if not first:
             return
-        logger.warning(f"{self.name}: HTTP 429 Too Many Requests; waiting {delay}s then skipping further requests for {int(cooldown)}s")
-        time.sleep(delay)
+        logger.warning(f"{self.name}: HTTP 429 Too Many Requests; skipping further requests for {int(cooldown)}s")
 
     def download_result(self, result):
+        if self.is_rate_limited():
+            logger.debug(f"{self.name}: skipping download (rate limited)")
+            return False
+
         if not self.login():
             return False
 
         urls, filename = self._make_url(result)
 
         for url in urls:
+            if self.is_rate_limited():
+                logger.debug(f"{self.name}: stopping download attempts (rate limited)")
+                return False
             if "NO_DOWNLOAD_NAME" in url:
                 continue
 

@@ -40,7 +40,7 @@ class TestTorrentDayTvCategories(unittest.TestCase):
         self.assertEqual(provider.categories["Season"], {"14": 1})
         self.assertEqual(provider.categories["RSS"]["14"], 1)
         self.assertNotIn("14", provider.categories["Episode"])
-        self.assertNotIn("14", provider.tv_category_choices)
+        self.assertNotIn("14", {cid for cid, _label in provider.tv_category_choices})
 
     def test_unknown_and_empty_restore_defaults(self):
         provider = Provider()

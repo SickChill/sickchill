@@ -320,7 +320,7 @@ class TestProviderRateLimit(unittest.TestCase):
             self.assertEqual(provider.get_url("http://example/search"), "")
             get_url.assert_not_called()
 
-    def test_429_hook_marks_and_sleeps_once(self):
+    def test_429_hook_marks_without_sleep(self):
         from sickchill.providers.GenericProvider import GenericProvider
 
         provider = GenericProvider("Hook429")
@@ -332,10 +332,34 @@ class TestProviderRateLimit(unittest.TestCase):
 
         with mock.patch("sickchill.providers.GenericProvider.time.sleep") as slept:
             provider.get_url_hook(response)
-            slept.assert_called_once_with(20)
+            slept.assert_not_called()
             provider.get_url_hook(response)
-            self.assertEqual(slept.call_count, 1)
+            slept.assert_not_called()
         self.assertTrue(provider.is_rate_limited())
+
+    def test_download_result_skips_when_rate_limited(self):
+        from sickchill.providers.GenericProvider import GenericProvider
+
+        provider = GenericProvider("DlLimited")
+        provider._rate_limited_until = time.time() + 60
+        provider.login = mock.Mock(return_value=True)
+        self.assertFalse(provider.download_result(mock.Mock()))
+        provider.login.assert_not_called()
+
+    def test_download_result_stops_after_429_in_loop(self):
+        from sickchill.providers.GenericProvider import GenericProvider
+
+        provider = GenericProvider("DlStop")
+        provider.login = mock.Mock(return_value=True)
+        provider._make_url = mock.Mock(return_value=(["http://example/a", "http://example/b"], "/tmp/x.torrent"))
+        provider._verify_download = mock.Mock(return_value=False)
+
+        def download_then_limit(*_args, **_kwargs):
+            provider._rate_limited_until = time.time() + 60
+
+        with mock.patch("sickchill.providers.GenericProvider.download_file", side_effect=download_then_limit) as downloaded:
+            self.assertFalse(provider.download_result(mock.Mock()))
+            self.assertEqual(downloaded.call_count, 1)
 
 
 class TestGenericFindPropersCachedProperGrp(conftest.SickChillTestDBCase):
