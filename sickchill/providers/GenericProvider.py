@@ -1,7 +1,9 @@
 import copy
 import re
+import time
 from base64 import b16encode, b32decode
 from datetime import datetime
+from email.utils import parsedate_to_datetime
 from itertools import chain
 from os.path import join
 from random import shuffle
@@ -26,6 +28,27 @@ from sickchill.providers.result_classes import Proper, SearchResult
 
 if TYPE_CHECKING:
     from sickchill.tv import TVEpisode
+
+# Pause after HTTP 429, then skip further requests for this provider until cooldown elapses.
+_RATE_LIMIT_SLEEP_DEFAULT = 30
+_RATE_LIMIT_SLEEP_MIN = 15
+_RATE_LIMIT_COOLDOWN = 300
+
+
+def _retry_after_seconds(value, default: int = _RATE_LIMIT_SLEEP_DEFAULT) -> int:
+    """Parse Retry-After (seconds or HTTP-date); at least _RATE_LIMIT_SLEEP_MIN."""
+    if value in (None, ""):
+        seconds = default
+    else:
+        try:
+            seconds = int(value)
+        except (TypeError, ValueError):
+            try:
+                retry_at = parsedate_to_datetime(str(value))
+                seconds = int(retry_at.timestamp() - time.time())
+            except Exception:
+                seconds = default
+    return max(_RATE_LIMIT_SLEEP_MIN, seconds)
 
 
 class GenericProvider(object):
@@ -90,16 +113,37 @@ class GenericProvider(object):
         self.ability_status = self.PROVIDER_OK
 
         self.size_units = ["B", "KB", "MB", "GB", "TB", "PB"]
+        self._rate_limited_until = 0.0
 
         shuffle(self.bt_cache_urls)
 
+    def is_rate_limited(self) -> bool:
+        return time.time() < self._rate_limited_until
+
+    def mark_rate_limited(self, retry_after=None) -> None:
+        """Record a cooldown after HTTP 429 so further requests for this provider are skipped."""
+        delay = _retry_after_seconds(retry_after)
+        cooldown = max(delay, _RATE_LIMIT_COOLDOWN)
+        first = not self.is_rate_limited()
+        self._rate_limited_until = max(self._rate_limited_until, time.time() + cooldown)
+        if not first:
+            return
+        logger.warning(f"{self.name}: HTTP 429 Too Many Requests; skipping further requests for {int(cooldown)}s")
+
     def download_result(self, result):
+        if self.is_rate_limited():
+            logger.debug(f"{self.name}: skipping download (rate limited)")
+            return False
+
         if not self.login():
             return False
 
         urls, filename = self._make_url(result)
 
         for url in urls:
+            if self.is_rate_limited():
+                logger.debug(f"{self.name}: stopping download attempts (rate limited)")
+                return False
             if "NO_DOWNLOAD_NAME" in url:
                 continue
 
@@ -368,15 +412,20 @@ class GenericProvider(object):
         return self._get_result(episodes, self, url)
 
     # noinspection PyUnusedLocal
-    @staticmethod
-    def get_url_hook(response, **kwargs_):
+    def get_url_hook(self, response, **kwargs_):
         if response:
             logger.debug(f"{response.request.method} URL: {response.request.url} [Status: {response.status_code}]")
+            if getattr(response, "status_code", None) == 429:
+                headers = getattr(response, "headers", None) or {}
+                self.mark_rate_limited(headers.get("Retry-After") or headers.get("retry-after"))
 
             if response.request.method == "POST":
                 logger.debug(f"With post data: {response.request.body}")
 
     def get_url(self, url, post_data=None, params=None, timeout=30, **kwargs):
+        if self.is_rate_limited():
+            logger.debug(f"{self.name}: skipping URL request (rate limited)")
+            return ""
         kwargs["hooks"] = {"response": self.get_url_hook}
         return getURL(url, post_data=post_data, params=params, headers=self.headers, timeout=timeout, session=self.session, **kwargs)
 

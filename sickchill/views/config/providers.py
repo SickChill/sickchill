@@ -346,6 +346,9 @@ class ConfigProviders(Config):
             # Newznab + Jackett-SC only — leave other torrent categories alone (#9148).
             if getattr(provider, "uses_configurable_categories", False):
                 provider.check_set_option(self, "categories", "5000,5030,5040,5045,5050,5060,5070")
+            elif hasattr(provider, "tv_category_choices") and callable(getattr(provider, "set_tv_categories", None)):
+                posted = self.get_body_arguments(provider.get_id("_tv_categories"))
+                provider.set_tv_categories(posted)
 
             provider.check_set_option(self, "minseed", 0, int)
             provider.check_set_option(self, "minleech", 0, int)

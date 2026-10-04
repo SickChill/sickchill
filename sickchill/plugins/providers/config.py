@@ -51,6 +51,7 @@ PROVIDER_OPTION_FIELDS: tuple[str, ...] = (
     "cookies",
     "indexer",
     "categories",
+    "tv_categories",
 )
 
 # Custom Newznab / TorrentRss extras stored under PROVIDERS[[id]].
@@ -581,6 +582,10 @@ def _apply_provider_options(cfg: ConfigObj, provider) -> None:
         default_cats = getattr(provider, "categories", "") or _DEFAULT_CATEGORIES
         provider.categories = _section_or_peek(cfg, provider, "categories", default_cats, "str")
 
+    if hasattr(provider, "tv_categories") and callable(getattr(provider, "set_tv_categories", None)):
+        default_tv = getattr(provider, "tv_categories", "") or ""
+        provider.set_tv_categories(_section_or_peek(cfg, provider, "tv_categories", default_tv, "str"))
+
     # Custom-only fields when present on the object
     if getattr(provider, "provider_type", None) is not None:
         section_type = section.get("type") if section else None
@@ -736,6 +741,8 @@ def _provider_to_section(provider) -> dict[str, Any]:
         data["minleech"] = int(provider.minleech)
     if hasattr(provider, "cat"):
         data["cat"] = int(provider.cat)
+    if hasattr(provider, "tv_categories"):
+        data["tv_categories"] = getattr(provider, "tv_categories", "") or ""
 
     return data
 
