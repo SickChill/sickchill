@@ -17,7 +17,7 @@ import sickchill.oldbeard
 from sickchill import logger
 from sickchill.helper.common import sanitize_filename, valid_url
 from sickchill.oldbeard import filters
-from sickchill.oldbeard.common import MULTI_EP_RESULT, SEASON_RESULT, Quality
+from sickchill.oldbeard.common import MULTI_EP_RESULT, SEASON_RESULT, Quality, uses_absolute_numbering
 from sickchill.oldbeard.db import DBConnection
 from sickchill.oldbeard.helpers import download_file, getURL, make_session, remove_file_failed
 from sickchill.oldbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
@@ -504,7 +504,7 @@ class GenericProvider(object):
                 episode_string += str(episode.airdate).replace("-", " ")
                 episode_string += ("|", " ")[len(self.proper_strings) > 1]
                 episode_string += episode.airdate.strftime("%b")
-            elif episode.show.anime:
+            elif uses_absolute_numbering(episode.show):
                 episode_string_fallback = episode_string + "{0:02d}".format(int(episode.scene_absolute_number))
                 episode_string += "{0:03d}".format(int(episode.scene_absolute_number))
             else:
@@ -532,7 +532,7 @@ class GenericProvider(object):
 
             if episode.show.air_by_date or episode.show.sports:
                 season_string += str(episode.airdate).split("-")[0]
-            elif episode.show.anime:
+            elif uses_absolute_numbering(episode.show):
                 # use string below if you really want to search on season with number
                 # season_string += 'Season ' + '{0:d}'.format(int(episode.scene_season))
                 season_string += "Season"  # ignore season number to get all seasons in all formats

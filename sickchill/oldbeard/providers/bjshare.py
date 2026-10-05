@@ -7,6 +7,7 @@ from sickchill import logger
 from sickchill.helper.common import convert_size, try_int
 from sickchill.oldbeard import tvcache
 from sickchill.oldbeard.bs4_parser import BS4Parser
+from sickchill.oldbeard.common import uses_absolute_numbering
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
@@ -66,14 +67,15 @@ class Provider(TorrentProvider):
         if not self.login():
             return results
 
-        anime = self.show and self.show.anime == 1 or False
+        is_anime_show = bool(self.show and self.show.is_anime)
+        absolute = bool(self.show and uses_absolute_numbering(self.show))
 
         search_params = {"order_by": "time", "order_way": "desc", "group_results": 0, "action": "basic", "searchsubmit": 1}
 
         if "RSS" in list(search_strings):
             search_params["filter_cat[14]"] = 1  # anime
             search_params["filter_cat[2]"] = 1  # tv shows
-        elif anime:
+        elif is_anime_show:
             search_params["filter_cat[14]"] = 1  # anime
         else:
             search_params["filter_cat[2]"] = 1  # tv shows
@@ -91,7 +93,7 @@ class Provider(TorrentProvider):
                     logger.debug(_("Search String: {search_string}").format(search_string=search_string))
 
                 # Remove season / episode from search (not supported by tracker)
-                search_str = re.sub(r"\d+$" if anime else r"[S|E]\d\d", "", search_string).strip()
+                search_str = re.sub(r"\d+$" if absolute else r"[S|E]\d\d", "", search_string).strip()
                 search_params["searchstr"] = search_str
                 next_page = 1
                 has_next_page = True

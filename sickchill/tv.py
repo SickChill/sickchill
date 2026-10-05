@@ -56,6 +56,7 @@ from sickchill.oldbeard.common import (
     Overview,
     Quality,
     statusStrings,
+    uses_absolute_numbering,
 )
 from sickchill.oldbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 from sickchill.oldbeard.network_timezones import sc_now, sc_timezone, sc_today
@@ -2096,8 +2097,9 @@ class TVEpisode(object):
                     )
                 )
             else:
+                self.name = "TBA"
                 logger.info(
-                    "This episode {show} - {ep} has no name on {indexer}. Setting to an empty string".format(
+                    "This episode {show} - {ep} has no name on {indexer}. Setting to TBA".format(
                         show=self.show.name, ep=episode_num(season, episode), indexer=self.indexer_name
                     )
                 )
@@ -2549,7 +2551,7 @@ class TVEpisode(object):
         Returns: A string representing the episode's name and season/ep numbers
         """
 
-        if self.show.anime and not self.show.scene:
+        if uses_absolute_numbering(self.show) and not self.show.scene:
             return self.naming_pattern("%SN - %AB - %EN")
         elif self.show.air_by_date:
             return self.naming_pattern("%SN - %AD - %EN")

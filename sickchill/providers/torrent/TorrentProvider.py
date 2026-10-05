@@ -4,7 +4,7 @@ import bencode
 
 from sickchill import logger, settings
 from sickchill.helper.common import try_int
-from sickchill.oldbeard.common import Quality
+from sickchill.oldbeard.common import Quality, uses_absolute_numbering
 from sickchill.oldbeard.db import DBConnection
 from sickchill.oldbeard.network_timezones import sc_now, sc_timezone
 from sickchill.providers.GenericProvider import GenericProvider
@@ -83,7 +83,7 @@ class TorrentProvider(GenericProvider):
         if getattr(show, "air_by_date", False) or getattr(show, "sports", False):
             airdate = getattr(episode, "airdate", None)
             return str(airdate).split("-")[0] if airdate else str(episode.season)
-        if getattr(show, "anime", False):
+        if uses_absolute_numbering(show):
             return "Season"
         season_no = episode.scene_season if getattr(episode, "scene_season", None) is not None else episode.season
         return str(int(season_no))
@@ -99,7 +99,7 @@ class TorrentProvider(GenericProvider):
         if getattr(show, "air_by_date", False) or getattr(show, "sports", False):
             airdate = getattr(episode, "airdate", None)
             season_part = str(airdate).split("-")[0] if airdate else ""
-        elif getattr(show, "anime", False):
+        elif uses_absolute_numbering(show):
             season_part = "Season"
         else:
             season_no = episode.scene_season if getattr(episode, "scene_season", None) is not None else episode.season

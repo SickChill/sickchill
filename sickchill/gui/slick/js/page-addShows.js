@@ -293,7 +293,7 @@ window.SICKCHILL.addShows = {
                 bestQualities: bestQualArray,
                 defaultSeasonFolders: $('#season_folders').is(':checked'),
                 subtitles: $('#subtitles').is(':checked'),
-                anime: $('#anime').is(':checked'),
+                anime: SICKCHILL.common.isAnimeFormatSelected(),
                 scene: $('#scene').is(':checked'),
                 defaultStatusAfter: $('#statusSelectAfter').val(),
                 whitelist: grpwhitelistArray,
@@ -372,7 +372,9 @@ window.SICKCHILL.addShows = {
         };
 
         const showGroupPicker = function () {
-            $('#blackwhitelist').toggle($('#anime').prop('checked'));
+            const animeOn = SICKCHILL.common.isAnimeFormatSelected();
+            $('#anime-extras, #anime-numbering').toggle(animeOn);
+            $('#blackwhitelist').toggle(animeOn);
         };
 
         const buildTable = function (shows) {
@@ -574,7 +576,7 @@ window.SICKCHILL.addShows = {
             $('#addShowForm').submit();
         });
 
-        $('#anime').on('click', () => {
+        $('#anime').on('change', () => {
             showGroupPicker();
             updateSampleText();
         });

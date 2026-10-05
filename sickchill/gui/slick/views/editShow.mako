@@ -207,14 +207,29 @@
                                     <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                         <div class="row">
                                             <div class="col-md-12">
-                                                <input type="checkbox" id="anime"
-                                                    name="anime" ${checked(show.is_anime)}>
-                                                <label for="anime">${_('check if the show is Anime and episodes are released as Show.265 rather than Show.S02E03')}</label>
+                                                <input type="checkbox" id="anime" name="anime" ${checked(show.is_anime)}>
+                                                <label for="anime">${_('check if the show is Anime')}</label>
                                             </div>
                                         </div>
-                                        <div class="row">
-                                            <div class="col-md-12">
-                                                <%include file="/inc_blackwhitelist.mako" />
+                                        <div id="anime-extras" ${('', 'style="display:none;"')[not show.is_anime]}>
+                                            <div id="anime-numbering">
+                                                <div class="row">
+                                                    <div class="col-md-12" style="padding-left: 1.5em;">
+                                                        <input type="radio" name="anime_numbering" id="anime_absolute" value="${common.ANIME_ABSOLUTE}" ${checked(int(show.anime or 0) != common.ANIME_SEASON_EPISODE)} />
+                                                        <label for="anime_absolute">${_('Absolute numbering (Show.265 rather than Show.S02E03)')}</label>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-md-12" style="padding-left: 1.5em;">
+                                                        <input type="radio" name="anime_numbering" id="anime_season" value="${common.ANIME_SEASON_EPISODE}" ${checked(int(show.anime or 0) == common.ANIME_SEASON_EPISODE)} />
+                                                        <label for="anime_season">${_('Season/episode numbering (Show.S02E03, still search anime providers)')}</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <%include file="/inc_blackwhitelist.mako" />
+                                                </div>
                                             </div>
                                         </div>
                                     </div>

@@ -539,9 +539,9 @@ def _apply_provider_options(cfg: ConfigObj, provider) -> None:
             provider.password = _section_or_peek(cfg, provider, "password", "", "str")
 
     if hasattr(provider, "confirmed"):
-        provider.confirmed = _section_or_peek(cfg, provider, "confirmed", True, "bool")
+        provider.confirmed = _section_or_peek(cfg, provider, "confirmed", getattr(provider, "confirmed", True), "bool")
     if hasattr(provider, "ranked"):
-        provider.ranked = _section_or_peek(cfg, provider, "ranked", True, "bool")
+        provider.ranked = _section_or_peek(cfg, provider, "ranked", getattr(provider, "ranked", True), "bool")
     if hasattr(provider, "engrelease"):
         provider.engrelease = _section_or_peek(cfg, provider, "engrelease", False, "bool")
     if hasattr(provider, "only_spanish_search"):
@@ -553,9 +553,9 @@ def _apply_provider_options(cfg: ConfigObj, provider) -> None:
     if hasattr(provider, "ratio"):
         provider.ratio = _section_or_peek(cfg, provider, "ratio", "", "str")
     if hasattr(provider, "minseed"):
-        provider.minseed = _section_or_peek(cfg, provider, "minseed", 10, "int")
+        provider.minseed = _section_or_peek(cfg, provider, "minseed", getattr(provider, "minseed", 10), "int")
     if hasattr(provider, "minleech"):
-        provider.minleech = _section_or_peek(cfg, provider, "minleech", 0, "int")
+        provider.minleech = _section_or_peek(cfg, provider, "minleech", getattr(provider, "minleech", 0), "int")
     if hasattr(provider, "freeleech"):
         provider.freeleech = _section_or_peek(cfg, provider, "freeleech", False, "bool")
     if hasattr(provider, "search_mode"):
