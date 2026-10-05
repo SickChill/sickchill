@@ -907,7 +907,8 @@ window.SICKCHILL.home = {
         $('#anime').on('change', () => {
             SICKCHILL.common.updateBlackWhiteList(getMeta('show.name'));
         });
-        if (!$('#anime').is(':checked')) {
+        if (!SICKCHILL.common.isAnimeFormatSelected()) {
+            $('#anime-extras, #anime-numbering').hide();
             $('#blackwhitelist').hide();
         }
 
@@ -925,7 +926,7 @@ window.SICKCHILL.home = {
 
             $('#exceptions').val(allExceptions);
 
-            if ($('#anime').is(':checked')) {
+            if (SICKCHILL.common.isAnimeFormatSelected()) {
                 generateBlackWhiteList(); // eslint-disable-line no-undef
             }
         });

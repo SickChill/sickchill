@@ -19,7 +19,19 @@ from sickchill.helper.common import episode_num, pretty_file_size
 from sickchill.helper.exceptions import CantUpdateShowException, NoNFOException, ShowDirectoryNotFoundException
 from sickchill.oldbeard import clients, config, db, filters, helpers, notifiers, sab, search_queue, ui
 from sickchill.oldbeard.blackandwhitelist import BlackAndWhiteList, short_group_names
-from sickchill.oldbeard.common import FAILED, IGNORED, SKIPPED, SNATCHED_BEST, UNAIRED, WANTED, Overview, Quality, statusStrings
+from sickchill.oldbeard.common import (
+    FAILED,
+    IGNORED,
+    SKIPPED,
+    SNATCHED_BEST,
+    UNAIRED,
+    WANTED,
+    Overview,
+    Quality,
+    parse_anime_form,
+    parse_anime_mode,
+    statusStrings,
+)
 from sickchill.oldbeard.network_timezones import sc_now, sc_timezone, sc_today
 from sickchill.oldbeard.scene_numbering import (
     get_scene_absolute_numbering,
@@ -1171,7 +1183,7 @@ class Home(WebRoot):
                 air_by_date = config.checkbox_to_value(self.get_body_argument("air_by_date", default="False"))
                 scene = config.checkbox_to_value(self.get_body_argument("scene", default="False"))
                 sports = config.checkbox_to_value(self.get_body_argument("sports", default="False"))
-                anime = config.checkbox_to_value(self.get_body_argument("anime", default="False"))
+                anime = self.get_body_argument("anime", default=None)
                 subtitles = config.checkbox_to_value(self.get_body_argument("subtitles", default="False"))
 
             # === IMAGE UPLOAD SUPPORT ===
@@ -1269,6 +1281,15 @@ class Home(WebRoot):
                 header=_("Edit Show"),
                 controller="home",
                 action="editShow",
+            )
+
+        if direct_call:
+            anime = parse_anime_mode(anime, int(show_obj.anime or 0))
+        else:
+            anime = parse_anime_form(
+                config.checkbox_to_value(anime),
+                self.get_body_argument("anime_numbering", default=None),
+                int(show_obj.anime or 0),
             )
 
         # Read from body if not already set

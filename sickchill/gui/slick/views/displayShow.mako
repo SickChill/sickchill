@@ -6,7 +6,7 @@
     from sickchill.oldbeard import subtitles, notifiers, scdatetime, network_timezones, helpers
 
     from sickchill.oldbeard.common import SKIPPED, WANTED, UNAIRED, ARCHIVED, IGNORED, FAILED, DOWNLOADED
-    from sickchill.oldbeard.common import Quality, qualityPresets, statusStrings, Overview
+    from sickchill.oldbeard.common import Quality, qualityPresets, statusStrings, Overview, uses_absolute_numbering
     from sickchill.oldbeard.helpers import anon_url
     from sickchill.helper.common import pretty_file_size, try_int
 %>
@@ -304,7 +304,15 @@
                                             </tr>
                                             <tr>
                                                 <td class="showLegend">${_('Anime')}: </td>
-                                                <td><span class="displayshow-icon-${('disable', 'enable')[show.is_anime]}" title=${("N", "Y")[show.is_anime]}></span></td>
+                                                <td>
+                                                    % if show.is_anime:
+                                                        <% anime_numbering = _('Absolute') if uses_absolute_numbering(show) else _('Seasons') %>
+                                                        <span class="displayshow-icon-enable" title="${anime_numbering}"></span>
+                                                        ${anime_numbering}
+                                                    % else:
+                                                        <span class="displayshow-icon-disable" title="${_('N')}"></span>
+                                                    % endif
+                                                </td>
                                             </tr>
                                             <tr>
                                                 <td class="showLegend">${_('Season Order')}: </td>

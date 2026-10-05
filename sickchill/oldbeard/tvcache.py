@@ -68,36 +68,42 @@ class RSSTorrentMixin:
             info_hash = attribute["value"]
 
         if not info_hash:
-            regex = "^.*(?P<guid>[{]?[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}[}]?).*$"
-            info_hash = item.find(["infoHash", "info_hash", "guid"]).get_text(strip=True)
-            if info_hash:
-                match = re.match(regex, info_hash)
-                if match:
-                    info_hash = match.group("guid")
+            hash_tag = item.find(["nyaa:infoHash", "infoHash", "info_hash"])
+            if hash_tag:
+                info_hash = hash_tag.get_text(strip=True)
+            else:
+                regex = "^.*(?P<guid>[{]?[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}[}]?).*$"
+                guid_tag = item.find("guid")
+                if guid_tag:
+                    info_hash = guid_tag.get_text(strip=True)
+                    match = re.match(regex, info_hash)
+                    if match:
+                        info_hash = match.group("guid")
 
         attribute = item.find(["newznab:attr", "torznab:attr"], attrs={"name": "seeders"})
         if attribute:
             seeders = try_int(attribute["value"])
-
-        if item.seeders and not seeders:
-            seeders = try_int(item.seeders.get_text(strip=True))
+        else:
+            seeders_tag = item.find(["seeders", "nyaa:seeders"])
+            if seeders_tag:
+                seeders = try_int(seeders_tag.get_text(strip=True))
 
         attribute = item.find(["newznab:attr", "torznab:attr"], attrs={"name": ["leechers", "peers"]})
         if attribute:
             leechers = try_int(attribute["value"])
-
-        if not leechers:
-            attribute = item.find(["peers", "leechers"])
-            if attribute:
-                leechers = try_int(attribute.get_text(strip=True))
+        else:
+            leechers_tag = item.find(["peers", "leechers", "nyaa:leechers", "nyaa:peers"])
+            if leechers_tag:
+                leechers = try_int(leechers_tag.get_text(strip=True))
 
         attribute = item.find(["newznab:attr", "torznab:attr"], attrs={"name": "size"})
         if attribute:
             item_size = attribute["value"]
 
-        if not item_size:
-            if item.size:
-                item_size = item.size.get_text(strip=True) or -1
+        if item_size in (-1, "-1", None, ""):
+            size_tag = item.find(["size", "nyaa:size"])
+            if size_tag:
+                item_size = size_tag.get_text(strip=True) or -1
             elif "gingadaddy" in url and item.description:
                 size_regex = re.search(r"\d*.?\d* [KMGT]B", item.description.get_text(strip=True))
                 if size_regex:

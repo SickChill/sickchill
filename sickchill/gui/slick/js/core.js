@@ -406,10 +406,15 @@ SICKCHILL.common = {
             this.setFromPresets(qualityPresets.find(':selected').val());
         },
     },
+    isAnimeFormatSelected() {
+        return $('#anime').is(':checked');
+    },
     updateBlackWhiteList(showName) {
+        const animeOn = this.isAnimeFormatSelected();
+        $('#anime-extras, #anime-numbering').toggle(animeOn);
         $('#pool').children().remove();
 
-        if ($('#anime').is(':checked')) {
+        if (animeOn) {
             $('#blackwhitelist').show();
             if (showName) {
                 $.getJSON(scRoot + '/home/fetch_releasegroups', {

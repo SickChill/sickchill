@@ -63,6 +63,44 @@ NAMING_LIMITED_EXTEND = 8
 NAMING_SEPARATED_REPEAT = 16
 NAMING_LIMITED_EXTEND_E_PREFIXED = 32
 
+# tv_shows.anime: 0 standard, 1 anime absolute (Show.265), 2 anime SxxExx (still searches anime providers)
+ANIME_NONE = 0
+ANIME_ABSOLUTE = 1
+ANIME_SEASON_EPISODE = 2
+
+
+def uses_absolute_numbering(show: object) -> bool:
+    return int(getattr(show, "anime", 0) or 0) == ANIME_ABSOLUTE
+
+
+def parse_anime_mode(value: object, fallback: int = ANIME_NONE) -> int:
+    """Accept only 0/1/2; anything else keeps fallback (never coerce invalid to 0)."""
+    try:
+        fallback_int = int(fallback or 0)
+    except (TypeError, ValueError):
+        fallback_int = ANIME_NONE
+    try:
+        mode = int(value)
+    except (TypeError, ValueError):
+        return fallback_int
+    if mode in (ANIME_NONE, ANIME_ABSOLUTE, ANIME_SEASON_EPISODE):
+        return mode
+    return fallback_int
+
+
+def parse_anime_form(enabled: bool, numbering: object, fallback: int = ANIME_NONE) -> int:
+    """Checkbox off is 0. Checkbox on uses numbering 1/2; invalid numbering keeps fallback if 1/2 else absolute."""
+    if not enabled:
+        return ANIME_NONE
+    numbering_fallback = parse_anime_mode(fallback, ANIME_ABSOLUTE)
+    if numbering_fallback == ANIME_NONE:
+        numbering_fallback = ANIME_ABSOLUTE
+    mode = parse_anime_mode(numbering, numbering_fallback)
+    if mode == ANIME_NONE:
+        return numbering_fallback
+    return mode
+
+
 MULTI_EP_STRINGS = NumDict(
     {
         NAMING_REPEAT: _("Repeat"),

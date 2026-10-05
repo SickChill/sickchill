@@ -2,6 +2,7 @@
     from sickchill import settings
     from sickchill.oldbeard.common import SKIPPED, WANTED, IGNORED
     from sickchill.oldbeard.common import Quality, statusStrings
+    from sickchill.oldbeard.common import ANIME_ABSOLUTE, ANIME_SEASON_EPISODE
 %>
 <div class="field-pair row">
     <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
@@ -79,8 +80,26 @@
             <span class="component-title">${_('Anime')}</span>
         </div>
         <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-            <input type="checkbox" name="anime" id="anime" ${checked(settings.ANIME_DEFAULT)} />
-            <label for="anime">${_('Is this show an Anime?')}</label>
+            <div class="row">
+                <div class="col-md-12">
+                    <input type="checkbox" name="anime" id="anime" ${checked(settings.ANIME_DEFAULT)} />
+                    <label for="anime">${_('Is this show an Anime?')}</label>
+                </div>
+            </div>
+            <div id="anime-numbering"${('', ' style="display:none;"')[not settings.ANIME_DEFAULT]}>
+                <div class="row">
+                    <div class="col-md-12" style="padding-left: 1.5em;">
+                        <input type="radio" name="anime_numbering" id="anime_absolute" value="${ANIME_ABSOLUTE}" checked />
+                        <label for="anime_absolute">${_('Absolute numbering (Show.265)')}</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12" style="padding-left: 1.5em;">
+                        <input type="radio" name="anime_numbering" id="anime_season" value="${ANIME_SEASON_EPISODE}" />
+                        <label for="anime_season">${_('Season/episode numbering (Show.S02E03, still search anime providers)')}</label>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
     <br>
