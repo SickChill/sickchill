@@ -6,7 +6,7 @@ import traceback
 from urllib.parse import urlparse
 
 from sickchill import logger, settings
-from sickchill.helper.common import convert_size, try_int, valid_url
+from sickchill.helper.common import convert_size, is_blocked_search_result, try_int, valid_url
 from sickchill.helper.exceptions import AuthException
 from sickchill.oldbeard import db, show_name_helpers
 from sickchill.oldbeard.bs4_parser import BS4Parser
@@ -61,6 +61,10 @@ class RSSTorrentMixin:
         if not (title and download_url):
             logger.debug(f"Skipping result {title}, {found_urls}")
             logger.debug(f"{item}")
+            return
+
+        if is_blocked_search_result(title, download_url):
+            logger.info(f"Skipping result {title} because it is a .exe file")
             return
 
         attribute = item.find(["newznab:attr", "torznab:attr"], attrs={"name": ["infoHash", "info_hash", "guid"]})
@@ -348,6 +352,10 @@ class TVCache(RSSTorrentMixin):
         return self.last_update < self.last_search
 
     def add_cache_entry(self, name, url, size, seeders, leechers, parse_result=None, indexer_id=0):
+        if is_blocked_search_result(name, url):
+            logger.info(f"Skipping cache of {name} because it is a .exe file")
+            return None
+
         # check if we passed in a parsed result or should we try and create one
         if not parse_result:
             # create show_obj from indexer_id if available

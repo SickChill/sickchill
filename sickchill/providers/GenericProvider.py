@@ -15,7 +15,7 @@ from requests.utils import add_dict_to_cookiejar
 
 import sickchill.oldbeard
 from sickchill import logger
-from sickchill.helper.common import sanitize_filename, valid_url
+from sickchill.helper.common import is_blocked_search_result, sanitize_filename, valid_url
 from sickchill.oldbeard import filters
 from sickchill.oldbeard.common import MULTI_EP_RESULT, SEASON_RESULT, Quality, uses_absolute_numbering
 from sickchill.oldbeard.db import DBConnection
@@ -256,6 +256,9 @@ class GenericProvider(object):
 
         for item in items_list:
             title, url = self._get_title_and_url(item)
+            if is_blocked_search_result(title, url):
+                logger.info(f"Skipping result {title} because it is a .exe file")
+                continue
             seeders, leechers = self._get_seeders_and_leechers(item)
             size = self._get_size(item)
 

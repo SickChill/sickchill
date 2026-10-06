@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING
 
 import sickchill.oldbeard.providers
 from sickchill import logger, settings
+from sickchill.helper.common import is_blocked_search_result
 from sickchill.helper.exceptions import AuthException
 from sickchill.oldbeard.network_timezones import sc_today
 from sickchill.providers.GenericProvider import GenericProvider
@@ -72,6 +73,10 @@ def snatch_episode(result: "SearchResult", end_status=SNATCHED):
     """
 
     if result is None:
+        return False
+
+    if is_blocked_search_result(result.name, result.url):
+        logger.info(f"Refusing to snatch {result.name}: blocked .exe file")
         return False
 
     if settings.ALLOW_HIGH_PRIORITY:
