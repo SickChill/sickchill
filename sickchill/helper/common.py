@@ -171,11 +171,15 @@ def _search_result_filename(value: Union[Path, PathLike, str] | None = None) -> 
             return ""
         text = unquote_plus(display_names[0])
     else:
-        parsed = urlparse(text)
-        if parsed.scheme in {"http", "https", "ftp"}:
-            text = unquote(parsed.path)
-        else:
+        try:
+            parsed = urlparse(text)
+        except ValueError:
             text = unquote(text.split("#", 1)[0].split("?", 1)[0])
+        else:
+            if parsed.scheme in {"http", "https", "ftp"}:
+                text = unquote(parsed.path)
+            else:
+                text = unquote(text.split("#", 1)[0].split("?", 1)[0])
     return text.rstrip("/\\").rsplit("/", 1)[-1].rsplit("\\", 1)[-1]
 
 

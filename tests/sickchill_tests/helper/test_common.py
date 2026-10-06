@@ -79,6 +79,9 @@ class CommonTests(unittest.TestCase):
         assert not is_blocked_search_result(name="Show.Name.S01E01.720p.HDTV.x264-GROUP", url="https://example.com/dl/Show.S01E01.torrent")
         assert not is_blocked_search_result(None, None)
         assert not is_blocked_search_result("", "")
+        # urlparse raises ValueError on invalid IPv6; still inspect the path for .exe
+        assert is_blocked_search_result(url="http://[::1/Show.S01E01.exe")
+        assert not is_blocked_search_result(url="http://[::1/Show.S01E01.torrent")
 
     def test_is_sync_file(self):
         """
