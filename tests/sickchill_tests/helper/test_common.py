@@ -14,6 +14,7 @@ from sickchill.helper.common import (
     convert_size,
     episode_num,
     http_code_description,
+    is_blocked_search_result,
     is_media_file,
     is_rar_file,
     is_sync_file,
@@ -64,6 +65,20 @@ class CommonTests(unittest.TestCase):
         for test in test_cases, unicode_test_cases:
             for http_code, result in test.items():
                 assert http_code_description(http_code) == result
+
+    def test_is_blocked_search_result(self):
+        """Titles and download URLs ending in .exe are blocked; torrents/videos are not."""
+        assert is_blocked_search_result("Show.Name.S01E01.720p.HDTV.x264.exe")
+        assert is_blocked_search_result("Show.Name.S01E01.EXE")
+        assert is_blocked_search_result(name="Show.Name.S01E01.720p.HDTV.x264-GROUP", url="https://example.com/dl/Show.S01E01.exe")
+        assert is_blocked_search_result(name="Show.Name.S01E01.720p.HDTV.x264-GROUP", url="https://example.com/dl/Show.S01E01.exe?token=abc")
+        assert is_blocked_search_result(url="magnet:?xt=urn:btih:abc&dn=Show.Name.S01E01.exe")
+        assert not is_blocked_search_result("Show.Name.S01E01.720p.HDTV.x264-GROUP")
+        assert not is_blocked_search_result("Show.Name.S01E01.720p.HDTV.x264.mkv")
+        assert not is_blocked_search_result("Show.Name.S01E01.720p.HDTV.x264.exe.torrent")
+        assert not is_blocked_search_result(name="Show.Name.S01E01.720p.HDTV.x264-GROUP", url="https://example.com/dl/Show.S01E01.torrent")
+        assert not is_blocked_search_result(None, None)
+        assert not is_blocked_search_result("", "")
 
     def test_is_sync_file(self):
         """
