@@ -97,7 +97,7 @@ class ProcessingQueue(generic_queue.GenericQueue):
                     length["manual"] += 1
         return length
 
-    def add_item(self, directory, filename=None, method=None, force=False, is_priority=None, delete=None, failed=False, mode="auto", force_next=False):
+    def add_item(self, directory, filename=None, method=None, force=False, is_priority=None, delete=None, failed=False, mode="auto", no_queue=False):
         """
         Adds a processing task to the queue
         :param directory: directory to process
@@ -108,7 +108,7 @@ class ProcessingQueue(generic_queue.GenericQueue):
         :param delete: delete files and folders after they are processed (always happens with move and auto combination)
         :param failed: mark downloads as failed if they fail to process
         :param mode: processing type: auto/manual
-        :param force_next: wait until the current item in the queue is finished, acquire the lock and process this task now, so we can return the result
+        :param no_queue: wait until the current item in the queue is finished, acquire the lock and process this task now, so we can return the result
         :return: string indicating success or failure
         """
         replacements = dict(mode=mode.title(), info=filename or directory)
@@ -139,7 +139,7 @@ class ProcessingQueue(generic_queue.GenericQueue):
             return message + r"<br\><span class='hidden'>Processing succeeded</span>"
         else:
             item = PostProcessorTask(directory, filename, method, force, is_priority, delete, failed, mode)
-            if force_next:
+            if no_queue:
                 with self.lock:
                     item.run()  # Non threaded, but with queue lock
                     message = item.last_result
