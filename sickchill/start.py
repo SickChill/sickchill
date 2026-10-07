@@ -367,6 +367,13 @@ def initialize(console_logging: bool = True, debug: bool = False, dbdebug: bool 
         settings.FILE_TIMESTAMP_TIMEZONE = check_setting_str(settings.CFG, "General", "file_timestamp_timezone", "network")
         settings.KEEP_PROCESSED_DIR = check_setting_bool(settings.CFG, "General", "keep_processed_dir", True)
         settings.PROCESS_METHOD = check_setting_str(settings.CFG, "General", "process_method", "copy" if settings.KEEP_PROCESSED_DIR else "move")
+        settings.MANUAL_POSTPROCESS_DIR = check_setting_str(settings.CFG, "ManualPostProcess", "proc_dir")
+        settings.MANUAL_POSTPROCESS_METHOD = check_setting_str(settings.CFG, "ManualPostProcess", "process_method")
+        settings.MANUAL_POSTPROCESS_FORCE = check_setting_bool(settings.CFG, "ManualPostProcess", "force")
+        settings.MANUAL_POSTPROCESS_PRIORITY = check_setting_bool(settings.CFG, "ManualPostProcess", "is_priority")
+        settings.MANUAL_POSTPROCESS_DELETE = check_setting_bool(settings.CFG, "ManualPostProcess", "delete_on")
+        settings.MANUAL_POSTPROCESS_NO_QUEUE = check_setting_bool(settings.CFG, "ManualPostProcess", "no_queue")
+        settings.MANUAL_POSTPROCESS_FAILED = check_setting_bool(settings.CFG, "ManualPostProcess", "failed")
         settings.PROCESSOR_FOLLOW_SYMLINKS = check_setting_bool(settings.CFG, "General", "processor_follow_symlinks")
         settings.DELRARCONTENTS = check_setting_bool(settings.CFG, "General", "del_rar_contents")
         settings.MOVE_ASSOCIATED_FILES = check_setting_bool(settings.CFG, "General", "move_associated_files")
@@ -1189,6 +1196,15 @@ def save_config():
             "ANIME": {
                 "anime_split_home": int(settings.ANIME_SPLIT_HOME),
                 "anime_split_home_in_tabs": int(settings.ANIME_SPLIT_HOME_IN_TABS),
+            },
+            "ManualPostProcess": {
+                "proc_dir": settings.MANUAL_POSTPROCESS_DIR or "",
+                "process_method": settings.MANUAL_POSTPROCESS_METHOD or "",
+                "force": int(settings.MANUAL_POSTPROCESS_FORCE),
+                "is_priority": int(settings.MANUAL_POSTPROCESS_PRIORITY),
+                "delete_on": int(settings.MANUAL_POSTPROCESS_DELETE),
+                "no_queue": int(settings.MANUAL_POSTPROCESS_NO_QUEUE),
+                "failed": int(settings.MANUAL_POSTPROCESS_FAILED),
             },
         }
     )

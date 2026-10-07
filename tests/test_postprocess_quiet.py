@@ -118,6 +118,52 @@ class ProcessEpisodeQuietTests(unittest.TestCase):
         handler.processEpisode()
         self.assertEqual(add_item.call_args.kwargs["mode"], "manual")
 
+    @patch("sickchill.start.save_config")
+    @patch("sickchill.views.manage.post_processing.settings")
+    def test_ui_process_saves_manual_postprocess_fields(self, mock_settings, mock_save):
+        mock_settings.postProcessorTaskScheduler.action.add_item.return_value = "ok\n"
+        handler = self._handler(
+            form={
+                "proc_dir": "/downloads/ui",
+                "process_method": "move",
+                "force": "on",
+                "is_priority": "on",
+                "delete_on": "on",
+                "no_queue": "on",
+                "failed": "on",
+            }
+        )
+        handler.processEpisode()
+        self.assertEqual(mock_settings.MANUAL_POSTPROCESS_DIR, "/downloads/ui")
+        self.assertEqual(mock_settings.MANUAL_POSTPROCESS_METHOD, "move")
+        self.assertTrue(mock_settings.MANUAL_POSTPROCESS_FORCE)
+        self.assertTrue(mock_settings.MANUAL_POSTPROCESS_PRIORITY)
+        self.assertTrue(mock_settings.MANUAL_POSTPROCESS_DELETE)
+        self.assertTrue(mock_settings.MANUAL_POSTPROCESS_NO_QUEUE)
+        self.assertTrue(mock_settings.MANUAL_POSTPROCESS_FAILED)
+        mock_save.assert_called_once()
+
+    @patch("sickchill.start.save_config")
+    @patch("sickchill.views.manage.post_processing.settings")
+    def test_ui_process_saves_unchecked_boxes_as_false(self, mock_settings, mock_save):
+        mock_settings.postProcessorTaskScheduler.action.add_item.return_value = "ok\n"
+        handler = self._handler(form={"proc_dir": "/downloads/ui", "process_method": "copy"})
+        handler.processEpisode()
+        self.assertFalse(mock_settings.MANUAL_POSTPROCESS_FORCE)
+        self.assertFalse(mock_settings.MANUAL_POSTPROCESS_PRIORITY)
+        self.assertFalse(mock_settings.MANUAL_POSTPROCESS_DELETE)
+        self.assertFalse(mock_settings.MANUAL_POSTPROCESS_NO_QUEUE)
+        self.assertFalse(mock_settings.MANUAL_POSTPROCESS_FAILED)
+        mock_save.assert_called_once()
+
+    @patch("sickchill.start.save_config")
+    @patch("sickchill.views.manage.post_processing.settings")
+    def test_quiet_script_does_not_save_manual_postprocess(self, mock_settings, mock_save):
+        mock_settings.postProcessorTaskScheduler.action.add_item.return_value = "ok\n"
+        handler = self._handler(query={"dir": "/downloads/script", "quiet": "1", "process_method": "move", "force": "on"})
+        handler.processEpisode()
+        mock_save.assert_not_called()
+
 
 if __name__ == "__main__":
     unittest.main()

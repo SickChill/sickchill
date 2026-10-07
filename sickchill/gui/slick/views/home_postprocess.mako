@@ -17,7 +17,7 @@
                         <b class="pull-lg-right pull-md-right pull-sm-right">${_('Enter the folder containing the episode')}</b>
                     </div>
                     <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
-                        <input type="text" name="proc_dir" id="episodeDir" class="form-control form-control-inline input-sm input250" autocapitalize="off" title="directory" />
+                        <input type="text" name="proc_dir" id="episodeDir" class="form-control form-control-inline input-sm input250" autocapitalize="off" title="directory" value="${settings.MANUAL_POSTPROCESS_DIR | h}" />
                     </div>
                 </div>
                 <div class="row">
@@ -28,7 +28,7 @@
                         <select name="process_method" id="process_method" class="form-control form-control-inline input-sm" title="process method">
                             <% process_method_text = {'copy': _('Copy'), 'move': _('Move'), 'hardlink': _('Hard Link'), 'symlink' : _('Symbolic Link'), 'symlink_reversed' : _('Symbolic Link Reversed')} %>
                             % for curAction in process_method_text:
-                                <option value="${curAction}" ${selected(settings.PROCESS_METHOD == curAction)}>${process_method_text[curAction]}</option>
+                                <option value="${curAction}" ${selected(settings.MANUAL_POSTPROCESS_METHOD == curAction)}>${process_method_text[curAction]}</option>
                             % endfor
                         </select>
                     </div>
@@ -38,7 +38,7 @@
                         <b class="pull-lg-right pull-md-right pull-sm-right">${_('Force already Post Processed Dir/Files')}</b>
                     </div>
                     <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
-                        <input id="force" name="force" type="checkbox">
+                        <input id="force" name="force" type="checkbox" ${checked(settings.MANUAL_POSTPROCESS_FORCE)}>
                     </div>
                 </div>
                 <div class="row">
@@ -46,7 +46,7 @@
                         <b class="pull-lg-right pull-md-right pull-sm-right">${_('Mark Dir/Files as priority download')}</b>
                     </div>
                     <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
-                        <input id="is_priority" name="is_priority" type="checkbox">
+                        <input id="is_priority" name="is_priority" type="checkbox" ${checked(settings.MANUAL_POSTPROCESS_PRIORITY)}>
                         <span style="line-height: 0; font-size: 12px;"><i>&nbsp;${_('(Check it to replace the file even if it exists at higher quality)')}</i></span>
                     </div>
                 </div>
@@ -55,7 +55,7 @@
                         <b class="pull-lg-right pull-md-right pull-sm-right">${_('Delete files and folders')}</b>
                     </div>
                     <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
-                        <input id="delete_on" name="delete_on" type="checkbox">
+                        <input id="delete_on" name="delete_on" type="checkbox" ${checked(settings.MANUAL_POSTPROCESS_DELETE)}>
                         <span style="line-height: 0; font-size: 12px;"><i>&nbsp;${_('(Check it to delete files and folders like auto processing)')}</i></span>
                     </div>
                 </div>
@@ -64,7 +64,7 @@
                         <b class="pull-lg-right pull-md-right pull-sm-right">${_('Don\'t use processing queue')}</b>
                     </div>
                     <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
-                        <input id="force_next" name="force_next" type="checkbox">
+                        <input id="no_queue" name="no_queue" type="checkbox" ${checked(settings.MANUAL_POSTPROCESS_NO_QUEUE)}>
                         <span style="line-height: 0; font-size: 12px;"><i>${_('(If checked this will return the result of the process here, but may be slow!)')}</i></span>
                     </div>
                 </div>
@@ -74,7 +74,7 @@
                             <b class="pull-lg-right pull-md-right pull-sm-right">${_('Mark download as failed')}</b>
                         </div>
                         <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
-                            <input id="failed" name="failed" type="checkbox">
+                            <input id="failed" name="failed" type="checkbox" ${checked(settings.MANUAL_POSTPROCESS_FAILED)}>
                         </div>
                     </div>
                 % endif
