@@ -62,7 +62,7 @@ We HIGHLY recommend starting out with no database files at all to make this a fr
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://thetvdb.com/images/attribution/logo1.png">
   <source media="(prefers-color-scheme: light)" srcset="https://thetvdb.com/images/attribution/logo2.png">
-  <img alt="Fallback image description" src="https://thetvdb.com/images/attribution/logo2.png">
+  <img alt="theTVDB logo" src="https://thetvdb.com/images/attribution/logo2.png">
 </picture>
 
 ### Thanks to [JetBrains](https://jb.gg/OpenSourceSupport) for previous "All Products Pack" licenses free of charge for SickChill developers as part of their support of OSS.
