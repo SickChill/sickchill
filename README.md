@@ -59,9 +59,11 @@ Before using this with your existing database (`sickbeard.db`) please make a bac
 We HIGHLY recommend starting out with no database files at all to make this a fresh start but the choice is at your own risk.
 
 ### Thanks to [TheTVDB](https://theTVDB.com) for API access.
-<a href="https://thetvdb.com"><img src="https://thetvdb.com/images/attribution/logo1.png" alt="theTVDB logo with link url" height="80">
-Metadata provided by TheTVDB. Please consider adding missing information or subscribing.
-</a>
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://thetvdb.com/images/attribution/logo1.png">
+  <source media="(prefers-color-scheme: light)" srcset="https://thetvdb.com/images/attribution/logo2.png">
+  <img alt="Fallback image description" src="https://thetvdb.com/images/attribution/logo2.png">
+</picture>
 
 ### Thanks to [JetBrains](https://jb.gg/OpenSourceSupport) for previous "All Products Pack" licenses free of charge for SickChill developers as part of their support of OSS.
 <a href="https://jb.gg/OpenSourceSupport"><img src="https://resources.jetbrains.com/storage/products/company/brand/logos/jb_beam.svg" alt="Jetbrains IDE and link" height="45"><img src="https://resources.jetbrains.com/storage/products/company/brand/logos/jb_square.svg" height="45"><img src="https://resources.jetbrains.com/storage/products/company/brand/logos/PyCharm_icon.svg" height="45"><img src="https://resources.jetbrains.com/storage/products/company/brand/logos/IntelliJ_IDEA_icon.svg" height="45"></a>
