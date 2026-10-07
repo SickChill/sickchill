@@ -246,7 +246,7 @@
                             ${_(display_status)}
                         </td>
 
-                        <td class="nowrap" title="${curShow.get_location}">${curShow.get_location}</td>
+                        <td class="nowrap" title="${curShow.get_location | h}">${curShow.get_location | h}</td>
                     </tr>
                 % endfor
             </tbody>
