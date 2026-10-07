@@ -88,6 +88,13 @@ window.SICKCHILL.home = {
             },
         });
 
+        $('#posterPopupToggle').prop('checked', localStorage.getItem('posterPopupDisabled') !== 'true').on('change', function () {
+            localStorage.setItem('posterPopupDisabled', $(this).is(':checked') ? 'false' : 'true');
+            if (!$(this).is(':checked')) {
+                $('#posterPopup').remove();
+            }
+        });
+
         $('#rootDirSelect').on('change', () => {
             $('#rootDirForm').submit();
         });
@@ -270,6 +277,10 @@ window.SICKCHILL.home = {
             // table, display a larger poster when hovering.
             let posterHoverTimer = null;
             $('.show-container').on('mouseenter', function () {
+                if (localStorage.getItem('posterPopupDisabled') === 'true') {
+                    return;
+                }
+
                 const poster = $(this);
                 const details = poster.find('.show-network-image');
                 if (details[0].style.cssText !== 'width: 0px;') {
