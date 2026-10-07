@@ -3525,6 +3525,65 @@ thead.tablesorter-stickyHeader {
     text-align: center;
 }
 
+/* Home list: compact columns stay small; Show/Location take most leftover width */
+#showListTableShows,
+#showListTableAnime {
+    table-layout: fixed;
+}
+
+#showListTableShows th:nth-child(1),
+#showListTableShows th:nth-child(2),
+#showListTableAnime th:nth-child(1),
+#showListTableAnime th:nth-child(2) {
+    width: 6%;
+}
+
+#showListTableShows th:nth-child(3),
+#showListTableAnime th:nth-child(3) {
+    width: 16%;
+}
+
+#showListTableShows th:nth-child(4),
+#showListTableAnime th:nth-child(4) {
+    width: 8%;
+}
+
+#showListTableShows th:nth-child(5),
+#showListTableAnime th:nth-child(5) {
+    width: 7%;
+}
+
+#showListTableShows th:nth-child(6),
+#showListTableAnime th:nth-child(6) {
+    width: 12%;
+}
+
+#showListTableShows th:nth-child(7),
+#showListTableAnime th:nth-child(7) {
+    width: 7%;
+}
+
+#showListTableShows th:nth-child(8),
+#showListTableAnime th:nth-child(8) {
+    width: 5%;
+}
+
+#showListTableShows th:nth-child(9),
+#showListTableAnime th:nth-child(9) {
+    width: 8%;
+}
+
+#showListTableShows th:nth-child(10),
+#showListTableAnime th:nth-child(10) {
+    width: 25%;
+}
+
+#showListTableShows td:nth-child(10),
+#showListTableAnime td:nth-child(10) {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 .tablesorter tfoot tr {
     background-color: #333333;
     border-collapse: collapse;

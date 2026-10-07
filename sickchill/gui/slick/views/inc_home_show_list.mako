@@ -29,11 +29,13 @@
                     <th>${_('Size')}</th>
                     <th>${_('Active')}</th>
                     <th>${_('Status')}</th>
+                    <th class="nowrap columnSelector-false">${_('Location')}</th>
                 </tr>
             </thead>
             <tfoot class="hidden-print">
                 <tr>
                     <th rowspan="1" colspan="1" class="text-center"><a href="${static_url('addShows/', include_version=False)}">${_('Add')} ${(_('Show'), _('Anime'))[curListType == 'Anime']}</a></th>
+                    <th>&nbsp;</th>
                     <th>&nbsp;</th>
                     <th>&nbsp;</th>
                     <th>&nbsp;</th>
@@ -91,6 +93,7 @@
                                 % endif
                             </td>
                         % endif
+                        <td></td>
                         <td></td>
                         <td></td>
                         <td></td>
@@ -242,6 +245,8 @@
                             %>
                             ${_(display_status)}
                         </td>
+
+                        <td class="nowrap" title="${curShow.get_location}">${curShow.get_location}</td>
                     </tr>
                 % endfor
             </tbody>

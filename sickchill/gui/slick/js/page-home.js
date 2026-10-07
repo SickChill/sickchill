@@ -128,6 +128,9 @@ window.SICKCHILL.home = {
                 7(node) {
                     return ($(node).find('span').attr('title') || 'No').toLowerCase();
                 },
+                9(node) {
+                    return latinize($(node).text().normalize('NFC'));
+                },
             },
             widgets: ['saveSort', 'zebra', 'stickyHeaders', 'filter', 'columnSelector'],
             headers: {
@@ -138,6 +141,7 @@ window.SICKCHILL.home = {
                 5: {sorter: 'digit'},
                 6: {sorter: 'digit'},
                 7: {filter: 'parsed'},
+                9: {sorter: 'text'},
             },
             widgetOptions: {
                 filter_columnFilters: true, // eslint-disable-line camelcase
@@ -195,6 +199,10 @@ window.SICKCHILL.home = {
                     },
                 },
                 columnSelector_mediaquery: false, // eslint-disable-line camelcase
+                columnSelector_saveColumns: true, // eslint-disable-line camelcase
+                columnSelector_columns: { // eslint-disable-line camelcase
+                    9: false,
+                },
             },
             sortStable: true,
             sortAppend: [[2, 0]],
