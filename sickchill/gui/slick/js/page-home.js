@@ -63,10 +63,24 @@ window.SICKCHILL.home = {
             });
         }
 
-        let posterSize;
-        if (typeof (Storage) !== 'undefined') {
-            posterSize = Number.parseInt(localStorage.getItem('posterSize'), 10);
+        function safeGetItem(key) {
+            try {
+                return localStorage.getItem(key);
+            } catch {
+                return null;
+            }
         }
+
+        function safeSetItem(key, value) {
+            try {
+                localStorage.setItem(key, value);
+            } catch {}
+        }
+
+        let posterPopupDisabled = safeGetItem('posterPopupDisabled') === 'true';
+        let posterHoverTimer = null;
+
+        let posterSize = Number.parseInt(safeGetItem('posterSize'), 10);
 
         if (typeof (posterSize) !== 'number' || Number.isNaN(posterSize)) {
             posterSize = 188;
@@ -79,20 +93,22 @@ window.SICKCHILL.home = {
             max: 250,
             value: posterSize,
             change(event, ui) {
-                if (typeof (Storage) !== 'undefined') {
-                    localStorage.setItem('posterSize', ui.value);
-                }
-
+                safeSetItem('posterSize', ui.value);
                 resizePosters(ui.value);
                 $('.show-grid').isotope('layout');
             },
         });
 
-        $('#posterPopupToggle').prop('checked', localStorage.getItem('posterPopupDisabled') !== 'true').on('change', function () {
-            localStorage.setItem('posterPopupDisabled', $(this).is(':checked') ? 'false' : 'true');
-            if (!$(this).is(':checked')) {
-                $('#posterPopup').remove();
+        $('#posterPopupToggle').prop('checked', !posterPopupDisabled).on('change', function () {
+            posterPopupDisabled = !$(this).is(':checked');
+            safeSetItem('posterPopupDisabled', posterPopupDisabled ? 'true' : 'false');
+            if (!posterPopupDisabled) {
+                return;
             }
+
+            clearTimeout(posterHoverTimer);
+            posterHoverTimer = null;
+            $('#posterPopup').remove();
         });
 
         $('#rootDirSelect').on('change', () => {
@@ -275,9 +291,8 @@ window.SICKCHILL.home = {
 
             // When posters are small enough to not display the .show-details
             // table, display a larger poster when hovering.
-            let posterHoverTimer = null;
             $('.show-container').on('mouseenter', function () {
-                if (localStorage.getItem('posterPopupDisabled') === 'true') {
+                if (posterPopupDisabled) {
                     return;
                 }
 
@@ -289,6 +304,10 @@ window.SICKCHILL.home = {
 
                 posterHoverTimer = setTimeout(() => {
                     posterHoverTimer = null;
+                    if (posterPopupDisabled) {
+                        return;
+                    }
+
                     $('#posterPopup').remove();
 
                     const popup = poster.clone().attr({
