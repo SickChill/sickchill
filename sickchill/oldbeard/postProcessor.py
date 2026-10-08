@@ -198,7 +198,9 @@ class PostProcessor(object):
             # Define associated files (all, allowed, and non-allowed)
             if os.path.isfile(associated_file_path):
                 # check if allowed or not during post-processing
-                if settings.MOVE_ASSOCIATED_FILES and associated_file_path.endswith(tuple(settings.ALLOWED_EXTENSIONS.split(","))):
+                allowed_exts = {ext.strip().lstrip(".").lower() for ext in settings.ALLOWED_EXTENSIONS.split(",") if ext.strip()}
+                file_ext = Path(associated_file_path).suffix.lstrip(".").lower()
+                if settings.MOVE_ASSOCIATED_FILES and (not allowed_exts or file_ext in allowed_exts):
                     file_path_list_to_allow.append(associated_file_path)
                 elif settings.DELETE_NON_ASSOCIATED_FILES:
                     file_path_list_to_delete.append(associated_file_path)
@@ -1074,11 +1076,15 @@ class PostProcessor(object):
 
         # find the destination folder
         try:
+            # proper_path runs before the download is moved; point scene-quality codec at the source file.
+            episode_object._naming_media_file = self.directory
             proper_path = episode_object.proper_path()
             proper_absolute_path = os.path.join(episode_object.show.location, proper_path)
             dest_path = os.path.dirname(proper_absolute_path)
         except ShowDirectoryNotFoundException:
             raise EpisodePostProcessingFailedException(_("Unable to post-process an episode if the show dir doesn't exist, quitting"))
+        finally:
+            episode_object._naming_media_file = None
 
         self._log(_("Destination folder for this episode: ") + dest_path, logger.DEBUG)
 

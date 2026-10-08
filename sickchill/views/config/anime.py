@@ -37,4 +37,4 @@ class ConfigAnime(Config):
         sickchill.start.save_config()
         ui.notifications.message(_("Configuration Saved"), os.path.join(settings.CONFIG_FILE))
 
-        return self.redirect("/config/anime/")
+        return self.config_save_response("/config/anime/")

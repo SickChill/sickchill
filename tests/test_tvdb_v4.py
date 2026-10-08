@@ -709,6 +709,46 @@ class EpisodeSkipApplyTests(unittest.TestCase):
         self.assertTrue(result)
         self.assertEqual(e.name, "Old")  # not applied
 
+    def test_load_from_indexer_missing_name_sets_tba(self):
+        from sickchill.oldbeard.common import UNAIRED
+        from sickchill.tv import TVEpisode
+
+        class E:
+            pass
+
+        e = E()
+        e.last_update_indexer = 0
+        e.name = ""
+        e.description = ""
+        e.show = MagicMock()
+        e.show.indexerid = 1
+        e.show.name = "Show"
+        e.show.indexer = 1
+        e.show.get_location = "/tmp/show"
+        e.season = 1
+        e.episode = 1
+        e.absolute_number = 0
+        e.indexer_name = "theTVDB"
+        e.idxr = MagicMock()
+        e.status = UNAIRED
+        e.airdate = datetime.date.min
+        e.indexerid = 99
+        e.location = ""
+
+        packet = {"episodeName": "", "lastUpdated": 100, "id": 99, "firstAired": "2026-01-01"}
+
+        with (
+            patch("sickchill.oldbeard.scene_numbering.xem_refresh"),
+            patch("sickchill.oldbeard.scene_numbering.get_scene_absolute_numbering", return_value=0),
+            patch("sickchill.oldbeard.scene_numbering.get_scene_numbering", return_value=(1, 1)),
+            patch("os.path.isdir", return_value=False),
+            patch("sickchill.tv.settings.CREATE_MISSING_SHOW_DIRS", False),
+            patch("sickchill.tv.settings.ADD_SHOWS_WO_DIR", False),
+        ):
+            TVEpisode.load_from_indexer(e, 1, 1, force_all=True, indexer_episode=packet)
+
+        self.assertEqual(e.name, "TBA")
+
     def test_apply_tba_indexer_packet_sets_name_and_last_update(self):
         from sickchill.tv import TVEpisode
 

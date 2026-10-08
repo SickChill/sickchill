@@ -56,6 +56,7 @@ from sickchill.oldbeard.common import (
     Overview,
     Quality,
     statusStrings,
+    uses_absolute_numbering,
 )
 from sickchill.oldbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 from sickchill.oldbeard.network_timezones import sc_now, sc_timezone, sc_today
@@ -1216,7 +1217,7 @@ class TVShow(object):
         except FuturesTimeoutError:
             if future is not None:
                 future.cancel()  # attempt to cancel
-            logger.warning(f"{self.indexerid}: IMDb refresh timed out after 25s (imdb_id={self.imdb_id})")
+            logger.info(f"{self.indexerid}: IMDb refresh timed out after 25s (imdb_id={self.imdb_id})")
         except Exception as e:
             logger.info(f"{self.indexerid}: IMDb refresh failed: {e}")
         finally:
@@ -2096,8 +2097,9 @@ class TVEpisode(object):
                     )
                 )
             else:
+                self.name = "TBA"
                 logger.info(
-                    "This episode {show} - {ep} has no name on {indexer}. Setting to an empty string".format(
+                    "This episode {show} - {ep} has no name on {indexer}. Setting to TBA".format(
                         show=self.show.name, ep=episode_num(season, episode), indexer=self.indexer_name
                     )
                 )
@@ -2549,7 +2551,7 @@ class TVEpisode(object):
         Returns: A string representing the episode's name and season/ep numbers
         """
 
-        if self.show.anime and not self.show.scene:
+        if uses_absolute_numbering(self.show) and not self.show.scene:
             return self.naming_pattern("%SN - %AB - %EN")
         elif self.show.air_by_date:
             return self.naming_pattern("%SN - %AD - %EN")
@@ -2594,7 +2596,7 @@ class TVEpisode(object):
 
         return good_name
 
-    def replace_map(self):
+    def replace_map(self, pattern=None):
         """
         Generates a replacement map for this episode which maps all possible custom naming patterns to the correct
         value for this episode.
@@ -2683,8 +2685,14 @@ class TVEpisode(object):
         else:
             relgrp = "SICKCHILL"
 
-        # try to get the release encoder to comply with scene naming standards
-        encoder = Quality.sceneQualityFromName(self.release_name.replace(release_grp[relgrp], ""), episode_quality)
+        # Scene Quality (%SQN) encoder: prefer libmediainfo from the real file, else the release name.
+        name_for_codec = (self.release_name or "").replace(release_grp[relgrp], "")
+        uses_scene_quality = bool(pattern and re.search(r"%SQ([._]?N)", pattern, flags=re.IGNORECASE))
+        if uses_scene_quality and not getattr(self, "is_naming_sample", False):
+            media_file = getattr(self, "_naming_media_file", None) or self.location
+            encoder = Quality.sceneQualityFromFile(media_file, episode_quality, name_for_codec)
+        else:
+            encoder = Quality.sceneQualityFromName(name_for_codec, episode_quality)
         if encoder and not getattr(self, "is_naming_sample", False):
             logger.debug(f"Found codec for '{show_name}: {ep_name}'.")
 
@@ -2764,7 +2772,7 @@ class TVEpisode(object):
         else:
             anime_type = 3
 
-        replace_map = self.replace_map()
+        replace_map = self.replace_map(pattern)
 
         result_name = pattern
 

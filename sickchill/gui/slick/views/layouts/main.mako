@@ -408,11 +408,33 @@
                 % else:
                     <script type="text/javascript" src="${static_url('js/core.min.js')}"></script>
                 % endif
+                % if controller in ('config', 'home', 'manage', 'history', 'errorlogs', 'schedule', 'addShows', 'movies'):
+                    <script type="text/javascript" src="${static_url('js/page-' + controller + '.js')}"></script>
+                % endif
                 <script type="text/javascript" src="${static_url('js/lib/jquery.scrolltopcontrol-1.1.js')}"></script>
                 <script type="text/javascript" src="${static_url('js/browser.js')}" charset="utf-8"></script>
                 <script type="text/javascript" src="${static_url('js/ajaxNotifications.js')}"></script>
             % endif
             <%block name="scripts" />
+            % if current_user:
+            <script type="text/javascript">
+                (function () {
+                    const guiLang = getMeta('settings.GUI_LANG');
+                    if (shouldSkipLocaleFetch(guiLang)) {
+                        installGettext();
+                        startSickchillUi();
+                    } else {
+                        $.getJSON(scRoot + '/ui/locale.json', {lang: guiLang}, function (data) {
+                            installGettext(data);
+                            startSickchillUi();
+                        }).fail(function () {
+                            installGettext();
+                            startSickchillUi();
+                        });
+                    }
+                })();
+            </script>
+            % endif
         </div>
     </body>
 </html>

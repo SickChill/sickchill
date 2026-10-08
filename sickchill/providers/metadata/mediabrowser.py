@@ -210,22 +210,30 @@ class MediaBrowserMetadata(generic.GenericMetadata):
 
         tv_node = ElementTree.Element("Series")
 
-        data = getattr(indexer_show, "id", None)
+        def _xml_text(value):
+            """ElementTree text must be str; indexer fields may be int/float (e.g. runtime)."""
+            if value is None:
+                return None
+            if isinstance(value, str):
+                return value
+            return str(value)
+
+        data = _xml_text(getattr(indexer_show, "id", None))
         if data:
             indexerid_element = ElementTree.SubElement(tv_node, "id")
-            indexerid_element.text = str(data)
+            indexerid_element.text = data
 
-        data = getattr(indexer_show, "seriesName", None)
+        data = _xml_text(getattr(indexer_show, "seriesName", None))
         if data:
             series_name_element = ElementTree.SubElement(tv_node, "SeriesName")
             series_name_element.text = data
 
-        data = getattr(indexer_show, "status", None)
+        data = _xml_text(getattr(indexer_show, "status", None))
         if data:
             status_element = ElementTree.SubElement(tv_node, "Status")
             status_element.text = data
 
-        data = getattr(indexer_show, "network", None)
+        data = _xml_text(getattr(indexer_show, "network", None))
         if data:
             network_element = ElementTree.SubElement(tv_node, "Network")
             network_element.text = data
@@ -234,17 +242,17 @@ class MediaBrowserMetadata(generic.GenericMetadata):
             studio_element = ElementTree.SubElement(studios_element, "Studio")
             studio_element.text = data
 
-        data = getattr(indexer_show, "airsTime", None)
+        data = _xml_text(getattr(indexer_show, "airsTime", None))
         if data:
             airs_time_element = ElementTree.SubElement(tv_node, "Airs_Time")
             airs_time_element.text = data
 
-        data = getattr(indexer_show, "airsDayOfWeek", None)
+        data = _xml_text(getattr(indexer_show, "airsDayOfWeek", None))
         if data:
             airs_day_element = ElementTree.SubElement(tv_node, "Airs_DayOfWeek")
             airs_day_element.text = data
 
-        data = getattr(indexer_show, "firstAired", None)
+        data = _xml_text(getattr(indexer_show, "firstAired", None))
         if data:
             first_aired_element = ElementTree.SubElement(tv_node, "FirstAired")
             first_aired_element.text = data
@@ -258,7 +266,7 @@ class MediaBrowserMetadata(generic.GenericMetadata):
             except Exception:
                 pass
 
-        data = getattr(indexer_show, "rating", None)
+        data = _xml_text(getattr(indexer_show, "rating", None))
         if data:
             content_rating_element = ElementTree.SubElement(tv_node, "ContentRating")
             content_rating_element.text = data
@@ -275,12 +283,12 @@ class MediaBrowserMetadata(generic.GenericMetadata):
         type_element = ElementTree.SubElement(tv_node, "Type")
         type_element.text = "Series"
 
-        data = getattr(indexer_show, "overview", None)
+        data = _xml_text(getattr(indexer_show, "overview", None))
         if data:
             overview_element = ElementTree.SubElement(tv_node, "Overview")
             overview_element.text = data
 
-        data = getattr(indexer_show, "runtime", None)
+        data = _xml_text(getattr(indexer_show, "runtime", None))
         if data:
             running_time_element = ElementTree.SubElement(tv_node, "RunningTime")
             running_time_element.text = data
@@ -288,7 +296,7 @@ class MediaBrowserMetadata(generic.GenericMetadata):
             runtime_element = ElementTree.SubElement(tv_node, "Runtime")
             runtime_element.text = data
 
-        data = getattr(indexer_show, "imdbId", None)
+        data = _xml_text(getattr(indexer_show, "imdbId", None))
         if data:
             imdb_id_element = ElementTree.SubElement(tv_node, "IMDB_ID")
             imdb_id_element.text = data
@@ -299,7 +307,7 @@ class MediaBrowserMetadata(generic.GenericMetadata):
             imdb_id_element = ElementTree.SubElement(tv_node, "IMDbId")
             imdb_id_element.text = data
 
-        data = getattr(indexer_show, "zap2itId", None)
+        data = _xml_text(getattr(indexer_show, "zap2itId", None))
         if data:
             zap2itid_element = ElementTree.SubElement(tv_node, "Zap2ItId")
             zap2itid_element.text = data
@@ -307,13 +315,13 @@ class MediaBrowserMetadata(generic.GenericMetadata):
         if getattr(indexer_show, "genre", []) and isinstance(indexer_show.genre, list):
             genres_element = ElementTree.SubElement(tv_node, "Genres")
             for genre in indexer_show.genre:
-                if genre.strip():
+                genre_text = _xml_text(genre)
+                if genre_text and genre_text.strip():
                     genre_element = ElementTree.SubElement(genres_element, "Genre")
-                    genre_element.text = genre.strip()
+                    genre_element.text = genre_text.strip()
 
             genre_element = ElementTree.SubElement(tv_node, "Genre")
-            genre_element.text = "|".join(indexer_show.genre)
-
+            genre_element.text = "|".join(_xml_text(g).strip() for g in indexer_show.genre if _xml_text(g) and _xml_text(g).strip())
         helpers.indentXML(tv_node)
 
         return ElementTree.ElementTree(tv_node)
@@ -399,20 +407,19 @@ class MediaBrowserMetadata(generic.GenericMetadata):
                     overview_element.text = indexer_episode["overview"]
 
                 if not episode_object.related_episodes:
-                    if indexer_episode.get("rating"):
+                    if indexer_episode.get("rating") or indexer_episode.get("siteRating"):
                         rating_element = ElementTree.SubElement(episode, "Rating")
-                        rating_element.text = indexer_episode["siteRating"]
+                        rating_element.text = str(indexer_episode.get("siteRating") or indexer_episode.get("rating"))
 
                     if indexer_episode.get("imdbId"):
                         imdb_id_element = ElementTree.SubElement(episode, "IMDB_ID")
-                        imdb_id_element.text = indexer_episode["imdbId"]
+                        imdb_id_element.text = str(indexer_episode["imdbId"])
 
                         imdb_element = ElementTree.SubElement(episode, "IMDB")
-                        imdb_element.text = indexer_episode["imdbId"]
+                        imdb_element.text = str(indexer_episode["imdbId"])
 
                         imdbid_element = ElementTree.SubElement(episode, "IMDbId")
-                        imdbid_element.text = indexer_episode["imdbId"]
-
+                        imdbid_element.text = str(indexer_episode["imdbId"])
                 if indexer_episode.get("id"):
                     id_element = ElementTree.SubElement(episode, "id")
                     id_element.text = str(indexer_episode["id"])

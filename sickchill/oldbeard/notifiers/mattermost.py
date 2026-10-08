@@ -44,7 +44,6 @@ class Notifier(object):
         mattermost_user = settings.MATTERMOST_USERNAME
 
         logger.info("Sending mattermost webhook message: " + message)
-        logger.info("Sending mattermost webhook message to url: " + mattermost_webhook)
 
         headers = CaseInsensitiveDict({"Content-Type": "application/json"})
 

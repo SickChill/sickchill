@@ -251,7 +251,7 @@ class KODIMetadata(generic.GenericMetadata):
 
             if current_episode.season and getattr(indexer_show, "runtime", None):
                 runtime_element = ElementTree.SubElement(episode_element, "runtime")
-                runtime_element.text = indexer_show.runtime
+                runtime_element.text = str(indexer_show.runtime)
 
             if indexer_episode.get("airedSeason"):
                 displayseason_element = ElementTree.SubElement(episode_element, "displayseason")

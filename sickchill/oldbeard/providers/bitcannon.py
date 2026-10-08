@@ -29,8 +29,8 @@ class Provider(TorrentProvider):
 
         search_params = {}
 
-        anime = self.show and self.show.anime or False
-        search_params["category"] = ("tv", "anime")[bool(anime)]
+        is_anime_show = bool(self.show and self.show.is_anime)
+        search_params["category"] = ("tv", "anime")[is_anime_show]
 
         if self.api_key:
             search_params["apiKey"] = self.api_key

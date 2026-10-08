@@ -11,7 +11,7 @@
     <script type="text/javascript" src="${static_url('js/configProviders.js')}"></script>
     <script type="text/javascript">
         $(document).ready(function() {
-            $('#config-components').tabs();
+            initConfigComponentTabs();
             $('#config-components').on( "tabsactivate", function( event, ui ){
                 if(ui.newPanel.selector === '#provider-options') {
                     //TODO: Reload provider options list
@@ -97,6 +97,7 @@
                             % endfor
                         </ul>
                         <input type="hidden" name="provider_order" id="provider_order" value="${" ".join([x.get_id(':'+str(int(x.is_enabled))) for x in providers.sorted_provider_list()])}" />
+                        <input type="hidden" name="provider_settings_loaded" id="provider_settings_loaded" value="${" ".join(x.get_id() for x in providers.sorted_provider_list() if getattr(x, 'enabled', False))}" />
                     </fieldset>
                 </div>
             </div>
@@ -623,6 +624,24 @@
                                     </div>
                                 % endif
 
+                                % if hasattr(provider, 'tv_category_choices'):
+                                    <div class="field-pair row">
+                                        <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                            <label class="component-title">${_('Search categories')}</label>
+                                        </div>
+                                        <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                            <% selected_tv_cats = provider.selected_tv_category_ids() if hasattr(provider, 'selected_tv_category_ids') else set() %>
+                                            % for cat_id, cat_label in provider.tv_category_choices:
+                                                <div>
+                                                    <input type="checkbox" name="${provider.get_id("_tv_categories")}" id="${provider.get_id("_tv_categories_")}${cat_id}" value="${cat_id}" ${checked(cat_id in selected_tv_cats)} />
+                                                    <label for="${provider.get_id("_tv_categories_")}${cat_id}">${_(cat_label)}</label>
+                                                </div>
+                                            % endfor
+                                            <p class="note">${_('These categories are used for episode search and RSS. Season packs (14) are always included for season and RSS searches.')}</p>
+                                        </div>
+                                    </div>
+                                % endif
+
                                 % if hasattr(provider, 'enable_daily'):
                                     <div class="field-pair row">
                                         <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
@@ -800,18 +819,25 @@
                                     <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                         <div class="row">
                                             <div class="col-md-12">
-                                                <select id="newznab_cap" multiple="multiple" style="min-width:10em;"></select>
-                                                <select id="newznab_cat" multiple="multiple" style="min-width:10em;"></select>
+                                                <select id="newznab_cap" multiple="multiple" style="min-width:12em; min-height:8em;" title="${_('Available categories')}"></select>
+                                                <select id="newznab_cat" multiple="multiple" style="min-width:12em; min-height:8em;" title="${_('Selected categories')}"></select>
                                             </div>
                                         </div>
                                         <div class="row">
                                             <div class="col-md-12">
-                                                <label><b>${_('select your Newznab categories on the left, and click the "update categories" button to use them for searching.) <b>don\'t forget to to save the form!')}</b></label>
+                                                <label><b>${_('Select TV categories on the left, then click Update Categories. Don\'t forget to save the form.')}</b></label>
                                             </div>
                                         </div>
                                         <div class="row">
                                             <div class="col-md-12">
+                                                <input class="btn" type="button" id="newznab_cat_fetch" value="${_('Fetch Categories')}" disabled />
                                                 <input class="btn newznab_cat_update" type="button" id="newznab_cat_update" value="${_('Update Categories')}" disabled />
+                                                <span class="updating_categories"></span>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <label>${_('Saved category ids')}: <code id="newznab_categories_display"></code></label>
                                             </div>
                                         </div>
                                     </div>

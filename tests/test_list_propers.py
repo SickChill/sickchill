@@ -160,6 +160,207 @@ class TestTorrentFindPropersCacheFirst(unittest.TestCase):
         provider.search.assert_not_called()
         provider.cache.list_propers.assert_called_once()
 
+    def test_skips_live_when_rate_limited(self):
+        from sickchill.providers.torrent.TorrentProvider import TorrentProvider
+
+        provider = TorrentProvider("RateLimited")
+        provider.cache = mock.Mock()
+        provider.cache.list_propers.return_value = []
+        provider.search = mock.Mock(return_value=[{"title": "should-not-call", "link": "http://x"}])
+        provider._rate_limited_until = time.time() + 60
+
+        results = provider.find_propers(search_date=sc_now())
+        self.assertEqual(results, [])
+        provider.search.assert_not_called()
+
+    def test_combines_same_show_season_into_one_search(self):
+        from sickchill.providers.torrent.TorrentProvider import TorrentProvider
+
+        provider = TorrentProvider("SeasonCombine")
+        provider.cache = mock.Mock()
+        provider.cache.list_propers.return_value = []
+        provider.search = mock.Mock(return_value=[])
+
+        show = mock.Mock()
+        show.indexerid = 42
+        show.name = "The Walking Dead: Daryl Dixon"
+        show.air_by_date = False
+        show.sports = False
+        show.anime = False
+
+        candidates = []
+        for ep_no in (1, 2, 3, 4):
+            episode = mock.Mock()
+            episode.show = show
+            episode.season = 3
+            episode.scene_season = 3
+            episode.episode = ep_no
+            candidates.append((show, episode))
+
+        with mock.patch.object(TorrentProvider, "_recent_proper_candidates", return_value=iter(candidates)):
+            provider.find_propers(search_date=sc_now())
+
+        self.assertEqual(provider.search.call_count, 1)
+        search_arg = provider.search.call_args[0][0]
+        self.assertIn("Episode", search_arg)
+        queries = list(search_arg["Episode"])
+        self.assertEqual(len(queries), 1)
+        query = queries[0]
+        self.assertIn("Daryl Dixon", query)
+        self.assertIn("S03", query)
+        self.assertNotIn("E01", query)
+        self.assertNotIn("E02", query)
+        self.assertNotIn("E03", query)
+        self.assertNotIn("E04", query)
+
+    def test_separate_seasons_are_separate_searches(self):
+        from sickchill.providers.torrent.TorrentProvider import TorrentProvider
+
+        provider = TorrentProvider("TwoSeasons")
+        provider.cache = mock.Mock()
+        provider.cache.list_propers.return_value = []
+        provider.search = mock.Mock(return_value=[])
+
+        show = mock.Mock()
+        show.indexerid = 42
+        show.name = "Daryl Dixon"
+        show.air_by_date = False
+        show.sports = False
+        show.anime = False
+
+        candidates = []
+        for season, ep_no in ((2, 1), (3, 1), (3, 2)):
+            episode = mock.Mock()
+            episode.show = show
+            episode.season = season
+            episode.scene_season = season
+            episode.episode = ep_no
+            candidates.append((show, episode))
+
+        with mock.patch.object(TorrentProvider, "_recent_proper_candidates", return_value=iter(candidates)):
+            provider.find_propers(search_date=sc_now())
+
+        self.assertEqual(provider.search.call_count, 2)
+        queries = []
+        for call in provider.search.call_args_list:
+            queries.extend(call[0][0]["Episode"])
+        self.assertTrue(any("S02" in q for q in queries))
+        self.assertTrue(any("S03" in q for q in queries))
+        self.assertFalse(any("E01" in q or "E02" in q for q in queries))
+
+    def test_anime_seasons_share_one_search(self):
+        from sickchill.providers.torrent.TorrentProvider import TorrentProvider
+
+        provider = TorrentProvider("AnimeCombine")
+        provider.cache = mock.Mock()
+        provider.cache.list_propers.return_value = []
+        provider.search = mock.Mock(return_value=[])
+
+        show = mock.Mock()
+        show.indexerid = 99
+        show.name = "Naruto"
+        show.air_by_date = False
+        show.sports = False
+        show.anime = True
+
+        candidates = []
+        for season, ep_no in ((1, 1), (2, 5)):
+            episode = mock.Mock()
+            episode.show = show
+            episode.season = season
+            episode.scene_season = season
+            episode.episode = ep_no
+            candidates.append((show, episode))
+
+        with mock.patch.object(TorrentProvider, "_recent_proper_candidates", return_value=iter(candidates)):
+            provider.find_propers(search_date=sc_now())
+
+        self.assertEqual(provider.search.call_count, 1)
+        queries = list(provider.search.call_args[0][0]["Episode"])
+        self.assertEqual(queries, ["Naruto Season"])
+
+    def test_stops_live_groups_after_429(self):
+        from sickchill.providers.torrent.TorrentProvider import TorrentProvider
+
+        provider = TorrentProvider("StopAfter429")
+        provider.cache = mock.Mock()
+        provider.cache.list_propers.return_value = []
+
+        def search_and_limit(_strings):
+            provider._rate_limited_until = time.time() + 60
+            return []
+
+        provider.search = mock.Mock(side_effect=search_and_limit)
+
+        def _episode(show, season):
+            episode = mock.Mock()
+            episode.show = show
+            episode.season = season
+            episode.scene_season = season
+            episode.episode = 1
+            return episode
+
+        show_a = mock.Mock(indexerid=1, name="Show A", air_by_date=False, sports=False, anime=False)
+        show_b = mock.Mock(indexerid=2, name="Show B", air_by_date=False, sports=False, anime=False)
+        candidates = [(show_a, _episode(show_a, 1)), (show_b, _episode(show_b, 1))]
+
+        with mock.patch.object(TorrentProvider, "_recent_proper_candidates", return_value=iter(candidates)):
+            provider.find_propers(search_date=sc_now())
+
+        self.assertEqual(provider.search.call_count, 1)
+
+
+class TestProviderRateLimit(unittest.TestCase):
+    def test_get_url_skips_while_rate_limited(self):
+        from sickchill.providers.GenericProvider import GenericProvider
+
+        provider = GenericProvider("Limited")
+        provider._rate_limited_until = time.time() + 60
+        with mock.patch("sickchill.providers.GenericProvider.getURL") as get_url:
+            self.assertEqual(provider.get_url("http://example/search"), "")
+            get_url.assert_not_called()
+
+    def test_429_hook_marks_without_sleep(self):
+        from sickchill.providers.GenericProvider import GenericProvider
+
+        provider = GenericProvider("Hook429")
+        response = mock.Mock()
+        response.status_code = 429
+        response.request.method = "GET"
+        response.request.url = "http://example/search"
+        response.headers = {"Retry-After": "20"}
+
+        with mock.patch("sickchill.providers.GenericProvider.time.sleep") as slept:
+            provider.get_url_hook(response)
+            slept.assert_not_called()
+            provider.get_url_hook(response)
+            slept.assert_not_called()
+        self.assertTrue(provider.is_rate_limited())
+
+    def test_download_result_skips_when_rate_limited(self):
+        from sickchill.providers.GenericProvider import GenericProvider
+
+        provider = GenericProvider("DlLimited")
+        provider._rate_limited_until = time.time() + 60
+        provider.login = mock.Mock(return_value=True)
+        self.assertFalse(provider.download_result(mock.Mock()))
+        provider.login.assert_not_called()
+
+    def test_download_result_stops_after_429_in_loop(self):
+        from sickchill.providers.GenericProvider import GenericProvider
+
+        provider = GenericProvider("DlStop")
+        provider.login = mock.Mock(return_value=True)
+        provider._make_url = mock.Mock(return_value=(["http://example/a", "http://example/b"], "/tmp/x.torrent"))
+        provider._verify_download = mock.Mock(return_value=False)
+
+        def download_then_limit(*_args, **_kwargs):
+            provider._rate_limited_until = time.time() + 60
+
+        with mock.patch("sickchill.providers.GenericProvider.download_file", side_effect=download_then_limit) as downloaded:
+            self.assertFalse(provider.download_result(mock.Mock()))
+            self.assertEqual(downloaded.call_count, 1)
+
 
 class TestGenericFindPropersCachedProperGrp(conftest.SickChillTestDBCase):
     def setUp(self):
