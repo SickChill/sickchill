@@ -7,6 +7,7 @@ if TYPE_CHECKING:
 
 from sickchill import logger
 from sickchill.oldbeard import helpers
+from sickchill.oldbeard.common import uses_absolute_numbering
 from sickchill.providers.metadata import generic
 
 
@@ -131,7 +132,7 @@ class TIVOMetadata(generic.GenericMetadata):
         Returns: A string representing the episode's name and season/ep numbers
         """
 
-        if episode_object.show.anime and not episode_object.show.scene:
+        if uses_absolute_numbering(episode_object.show) and not episode_object.show.scene:
             return episode_object.naming_pattern("%AB - %EN")
         elif episode_object.show.air_by_date:
             return episode_object.naming_pattern("%AD - %EN")

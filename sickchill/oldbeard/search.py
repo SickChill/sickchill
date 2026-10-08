@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING
 
 import sickchill.oldbeard.providers
 from sickchill import logger, settings
+from sickchill.helper.common import is_blocked_search_result
 from sickchill.helper.exceptions import AuthException
 from sickchill.oldbeard.network_timezones import sc_today
 from sickchill.providers.GenericProvider import GenericProvider
@@ -74,6 +75,10 @@ def snatch_episode(result: "SearchResult", end_status=SNATCHED):
     if result is None:
         return False
 
+    if is_blocked_search_result(result.name, result.url):
+        logger.info(f"Refusing to snatch {result.name}: blocked .exe file")
+        return False
+
     if settings.ALLOW_HIGH_PRIORITY:
         # if it aired recently make it high priority
         for episode in result.episodes:
@@ -86,7 +91,14 @@ def snatch_episode(result: "SearchResult", end_status=SNATCHED):
     if result.is_torrent:
         # torrents are saved to disk when blackhole mode
         if settings.TORRENT_METHOD == "blackhole":
-            snatched_result = _download_result(result)
+            try:
+                from sickchill.plugins.api import PluginKind
+                from sickchill.plugins.manager import plugin_manager
+
+                plugin = plugin_manager.get(PluginKind.CLIENT, "blackhole")
+            except Exception:
+                plugin = None
+            snatched_result = plugin.send(result) if plugin is not None else _download_result(result)
         else:
             if not result.content and not result.url.startswith("magnet") and result.provider.login():
                 result.content = result.provider.get_url(result.url, returns="content")
@@ -101,12 +113,33 @@ def snatch_episode(result: "SearchResult", end_status=SNATCHED):
     # NZBs can be sent straight to SAB or saved to disk
     elif result.is_nzb or result.is_nzbdata:
         if settings.NZB_METHOD == "blackhole":
-            snatched_result = _download_result(result)
+            try:
+                from sickchill.plugins.api import PluginKind
+                from sickchill.plugins.manager import plugin_manager
+
+                plugin = plugin_manager.get(PluginKind.CLIENT, "blackhole")
+            except Exception:
+                plugin = None
+            snatched_result = plugin.send(result) if plugin is not None else _download_result(result)
         elif settings.NZB_METHOD == "sabnzbd":
-            snatched_result = sab.send_nzb(result)
+            try:
+                from sickchill.plugins.api import PluginKind
+                from sickchill.plugins.manager import plugin_manager
+
+                plugin = plugin_manager.get(PluginKind.CLIENT, "sabnzbd")
+            except Exception:
+                plugin = None
+            snatched_result = plugin.send(result) if plugin is not None else sab.send_nzb(result)
         elif settings.NZB_METHOD == "nzbget":
             is_proper = end_status == SNATCHED_PROPER
-            snatched_result = nzbget.send_nzb(result, is_proper)
+            try:
+                from sickchill.plugins.api import PluginKind
+                from sickchill.plugins.manager import plugin_manager
+
+                plugin = plugin_manager.get(PluginKind.CLIENT, "nzbget")
+            except Exception:
+                plugin = None
+            snatched_result = plugin.send(result, proper=is_proper) if plugin is not None else nzbget.send_nzb(result, is_proper)
         elif settings.NZB_METHOD == "download_station":
             client = clients.getClientInstance(settings.NZB_METHOD)(settings.SYNOLOGY_DSM_HOST, settings.SYNOLOGY_DSM_USERNAME, settings.SYNOLOGY_DSM_PASSWORD)
             snatched_result = client.send_nzb(result)
@@ -197,7 +230,7 @@ def pick_best_result(results, show):
         if not show_name_helpers.filter_bad_releases(result.name, parse=False, show=show):
             continue
 
-        if hasattr(result, "size") and settings.USE_FAILED_DOWNLOADS and History().has_failed(result.name, result.size, result.provider.name):
+        if settings.USE_FAILED_DOWNLOADS and History().has_failed(result.name):
             logger.info(f"{result.name} has previously failed, rejecting it")
             continue
 

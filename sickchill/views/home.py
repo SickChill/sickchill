@@ -19,7 +19,19 @@ from sickchill.helper.common import episode_num, pretty_file_size
 from sickchill.helper.exceptions import CantUpdateShowException, NoNFOException, ShowDirectoryNotFoundException
 from sickchill.oldbeard import clients, config, db, filters, helpers, notifiers, sab, search_queue, ui
 from sickchill.oldbeard.blackandwhitelist import BlackAndWhiteList, short_group_names
-from sickchill.oldbeard.common import FAILED, IGNORED, SKIPPED, SNATCHED_BEST, UNAIRED, WANTED, Overview, Quality, statusStrings
+from sickchill.oldbeard.common import (
+    FAILED,
+    IGNORED,
+    SKIPPED,
+    SNATCHED_BEST,
+    UNAIRED,
+    WANTED,
+    Overview,
+    Quality,
+    parse_anime_form,
+    parse_anime_mode,
+    statusStrings,
+)
 from sickchill.oldbeard.network_timezones import sc_now, sc_timezone, sc_today
 from sickchill.oldbeard.scene_numbering import (
     get_scene_absolute_numbering,
@@ -334,7 +346,10 @@ class Home(WebRoot):
         torrent_method = self.get_body_argument("torrent_method")
         host = config.clean_url(self.get_body_argument("host"))
         username = self.get_body_argument("username")
-        password = filters.unhide(settings.TORRENT_PASSWORD, self.get_body_argument("password"))
+        from sickchill.plugins.clients.config import stored_client_password
+
+        stored = stored_client_password(settings.CFG, torrent_method, fallback=settings.TORRENT_PASSWORD)
+        password = filters.unhide(stored, self.get_body_argument("password"))
         return self.__torrent_test(host, username, password, torrent_method)
 
     def testFreeMobile(self):
@@ -366,20 +381,6 @@ class Home(WebRoot):
 
         return _("Error sending join notification: {message}".format(message=message))
 
-    def testGrowl(self):
-        host = self.get_query_argument("host")
-        password = filters.unhide(settings.GROWL_PASSWORD, self.get_query_argument("password"))
-        # self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
-
-        host = config.clean_host(host, default_port=23053)
-        result = notifiers.growl_notifier.test_notify(host, password)
-
-        pw_append = _(" with password") + ": " + password if password else ""
-        if result:
-            return _("Registered and Tested growl successfully {growl_host}").format(growl_host=unquote_plus(host)) + pw_append
-
-        return _("Registration and Testing of growl failed {growl_host}").format(growl_host=unquote_plus(host)) + pw_append
-
     def testProwl(self):
         prowl_api = self.get_query_argument("prowl_api")
         prowl_priority = self.get_query_argument("prowl_priority")
@@ -388,14 +389,6 @@ class Home(WebRoot):
             return _("Test prowl notice sent successfully")
 
         return _("Test prowl notice failed")
-
-    def testBoxcar2(self):
-        access_token = self.get_query_argument("accesstoken")
-        result = notifiers.boxcar2_notifier.test_notify(access_token)
-        if result:
-            return _("Boxcar2 notification succeeded. Check your Boxcar2 clients to make sure it worked")
-
-        return _("Error sending Boxcar2 notification")
 
     def testPushover(self):
         user_key = self.get_query_argument("userKey")
@@ -440,26 +433,6 @@ class Home(WebRoot):
             return _("Tweet successful, check your twitter to make sure it worked")
 
         return _("Error sending tweet")
-
-    @staticmethod
-    def testTwilio():
-        # if not notifiers.twilio_notifier.account_regex.match(settings.TWILIO_ACCOUNT_SID):
-        #     return _("Please enter a valid account sid")
-        #
-        # if not notifiers.twilio_notifier.auth_regex.match(settings.TWILIO_AUTH_TOKEN):
-        #     return _("Please enter a valid auth token")
-        #
-        # if not notifiers.twilio_notifier.phone_regex.match(settings.TWILIO_PHONE_SID):
-        #     return _("Please enter a valid phone sid")
-        #
-        # if not notifiers.twilio_notifier.number_regex.match(settings.TWILIO_TO_NUMBER):
-        #     return _('Please format the phone number as "+1-###-###-####"')
-        #
-        # result = notifiers.twilio_notifier.test_notify()
-        # if result:
-        #     return _("Authorization successful and number ownership verified")
-        # else:
-        return _("Error sending sms")
 
     @staticmethod
     def testSlack():
@@ -790,14 +763,6 @@ class Home(WebRoot):
             return _("Test email sent successfully! Check inbox.")
 
         return _("ERROR: {last_error}").format(last_error=notifiers.email_notifier.last_err)
-
-    def testPushalot(self):
-        authorization_token = self.get_body_argument("authorizationToken")
-        result = notifiers.pushalot_notifier.test_notify(authorization_token)
-        if result:
-            return _("Pushalot notification succeeded. Check your Pushalot clients to make sure it worked")
-
-        return _("Error sending Pushalot notification")
 
     def testPushbullet(self):
         api = self.get_body_argument("api")
@@ -1218,7 +1183,7 @@ class Home(WebRoot):
                 air_by_date = config.checkbox_to_value(self.get_body_argument("air_by_date", default="False"))
                 scene = config.checkbox_to_value(self.get_body_argument("scene", default="False"))
                 sports = config.checkbox_to_value(self.get_body_argument("sports", default="False"))
-                anime = config.checkbox_to_value(self.get_body_argument("anime", default="False"))
+                anime = self.get_body_argument("anime", default=None)
                 subtitles = config.checkbox_to_value(self.get_body_argument("subtitles", default="False"))
 
             # === IMAGE UPLOAD SUPPORT ===
@@ -1277,6 +1242,8 @@ class Home(WebRoot):
         if not (location or any_qualities or best_qualities or season_folders):
             t = PageTemplate(rh=self, filename="editShow.mako")
             groups = []
+            whitelist = []
+            blacklist = []
 
             if show_obj.is_anime:
                 whitelist = show_obj.release_groups.whitelist
@@ -1302,30 +1269,27 @@ class Home(WebRoot):
                     {"slug": "dvd", "name": "DVD Order"},
                 ]
 
-            if show_obj.is_anime:
-                return t.render(
-                    show=show_obj,
-                    scene_exceptions=show_obj.exceptions,
-                    seasonResults=seasonResults,
-                    groups=groups,
-                    whitelist=whitelist,
-                    blacklist=blacklist,
-                    season_order_types=season_order_types,
-                    title=_("Edit Show"),
-                    header=_("Edit Show"),
-                    controller="home",
-                    action="editShow",
-                )
-
             return t.render(
                 show=show_obj,
                 scene_exceptions=show_obj.exceptions,
                 seasonResults=seasonResults,
+                groups=groups,
+                whitelist=whitelist,
+                blacklist=blacklist,
                 season_order_types=season_order_types,
                 title=_("Edit Show"),
                 header=_("Edit Show"),
                 controller="home",
                 action="editShow",
+            )
+
+        if direct_call:
+            anime = parse_anime_mode(anime, int(show_obj.anime or 0))
+        else:
+            anime = parse_anime_form(
+                config.checkbox_to_value(anime),
+                self.get_body_argument("anime_numbering", default=None),
+                int(show_obj.anime or 0),
             )
 
         # Read from body if not already set
@@ -2216,12 +2180,12 @@ class Home(WebRoot):
 
             if isinstance(searchThread, sickchill.oldbeard.search_queue.ManualSearchQueueItem):
                 # noinspection PyTypeChecker
-                if not [x for x in episodes if x["episodeindexid"] == searchThread.segment.indexerid]:
+                if not any(row["episodeindexid"] == searchThread.segment.indexerid for row in episodes):
                     episodes += getEpisodes(searchThread, searchstatus)
             else:
-                # ## These are only Failed Downloads/Retry SearchThreadItems.. lets loop through the segment/episodes
-                # TODO: WTF is this doing? Intensive
-                if not [i for i, j in zip(searchThread.segment, episodes) if i.indexerid == j["episodeindexid"]]:
+                # Failed/retry items: segment is a list of episodes — skip if any are already listed.
+                segment_ids = {ep.indexerid for ep in searchThread.segment}
+                if segment_ids.isdisjoint(row["episodeindexid"] for row in episodes):
                     episodes += getEpisodes(searchThread, searchstatus)
 
         self.set_header("Cache-Control", "max-age=0,no-cache,no-store")

@@ -6,6 +6,7 @@ from urllib.parse import urlencode, urljoin
 from sickchill import logger
 from sickchill.helper.exceptions import AuthException
 from sickchill.oldbeard import tvcache
+from sickchill.oldbeard.common import uses_absolute_numbering
 from sickchill.oldbeard.network_timezones import sc_timezone
 from sickchill.providers import result_classes
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
@@ -110,7 +111,7 @@ class Provider(TorrentProvider):
                 post_data["tvdb"] = {"id": show.indexerid, "episode": str(episode.airdate).replace("-", "|")}
             elif show.sports:
                 post_data["tvdb"] = {"id": show.indexerid, "episode": episode.airdate.strftime("%b")}
-            elif show.anime:
+            elif uses_absolute_numbering(show):
                 post_data["tvdb"] = {"id": show.indexerid, "episode": "{0:d}".format(int(episode.scene_absolute_number))}
             else:
                 post_data["tvdb"] = {"id": show.indexerid, "season": episode.scene_season, "episode": episode.scene_episode}
@@ -121,7 +122,7 @@ class Provider(TorrentProvider):
                     "id": show.indexerid,
                     "season": str(season.airdate)[:7],
                 }
-            elif show.anime:
+            elif uses_absolute_numbering(show):
                 post_data["tvdb"] = {
                     "id": show.indexerid,
                     "season": "{0:d}".format(season.scene_absolute_number),

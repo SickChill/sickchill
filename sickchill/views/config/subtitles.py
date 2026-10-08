@@ -77,4 +77,4 @@ class ConfigSubtitles(Config):
 
         ui.notifications.message(_("Configuration Saved"), os.path.join(settings.CONFIG_FILE))
 
-        return self.redirect("/config/subtitles/")
+        return self.config_save_response("/config/subtitles/")

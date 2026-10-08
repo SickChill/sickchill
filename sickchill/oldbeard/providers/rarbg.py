@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Dict, List
 from sickchill import logger, settings
 from sickchill.helper.common import convert_size, try_int
 from sickchill.oldbeard import tvcache
-from sickchill.oldbeard.common import cpu_presets
+from sickchill.oldbeard.common import cpu_presets, uses_absolute_numbering
 from sickchill.oldbeard.network_timezones import sc_now
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
@@ -168,7 +168,7 @@ class Provider(TorrentProvider):
             if episode.show.air_by_date or episode.show.sports:
                 year = str(episode.airdate).split("-")[0]
                 season_string = f"{episode.show.imdb_id}.{year}"
-            elif episode.show.anime:
+            elif uses_absolute_numbering(episode.show):
                 season_string = f"{episode.show.imdb_id}.Season"
             else:
                 season_string = f"{episode.show.imdb_id}.S{episode.season:02d}"

@@ -232,11 +232,13 @@ def change_nzb_dir(nzb_dir):
     :param nzb_dir: New NZB Folder location
     :return: True on success, False on failure
     """
+    if nzb_dir is None:
+        return True
     if nzb_dir == "":
         settings.NZB_DIR = ""
         return True
 
-    if os.path.normpath(settings.NZB_DIR) != os.path.normpath(nzb_dir):
+    if os.path.normpath(settings.NZB_DIR or "") != os.path.normpath(nzb_dir):
         if helpers.makeDir(nzb_dir):
             settings.NZB_DIR = os.path.normpath(nzb_dir)
             logger.info("Changed NZB folder to " + nzb_dir)
@@ -253,11 +255,13 @@ def change_torrent_dir(torrent_dir):
     :param torrent_dir: New torrent directory
     :return: True on success, False on failure
     """
+    if torrent_dir is None:
+        return True
     if torrent_dir == "":
         settings.TORRENT_DIR = ""
         return True
 
-    if os.path.normpath(settings.TORRENT_DIR) != os.path.normpath(torrent_dir):
+    if os.path.normpath(settings.TORRENT_DIR or "") != os.path.normpath(torrent_dir):
         if helpers.makeDir(torrent_dir):
             settings.TORRENT_DIR = os.path.normpath(torrent_dir)
             logger.info("Changed torrent folder to " + torrent_dir)
@@ -918,6 +922,61 @@ def check_setting_bool(config, cfg_name, item_name, def_val=False, silent=True):
     return my_val
 
 
+################################################################################
+# peek_setting_* — read without creating missing sections/keys                 #
+################################################################################
+def peek_setting_str(config, cfg_name, item_name, def_val="", censor_log=False) -> str:
+    """Return existing string value or def_val; never mutate config."""
+    encryption_version = (0, settings.ENCRYPTION_VERSION)["password" in item_name]
+    try:
+        if cfg_name not in config or item_name not in config[cfg_name]:
+            my_val = def_val
+        else:
+            my_val = helpers.decrypt(config[cfg_name][item_name], encryption_version)
+            if str(my_val) == str(None) or not str(my_val):
+                my_val = def_val
+    except (ValueError, IndexError, KeyError, TypeError):
+        my_val = def_val
+
+    if (censor_log or (cfg_name, item_name) in logger.censored_items.items()) and not item_name.endswith("custom_url"):
+        logger.censored_items[cfg_name, item_name] = my_val
+
+    return str(my_val)
+
+
+def peek_setting_bool(config, cfg_name, item_name, def_val=False) -> bool:
+    """Return existing bool value or def_val; never mutate config."""
+    try:
+        if cfg_name not in config or item_name not in config[cfg_name]:
+            return bool(def_val)
+        my_val = config[cfg_name][item_name]
+        if my_val is None or my_val == "" or str(my_val) == str(None):
+            return bool(def_val)
+        return checkbox_to_value(str(my_val))
+    except (KeyError, IndexError, ValueError, TypeError):
+        return bool(def_val)
+
+
+def peek_setting_int(config, cfg_name, item_name, def_val=0, min_val=None, max_val=None, fallback_def=True) -> int:
+    """Return existing int value or def_val; never mutate config."""
+    try:
+        if cfg_name not in config or item_name not in config[cfg_name]:
+            return int(def_val)
+        my_val = config[cfg_name][item_name]
+        if str(my_val).lower() == "true":
+            my_val = 1
+        elif str(my_val).lower() == "false":
+            my_val = 0
+        my_val = int(my_val)
+        if isinstance(min_val, int) and my_val < min_val:
+            my_val = (min_val, def_val)[fallback_def]
+        if isinstance(max_val, int) and my_val > max_val:
+            my_val = (max_val, def_val)[fallback_def]
+        return my_val
+    except (ValueError, IndexError, KeyError, TypeError):
+        return int(def_val)
+
+
 class ConfigMigrator(object):
     def __init__(self, config_obj):
         """
@@ -983,6 +1042,8 @@ class ConfigMigrator(object):
             settings.CONFIG_VERSION = self.config_version
             logger.info("Saving config file to disk")
             sickchill.start.save_config()
+
+        # Plugin clean-cut migration runs once in start.bootstrap_plugins() after this method.
 
     # Migration v1: Custom naming
     def _migrate_v1(self):
@@ -1204,19 +1265,20 @@ class ConfigMigrator(object):
 
     # Migration v6: Convert from XBMC to KODI variables
     def _migrate_v6(self):
-        settings.USE_KODI = check_setting_bool(self.config_obj, "XBMC", "use_xbmc")
-        settings.KODI_ALWAYS_ON = check_setting_bool(self.config_obj, "XBMC", "xbmc_always_on", True)
-        settings.KODI_NOTIFY_ONSNATCH = check_setting_bool(self.config_obj, "XBMC", "xbmc_notify_onsnatch")
-        settings.KODI_NOTIFY_ONDOWNLOAD = check_setting_bool(self.config_obj, "XBMC", "xbmc_notify_ondownload")
-        settings.KODI_NOTIFY_ONSUBTITLEDOWNLOAD = check_setting_bool(self.config_obj, "XBMC", "xbmc_notify_onsubtitledownload")
-        settings.KODI_UPDATE_LIBRARY = check_setting_bool(self.config_obj, "XBMC", "xbmc_update_library")
-        settings.KODI_UPDATE_FULL = check_setting_bool(self.config_obj, "XBMC", "xbmc_update_full")
-        settings.KODI_UPDATE_ONLYFIRST = check_setting_bool(self.config_obj, "XBMC", "xbmc_update_onlyfirst")
-        settings.KODI_HOST = check_setting_str(self.config_obj, "XBMC", "xbmc_host")
-        settings.KODI_USERNAME = check_setting_str(self.config_obj, "XBMC", "xbmc_username", censor_log=True)
-        settings.KODI_PASSWORD = check_setting_str(self.config_obj, "XBMC", "xbmc_password", censor_log=True)
-        settings.METADATA_KODI = check_setting_str(self.config_obj, "General", "metadata_xbmc", "0|0|0|0|0|0|0|0|0|0")
-        settings.METADATA_KODI_12PLUS = check_setting_str(self.config_obj, "General", "metadata_xbmc_12plus", "0|0|0|0|0|0|0|0|0|0")
+        # peek_* only — check_setting_* would recreate empty [XBMC] shells.
+        settings.USE_KODI = peek_setting_bool(self.config_obj, "XBMC", "use_xbmc")
+        settings.KODI_ALWAYS_ON = peek_setting_bool(self.config_obj, "XBMC", "xbmc_always_on", True)
+        settings.KODI_NOTIFY_ONSNATCH = peek_setting_bool(self.config_obj, "XBMC", "xbmc_notify_onsnatch")
+        settings.KODI_NOTIFY_ONDOWNLOAD = peek_setting_bool(self.config_obj, "XBMC", "xbmc_notify_ondownload")
+        settings.KODI_NOTIFY_ONSUBTITLEDOWNLOAD = peek_setting_bool(self.config_obj, "XBMC", "xbmc_notify_onsubtitledownload")
+        settings.KODI_UPDATE_LIBRARY = peek_setting_bool(self.config_obj, "XBMC", "xbmc_update_library")
+        settings.KODI_UPDATE_FULL = peek_setting_bool(self.config_obj, "XBMC", "xbmc_update_full")
+        settings.KODI_UPDATE_ONLYFIRST = peek_setting_bool(self.config_obj, "XBMC", "xbmc_update_onlyfirst")
+        settings.KODI_HOST = peek_setting_str(self.config_obj, "XBMC", "xbmc_host")
+        settings.KODI_USERNAME = peek_setting_str(self.config_obj, "XBMC", "xbmc_username", censor_log=True)
+        settings.KODI_PASSWORD = peek_setting_str(self.config_obj, "XBMC", "xbmc_password", censor_log=True)
+        settings.METADATA_KODI = peek_setting_str(self.config_obj, "General", "metadata_xbmc", "0|0|0|0|0|0|0|0|0|0")
+        settings.METADATA_KODI_12PLUS = peek_setting_str(self.config_obj, "General", "metadata_xbmc_12plus", "0|0|0|0|0|0|0|0|0|0")
 
     # Migration v7: Use version 2 for password encryption
     @staticmethod
@@ -1225,10 +1287,11 @@ class ConfigMigrator(object):
 
     # Migration v8: Rename plex settings
     def _migrate_v8(self):
-        settings.PLEX_CLIENT_HOST = check_setting_str(self.config_obj, "Plex", "plex_host")
-        settings.PLEX_SERVER_USERNAME = check_setting_str(self.config_obj, "Plex", "plex_username", censor_log=True)
-        settings.PLEX_SERVER_PASSWORD = check_setting_str(self.config_obj, "Plex", "plex_password", censor_log=True)
-        settings.USE_PLEX_SERVER = check_setting_bool(self.config_obj, "Plex", "use_plex")
+        # peek_* only — check_setting_* would recreate empty [Plex] for migrated configs.
+        settings.PLEX_CLIENT_HOST = peek_setting_str(self.config_obj, "Plex", "plex_host")
+        settings.PLEX_SERVER_USERNAME = peek_setting_str(self.config_obj, "Plex", "plex_username", censor_log=True)
+        settings.PLEX_SERVER_PASSWORD = peek_setting_str(self.config_obj, "Plex", "plex_password", censor_log=True)
+        settings.USE_PLEX_SERVER = peek_setting_bool(self.config_obj, "Plex", "use_plex")
 
     # Migration v9: Rename autopostprocesser (typo) to autopostprocessor
     def _migrate_v9(self):

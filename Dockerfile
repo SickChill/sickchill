@@ -15,12 +15,8 @@ ENV DEBIAN_FRONTEND=noninteractive
 ENV PYTHONIOENCODING="UTF-8"
 ENV PYTHONUNBUFFERED=1
 
-ARG SOURCE
 ARG PIP_EXTRA_INDEX_URL="https://www.piwheels.org/simple"
 ARG HOME=${HOME:-}
-# Neutral defaults — never invent "develop" (master/local builds omit or pass real ref)
-ARG GIT_SHA=unknown
-ARG GIT_BRANCH=unknown
 
 ENV POETRY_INSTALLER_PARALLEL=false
 ENV POETRY_VIRTUALENVS_CREATE=false
@@ -42,8 +38,9 @@ ENV PIP_EXTRA_INDEX_URL=$PIP_EXTRA_INDEX_URL
 RUN mkdir -m 777 -p /sickchill "$POETRY_CACHE_DIR"
 
 RUN sed -i "s/Components: main/Components: main contrib non-free/" /etc/apt/sources.list.d/debian.sources
+# pymediainfo vendors libmediainfo; keep unrar for rarfile post-processing and curl for HEALTHCHECK.
 RUN apt-get update -qq && apt-get upgrade -yqq && \
- apt-get install -yqq curl libxml2 libxslt1.1 libffi8 libssl3 libmediainfo0v5 mediainfo unrar && \
+ apt-get install -yqq curl libxml2 libxslt1.1 libffi8 libssl3 unrar && \
  apt-get clean -yqq && \
  rm -rf /var/lib/apt/lists/*
 
@@ -71,20 +68,37 @@ ENV CARGO_TERM_VERBOSE "true"
 ENV CARGO "$CARGO_HOME/bin/cargo"
 
 # hadolint ignore=SC2215
-RUN --security=insecure curl --proto "=https" --tlsv1.2 -sSf https://sh.rustup.rs | sed "s#/proc/self/exe#$SHELL#g" | sh -s -- -y --profile minimal --default-toolchain nightly
+RUN --security=insecure curl --proto "=https" --tlsv1.2 -sSf https://sh.rustup.rs | sed "s#/proc/self/exe#$SHELL#g" | sh -s -- -y --profile minimal --default-toolchain stable
 
 ENV PATH "$RUSTUP_HOME/bin:$CARGO_HOME/bin:$PATH"
 
-# Always just create our own virtualenv to prevent issues
+# Runtime venv (copied to the final image). Poetry lives in /opt/poetry so it is not shipped.
+# Do not put /opt/poetry/bin first: that venv's python/pip would hide the runtime venv.
+ENV POETRY_HOME="/opt/poetry"
+ENV VIRTUAL_ENV="$POETRY_VIRTUALENVS_PATH"
 RUN python3 -m venv "$POETRY_VIRTUALENVS_PATH" --upgrade --upgrade-deps # upgrade-deps requires python3.9+
-RUN pip install -U wheel setuptools-rust
+RUN python3 -m venv "$POETRY_HOME" && "$POETRY_HOME/bin/pip" install -U pip poetry
+RUN "$POETRY_VIRTUALENVS_PATH/bin/pip" install -U wheel setuptools-rust
 
 WORKDIR /sickchill
+# poetry.lock is gitignored, so this layer caches on pyproject.toml (plus license/readme).
+COPY pyproject.toml README.md LICENSE.md COPYING.txt ./
+RUN "$POETRY_HOME/bin/poetry" run pip install -U setuptools-rust pycparser
+
+# SOURCE=1 in CI: install locked runtime deps here so rust/crypto is not rebuilt on every commit.
+ARG SOURCE
+# https://github.com/rust-lang/cargo/issues/8719#issuecomment-1253575253
+# hadolint ignore=SC2215,SC1089
+RUN --mount=type=tmpfs,target="$CARGO_HOME" \
+  if [ -n "$SOURCE" ]; then \
+    "$POETRY_HOME/bin/poetry" install --only main --no-root --no-interaction --no-ansi; \
+  fi
+
 COPY . /sickchill/
 
 # Bake git revision for Help & Info. Skip placeholder "unknown" so pip-only
-ARG GIT_SHA
-ARG GIT_BRANCH
+ARG GIT_SHA=unknown
+ARG GIT_BRANCH=unknown
 RUN if [ -n "$GIT_SHA" ] && [ "$GIT_SHA" != "unknown" ]; then \
   if [ -n "$GIT_BRANCH" ] && [ "$GIT_BRANCH" != "unknown" ]; then \
     printf '%s %s\n' "$GIT_BRANCH" "$GIT_SHA" > sickchill/_revision.txt; \
@@ -93,27 +107,25 @@ RUN if [ -n "$GIT_SHA" ] && [ "$GIT_SHA" != "unknown" ]; then \
   fi; \
 fi
 
-# https://github.com/rust-lang/cargo/issues/8719#issuecomment-1253575253
 # hadolint ignore=SC2215,SC1089
 RUN --mount=type=tmpfs,target="$CARGO_HOME" if [ -z "$SOURCE" ]; then \
-  pip install --upgrade "sickchill[speedups]"; \
+  "$POETRY_VIRTUALENVS_PATH/bin/pip" install --upgrade sickchill; \
 else \
-  pip install --upgrade poetry && poetry run pip install -U setuptools-rust pycparser && \
-  poetry build --no-interaction --no-ansi && pip install --upgrade "$(ls ./dist/sickchill-*.whl)[speedups]"; \
+  "$POETRY_HOME/bin/poetry" build --no-interaction --no-ansi && "$POETRY_VIRTUALENVS_PATH/bin/pip" install --upgrade "$(ls ./dist/sickchill-*.whl)"; \
 fi
 
 # Ensure installed package has _revision.txt (wheel may omit gitignored file).
 # Run python from /tmp so cwd (/sickchill) is not on sys.path — otherwise
 # `import sickchill` resolves to the source tree and cp is same-file.
 RUN if [ -f sickchill/_revision.txt ]; then \
-  REV_DST="$(cd /tmp && python -c 'import pathlib, sickchill; print(pathlib.Path(sickchill.__file__).parent)')" && \
+  REV_DST="$(cd /tmp && "$POETRY_VIRTUALENVS_PATH/bin/python" -c 'import pathlib, sickchill; print(pathlib.Path(sickchill.__file__).parent)')" && \
   SRC="$(realpath sickchill/_revision.txt)" && \
   DST="$(realpath -m "$REV_DST/_revision.txt")" && \
   if [ "$SRC" != "$DST" ]; then cp sickchill/_revision.txt "$REV_DST/_revision.txt"; fi; \
 fi
 
 RUN mkdir -m 777 /sickchill-wheels && \
- pip download sickchill --dest /sickchill-wheels && \
+ "$POETRY_VIRTUALENVS_PATH/bin/pip" download sickchill --dest /sickchill-wheels && \
  rm -rf /sickchill-wheels/*none-any.whl && \
  rm -rf /sickchill-wheels/*.gz;
 
@@ -121,6 +133,11 @@ RUN if [ -z "$SOURCE" ]; then \
   rm -rf /sickchill-wheels/sickchill*.whl && \
   cp dist/sickchill*.whl /sickchill-wheels/; \
 fi
+
+# Drop build-only tools and translation sources from the copied venv.
+# Keep pip: update-manager runs `sys.executable -m pip`.
+# Script file (not a shell heredoc): Dockerfile treats an unescaped `import` as an instruction.
+RUN "$POETRY_VIRTUALENVS_PATH/bin/python" /sickchill/docker/strip-venv.py
 
 FROM scratch AS sickchill-wheels
 COPY --from=builder /sickchill-wheels /
@@ -141,6 +158,7 @@ LABEL org.opencontainers.image.revision=$GIT_SHA
 ENV HOME=/data
 WORKDIR /data
 
+# Operator drop-in plugins: /data/plugins (host: $DATA_DIR/plugins or settings.PLUGIN_DIR)
 VOLUME /data /downloads /tv
 
 CMD ["sickchill", "--nolaunch", "--datadir", "/data", "--port", "8081"]

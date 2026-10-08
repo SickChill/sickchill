@@ -8,6 +8,10 @@ from sickchill.oldbeard.network_timezones import sc_today
 
 MIN_DB_VERSION = 44
 MAX_DB_VERSION = 44
+# Full schema from InitialSchema CREATE + Add* migrations. Fresh DBs insert this;
+# existing DBs may skip Add* execute() when columns already exist, leaving minor < 7.
+TARGET_DB_MAJOR = 44
+TARGET_DB_MINOR = 7
 
 
 class MainSanityCheck(db.DBSanityCheck):
@@ -345,3 +349,47 @@ class AddSeasonsOrder(AddEpisodeLastUpdateIndexer):
         self.connection.action("UPDATE tv_shows SET seasons_order = 'default' WHERE seasons_order IS NULL OR seasons_order = ''")
         self.inc_minor_version()
         logger.info("Updated to: {0:d}.{1:d}".format(*self.connection.version))
+
+
+def _full_schema_present(connection) -> bool:
+    """True when all columns that define schema 44.7 are present."""
+    return (
+        connection.has_table("db_version")
+        and connection.has_table("tv_shows")
+        and connection.has_table("tv_episodes")
+        and connection.has_column("tv_shows", "rls_prefer_words")
+        and connection.has_column("tv_shows", "custom_name")
+        and connection.has_column("tv_shows", "seasons_order")
+        and connection.has_column("tv_episodes", "last_update_indexer")
+    )
+
+
+class ReconcileSchemaVersion(AddSeasonsOrder):
+    """
+    Ensure db_version reflects the full schema (44.7).
+
+    Add* migrations only call inc_minor_version() inside execute(). When a column
+    already exists, test() skips execute and the stored minor can lag behind
+    (e.g. 44.0–44.4) even though the schema matches InitialSchema's 44.7 CREATE.
+    """
+
+    def test(self):
+        major, minor = self.connection.version
+        if major != TARGET_DB_MAJOR:
+            return True
+        if minor >= TARGET_DB_MINOR:
+            return True
+        # Version is behind target — run execute only when schema is already complete.
+        return not _full_schema_present(self.connection)
+
+    def execute(self):
+        if not _full_schema_present(self.connection):
+            logger.warning("Database schema is incomplete; not reconciling version to {0:d}.{1:d}".format(TARGET_DB_MAJOR, TARGET_DB_MINOR))
+            return
+
+        major, minor = self.connection.version
+        self.connection.action(
+            "UPDATE db_version SET db_version = ?, db_minor_version = ?",
+            [TARGET_DB_MAJOR, TARGET_DB_MINOR],
+        )
+        logger.info("Reconciled database version from {0:d}.{1:d} to {2:d}.{3:d} (full schema present)".format(major, minor, TARGET_DB_MAJOR, TARGET_DB_MINOR))

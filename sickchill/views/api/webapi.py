@@ -1309,7 +1309,8 @@ class CMDPostProcess(ApiCall):
             "nzbName": {"desc": "The name of the release to process (deprecated, use release_name param instead)"},
             "force_replace": {"desc": "Force already post-processed files to be post-processed again"},
             "force": {"desc": "Force already post-processed files to be post-processed again (deprecated, use force_replace param instead)"},
-            "force_next": {"desc": "Waits for the current processing queue item to finish and returns result of this request"},
+            "no_queue": {"desc": "Waits for the current processing queue item to finish and returns result of this request"},
+            "force_next": {"desc": "Waits for the current processing queue item to finish (deprecated, use no_queue instead)"},
             "return_data": {"desc": "Returns the result of the post-process"},
             "quiet": {"desc": "Returns the result of the post-process (deprecated, use return_data param instead)"},
             "process_method": {"desc": "How should valid post-processed files be handled"},
@@ -1332,6 +1333,8 @@ class CMDPostProcess(ApiCall):
         self.force_replace, args = self.check_params(args, kwargs, "force_replace", False, False, "bool", []) or self.force
 
         self.force_next, args = self.check_params(args, kwargs, "force_next", False, False, "bool", [])
+        self.no_queue, args = self.check_params(args, kwargs, "no_queue", False, False, "bool", [])
+        self.no_queue = self.no_queue or self.force_next
 
         self.quiet, args = self.check_params(args, kwargs, "quiet", False, False, "bool", [])
         self.return_data, args = self.check_params(args, kwargs, "return_data", False, False, "bool", []) or self.quiet
@@ -1362,7 +1365,7 @@ class CMDPostProcess(ApiCall):
             failed=self.failed,
             delete=self.delete,
             mode=self.type,
-            force_next=self.force_next,
+            no_queue=self.no_queue,
         )
 
         if not self.return_data:

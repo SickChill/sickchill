@@ -14,7 +14,7 @@ from sickchill.helper import sanitize_filename, try_int
 from sickchill.helper.list_status import build_list_status
 from sickchill.oldbeard import config, db, helpers, tmdbLists, tvmazePremieres, ui
 from sickchill.oldbeard.blackandwhitelist import short_group_names
-from sickchill.oldbeard.common import Quality
+from sickchill.oldbeard.common import Quality, parse_anime_form
 from sickchill.oldbeard.trakt_api import TraktAPI, trakt_credentials_configured
 from sickchill.oldbeard.traktTrending import trakt_trending
 from sickchill.show.recommendations.imdb import imdb_popular
@@ -769,7 +769,11 @@ class AddShows(Home):
 
         # prepare the inputs for passing along
         scene = config.checkbox_to_value(self.get_body_argument("scene", default=None))
-        anime = config.checkbox_to_value(self.get_body_argument("anime", default=None))
+        anime = parse_anime_form(
+            config.checkbox_to_value(self.get_body_argument("anime", default=None)),
+            self.get_body_argument("anime_numbering", default=None),
+            int(bool(settings.ANIME_DEFAULT)),
+        )
         season_folders = config.checkbox_to_value(self.get_body_argument("season_folders", default=None))
         subtitles = config.checkbox_to_value(self.get_body_argument("subtitles", default=None))
         subtitles_sc_metadata = config.checkbox_to_value(self.get_body_argument("subtitles_sc_metadata", default=None))

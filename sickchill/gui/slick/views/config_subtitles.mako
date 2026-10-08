@@ -22,7 +22,7 @@
                 }
             });
         });
-        $('#config-components').tabs();
+        initConfigComponentTabs();
         $('#subtitles_dir').fileBrowser({ title: _('Select Subtitles Download Directory') });
     </script>
 </%block>
