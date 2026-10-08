@@ -1,3 +1,23 @@
+### 2026.10.8
+
+[full changelog](https://github.com/SickChill/SickChill/compare/2026.9.18...2026.10.8)
+
+* feat: plugin platform for download clients, providers, metadata generators, and notifiers, with hybrid config migration (#9188)
+* feat: anime numbering modes and Nyaa search/config updates (#9231)
+* feat: home show-list Location column and table layout (#9235, #9236)
+* feat: persist manual post-processing form settings (#9237)
+* feat: optional poster hover zoom on the home page (#9239)
+* update: block `.exe` search hits so they are not cached or snatched (#9232)
+* update: provider HTTP 429 / rate-limit handling (#9224)
+* update: Windows timezone, `fromtimestamp`, and drive-map handling (#9203, #9204, #9208, #9217)
+* update: chmod the subtitle file actually written; associated-file / sidecar paths (#9201, #9199)
+* update: metadata per-episode runtime as a string (#9205)
+* update: failed-download handling (#9207)
+* update: README TheTVDB attribution logos (dark/light) (#9240, #9241, #9242)
+* ci: Docker image size reduction; GitHub packaging/build updates (#9223, #9222)
+* chore: DSM6/Synology greenlet floor (#9234)
+* chore: dependency updates (#9200, #9219, #9220, #9227, #9233)
+
 ### 2026.9.18
 
 [full changelog](https://github.com/SickChill/SickChill/compare/2024.3.1...2026.9.18)
