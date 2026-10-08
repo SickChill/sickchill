@@ -58,34 +58,26 @@ To run SickChill you will need Python 3.10+, preferably 3.13.
 Before using this with your existing database (`sickbeard.db`) please make a backup copy of it and delete any other database files such as cache.db and failed.db if present.
 We HIGHLY recommend starting out with no database files at all to make this a fresh start but the choice is at your own risk.
 
-<style>
-    .thetvdbattribution {
-        display: flex;
-        margin: 5px 0;
-        padding: 15px;
-        background-color: #365658;
-        border: 1px solid #0d1313;
-        min-height: 80px;
-        align-items: center;
-        justify-content: center;
-        font-size: 13px;
-    }
-    .thetvdbattribution:hover {
-        background-color: #406264;
-    }
-    .thetvdbattribution img {
-        margin: 0 10px 0;
-    }
-</style>
 ### Attribution
-### Thanks to [TheTVDB](https://theTVDB.com) for API access.
-<div style="max-width: 500px">
-    <a class="thetvdbattribution" style="" href="https://thetvdb.com/subscribe">
-        <img src="https://thetvdb.com/images/attribution/logo1.png" height="80">
-        Metadata provided by TheTVDB. Please consider adding missing information or subscribing.
-    </a>
-</div>
 
+### Thanks to [TheTVDB](https://thetvdb.com) for API access.
+
+<a href="https://thetvdb.com/subscribe">
+  <table>
+    <tr>
+      <td width="148" valign="middle">
+        <picture>
+          <source media="(prefers-color-scheme: dark)" srcset="https://thetvdb.com/images/attribution/logo1.png">
+          <source media="(prefers-color-scheme: light)" srcset="https://thetvdb.com/images/attribution/logo2.png">
+          <img src="https://thetvdb.com/images/attribution/logo2.png" alt="theTVDB" width="148" height="80">
+        </picture>
+      </td>
+      <td valign="middle">
+        Metadata provided by TheTVDB. Please consider adding missing information or subscribing.
+      </td>
+    </tr>
+  </table>
+</a>
 
 ### Thanks to [JetBrains](https://jb.gg/OpenSourceSupport) for previous "All Products Pack" licenses free of charge for SickChill developers as part of their support of OSS.
 <a href="https://jb.gg/OpenSourceSupport"><img src="https://resources.jetbrains.com/storage/products/company/brand/logos/jb_beam.svg" alt="Jetbrains IDE and link" height="45"><img src="https://resources.jetbrains.com/storage/products/company/brand/logos/jb_square.svg" height="45"><img src="https://resources.jetbrains.com/storage/products/company/brand/logos/PyCharm_icon.svg" height="45"><img src="https://resources.jetbrains.com/storage/products/company/brand/logos/IntelliJ_IDEA_icon.svg" height="45"></a>
