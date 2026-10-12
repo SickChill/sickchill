@@ -10,7 +10,6 @@ from urllib.parse import parse_qs, unquote, unquote_plus, urlparse
 
 import appdirs
 import rarfile
-import validators
 
 from sickchill import settings
 from sickchill.init_helpers import get_current_version
@@ -422,15 +421,16 @@ def sanitize_filename(filename):
 
 
 def valid_url(url):
-    try:
-        valid = validators.url(url)
-    except validators.utils.ValidationError:
-        valid = False  # ValidationError isn't an exception so doesn't actually get here
+    """Return True if ``url`` is an http(s) URL with a host.
 
-    if not valid:
-        valid = False  # if ValidationError in response set to False
-
-    return valid
+    Accepts Docker/LAN hostnames that have no public TLD.
+    """
+    if not url or not isinstance(url, str):
+        return False
+    parts = urlparse(url.strip())
+    if parts.scheme not in ("http", "https"):
+        return False
+    return bool(parts.netloc and parts.hostname)
 
 
 def try_int(candidate, default_value=0) -> int:

@@ -91,7 +91,7 @@ class Provider(TorrentProvider):
                     continue
 
                 try:
-                    with BS4Parser(trimmedData, "html5lib") as html:
+                    with BS4Parser(trimmedData, "lxml") as html:
                         result_table = html.find("table", {"id": "torrent_table"})
 
                         if not result_table:

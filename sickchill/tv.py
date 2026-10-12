@@ -14,8 +14,7 @@ from typing import Union
 from weakref import WeakKeyDictionary
 from xml.etree import ElementTree
 
-from imdbpie import Imdb, ImdbFacade
-from unidecode import unidecode
+from text_unidecode import unidecode
 
 import sickchill
 import sickchill.oldbeard.providers
@@ -58,6 +57,7 @@ from sickchill.oldbeard.common import (
     statusStrings,
     uses_absolute_numbering,
 )
+from sickchill.oldbeard.imdb_api import Imdb, ImdbFacade
 from sickchill.oldbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 from sickchill.oldbeard.network_timezones import sc_now, sc_timezone, sc_today
 from sickchill.show.Show import Show
@@ -1227,8 +1227,7 @@ class TVShow(object):
     def _fetch_imdb_title(self, imdb_id):
         """Isolated so it can be run in a thread with a timeout.
 
-        Resolves redirected/legacy IMDb ids before calling imdbpie, which otherwise
-        raises ``Title not found. … is a redirection imdb id``.
+        Resolves redirected/legacy IMDb ids before fetching title details.
         """
         client = Imdb()
         resolved_id = helpers.resolve_imdb_title_id(imdb_id, client=client) or imdb_id

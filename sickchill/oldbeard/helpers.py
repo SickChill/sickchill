@@ -30,8 +30,8 @@ import requests
 import urllib3.exceptions
 from cachecontrol import CacheControl
 from cryptography.hazmat.primitives import serialization
+from text_unidecode import unidecode
 from tornado._locale_data import LOCALE_NAMES
-from unidecode import unidecode
 from urllib3 import disable_warnings
 
 import sickchill
@@ -1745,15 +1745,13 @@ def resolve_imdb_title_id(imdb_id: Union[str, None], client=None) -> str:
     """Normalize an IMDb title id and follow IMDb redirections to the canonical id.
 
     IMDb sometimes keeps duplicate/legacy ids that redirect to a canonical ``tt`` id.
-    ``imdbpie`` refuses those with ``Title not found. … is a redirection imdb id``.
     """
     normalized = normalize_imdb_id(imdb_id)
     if not normalized:
         return ""
 
     try:
-        from imdbpie import Imdb
-        from imdbpie.imdbpie import BASE_URI
+        from sickchill.oldbeard.imdb_api import BASE_URI, Imdb
     except Exception as error:
         logger.debug(f"IMDb redirect resolve unavailable: {error}")
         return normalized

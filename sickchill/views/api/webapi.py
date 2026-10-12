@@ -102,9 +102,12 @@ class ApiHandler(RequestHandler):
         _call_dispatcher = self.call_dispatcher
         # if profile was set wrap "_call_dispatcher" in the profile function
         if "profile" in kwargs:
-            from profilehooks import profile
-
-            _call_dispatcher = profile(_call_dispatcher, immediate=True)
+            try:
+                from profilehooks import profile
+            except ImportError:
+                logger.debug("API profile requested but profilehooks is not installed")
+            else:
+                _call_dispatcher = profile(_call_dispatcher, immediate=True)
             del kwargs["profile"]
 
         try:

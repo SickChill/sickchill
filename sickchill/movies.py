@@ -15,7 +15,7 @@ from sickchill.oldbeard.network_timezones import sc_timezone
 
 # import imdb
 # from imdb.parser.http.piculet import Path, Rule
-# TODO: Implement imdbpie throughout, presently commented out so no errors.
+# TODO: Wire IMDb title lookup through sickchill.oldbeard.imdb_api.
 logger = logging.getLogger("sickchill.movie")
 
 

@@ -53,7 +53,7 @@ class Provider(TorrentProvider):
 
         # Yay, lets add another request to the process since they are unreasonable.
         response = self.get_url(self.url, returns="text")
-        with BS4Parser(response, "html5lib") as html:
+        with BS4Parser(response, "lxml") as html:
             form = html.find("form", id="loginform")
             if form:
                 self.urls["login"] = urljoin(self.url, form["action"])

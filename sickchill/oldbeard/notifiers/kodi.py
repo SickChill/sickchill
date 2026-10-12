@@ -1,12 +1,9 @@
-from urllib.error import URLError
 from urllib.parse import unquote_plus
-
-from beekeeper.exceptions import RequestTimeout
-from kodipydent import Kodi
 
 from sickchill import logger, settings
 from sickchill.helper import try_int
 from sickchill.oldbeard import common
+from sickchill.oldbeard.kodi_jsonrpc import DEFAULT_PORT, KodiClient, KodiRPCError
 
 
 class Notifier(object):
@@ -18,11 +15,16 @@ class Notifier(object):
         for host in (x.strip() for x in (hosts or settings.KODI_HOST or "").split(",") if x.strip()):
             try:
                 if ":" in host:
-                    bare_host, port = host.split(":")
-                    kodi = Kodi(bare_host, username or settings.KODI_USERNAME, password or settings.KODI_PASSWORD, port=try_int(port, 8080))
+                    bare_host, port = host.split(":", 1)
+                    kodi = KodiClient(
+                        bare_host,
+                        username or settings.KODI_USERNAME,
+                        password or settings.KODI_PASSWORD,
+                        port=try_int(port, DEFAULT_PORT),
+                    )
                 else:
-                    kodi = Kodi(host, username or settings.KODI_USERNAME, password or settings.KODI_PASSWORD)
-                kodi.host = kodi.variables()["hostname"]["value"]
+                    kodi = KodiClient(host, username or settings.KODI_USERNAME, password or settings.KODI_PASSWORD)
+                kodi.ping()
                 try:
                     server_name = kodi.Settings.GetSettingValue(setting="services.devicename")["result"]["value"]
                     kodi.name = server_name
@@ -31,9 +33,8 @@ class Notifier(object):
 
                 if kodi not in self._connections:
                     self._connections.append(kodi)
-            except (URLError, RequestTimeout, KeyError, IndexError):
+            except (KodiRPCError, KeyError, IndexError, ValueError):
                 pass
-                # logger.info('Unable to connect to Kodi host as {0}, make sure the username and password is correct and that the http control is enabled'.format(host))
 
     @property
     def connections(self):
@@ -171,7 +172,7 @@ class Notifier(object):
                         return True
 
                     result += 1
-            except (URLError, RequestTimeout):
+            except KodiRPCError:
                 pass
 
         return result > 0
