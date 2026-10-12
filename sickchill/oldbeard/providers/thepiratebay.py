@@ -200,7 +200,7 @@ class TrackerCacheDBConnection(db.DBConnection):
         sql_result = self.select_one("SELECT * FROM trackers WHERE provider = ?", [self.provider_id])
 
         # Timezone-aware minimum sentinel (far in the past)
-        min_aware = datetime.datetime.min  # noqa: DTZ901
+        min_aware = datetime.datetime.min.replace(tzinfo=sc_timezone)
 
         if sql_result:
             last_time = datetime.datetime.fromtimestamp(sql_result["time"], tz=sc_timezone)
