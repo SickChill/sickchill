@@ -1437,7 +1437,7 @@ class TVShow(object):
                             episode_object.status = new_status
                             episode_object.subtitles = []
                             episode_object.subtitles_searchcount = 0
-                            episode_object.subtitles_lastsearch = str(datetime.datetime.min)  # noqa: DTZ901
+                            episode_object.subtitles_lastsearch = str(datetime.datetime.min)
                         episode_object.location = ""
                         episode_object.has_nfo = False
                         episode_object.has_tbn = False
@@ -1709,7 +1709,7 @@ class TVEpisode(object):
     description = DirtySetter("")
     subtitles = DirtySetter(list())
     subtitles_searchcount = DirtySetter(0)
-    subtitles_lastsearch = DirtySetter(str(datetime.datetime.min))  # noqa: DTZ901
+    subtitles_lastsearch = DirtySetter(str(datetime.datetime.min))
     airdate = DirtySetter(datetime.date.min)
     has_nfo = DirtySetter(False)
     has_tbn = DirtySetter(False)
@@ -1923,7 +1923,7 @@ class TVEpisode(object):
             self.description = ""
             self.subtitles = []
             self.subtitles_searchcount = 0
-            self.subtitles_lastsearch = str(datetime.datetime.min)  # noqa: DTZ901
+            self.subtitles_lastsearch = str(datetime.datetime.min)
             existing_location = self._location
             self.location = ""
             self.file_size = 0
