@@ -3,6 +3,7 @@ from __future__ import annotations
 import hashlib
 import hmac
 import json
+import os
 import re
 import tempfile
 from datetime import date, datetime, timezone
@@ -19,8 +20,8 @@ SEARCH_BASE_URI = "https://v2.sg.media-imdb.com"
 USER_AGENT = "IMDb/8.3.1 (iPhone9,4; iOS 11.2.1)"
 APP_KEY = "76a6cc20-6073-4290-8a2c-951b4580ae4a"
 _TITLE_AUX_PATH = "/template/imdb-ios-writable/title-auxiliary-v31.jstl/render"
-_CREDS_PATH = Path(tempfile.gettempdir()) / "sickchill-imdb-credentials.json"
 _IMDB_ID_RE = re.compile(r"[a-zA-Z]{2}[0-9]{7,}", re.IGNORECASE)
+_CREDS_NAME = "imdb-credentials.json"
 
 
 class ImdbAPIError(Exception):
@@ -73,23 +74,38 @@ def _sigv4_headers(url: str, creds: dict) -> dict[str, str]:
     return headers
 
 
+def _creds_path() -> Path:
+    from sickchill import settings
+
+    cache_dir = getattr(settings, "CACHE_DIR", None)
+    if cache_dir:
+        return Path(cache_dir) / _CREDS_NAME
+    return Path(tempfile.gettempdir()) / f"sickchill-{_CREDS_NAME}"
+
+
 def _load_cached_creds() -> dict | None:
     try:
-        return json.loads(_CREDS_PATH.read_text(encoding="utf-8"))
+        return json.loads(_creds_path().read_text(encoding="utf-8"))
     except (OSError, ValueError):
         return None
 
 
 def _store_creds(creds: dict) -> dict:
+    path = _creds_path()
     try:
-        _CREDS_PATH.write_text(json.dumps(creds), encoding="utf-8")
+        path.parent.mkdir(parents=True, exist_ok=True)
+        fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
+        with os.fdopen(fd, "w", encoding="utf-8") as handle:
+            handle.write(json.dumps(creds))
     except OSError:
         pass
     return creds
 
 
 def _creds_need_refresh(creds: dict | None) -> bool:
-    if not creds or not creds.get("expirationTimeStamp"):
+    if not isinstance(creds, dict):
+        return True
+    if not creds.get("expirationTimeStamp") or not creds.get("accessKeyId") or not creds.get("secretAccessKey"):
         return True
     try:
         expires = datetime.fromisoformat(str(creds["expirationTimeStamp"]).replace("Z", "+00:00"))
@@ -101,14 +117,20 @@ def _creds_need_refresh(creds: dict | None) -> bool:
 
 
 def _fetch_credentials() -> dict:
-    response = requests.post(
-        f"{BASE_URI}/authentication/credentials/temporary/ios82",
-        json={"appKey": APP_KEY},
-        headers={"User-Agent": USER_AGENT},
-        timeout=15,
-    )
-    response.raise_for_status()
-    return response.json()["resource"]
+    try:
+        response = requests.post(
+            f"{BASE_URI}/authentication/credentials/temporary/ios82",
+            json={"appKey": APP_KEY},
+            headers={"User-Agent": USER_AGENT},
+            timeout=15,
+        )
+        response.raise_for_status()
+        resource = response.json()["resource"]
+    except (requests.RequestException, ValueError, KeyError, TypeError) as error:
+        raise ImdbAPIError(f"Failed to fetch IMDb credentials: {error}") from error
+    if not isinstance(resource, dict) or not resource.get("accessKeyId") or not resource.get("secretAccessKey"):
+        raise ImdbAPIError("IMDb credentials response missing keys")
+    return resource
 
 
 class Imdb:
@@ -133,7 +155,10 @@ class Imdb:
             full_url = url
         if urlparse(url).netloc == HOST:
             headers.update(_sigv4_headers(full_url, self._credentials()))
-        response = self.session.get(url, headers=headers, params=params, timeout=20)
+        try:
+            response = self.session.get(url, headers=headers, params=params, timeout=20)
+        except requests.RequestException as error:
+            raise ImdbAPIError(f"Failed talking to IMDb: {error}") from error
         if response.status_code == 404:
             raise LookupError(f"Resource {url} not found")
         if not response.ok:

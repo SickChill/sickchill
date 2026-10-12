@@ -11,6 +11,7 @@ import requests
 from sickchill.helper.common import valid_url
 from sickchill.oldbeard.notifiers.tweet import Notifier as TwitterNotifier
 from sickchill.oldbeard.providers.btn import Provider as BTNProvider
+from sickchill.oldbeard.providers.thepiratebay import Provider as TPBProvider
 from sickchill.oldbeard.scdatetime import _format_timeago, sctimeago
 
 
@@ -26,6 +27,7 @@ class ValidUrlTests(unittest.TestCase):
         self.assertFalse(valid_url("not a url"))
         self.assertFalse(valid_url("magnet:?xt=urn:btih:abc"))
         self.assertFalse(valid_url("ftp://example.com/file"))
+        self.assertFalse(valid_url("http://example.com:99999/"))
 
 
 class TimeagoTests(unittest.TestCase):
@@ -69,6 +71,16 @@ class BtnJsonRpcTests(unittest.TestCase):
         self.assertIn("api-error", data)
 
 
+class TpbTrackerTests(unittest.TestCase):
+    def test_tracker_js_allows_whitespace(self):
+        provider = TPBProvider()
+        script = "'&tr=' + encodeURIComponent( 'udp://tracker.example:80/announce' )"
+        with patch.object(provider, "get_url", return_value=script):
+            result = provider.get_tracker_list()
+        self.assertIn("tracker.example", result)
+        self.assertTrue(result.startswith("&tr="))
+
+
 class TwitterNotifierTests(unittest.TestCase):
     def test_send_tweet_posts_status(self):
         notifier = TwitterNotifier()
@@ -81,6 +93,7 @@ class TwitterNotifierTests(unittest.TestCase):
         args, kwargs = session.post.call_args
         self.assertEqual(args[0], "https://api.x.com/1.1/statuses/update.json")
         self.assertEqual(kwargs["data"]["status"], "hello from sickchill")
+        self.assertEqual(kwargs["timeout"], 10)
         response.raise_for_status.assert_called_once()
 
     def test_send_tweet_timeout(self):

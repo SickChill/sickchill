@@ -81,7 +81,13 @@ class Notifier(object):
         results = dict()
         for connection in self.connections:
             logger.debug("Sending {0} notification to '{1}' - {2}".format(dest_app, connection.host, message))
-            response = connection.GUI.ShowNotification(title=title, message=message, image=settings.LOGO_URL)
+            try:
+                response = connection.GUI.ShowNotification(title=title, message=message, image=settings.LOGO_URL)
+            except KodiRPCError:
+                if settings.KODI_ALWAYS_ON or force:
+                    logger.warning("Failed to send notification to {0} for '{1}', check configuration and try again.".format(dest_app, connection.host))
+                results[connection.host] = False
+                continue
             if response and response.get("result"):
                 results[connection.host] = self.success(response)
             else:

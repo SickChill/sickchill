@@ -55,7 +55,10 @@ class Provider(TorrentProvider):
     def get_tracker_list(self):
         try:
             data = self.get_url(self.script_url)
-            matcher = re.compile(r"'&\+?tr='\+encodeURIComponent\('((?:udp|tcp|http|https)://[^']+)'\)", re.IGNORECASE | re.MULTILINE)
+            matcher = re.compile(
+                r"'&\+?tr='\s*\+\s*encodeURIComponent\s*\(\s*'((?:udp|tcp|http|https)://[^']+)'\s*\)",
+                re.IGNORECASE | re.MULTILINE,
+            )
             trackers_list = matcher.findall(data or "")
             if trackers_list:
                 joined = "&".join(urlencode({"tr": tracker}) for tracker in trackers_list)

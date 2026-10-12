@@ -62,7 +62,10 @@ class KodiClient:
         try:
             response = self._session.post(self.url, json=payload, timeout=self.timeout)
             response.raise_for_status()
-            return response.json()
+            body = response.json()
+            if isinstance(body, dict) and body.get("error"):
+                raise KodiRPCError(f"JSON-RPC error from Kodi at {self.host}:{self.port}: {body['error']}")
+            return body
         except requests.Timeout as error:
             raise KodiRPCError(f"Timeout talking to Kodi at {self.host}:{self.port}") from error
         except (requests.RequestException, ValueError) as error:

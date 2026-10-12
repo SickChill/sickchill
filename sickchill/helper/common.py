@@ -427,7 +427,11 @@ def valid_url(url):
     """
     if not url or not isinstance(url, str):
         return False
-    parts = urlparse(url.strip())
+    try:
+        parts = urlparse(url.strip())
+        _ = parts.port
+    except ValueError:
+        return False
     if parts.scheme not in ("http", "https"):
         return False
     return bool(parts.netloc and parts.hostname)

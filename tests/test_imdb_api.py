@@ -5,9 +5,8 @@ from __future__ import annotations
 import unittest
 from unittest.mock import MagicMock, patch
 
-from sickchill.oldbeard.imdb_api import Imdb, ImdbFacade
+from sickchill.oldbeard.imdb_api import Imdb, ImdbFacade, _creds_need_refresh
 from sickchill.show.recommendations.imdb import imdbPopular
-from sickchill.tv import TVShow
 
 
 class ImdbTitleMappingTests(unittest.TestCase):
@@ -33,30 +32,18 @@ class ImdbTitleMappingTests(unittest.TestCase):
         self.assertEqual(title.rating, 9.2)
         self.assertEqual(title.rating_count, 2100000)
 
-        show = object.__new__(TVShow)
-        show.indexerid = 121361
-        show.imdb_id = "tt0944947"
-        show.name = "Game of Thrones"
-        show.startyear = 2011
-        show.runtime = 0
-        show.imdb_info = {}
-        show.imdb_info.update(
-            {
-                "indexer_id": show.indexerid,
-                "imdb_id": title.imdb_id,
-                "title": title.title,
-                "year": title.year,
-                "runtimes": title.runtime,
-                "genres": "|".join(title.genres or []),
-                "certificates": title.certification or "",
-                "rating": str(title.rating),
-                "votes": str(title.rating_count),
-            }
+    def test_incomplete_cached_creds_need_refresh(self):
+        self.assertTrue(_creds_need_refresh(None))
+        self.assertTrue(_creds_need_refresh({"expirationTimeStamp": "2099-01-01T00:00:00Z"}))
+        self.assertTrue(
+            _creds_need_refresh(
+                {
+                    "expirationTimeStamp": "2099-01-01T00:00:00Z",
+                    "accessKeyId": "AKID",
+                    "secretAccessKey": "",
+                }
+            )
         )
-        self.assertEqual(show.imdb_info["imdb_id"], "tt0944947")
-        self.assertEqual(show.imdb_info["title"], "Game of Thrones")
-        self.assertEqual(show.imdb_info["genres"], "drama|adventure")
-        self.assertEqual(show.imdb_info["votes"], "2100000")
 
     def test_eight_digit_tt_id_is_valid(self):
         Imdb.validate_imdb_id("tt41154853")

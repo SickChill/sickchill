@@ -109,7 +109,7 @@ class Notifier(object):
         """
         logger.debug("Sending tweet: {}".format(message))
         try:
-            response = self._api_session().post(f"{self.API_BASE}/statuses/update.json", data={"status": (message or "")[:139]})
+            response = self._api_session().post(f"{self.API_BASE}/statuses/update.json", data={"status": (message or "")[:139]}, timeout=10)
             response.raise_for_status()
         except Exception as error:
             logger.exception(f"Error Sending Tweet: {error}")
@@ -129,7 +129,7 @@ class Notifier(object):
         logger.debug("Sending DM @{0}: {1}".format(dmdest, message))
         try:
             session = self._api_session()
-            user = session.get(f"{self.API_BASE}/users/show.json", params={"screen_name": dmdest})
+            user = session.get(f"{self.API_BASE}/users/show.json", params={"screen_name": dmdest}, timeout=10)
             user.raise_for_status()
             user_id = user.json()["id"]
             event = {
@@ -141,7 +141,7 @@ class Notifier(object):
                     },
                 }
             }
-            response = session.post(f"{self.API_BASE}/direct_messages/events/new.json", json=event)
+            response = session.post(f"{self.API_BASE}/direct_messages/events/new.json", json=event, timeout=10)
             response.raise_for_status()
         except Exception as error:
             logger.exception(f"Error Sending Tweet (DM): {error}")

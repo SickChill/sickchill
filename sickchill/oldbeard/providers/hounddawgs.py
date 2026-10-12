@@ -99,7 +99,7 @@ class Provider(TorrentProvider):
                             continue
 
                         result_tbody = result_table.find("tbody")
-                        entries = result_tbody.contents
+                        entries = (result_tbody or result_table).contents
                         del entries[1::2]
 
                         for result in entries[1:]:
