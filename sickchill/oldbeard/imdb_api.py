@@ -11,6 +11,7 @@ from pathlib import Path
 from types import SimpleNamespace
 from urllib.parse import parse_qs, quote, urlencode, urljoin, urlparse
 
+import appdirs
 import requests
 from text_unidecode import unidecode
 
@@ -80,7 +81,7 @@ def _creds_path() -> Path:
     cache_dir = getattr(settings, "CACHE_DIR", None)
     if cache_dir:
         return Path(cache_dir) / _CREDS_NAME
-    return Path(tempfile.gettempdir()) / f"sickchill-{_CREDS_NAME}"
+    return Path(appdirs.user_cache_dir(appname="sickchill")) / _CREDS_NAME
 
 
 def _load_cached_creds() -> dict | None:
@@ -92,13 +93,24 @@ def _load_cached_creds() -> dict | None:
 
 def _store_creds(creds: dict) -> dict:
     path = _creds_path()
+    tmp_name = None
     try:
         path.parent.mkdir(parents=True, exist_ok=True)
-        fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
+        fd, tmp_name = tempfile.mkstemp(prefix=".imdb-creds-", dir=str(path.parent))
+        try:
+            os.fchmod(fd, 0o600)
+        except OSError:
+            pass
         with os.fdopen(fd, "w", encoding="utf-8") as handle:
             handle.write(json.dumps(creds))
+        os.replace(tmp_name, path)
+        tmp_name = None
     except OSError:
-        pass
+        if tmp_name:
+            try:
+                os.unlink(tmp_name)
+            except OSError:
+                pass
     return creds
 
 
@@ -247,9 +259,11 @@ class ImdbFacade:
             aux_data = self._client.get_title_auxiliary(imdb_id=imdb_id)
         except (LookupError, ImdbAPIError, ValueError):
             return None
-        if not isinstance(base_data, dict):
+        if not isinstance(base_data, dict) or not base_data:
             return None
         base = base_data.get("base") or {}
+        if not base.get("title"):
+            return None
         ratings = base_data.get("ratings") or {}
         aux = aux_data if isinstance(aux_data, dict) else {}
         try:

@@ -2,10 +2,12 @@
 
 from __future__ import annotations
 
+import tempfile
 import unittest
+from pathlib import Path
 from unittest.mock import MagicMock, patch
 
-from sickchill.oldbeard.imdb_api import Imdb, ImdbFacade, _creds_need_refresh
+from sickchill.oldbeard.imdb_api import Imdb, ImdbFacade, _creds_need_refresh, _creds_path
 from sickchill.show.recommendations.imdb import imdbPopular
 
 
@@ -31,6 +33,17 @@ class ImdbTitleMappingTests(unittest.TestCase):
         self.assertEqual(title.certification, "TV-MA")
         self.assertEqual(title.rating, 9.2)
         self.assertEqual(title.rating_count, 2100000)
+
+    def test_empty_title_payload_returns_none(self):
+        client = MagicMock()
+        client.get_title.return_value = {}
+        client.get_title_auxiliary.return_value = {"genres": ["Drama"]}
+        self.assertIsNone(ImdbFacade(client=client).get_title("tt0944947"))
+
+    def test_creds_path_avoids_shared_tempdir(self):
+        with patch("sickchill.settings.CACHE_DIR", None):
+            path = _creds_path()
+        self.assertNotEqual(Path(path).parent.resolve(), Path(tempfile.gettempdir()).resolve())
 
     def test_incomplete_cached_creds_need_refresh(self):
         self.assertTrue(_creds_need_refresh(None))

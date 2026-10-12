@@ -40,6 +40,15 @@ class TestKodiClient(unittest.TestCase):
         self.assertEqual(payload["method"], "VideoLibrary.Scan")
         self.assertNotIn("params", payload)
 
+    def test_non_object_json_becomes_kodi_rpc_error(self):
+        client = KodiClient("192.168.1.9")
+        mock_response = MagicMock()
+        mock_response.json.return_value = ["pong"]
+        mock_response.raise_for_status = MagicMock()
+        with patch.object(client._session, "post", return_value=mock_response):
+            with self.assertRaises(KodiRPCError):
+                client.ping()
+
     def test_jsonrpc_error_becomes_kodi_rpc_error(self):
         client = KodiClient("192.168.1.9")
         mock_response = MagicMock()
