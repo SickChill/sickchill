@@ -116,7 +116,7 @@ types = [
     "types-pytz>=2026.4.0.20260926,<2027.0.0",
     "types-requests>=2.33.0.20260906",
     "types-setuptools>=84.0.0.20260812",
-    "types-six>=1.17.0.20260724",
+    "types-six>=1.17.0.20261008",
 ]
 
 [build-system]
