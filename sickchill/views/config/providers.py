@@ -253,13 +253,13 @@ class ConfigProviders(Config):
                 newznab_provider_dict[provider_id].needs_auth = key and key != "0"
                 newznab_provider_dict[provider_id].search_mode = self.get_body_argument(provider_id + "_search_mode", "episode")
                 newznab_provider_dict[provider_id].search_fallback = config.checkbox_to_value(
-                    self.get_body_argument(provider_id + "search_fallback", 0), value_on=1, value_off=0
+                    self.get_body_argument(provider_id + "_search_fallback", 0), value_on=1, value_off=0
                 )
                 newznab_provider_dict[provider_id].enable_daily = config.checkbox_to_value(
-                    self.get_body_argument(provider_id + "enable_daily", 0), value_on=1, value_off=0
+                    self.get_body_argument(provider_id + "_enable_daily", 0), value_on=1, value_off=0
                 )
                 newznab_provider_dict[provider_id].enable_backlog = config.checkbox_to_value(
-                    self.get_body_argument(provider_id + "enable_backlog", 0), value_on=1, value_off=0
+                    self.get_body_argument(provider_id + "_enable_backlog", 0), value_on=1, value_off=0
                 )
 
                 # mark it finished

@@ -212,15 +212,17 @@ class GenericProvider(object):
                 else:
                     results[episode.episode].extend(cache_result)
 
-                continue
+                # Episode cache hits are not season packs; keep going so we still search for packs.
+                if search_mode != "season":
+                    continue
 
-            if len(episodes) > 1 and search_mode == "season" and searched_scene_season == episode.scene_season:
+            if search_mode == "season" and searched_scene_season == episode.scene_season:
                 continue
 
             search_strings = []
             searched_scene_season = episode.scene_season
 
-            if len(episodes) > 1 and search_mode == "season":
+            if search_mode == "season":
                 search_strings = self.get_season_search_strings(episode)
             elif search_mode == "episode":
                 search_strings = self.get_episode_search_strings(episode)
@@ -230,7 +232,8 @@ class GenericProvider(object):
             for search_string in search_strings:
                 items_list += self.search(search_string)
 
-        if len(results) == len(episodes):
+        # Cache covering every episode is enough for episode search; season search still needs items_list.
+        if search_mode != "season" and len(results) == len(episodes):
             return results
 
         if items_list:

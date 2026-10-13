@@ -383,6 +383,7 @@ def search_for_needed_episodes():
     # noinspection DuplicatedCode
     original_thread_name = threading.current_thread().name
 
+    # Daily search is RSS/cache only; search_mode and search_fallback apply to backlog.
     providers = [x for x in sickchill.oldbeard.providers.sorted_provider_list(settings.RANDOMIZE_PROVIDERS) if x.is_active and x.enable_daily and x.can_daily]
     for curProvider in providers:
         threading.current_thread().name = f"{original_thread_name} :: [{curProvider.name}]"
@@ -505,15 +506,27 @@ def search_providers(show, episodes, manual=False, downCurQuality=False):
                     else:
                         found_results[curProvider.name][current_episode] = search_results[current_episode]
 
-                break
-            elif search_count == 2 or not curProvider.search_fallback:
+            # Season-pack search succeeds only when a season pack was found.
+            # Episode search succeeds when any individual/multi-ep result was found.
+            if search_mode == "season":
+                found_wanted_results = SEASON_RESULT in search_results
+            else:
+                found_wanted_results = any(key != SEASON_RESULT for key in search_results)
+
+            # Episode → season pack only on backlog. Daily RSS never uses this loop;
+            # manual/failed searches stay on the episode that was requested.
+            allow_fallback = bool(curProvider.search_fallback) and search_count == 1
+            if search_mode == "episode" and manual:
+                allow_fallback = False
+
+            if found_wanted_results or not allow_fallback:
                 break
 
             if search_mode == "season":
                 logger.debug("Fallback episode search initiated")
                 search_mode = "episode"
             else:
-                logger.debug("Fallback season pack search initiate")
+                logger.debug("Fallback season pack search initiated")
                 search_mode = "season"
 
         # skip to next provider if we have no results to process
