@@ -234,10 +234,11 @@ def best_subtitle_preference_kwargs():
     """
     params = inspect.signature(subliminal.ProviderPool.download_best_subtitles).parameters
     if "subtitle_categories" in params:
+        # 2.7 filters omitted categories out; list all three so preference is order only.
         if settings.SUBTITLES_HEARING_IMPAIRED:
-            categories = "hi,n"
+            categories = "hi,n,fo"
         elif settings.SUBTITLES_FOREIGN_ONLY:
-            categories = "fo,n"
+            categories = "fo,n,hi"
         else:
             categories = ""
         return {"subtitle_categories": categories}

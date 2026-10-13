@@ -255,14 +255,14 @@ class TestForcedSubtitles(unittest.TestCase):
         settings.SUBTITLES_FOREIGN_ONLY = True
         foreign = best_subtitle_preference_kwargs()
         if uses_categories:
-            self.assertEqual(foreign, {"subtitle_categories": "fo,n"})
+            self.assertEqual(foreign, {"subtitle_categories": "fo,n,hi"})
         else:
             self.assertTrue(foreign["foreign_only"])
 
         settings.SUBTITLES_HEARING_IMPAIRED = True
         both = best_subtitle_preference_kwargs()
         if uses_categories:
-            self.assertEqual(both, {"subtitle_categories": "hi,n"})
+            self.assertEqual(both, {"subtitle_categories": "hi,n,fo"})
         else:
             self.assertTrue(both["hearing_impaired"])
 
@@ -309,7 +309,7 @@ class TestForcedSubtitles(unittest.TestCase):
         pool.download_best_subtitles.assert_called_once()
         call_kwargs = pool.download_best_subtitles.call_args[1]
         if "subtitle_categories" in call_kwargs:
-            self.assertEqual(call_kwargs["subtitle_categories"], "fo,n")
+            self.assertEqual(call_kwargs["subtitle_categories"], "fo,n,hi")
             self.assertNotIn("foreign_only", call_kwargs)
         else:
             self.assertTrue(call_kwargs.get("foreign_only"))
