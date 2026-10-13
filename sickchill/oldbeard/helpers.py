@@ -30,6 +30,7 @@ import requests
 import urllib3.exceptions
 from cachecontrol import CacheControl
 from cryptography.hazmat.primitives import serialization
+from guessit import guessit
 from text_unidecode import unidecode
 from tornado._locale_data import LOCALE_NAMES
 from urllib3 import disable_warnings
@@ -684,24 +685,19 @@ def sanitizeSceneName(name, anime=False):
     return name
 
 
-_SEASON_OR_EPISODE_TOKEN = re.compile(
-    r"^(?:s\d{1,4}(?:e\d{1,4})*|e\d{1,4}|season\d*|(?:19|20)\d{2}|\d{2,4})$",
-    re.IGNORECASE,
-)
-
-
 def scene_title_matches_show(title, show_name, anime=False):
-    """True when title starts with the full scene show name, then a season/episode token."""
-    show_scene = sanitizeSceneName(show_name or "", anime=anime).lower()
-    title_scene = sanitizeSceneName(title or "", anime=anime).lower()
-    if not show_scene or not title_scene:
+    """True when guessit series title equals the show name (same path as postProcessor.guessit_findit)."""
+    if not title or not show_name:
         return False
-    show_parts = [part for part in show_scene.split(".") if part]
-    title_parts = [part for part in title_scene.split(".") if part]
-    n = len(show_parts)
-    if not n or len(title_parts) <= n or title_parts[:n] != show_parts:
+    guess = guessit(title, {"type": "episode"})
+    parsed_title = guess.get("title")
+    if isinstance(parsed_title, list):
+        parsed_title = " ".join(str(part) for part in parsed_title)
+    if not parsed_title:
         return False
-    return bool(_SEASON_OR_EPISODE_TOKEN.match(title_parts[n]))
+    if sanitizeSceneName(parsed_title, anime=anime).lower() != sanitizeSceneName(show_name, anime=anime).lower():
+        return False
+    return guess.get("season") is not None or guess.get("episode") is not None or guess.get("date") is not None
 
 
 def create_https_certificates(ssl_cert, ssl_key):

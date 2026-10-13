@@ -629,6 +629,10 @@ class HelpersMiscTests(unittest.TestCase):
         self.assertFalse(helpers.scene_title_matches_show("NCIS.Los.Angeles.S01E01.REPACK.720p", "NCIS"))
         self.assertTrue(helpers.scene_title_matches_show("NCIS.Los.Angeles.S01E01.REPACK.720p", "NCIS Los Angeles"))
         self.assertFalse(helpers.scene_title_matches_show("NCIS.Los.S01E01.REPACK.720p", "NCIS Los Angeles"))
+        self.assertFalse(helpers.scene_title_matches_show("Doctor.Who.2005.PROPER.720p", "Doctor Who"))
+        self.assertTrue(helpers.scene_title_matches_show("Doctor.Who.2005.S01E01.PROPER.720p", "Doctor Who"))
+        self.assertTrue(helpers.scene_title_matches_show("The.Daily.Show.2024.10.13.REPACK", "The Daily Show"))
+        self.assertFalse(helpers.scene_title_matches_show("The.Daily.Show.2024.REPACK", "The Daily Show"))
 
     def test_full_sanitize_scene_name(self):
         cases = [
