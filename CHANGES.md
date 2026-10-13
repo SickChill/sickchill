@@ -16,6 +16,7 @@
 * update: README TheTVDB attribution logos (dark/light) (#9240, #9241, #9242)
 * ci: Docker image size reduction; GitHub packaging/build updates (#9223, #9222)
 * chore: DSM6/Synology greenlet floor (#9234)
+* chore: drop Python 3.10; require 3.11+ and SQLAlchemy 2.1
 * chore: dependency updates (#9200, #9219, #9220, #9227, #9233)
 
 ### 2026.9.18

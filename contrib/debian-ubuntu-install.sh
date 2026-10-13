@@ -117,8 +117,20 @@ if [[ ! -d ${LOCATION} ]]; then
   fi
 fi
 
-echo "Creating virtual environment"
-if ! sudo -u sickchill -g sickchill python3 -m venv ${LOCATION}; then
+PYTHON_BIN=""
+for cand in python3.13 python3.12 python3.11 python3; do
+  if command -v "${cand}" >/dev/null 2>&1 && "${cand}" -c 'import sys; raise SystemExit(0 if sys.version_info >= (3, 11) else 1)'; then
+    PYTHON_BIN="${cand}"
+    break
+  fi
+done
+if [[ -z ${PYTHON_BIN} ]]; then
+  echo "SickChill requires Python 3.11 or newer (Ubuntu 22.04: apt install python3.11 python3.11-venv)"
+  exit 1
+fi
+
+echo "Creating virtual environment with ${PYTHON_BIN}"
+if ! sudo -u sickchill -g sickchill "${PYTHON_BIN}" -m venv ${LOCATION}; then
   whiptail --title "Failed to create virtual environment" --msgbox "Failed to create virtual environment" 8 128
   exit 1
 fi

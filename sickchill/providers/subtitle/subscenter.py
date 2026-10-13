@@ -29,12 +29,11 @@ class SubsCenterSubtitle(Subtitle):
     def __init__(
         self, language, hearing_impaired, page_link, series, season, episode, title, subtitle_id, subtitle_key, subtitle_version, downloaded, releases
     ):
-        super().__init__(language, hearing_impaired, page_link)
+        super().__init__(language, subtitle_id=str(subtitle_id), hearing_impaired=hearing_impaired, page_link=page_link)
         self.series = series
         self.season = season
         self.episode = episode
         self.title = title
-        self.subtitle_id = subtitle_id
         self.subtitle_key = subtitle_key
         self.subtitle_version = subtitle_version
         self.downloaded = downloaded

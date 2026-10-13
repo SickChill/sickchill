@@ -1,4 +1,5 @@
 import datetime
+import inspect
 import os
 import re
 import subprocess
@@ -225,6 +226,27 @@ def code_from_code(code):
     return from_code(code).opensubtitles
 
 
+def best_subtitle_preference_kwargs():
+    """Kwargs for ProviderPool.download_best_subtitles HI / foreign-only preference.
+
+    Subliminal 2.6 takes hearing_impaired and foreign_only; 2.7 takes subtitle_categories
+    (comma-ordered n/hi/fo). Hearing-impaired wins when both settings are on, matching 2.6.
+    """
+    params = inspect.signature(subliminal.ProviderPool.download_best_subtitles).parameters
+    if "subtitle_categories" in params:
+        if settings.SUBTITLES_HEARING_IMPAIRED:
+            categories = "hi,n"
+        elif settings.SUBTITLES_FOREIGN_ONLY:
+            categories = "fo,n"
+        else:
+            categories = ""
+        return {"subtitle_categories": categories}
+    return {
+        "hearing_impaired": settings.SUBTITLES_HEARING_IMPAIRED,
+        "foreign_only": settings.SUBTITLES_FOREIGN_ONLY,
+    }
+
+
 def download_subtitles(episode, force_lang=None):
     existing_subtitles = episode.subtitles
 
@@ -282,10 +304,9 @@ def download_subtitles(episode, force_lang=None):
             subtitles_list,
             video,
             languages=languages,
-            hearing_impaired=settings.SUBTITLES_HEARING_IMPAIRED,
-            foreign_only=settings.SUBTITLES_FOREIGN_ONLY,
             min_score=user_score,
             only_one=not settings.SUBTITLES_MULTI,
+            **best_subtitle_preference_kwargs(),
         )
 
         saved = subliminal.save_subtitles(video, found_subtitles, directory=subtitles_path, single=not settings.SUBTITLES_MULTI, encoding="utf8")
