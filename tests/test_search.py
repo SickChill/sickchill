@@ -185,8 +185,16 @@ class SearchFallbackTests(unittest.TestCase):
         pack = MagicMock()
         pack.quality = 1
         provider.find_search_results.return_value = {common.SEASON_RESULT: [pack]}
-        with patch("sickchill.oldbeard.search.pick_best_result", return_value=None):
+        with patch("sickchill.oldbeard.search.pick_best_result", side_effect=[pack, None]):
             self.assertEqual(self._run(provider), ["season"])
+
+    def test_season_fallback_on_switches_when_pack_not_selectable(self):
+        provider = _provider(search_mode="season", search_fallback=True)
+        pack = MagicMock()
+        pack.quality = 1
+        provider.find_search_results.return_value = {common.SEASON_RESULT: [pack]}
+        with patch("sickchill.oldbeard.search.pick_best_result", return_value=None):
+            self.assertEqual(self._run(provider), ["season", "episode"])
 
     def test_episode_fallback_on_switches_to_season_when_empty(self):
         provider = _provider(search_mode="episode", search_fallback=True)

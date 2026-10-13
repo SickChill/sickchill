@@ -430,12 +430,15 @@ def search_for_needed_episodes():
     return list(found_results.values())
 
 
-def _search_results_cover_requested(search_results, episodes, search_mode):
-    """True when this pass found a season pack, or every requested episode."""
-    if search_mode == "season":
-        return SEASON_RESULT in search_results
+def _search_results_cover_requested(search_results, episodes, search_mode, show):
+    """True when this pass found a selectable season pack, or every requested episode."""
+    season_results = search_results.get(SEASON_RESULT) or []
+    has_selectable_pack = bool(season_results) and pick_best_result(season_results, show) is not None
 
-    if SEASON_RESULT in search_results:
+    if search_mode == "season":
+        return has_selectable_pack
+
+    if has_selectable_pack:
         return True
 
     covered_episodes = set()
@@ -525,9 +528,9 @@ def search_providers(show, episodes, manual=False, downCurQuality=False):
                     else:
                         found_results[curProvider.name][current_episode] = search_results[current_episode]
 
-            # Season-pack search succeeds only when a season pack was found.
+            # Season-pack search succeeds only when a selectable pack was found.
             # Episode search succeeds when every requested episode is covered.
-            found_wanted_results = _search_results_cover_requested(search_results, episodes, search_mode)
+            found_wanted_results = _search_results_cover_requested(search_results, episodes, search_mode, show)
 
             # Episode → season pack only on backlog. Daily RSS never uses this loop;
             # manual/failed searches stay on the episode that was requested.
