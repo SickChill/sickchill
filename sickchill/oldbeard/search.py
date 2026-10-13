@@ -430,6 +430,25 @@ def search_for_needed_episodes():
     return list(found_results.values())
 
 
+def _search_results_cover_requested(search_results, episodes, search_mode):
+    """True when this pass found a season pack, or every requested episode."""
+    if search_mode == "season":
+        return SEASON_RESULT in search_results
+
+    if SEASON_RESULT in search_results:
+        return True
+
+    covered_episodes = set()
+    for result_key, result_list in search_results.items():
+        if result_key == MULTI_EP_RESULT:
+            for result in result_list:
+                covered_episodes.update(episode.episode for episode in result.episodes)
+        elif result_key >= 0 and result_list:
+            covered_episodes.add(result_key)
+
+    return {episode.episode for episode in episodes} <= covered_episodes
+
+
 # noinspection PyPep8Naming
 def search_providers(show, episodes, manual=False, downCurQuality=False):
     """
@@ -507,11 +526,8 @@ def search_providers(show, episodes, manual=False, downCurQuality=False):
                         found_results[curProvider.name][current_episode] = search_results[current_episode]
 
             # Season-pack search succeeds only when a season pack was found.
-            # Episode search succeeds when any individual/multi-ep result was found.
-            if search_mode == "season":
-                found_wanted_results = SEASON_RESULT in search_results
-            else:
-                found_wanted_results = any(key != SEASON_RESULT for key in search_results)
+            # Episode search succeeds when every requested episode is covered.
+            found_wanted_results = _search_results_cover_requested(search_results, episodes, search_mode)
 
             # Episode → season pack only on backlog. Daily RSS never uses this loop;
             # manual/failed searches stay on the episode that was requested.

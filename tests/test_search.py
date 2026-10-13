@@ -198,9 +198,15 @@ class SearchFallbackTests(unittest.TestCase):
         provider.find_search_results.return_value = {}
         self.assertEqual(self._run(provider), ["episode"])
 
-    def test_episode_fallback_on_does_not_switch_when_episodes_found(self):
+    def test_episode_fallback_on_switches_when_only_some_episodes_found(self):
         provider = _provider(search_mode="episode", search_fallback=True)
         provider.find_search_results.return_value = {1: [MagicMock(quality=1)]}
+        with patch("sickchill.oldbeard.search.pick_best_result", return_value=None):
+            self.assertEqual(self._run(provider), ["episode", "season"])
+
+    def test_episode_fallback_on_does_not_switch_when_all_episodes_found(self):
+        provider = _provider(search_mode="episode", search_fallback=True)
+        provider.find_search_results.return_value = {1: [MagicMock(quality=1)], 2: [MagicMock(quality=1)]}
         with patch("sickchill.oldbeard.search.pick_best_result", return_value=None):
             self.assertEqual(self._run(provider), ["episode"])
 

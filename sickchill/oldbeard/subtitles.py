@@ -231,16 +231,18 @@ def best_subtitle_preference_kwargs():
 
     Subliminal 2.6 takes hearing_impaired and foreign_only; 2.7 takes subtitle_categories
     (comma-ordered n/hi/fo). Hearing-impaired wins when both settings are on, matching 2.6.
+    With both settings off, 2.7 uses n,hi,fo so narrative stays first among equal scores.
     """
     params = inspect.signature(subliminal.ProviderPool.download_best_subtitles).parameters
     if "subtitle_categories" in params:
         # 2.7 filters omitted categories out; list all three so preference is order only.
+        # Default n first matches 2.6 with hearing_impaired=False and foreign_only=False.
         if settings.SUBTITLES_HEARING_IMPAIRED:
             categories = "hi,n,fo"
         elif settings.SUBTITLES_FOREIGN_ONLY:
             categories = "fo,n,hi"
         else:
-            categories = ""
+            categories = "n,hi,fo"
         return {"subtitle_categories": categories}
     return {
         "hearing_impaired": settings.SUBTITLES_HEARING_IMPAIRED,

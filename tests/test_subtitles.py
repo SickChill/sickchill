@@ -247,7 +247,7 @@ class TestForcedSubtitles(unittest.TestCase):
         settings.SUBTITLES_FOREIGN_ONLY = False
         empty = best_subtitle_preference_kwargs()
         if uses_categories:
-            self.assertEqual(empty, {"subtitle_categories": ""})
+            self.assertEqual(empty, {"subtitle_categories": "n,hi,fo"})
         else:
             self.assertFalse(empty["hearing_impaired"])
             self.assertFalse(empty["foreign_only"])
