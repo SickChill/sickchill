@@ -6,6 +6,7 @@ from sickchill import logger, settings
 from sickchill.helper.common import try_int
 from sickchill.oldbeard.common import Quality, uses_absolute_numbering
 from sickchill.oldbeard.db import DBConnection
+from sickchill.oldbeard.helpers import scene_title_matches_show
 from sickchill.oldbeard.network_timezones import sc_now, sc_timezone
 from sickchill.providers.GenericProvider import GenericProvider
 from sickchill.providers.result_classes import Proper, TorrentSearchResult
@@ -69,9 +70,12 @@ class TorrentProvider(GenericProvider):
             live_count += 1
             for item in self.search(search_string):
                 title, url = self._get_title_and_url(item)
-                if url and url not in seen_urls:
-                    seen_urls.add(url)
-                    results.append(Proper(title, url, sc_now(), show))
+                if not url or url in seen_urls:
+                    continue
+                if not scene_title_matches_show(title, show.name):
+                    continue
+                seen_urls.add(url)
+                results.append(Proper(title, url, sc_now(), show))
 
         if live_count:
             logger.debug(f"{self.name}: live proper searches for {live_count} season group(s); results={len(results)}")
@@ -104,7 +108,8 @@ class TorrentProvider(GenericProvider):
         else:
             season_no = episode.scene_season if getattr(episode, "scene_season", None) is not None else episode.season
             season_part = "S{0:02d}".format(int(season_no))
-        query = f"{show_name} {season_part}".strip()
+        add_string = self.proper_search_add_string()
+        query = f"{show_name} {season_part} {add_string}".strip()
         logger.debug(f"{self.name}: live proper season search: {query}")
         return {"Episode": {query}}
 

@@ -30,6 +30,7 @@ import requests
 import urllib3.exceptions
 from cachecontrol import CacheControl
 from cryptography.hazmat.primitives import serialization
+from guessit import guessit
 from text_unidecode import unidecode
 from tornado._locale_data import LOCALE_NAMES
 from urllib3 import disable_warnings
@@ -682,6 +683,21 @@ def sanitizeSceneName(name, anime=False):
     name = name.removesuffix(".")
 
     return name
+
+
+def scene_title_matches_show(title, show_name, anime=False):
+    """True when guessit series title equals the show name (same path as postProcessor.guessit_findit)."""
+    if not title or not show_name:
+        return False
+    guess = guessit(title, {"type": "episode"})
+    parsed_title = guess.get("title")
+    if isinstance(parsed_title, list):
+        parsed_title = " ".join(str(part) for part in parsed_title)
+    if not parsed_title:
+        return False
+    if sanitizeSceneName(parsed_title, anime=anime).lower() != sanitizeSceneName(show_name, anime=anime).lower():
+        return False
+    return guess.get("season") is not None or guess.get("episode") is not None or guess.get("date") is not None
 
 
 def create_https_certificates(ssl_cert, ssl_key):
