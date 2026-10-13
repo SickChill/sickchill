@@ -620,6 +620,16 @@ class HelpersMiscTests(unittest.TestCase):
             with self.subTest(case=case):
                 self.assertEqual(helpers.sanitizeSceneName(case["name"], anime=case["anime"]), case["expected"])
 
+    def test_scene_title_matches_show_requires_full_name(self):
+        self.assertTrue(helpers.scene_title_matches_show("Pierre.S01E01.1080p.HEVC.x265-MeGusta", "Pierre"))
+        self.assertTrue(helpers.scene_title_matches_show("Pierre S01E01 1080p WEB H264-SYLiX", "Pierre"))
+        self.assertFalse(helpers.scene_title_matches_show("Saint-Pierre.S01E08.REPACK.1080p.HEVC.x265-MeGusta", "Pierre"))
+        self.assertTrue(helpers.scene_title_matches_show("Spider-Man.S01E01.720p", "Spider-Man"))
+        self.assertTrue(helpers.scene_title_matches_show("NCIS.S01E01.PROPER.720p", "NCIS"))
+        self.assertFalse(helpers.scene_title_matches_show("NCIS.Los.Angeles.S01E01.REPACK.720p", "NCIS"))
+        self.assertTrue(helpers.scene_title_matches_show("NCIS.Los.Angeles.S01E01.REPACK.720p", "NCIS Los Angeles"))
+        self.assertFalse(helpers.scene_title_matches_show("NCIS.Los.S01E01.REPACK.720p", "NCIS Los Angeles"))
+
     def test_full_sanitize_scene_name(self):
         cases = [
             {"name": "Name, with: bad (chars)!", "expected": "name with bad chars"},

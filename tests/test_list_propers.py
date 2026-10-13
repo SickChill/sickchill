@@ -310,15 +310,6 @@ class TestTorrentFindPropersCacheFirst(unittest.TestCase):
 
         self.assertEqual(provider.search.call_count, 1)
 
-    def test_title_matches_show_name_rejects_hyphenated_superset(self):
-        from sickchill.providers.torrent.TorrentProvider import TorrentProvider
-
-        self.assertTrue(TorrentProvider._title_matches_show_name("Pierre.S01E01.1080p.HEVC.x265-MeGusta", "Pierre"))
-        self.assertTrue(TorrentProvider._title_matches_show_name("Pierre S01E01 1080p WEB H264-SYLiX", "Pierre"))
-        self.assertFalse(TorrentProvider._title_matches_show_name("Saint-Pierre.S01E08.REPACK.1080p.HEVC.x265-MeGusta", "Pierre"))
-        self.assertFalse(TorrentProvider._title_matches_show_name("Saint-Pierre S01E10 1080p HEVC x265-MeGusta", "Pierre"))
-        self.assertTrue(TorrentProvider._title_matches_show_name("Spider-Man.S01E01.720p", "Spider-Man"))
-
     def test_live_propers_skip_titles_for_a_different_show(self):
         from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 

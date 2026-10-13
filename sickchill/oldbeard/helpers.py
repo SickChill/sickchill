@@ -684,6 +684,26 @@ def sanitizeSceneName(name, anime=False):
     return name
 
 
+_SEASON_OR_EPISODE_TOKEN = re.compile(
+    r"^(?:s\d{1,4}(?:e\d{1,4})*|e\d{1,4}|season\d*|(?:19|20)\d{2}|\d{2,4})$",
+    re.IGNORECASE,
+)
+
+
+def scene_title_matches_show(title, show_name, anime=False):
+    """True when title starts with the full scene show name, then a season/episode token."""
+    show_scene = sanitizeSceneName(show_name or "", anime=anime).lower()
+    title_scene = sanitizeSceneName(title or "", anime=anime).lower()
+    if not show_scene or not title_scene:
+        return False
+    show_parts = [part for part in show_scene.split(".") if part]
+    title_parts = [part for part in title_scene.split(".") if part]
+    n = len(show_parts)
+    if not n or len(title_parts) <= n or title_parts[:n] != show_parts:
+        return False
+    return bool(_SEASON_OR_EPISODE_TOKEN.match(title_parts[n]))
+
+
 def create_https_certificates(ssl_cert, ssl_key):
     """
     Create self-signed HTTPS certificares and store in paths 'ssl_cert' and 'ssl_key'

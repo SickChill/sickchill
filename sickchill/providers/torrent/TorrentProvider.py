@@ -6,7 +6,7 @@ from sickchill import logger, settings
 from sickchill.helper.common import try_int
 from sickchill.oldbeard.common import Quality, uses_absolute_numbering
 from sickchill.oldbeard.db import DBConnection
-from sickchill.oldbeard.helpers import sanitizeSceneName
+from sickchill.oldbeard.helpers import scene_title_matches_show
 from sickchill.oldbeard.network_timezones import sc_now, sc_timezone
 from sickchill.providers.GenericProvider import GenericProvider
 from sickchill.providers.result_classes import Proper, TorrentSearchResult
@@ -72,7 +72,7 @@ class TorrentProvider(GenericProvider):
                 title, url = self._get_title_and_url(item)
                 if not url or url in seen_urls:
                     continue
-                if not self._title_matches_show_name(title, show.name):
+                if not scene_title_matches_show(title, show.name):
                     continue
                 seen_urls.add(url)
                 results.append(Proper(title, url, sc_now(), show))
@@ -112,17 +112,6 @@ class TorrentProvider(GenericProvider):
         query = f"{show_name} {season_part} {add_string}".strip()
         logger.debug(f"{self.name}: live proper season search: {query}")
         return {"Episode": {query}}
-
-    @staticmethod
-    def _title_matches_show_name(title, show_name):
-        """True when title starts with the show name as whole tokens (Pierre, not Saint-Pierre)."""
-        show_scene = sanitizeSceneName(show_name or "").lower()
-        title_scene = sanitizeSceneName(title or "").lower()
-        if not show_scene or not title_scene:
-            return False
-        show_parts = show_scene.split(".")
-        title_parts = title_scene.split(".")
-        return title_parts[: len(show_parts)] == show_parts
 
     @staticmethod
     def _recent_proper_candidates(search_date=None):
