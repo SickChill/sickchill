@@ -120,7 +120,7 @@ def _creds_need_refresh(creds: dict | None) -> bool:
     if not creds.get("expirationTimeStamp") or not creds.get("accessKeyId") or not creds.get("secretAccessKey"):
         return True
     try:
-        expires = datetime.fromisoformat(str(creds["expirationTimeStamp"]).replace("Z", "+00:00"))
+        expires = datetime.fromisoformat(str(creds["expirationTimeStamp"]))
     except ValueError:
         return True
     if expires.tzinfo is None:

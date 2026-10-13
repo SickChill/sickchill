@@ -383,6 +383,7 @@ def search_for_needed_episodes():
     # noinspection DuplicatedCode
     original_thread_name = threading.current_thread().name
 
+    # Daily search is RSS/cache only; search_mode and search_fallback apply to backlog.
     providers = [x for x in sickchill.oldbeard.providers.sorted_provider_list(settings.RANDOMIZE_PROVIDERS) if x.is_active and x.enable_daily and x.can_daily]
     for curProvider in providers:
         threading.current_thread().name = f"{original_thread_name} :: [{curProvider.name}]"
@@ -427,6 +428,28 @@ def search_for_needed_episodes():
         logger.info("No NZB/Torrent providers found or enabled in the sickchill config for daily searches. Please check your settings.")
 
     return list(found_results.values())
+
+
+def _search_results_cover_requested(search_results, episodes, search_mode, show):
+    """True when this pass found a selectable season pack, or every requested episode."""
+    season_results = search_results.get(SEASON_RESULT) or []
+    has_selectable_pack = bool(season_results) and pick_best_result(season_results, show) is not None
+
+    if search_mode == "season":
+        return has_selectable_pack
+
+    if has_selectable_pack:
+        return True
+
+    covered_episodes = set()
+    for result_key, result_list in search_results.items():
+        if result_key == MULTI_EP_RESULT:
+            for result in result_list:
+                covered_episodes.update(episode.episode for episode in result.episodes)
+        elif result_key >= 0 and result_list:
+            covered_episodes.add(result_key)
+
+    return {episode.episode for episode in episodes} <= covered_episodes
 
 
 # noinspection PyPep8Naming
@@ -505,15 +528,24 @@ def search_providers(show, episodes, manual=False, downCurQuality=False):
                     else:
                         found_results[curProvider.name][current_episode] = search_results[current_episode]
 
-                break
-            elif search_count == 2 or not curProvider.search_fallback:
+            # Season-pack search succeeds only when a selectable pack was found.
+            # Episode search succeeds when every requested episode is covered.
+            found_wanted_results = _search_results_cover_requested(search_results, episodes, search_mode, show)
+
+            # Episode → season pack only on backlog. Daily RSS never uses this loop;
+            # manual/failed searches stay on the episode that was requested.
+            allow_fallback = bool(curProvider.search_fallback) and search_count == 1
+            if search_mode == "episode" and manual:
+                allow_fallback = False
+
+            if found_wanted_results or not allow_fallback:
                 break
 
             if search_mode == "season":
                 logger.debug("Fallback episode search initiated")
                 search_mode = "episode"
             else:
-                logger.debug("Fallback season pack search initiate")
+                logger.debug("Fallback season pack search initiated")
                 search_mode = "season"
 
         # skip to next provider if we have no results to process

@@ -27,13 +27,12 @@ class WizdomSubtitle(Subtitle):
     provider_name = "wizdom"
 
     def __init__(self, language, hearing_impaired, page_link, series, season, episode, title, imdb_id, subtitle_id, releases):
-        super().__init__(language, hearing_impaired, page_link)
+        super().__init__(language, subtitle_id=str(subtitle_id), hearing_impaired=hearing_impaired, page_link=page_link)
         self.series = series
         self.season = season
         self.episode = episode
         self.title = title
         self.imdb_id = imdb_id
-        self.subtitle_id = subtitle_id
         self.downloaded = 0
         self.releases = releases
 
