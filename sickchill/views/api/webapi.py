@@ -1327,20 +1327,24 @@ class CMDPostProcess(ApiCall):
     def __init__(self, args, kwargs):
         super().__init__(args, kwargs)
         self.proc_dir, args = self.check_params(args, kwargs, "proc_dir", None, False, "string", [])
-        self.path, args = self.check_params(args, kwargs, "path", None, False, "string", []) or self.proc_dir
+        self.path, args = self.check_params(args, kwargs, "path", None, False, "string", [])
+        self.path = self.path or self.proc_dir
 
         self.nzbName, args = self.check_params(args, kwargs, "nzbName", None, False, "string", [])
-        self.release_name, args = self.check_params(args, kwargs, "release_name", None, False, "string", []) or self.nzbName
+        self.release_name, args = self.check_params(args, kwargs, "release_name", None, False, "string", [])
+        self.release_name = self.release_name or self.nzbName
 
         self.force, args = self.check_params(args, kwargs, "force", False, False, "bool", [])
-        self.force_replace, args = self.check_params(args, kwargs, "force_replace", False, False, "bool", []) or self.force
+        self.force_replace, args = self.check_params(args, kwargs, "force_replace", False, False, "bool", [])
+        self.force_replace = self.force_replace or self.force
 
         self.force_next, args = self.check_params(args, kwargs, "force_next", False, False, "bool", [])
         self.no_queue, args = self.check_params(args, kwargs, "no_queue", False, False, "bool", [])
         self.no_queue = self.no_queue or self.force_next
 
         self.quiet, args = self.check_params(args, kwargs, "quiet", False, False, "bool", [])
-        self.return_data, args = self.check_params(args, kwargs, "return_data", False, False, "bool", []) or self.quiet
+        self.return_data, args = self.check_params(args, kwargs, "return_data", False, False, "bool", [])
+        self.return_data = self.return_data or self.quiet
 
         self.process_method, args = self.check_params(args, kwargs, "process_method", False, False, "string", PROCESS_METHODS)
         self.is_priority, args = self.check_params(args, kwargs, "is_priority", False, False, "bool", [])
