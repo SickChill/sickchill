@@ -208,6 +208,7 @@ class TestTorrentFindPropersCacheFirst(unittest.TestCase):
         query = queries[0]
         self.assertIn("Daryl Dixon", query)
         self.assertIn("S03", query)
+        self.assertIn("PROPER|REPACK|REAL", query)
         self.assertNotIn("E01", query)
         self.assertNotIn("E02", query)
         self.assertNotIn("E03", query)
@@ -277,7 +278,7 @@ class TestTorrentFindPropersCacheFirst(unittest.TestCase):
 
         self.assertEqual(provider.search.call_count, 1)
         queries = list(provider.search.call_args[0][0]["Episode"])
-        self.assertEqual(queries, ["Naruto Season"])
+        self.assertEqual(queries, ["Naruto Season PROPER|REPACK|REAL"])
 
     def test_stops_live_groups_after_429(self):
         from sickchill.providers.torrent.TorrentProvider import TorrentProvider
@@ -308,6 +309,48 @@ class TestTorrentFindPropersCacheFirst(unittest.TestCase):
             provider.find_propers(search_date=sc_now())
 
         self.assertEqual(provider.search.call_count, 1)
+
+    def test_title_matches_show_name_rejects_hyphenated_superset(self):
+        from sickchill.providers.torrent.TorrentProvider import TorrentProvider
+
+        self.assertTrue(TorrentProvider._title_matches_show_name("Pierre.S01E01.1080p.HEVC.x265-MeGusta", "Pierre"))
+        self.assertTrue(TorrentProvider._title_matches_show_name("Pierre S01E01 1080p WEB H264-SYLiX", "Pierre"))
+        self.assertFalse(TorrentProvider._title_matches_show_name("Saint-Pierre.S01E08.REPACK.1080p.HEVC.x265-MeGusta", "Pierre"))
+        self.assertFalse(TorrentProvider._title_matches_show_name("Saint-Pierre S01E10 1080p HEVC x265-MeGusta", "Pierre"))
+        self.assertTrue(TorrentProvider._title_matches_show_name("Spider-Man.S01E01.720p", "Spider-Man"))
+
+    def test_live_propers_skip_titles_for_a_different_show(self):
+        from sickchill.providers.torrent.TorrentProvider import TorrentProvider
+
+        provider = TorrentProvider("PierreFilter")
+        provider.cache = mock.Mock()
+        provider.cache.list_propers.return_value = []
+        provider.search = mock.Mock(
+            return_value=[
+                {"title": "Pierre S01E01 1080p HEVC x265-MeGusta", "link": "http://example/pierre"},
+                {"title": "Saint-Pierre S01E08 REPACK 1080p HEVC x265-MeGusta", "link": "http://example/saint"},
+            ]
+        )
+
+        show = mock.Mock()
+        show.indexerid = 1
+        show.name = "Pierre"
+        show.air_by_date = False
+        show.sports = False
+        show.anime = False
+        episode = mock.Mock()
+        episode.show = show
+        episode.season = 1
+        episode.scene_season = 1
+        episode.episode = 1
+
+        with mock.patch.object(TorrentProvider, "_recent_proper_candidates", return_value=iter([(show, episode)])):
+            results = provider.find_propers(search_date=sc_now())
+
+        names = [result.name for result in results]
+        self.assertEqual(len(names), 1)
+        self.assertTrue(names[0].startswith("Pierre."))
+        self.assertFalse(any("Saint" in name for name in names))
 
 
 class TestProviderRateLimit(unittest.TestCase):
