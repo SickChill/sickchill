@@ -1,10 +1,9 @@
 import math
-import socket
 import time
 from datetime import datetime
 from typing import TYPE_CHECKING, Dict, Iterable, List, Union
 
-import jsonrpclib
+import requests
 
 from sickchill import logger, settings
 from sickchill.helper.common import episode_num
@@ -105,27 +104,33 @@ class Provider(TorrentProvider):
 
     def _api_call(self, params=None, results_per_page=1000, offset=0) -> dict:
         data = {}
+        payload = {
+            "jsonrpc": "2.0",
+            "method": "getTorrents",
+            "params": [self.api_key, params or {}, int(results_per_page), int(offset)],
+            "id": 1,
+        }
 
         try:
-            data = jsonrpclib.Server(self.urls["base_url"]).getTorrents(self.api_key, params or {}, int(results_per_page), int(offset))
+            response = requests.post(self.urls["base_url"], json=payload, timeout=30)
+            response.raise_for_status()
+            body = response.json()
+            if body.get("error"):
+                error = body["error"]
+                code = error.get("code") if isinstance(error, dict) else None
+                if code == -32001:
+                    logger.warning(_("The API key you provided was rejected because it is invalid. Check your provider configuration."))
+                elif code == -32002:
+                    logger.warning(_("You have exceeded the limit of 150 calls per hour, per API key which is unique to your user account"))
+                else:
+                    logger.exception(f"JSON-RPC protocol error while accessing provider. Error: {error} ")
+                return {"api-error": f"{error}"}
+            data = body.get("result") or {}
             time.sleep(cpu_presets[settings.CPU_PRESET])
-        except jsonrpclib.jsonrpc.ProtocolError as error:
-            if error == (-32001, "Invalid API Key"):
-                logger.warning(_("The API key you provided was rejected because it is invalid. Check your provider configuration."))
-            elif error == (-32002, "Call Limit Exceeded"):
-                logger.warning(_("You have exceeded the limit of 150 calls per hour, per API key which is unique to your user account"))
-            else:
-                logger.exception(f"JSON-RPC protocol error while accessing provider. Error: {error} ")
-            data = {"api-error": f"{error}"}
-            return data
-
-        except socket.timeout:
+        except requests.Timeout:
             logger.warning(_("Timeout while accessing provider"))
-
-        except socket.error as error:
-            # Note that sometimes timeouts are thrown as socket errors
+        except requests.RequestException as error:
             logger.warning(f"Socket error while accessing provider. Error: {error}")
-
         except Exception as error:
             logger.warning(f"Unknown error while accessing provider. Error: {error}")
 

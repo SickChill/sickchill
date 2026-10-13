@@ -91,7 +91,7 @@ class Provider(TorrentProvider):
                     continue
 
                 try:
-                    with BS4Parser(trimmedData, "html5lib") as html:
+                    with BS4Parser(trimmedData, "lxml") as html:
                         result_table = html.find("table", {"id": "torrent_table"})
 
                         if not result_table:
@@ -99,13 +99,15 @@ class Provider(TorrentProvider):
                             continue
 
                         result_tbody = result_table.find("tbody")
-                        entries = result_tbody.contents
-                        del entries[1::2]
+                        rows_root = result_tbody or result_table
 
-                        for result in entries[1:]:
+                        for result in rows_root.find_all("tr", recursive=False):
+                            classes = result.get("class") or []
+                            if any("colhead" in cls for cls in classes) or result.find("th"):
+                                continue
                             torrent = result("td")
                             if len(torrent) <= 1:
-                                break
+                                continue
 
                             allAs = (torrent[1])("a")
 

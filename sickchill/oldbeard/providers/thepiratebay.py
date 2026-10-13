@@ -55,34 +55,14 @@ class Provider(TorrentProvider):
     def get_tracker_list(self):
         try:
             data = self.get_url(self.script_url)
-
-            # Lazy import - only when we actually need js2py
-            try:
-                import js2py
-            except (KeyError, ImportError, ModuleNotFoundError, RuntimeError):
-                js2py = None
-
-            if js2py:
-                context = js2py.EvalJs()
-                context.execute(
-                    """
-                    escape = function(text){pyimport urllib; return urllib.parse.quote(text)};
-                    unescape = function(text){pyimport urllib; return urllib.parse.unquote(text)};
-                    encodeURI = function(text){pyimport urllib; return urllib.parse.quote(text, safe='~@#$&()*!+=:;,.?/\\'')};
-                    decodeURI = unescape;
-                    encodeURIComponent = function(text){pyimport urllib; return urllib.parse.quote(text, safe='~()*!.\\'')};
-                    decodeURIComponent = unescape;
-                    """
-                )
-
-                context.execute(data)
-                return context.print_trackers()
-            else:
-                matcher = re.compile(r"'&\+?tr='\+encodeURIComponent\('((?:udp|tcp|http|https)://[^']+)'\)", re.IGNORECASE | re.MULTILINE)
-                trackers_list = matcher.findall(data)
-                if trackers_list:
-                    joined = "&".join(urlencode({"tr": tracker}) for tracker in trackers_list)
-                    return f"&{joined}"
+            matcher = re.compile(
+                r"'&\+?tr='\s*\+\s*encodeURIComponent\s*\(\s*'((?:udp|tcp|http|https)://[^']+)'\s*\)",
+                re.IGNORECASE | re.MULTILINE,
+            )
+            trackers_list = matcher.findall(data or "")
+            if trackers_list:
+                joined = "&".join(urlencode({"tr": tracker}) for tracker in trackers_list)
+                return f"&{joined}"
 
         except Exception:
             return ""
