@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import datetime
+import re
 import time
 import unittest
 from unittest import mock
@@ -121,25 +122,60 @@ class TestProperSearchAddString(unittest.TestCase):
         self.assertEqual(provider.proper_search_add_string(), "PROPER|REPACK|REAL")
 
 
+def _proper_candidate(name, indexerid, season, episode, resource, anime=False, absolute=None):
+    show = mock.Mock()
+    show.indexerid = indexerid
+    show.name = name
+    show.air_by_date = False
+    show.sports = False
+    show.anime = 1 if anime else 0
+    show.is_anime = anime
+    ep = mock.Mock()
+    ep.show = show
+    ep.season = season
+    ep.scene_season = season
+    ep.episode = episode
+    ep.scene_episode = episode
+    ep.scene_absolute_number = absolute if absolute is not None else episode
+    return show, ep, resource
+
+
+def _queries(provider):
+    queries = []
+    for call in provider.search.call_args_list:
+        for values in call[0][0].values():
+            queries.extend(values)
+    return queries
+
+
 class TestTorrentFindPropersCacheFirst(unittest.TestCase):
-    def test_skips_live_when_cache_has_hits(self):
+    def test_unrelated_cache_hits_do_not_skip_live_search(self):
         from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
         provider = TorrentProvider("CacheFirst")
         provider.cache = mock.Mock()
         provider.cache.list_propers.return_value = [
-            {"name": "Show.S01E01.PROPER.720p", "url": "http://example/a", "time": int(time.time())},
+            {"name": "Other.Show.S01E01.PROPER.720p", "url": "http://example/a", "time": int(time.time())},
         ]
-        provider.search = mock.Mock(return_value=[{"title": "should-not-call"}])
-        provider._get_title_and_url = mock.Mock(return_value=("x", "y"))
+        provider.search = mock.Mock(return_value=[])
+        candidates = [
+            _proper_candidate(
+                "President Curtis",
+                1,
+                1,
+                8,
+                "President.Curtis.S01E08.1080p.10bit.WEBRip.6CH.x265.HEVC-PSA",
+            )
+        ]
 
-        with mock.patch.object(TorrentProvider, "_recent_proper_candidates", return_value=iter([])):
+        with mock.patch.object(TorrentProvider, "_recent_proper_candidates", return_value=iter(candidates)):
             results = provider.find_propers(search_date=sc_now())
 
-        self.assertEqual(len(results), 1)
-        provider.search.assert_not_called()
+        self.assertEqual(results, [])
+        provider.search.assert_called()
+        self.assertIn("President Curtis S01E08 1080p PROPER|REPACK|REAL", _queries(provider))
 
-    def test_consumes_cached_proper_grp_via_list_propers(self):
+    def test_consumes_cached_proper_that_matches_history_and_still_searches_live(self):
         from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
         provider = TorrentProvider("CacheProperGrp")
@@ -152,12 +188,15 @@ class TestTorrentFindPropersCacheFirst(unittest.TestCase):
             },
         ]
         provider.search = mock.Mock(return_value=[])
+        candidates = [_proper_candidate("Show", 1, 1, 1, "Show.S01E01.720p.HDTV")]
 
-        results = provider.find_propers(search_date=sc_now())
+        with mock.patch.object(TorrentProvider, "_recent_proper_candidates", return_value=iter(candidates)):
+            results = provider.find_propers(search_date=sc_now())
+
         self.assertEqual(len(results), 1)
         self.assertEqual(results[0].name, "Show.S01E01.PROPER-GRP.720p.HDTV")
         self.assertEqual(results[0].url, "http://example/proper-grp")
-        provider.search.assert_not_called()
+        provider.search.assert_called()
         provider.cache.list_propers.assert_called_once()
 
     def test_skips_live_when_rate_limited(self):
@@ -168,12 +207,15 @@ class TestTorrentFindPropersCacheFirst(unittest.TestCase):
         provider.cache.list_propers.return_value = []
         provider.search = mock.Mock(return_value=[{"title": "should-not-call", "link": "http://x"}])
         provider._rate_limited_until = time.time() + 60
+        candidates = [_proper_candidate("Show", 1, 1, 1, "Show.S01E01.720p.HDTV")]
 
-        results = provider.find_propers(search_date=sc_now())
+        with mock.patch.object(TorrentProvider, "_recent_proper_candidates", return_value=iter(candidates)):
+            results = provider.find_propers(search_date=sc_now())
+
         self.assertEqual(results, [])
         provider.search.assert_not_called()
 
-    def test_combines_same_show_season_into_one_search(self):
+    def test_shared_remainder_searches_season_pack_then_each_episode(self):
         from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
         provider = TorrentProvider("SeasonCombine")
@@ -187,6 +229,7 @@ class TestTorrentFindPropersCacheFirst(unittest.TestCase):
         show.air_by_date = False
         show.sports = False
         show.anime = False
+        show.is_anime = False
 
         candidates = []
         for ep_no in (1, 2, 3, 4):
@@ -195,26 +238,20 @@ class TestTorrentFindPropersCacheFirst(unittest.TestCase):
             episode.season = 3
             episode.scene_season = 3
             episode.episode = ep_no
-            candidates.append((show, episode))
+            episode.scene_episode = ep_no
+            resource = f"The.Walking.Dead.Daryl.Dixon.S03E{ep_no:02d}.1080p.10bit.WEBRip.6CH.x265.HEVC-PSA"
+            candidates.append((show, episode, resource))
 
         with mock.patch.object(TorrentProvider, "_recent_proper_candidates", return_value=iter(candidates)):
             provider.find_propers(search_date=sc_now())
 
-        self.assertEqual(provider.search.call_count, 1)
-        search_arg = provider.search.call_args[0][0]
-        self.assertIn("Episode", search_arg)
-        queries = list(search_arg["Episode"])
-        self.assertEqual(len(queries), 1)
-        query = queries[0]
-        self.assertIn("Daryl Dixon", query)
-        self.assertIn("S03", query)
-        self.assertIn("PROPER|REPACK|REAL", query)
-        self.assertNotIn("E01", query)
-        self.assertNotIn("E02", query)
-        self.assertNotIn("E03", query)
-        self.assertNotIn("E04", query)
+        queries = _queries(provider)
+        self.assertEqual(provider.search.call_count, 5)
+        self.assertIn("The Walking Dead: Daryl Dixon S03 1080p PROPER|REPACK|REAL", queries)
+        self.assertIn("The Walking Dead: Daryl Dixon S03E01 1080p PROPER|REPACK|REAL", queries)
+        self.assertIn("The Walking Dead: Daryl Dixon S03E04 1080p PROPER|REPACK|REAL", queries)
 
-    def test_separate_seasons_are_separate_searches(self):
+    def test_mixed_remainders_stay_per_episode(self):
         from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
         provider = TorrentProvider("TwoSeasons")
@@ -228,7 +265,13 @@ class TestTorrentFindPropersCacheFirst(unittest.TestCase):
         show.air_by_date = False
         show.sports = False
         show.anime = False
+        show.is_anime = False
 
+        resources = {
+            (2, 1): "Daryl.Dixon.S02E01.1080p.WEBRip.x265-PSA",
+            (3, 1): "Daryl.Dixon.S03E01.1080p.WEBRip.x265-PSA",
+            (3, 2): "Daryl.Dixon.S03E02.720p.HDTV.x264-NTb",
+        }
         candidates = []
         for season, ep_no in ((2, 1), (3, 1), (3, 2)):
             episode = mock.Mock()
@@ -236,20 +279,20 @@ class TestTorrentFindPropersCacheFirst(unittest.TestCase):
             episode.season = season
             episode.scene_season = season
             episode.episode = ep_no
-            candidates.append((show, episode))
+            episode.scene_episode = ep_no
+            candidates.append((show, episode, resources[(season, ep_no)]))
 
         with mock.patch.object(TorrentProvider, "_recent_proper_candidates", return_value=iter(candidates)):
             provider.find_propers(search_date=sc_now())
 
-        self.assertEqual(provider.search.call_count, 2)
-        queries = []
-        for call in provider.search.call_args_list:
-            queries.extend(call[0][0]["Episode"])
-        self.assertTrue(any("S02" in q for q in queries))
-        self.assertTrue(any("S03" in q for q in queries))
-        self.assertFalse(any("E01" in q or "E02" in q for q in queries))
+        queries = _queries(provider)
+        self.assertEqual(provider.search.call_count, 3)
+        self.assertTrue(any("S02E01" in query for query in queries))
+        self.assertTrue(any("S03E01" in query for query in queries))
+        self.assertTrue(any("S03E02" in query for query in queries))
+        self.assertFalse(any(re.search(r"\bS03\b", query) and "E0" not in query for query in queries))
 
-    def test_anime_seasons_share_one_search(self):
+    def test_anime_episodes_are_searched_individually(self):
         from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
         provider = TorrentProvider("AnimeCombine")
@@ -262,23 +305,29 @@ class TestTorrentFindPropersCacheFirst(unittest.TestCase):
         show.name = "Naruto"
         show.air_by_date = False
         show.sports = False
-        show.anime = True
+        show.anime = 1
+        show.is_anime = True
 
         candidates = []
-        for season, ep_no in ((1, 1), (2, 5)):
+        for season, ep_no, absolute in ((1, 1, 1), (2, 5, 5)):
             episode = mock.Mock()
             episode.show = show
             episode.season = season
             episode.scene_season = season
             episode.episode = ep_no
-            candidates.append((show, episode))
+            episode.scene_episode = ep_no
+            episode.scene_absolute_number = absolute
+            resource = f"Naruto.S{season:02d}E{ep_no:02d}.1080p.WEBRip.x265-SubsPlease"
+            candidates.append((show, episode, resource))
 
         with mock.patch.object(TorrentProvider, "_recent_proper_candidates", return_value=iter(candidates)):
             provider.find_propers(search_date=sc_now())
 
-        self.assertEqual(provider.search.call_count, 1)
-        queries = list(provider.search.call_args[0][0]["Episode"])
-        self.assertEqual(queries, ["Naruto Season PROPER|REPACK|REAL"])
+        queries = _queries(provider)
+        self.assertEqual(provider.search.call_count, 2)
+        self.assertTrue(any(query.startswith(("Naruto 001 ", "Naruto 01 ")) for query in queries))
+        self.assertTrue(any(query.startswith(("Naruto 005 ", "Naruto 05 ")) for query in queries))
+        self.assertTrue(all("1080p PROPER|REPACK|REAL" in query for query in queries))
 
     def test_stops_live_groups_after_429(self):
         from sickchill.providers.torrent.TorrentProvider import TorrentProvider
@@ -292,18 +341,10 @@ class TestTorrentFindPropersCacheFirst(unittest.TestCase):
             return []
 
         provider.search = mock.Mock(side_effect=search_and_limit)
-
-        def _episode(show, season):
-            episode = mock.Mock()
-            episode.show = show
-            episode.season = season
-            episode.scene_season = season
-            episode.episode = 1
-            return episode
-
-        show_a = mock.Mock(indexerid=1, name="Show A", air_by_date=False, sports=False, anime=False)
-        show_b = mock.Mock(indexerid=2, name="Show B", air_by_date=False, sports=False, anime=False)
-        candidates = [(show_a, _episode(show_a, 1)), (show_b, _episode(show_b, 1))]
+        candidates = [
+            _proper_candidate("Show A", 1, 1, 1, "Show.A.S01E01.720p.HDTV"),
+            _proper_candidate("Show B", 2, 1, 1, "Show.B.S01E01.720p.HDTV"),
+        ]
 
         with mock.patch.object(TorrentProvider, "_recent_proper_candidates", return_value=iter(candidates)):
             provider.find_propers(search_date=sc_now())
@@ -318,30 +359,198 @@ class TestTorrentFindPropersCacheFirst(unittest.TestCase):
         provider.cache.list_propers.return_value = []
         provider.search = mock.Mock(
             return_value=[
-                {"title": "Pierre S01E01 1080p HEVC x265-MeGusta", "link": "http://example/pierre"},
+                {"title": "Pierre S01E01 PROPER 1080p HEVC x265-MeGusta", "link": "http://example/pierre"},
                 {"title": "Saint-Pierre S01E08 REPACK 1080p HEVC x265-MeGusta", "link": "http://example/saint"},
             ]
         )
+        candidates = [_proper_candidate("Pierre", 1, 1, 1, "Pierre.S01E01.1080p.HEVC.x265-MeGusta")]
 
-        show = mock.Mock()
-        show.indexerid = 1
-        show.name = "Pierre"
-        show.air_by_date = False
-        show.sports = False
-        show.anime = False
-        episode = mock.Mock()
-        episode.show = show
-        episode.season = 1
-        episode.scene_season = 1
-        episode.episode = 1
-
-        with mock.patch.object(TorrentProvider, "_recent_proper_candidates", return_value=iter([(show, episode)])):
+        with mock.patch.object(TorrentProvider, "_recent_proper_candidates", return_value=iter(candidates)):
             results = provider.find_propers(search_date=sc_now())
 
         names = [result.name for result in results]
         self.assertEqual(len(names), 1)
         self.assertTrue(names[0].startswith("Pierre."))
         self.assertFalse(any("Saint" in name for name in names))
+
+    def test_president_curtis_keeps_matching_quality_and_remainder(self):
+        from sickchill.providers.torrent.TorrentProvider import TorrentProvider
+
+        provider = TorrentProvider("PresidentCurtis")
+        provider.cache = mock.Mock()
+        provider.cache.list_propers.return_value = []
+        provider.search = mock.Mock(
+            return_value=[
+                {"title": "President.Curtis.S01E08.PROPER.1080p.10bit.WEBRip.6CH.x265.HEVC-PSA", "link": "http://example/match"},
+                {"title": "President.Curtis.S01E08.PROPER.720p.10bit.WEBRip.6CH.x265.HEVC-PSA", "link": "http://example/720"},
+                {"title": "President.Curtis.S01E08.PROPER.1080p.10bit.WEBRip.6CH.x265.HEVC-NTb", "link": "http://example/ntb"},
+            ]
+        )
+        candidates = [
+            _proper_candidate(
+                "President Curtis",
+                1,
+                1,
+                8,
+                "President.Curtis.S01E08.1080p.10bit.WEBRip.6CH.x265.HEVC-PSA",
+            )
+        ]
+
+        with mock.patch.object(TorrentProvider, "_recent_proper_candidates", return_value=iter(candidates)):
+            results = provider.find_propers(search_date=sc_now())
+
+        names = [result.name for result in results]
+        self.assertEqual(names, ["President.Curtis.S01E08.PROPER.1080p.10bit.WEBRip.6CH.x265.HEVC-PSA"])
+        self.assertEqual(_queries(provider), ["President Curtis S01E08 1080p PROPER|REPACK|REAL"])
+
+    def test_president_curtis_720p_history_keeps_720p_proper(self):
+        from sickchill.providers.torrent.TorrentProvider import TorrentProvider
+
+        provider = TorrentProvider("PresidentCurtis720")
+        provider.cache = mock.Mock()
+        provider.cache.list_propers.return_value = []
+        provider.search = mock.Mock(
+            return_value=[
+                {"title": "President.Curtis.S01E08.PROPER.1080p.10bit.WEBRip.6CH.x265.HEVC-PSA", "link": "http://example/1080"},
+                {"title": "President.Curtis.S01E08.PROPER.720p.10bit.WEBRip.6CH.x265.HEVC-PSA", "link": "http://example/720"},
+            ]
+        )
+        candidates = [
+            _proper_candidate(
+                "President Curtis",
+                1,
+                1,
+                8,
+                "President.Curtis.S01E08.720p.10bit.WEBRip.6CH.x265.HEVC-PSA",
+            )
+        ]
+
+        with mock.patch.object(TorrentProvider, "_recent_proper_candidates", return_value=iter(candidates)):
+            results = provider.find_propers(search_date=sc_now())
+
+        names = [result.name for result in results]
+        self.assertEqual(names, ["President.Curtis.S01E08.PROPER.720p.10bit.WEBRip.6CH.x265.HEVC-PSA"])
+        self.assertEqual(_queries(provider), ["President Curtis S01E08 720p PROPER|REPACK|REAL"])
+
+    def test_season_pack_kept_when_remainder_matches(self):
+        from sickchill.providers.torrent.TorrentProvider import TorrentProvider
+
+        provider = TorrentProvider("SeasonPackKeep")
+        provider.cache = mock.Mock()
+        provider.cache.list_propers.return_value = []
+        provider.search = mock.Mock(
+            return_value=[
+                {"title": "President.Curtis.S01.PROPER.1080p.10bit.WEBRip.6CH.x265.HEVC-PSA", "link": "http://example/pack"},
+            ]
+        )
+        show, ep1, resource = _proper_candidate(
+            "President Curtis",
+            1,
+            1,
+            7,
+            "President.Curtis.S01E07.1080p.10bit.WEBRip.6CH.x265.HEVC-PSA",
+        )
+        ep2 = mock.Mock()
+        ep2.show = show
+        ep2.season = 1
+        ep2.scene_season = 1
+        ep2.episode = 8
+        ep2.scene_episode = 8
+        candidates = [
+            (show, ep1, resource),
+            (show, ep2, "President.Curtis.S01E08.1080p.10bit.WEBRip.6CH.x265.HEVC-PSA"),
+        ]
+
+        with mock.patch.object(TorrentProvider, "_recent_proper_candidates", return_value=iter(candidates)):
+            results = provider.find_propers(search_date=sc_now())
+
+        names = [result.name for result in results]
+        self.assertEqual(names, ["President.Curtis.S01.PROPER.1080p.10bit.WEBRip.6CH.x265.HEVC-PSA"])
+        queries = _queries(provider)
+        self.assertEqual(queries[0], "President Curtis S01 1080p PROPER|REPACK|REAL")
+        self.assertIn("President Curtis S01E07 1080p PROPER|REPACK|REAL", queries)
+        self.assertIn("President Curtis S01E08 1080p PROPER|REPACK|REAL", queries)
+
+
+class TestProperFinderFingerprint(unittest.TestCase):
+    def test_fingerprint_matching_history_requires_quality_and_remainder(self):
+        finder = ProperFinder()
+        proper = mock.Mock()
+        proper.indexerid = 1
+        proper.season = 1
+        proper.episode = 8
+        proper.quality = 8
+        proper.name = "President.Curtis.S01E08.PROPER.1080p.10bit.WEBRip.6CH.x265.HEVC-PSA"
+        proper.show.is_anime = False
+        latest = {(1, 8): "President.Curtis.S01E08.1080p.10bit.WEBRip.6CH.x265.HEVC-PSA"}
+
+        with mock.patch.object(finder, "_latest_history_resources", return_value=latest):
+            matched = finder._fingerprint_matching_history(proper, False, sc_now())
+        self.assertEqual(list(matched), [(1, 8)])
+
+        proper.name = "President.Curtis.S01E08.PROPER.720p.10bit.WEBRip.6CH.x265.HEVC-PSA"
+        with mock.patch.object(finder, "_latest_history_resources", return_value=latest):
+            self.assertEqual(finder._fingerprint_matching_history(proper, False, sc_now()), {})
+
+        proper.name = "President.Curtis.S01E08.PROPER.1080p.10bit.WEBRip.6CH.x265.HEVC-NTb"
+        with mock.patch.object(finder, "_latest_history_resources", return_value=latest):
+            self.assertEqual(finder._fingerprint_matching_history(proper, False, sc_now()), {})
+
+    def test_season_pack_matches_shared_remainder_history(self):
+        finder = ProperFinder()
+        proper = mock.Mock()
+        proper.indexerid = 1
+        proper.season = 1
+        proper.episode = -1
+        proper.quality = 8
+        proper.name = "President.Curtis.S01.PROPER.1080p.10bit.WEBRip.6CH.x265.HEVC-PSA"
+        proper.show.is_anime = False
+        latest = {
+            (1, 7): "President.Curtis.S01E07.1080p.10bit.WEBRip.6CH.x265.HEVC-PSA",
+            (1, 8): "President.Curtis.S01E08.1080p.10bit.WEBRip.6CH.x265.HEVC-PSA",
+        }
+
+        with mock.patch.object(finder, "_latest_history_resources", return_value=latest):
+            matched = finder._fingerprint_matching_history(proper, True, sc_now())
+        self.assertEqual(set(matched), {(1, 7), (1, 8)})
+
+    def test_download_propers_snatches_matching_season_pack_episodes(self):
+        finder = ProperFinder()
+        show = mock.Mock()
+        show.is_anime = False
+        ep7 = mock.Mock()
+        ep8 = mock.Mock()
+        show.get_episode.side_effect = lambda season, episode: {7: ep7, 8: ep8}[episode]
+        provider = mock.Mock()
+        result = mock.Mock()
+        provider.get_result.return_value = result
+        proper = mock.Mock()
+        proper.indexerid = 1
+        proper.season = 1
+        proper.episode = -1
+        proper.quality = 8
+        proper.name = "President.Curtis.S01.PROPER.1080p.10bit.WEBRip.6CH.x265.HEVC-PSA"
+        proper.url = "http://example/pack"
+        proper.show = show
+        proper.provider = provider
+        proper.release_group = "PSA"
+        proper.version = -1
+        proper.content = None
+        latest = {
+            (1, 7): "President.Curtis.S01E07.1080p.10bit.WEBRip.6CH.x265.HEVC-PSA",
+            (1, 8): "President.Curtis.S01E08.1080p.10bit.WEBRip.6CH.x265.HEVC-PSA",
+        }
+
+        with mock.patch.object(finder, "_latest_history_resources", return_value=latest):
+            with mock.patch("sickchill.oldbeard.properFinder.snatch_episode") as snatch:
+                with mock.patch("sickchill.oldbeard.properFinder.time.sleep"):
+                    with mock.patch("sickchill.oldbeard.properFinder.cpu_presets", {None: 0}):
+                        finder._download_propers([proper])
+
+        provider.get_result.assert_called_once()
+        episodes = provider.get_result.call_args[0][0]
+        self.assertEqual(episodes, [ep7, ep8])
+        snatch.assert_called_once()
 
 
 class TestProviderRateLimit(unittest.TestCase):

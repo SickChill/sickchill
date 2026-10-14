@@ -4,18 +4,18 @@ import bencode
 
 from sickchill import logger, settings
 from sickchill.helper.common import try_int
-from sickchill.oldbeard.common import Quality, uses_absolute_numbering
+from sickchill.oldbeard.common import Quality
 from sickchill.oldbeard.db import DBConnection
-from sickchill.oldbeard.helpers import scene_title_matches_show
+from sickchill.oldbeard.helpers import release_matches_fingerprint, split_release_fingerprint
 from sickchill.oldbeard.network_timezones import sc_now, sc_timezone
 from sickchill.providers.GenericProvider import GenericProvider
 from sickchill.providers.result_classes import Proper, TorrentSearchResult
 from sickchill.show.History import History
 from sickchill.show.Show import Show
 
-# Cap live proper season searches per provider per ProperFinder run
+# Cap live proper searches per provider per ProperFinder run
 _LIVE_PROPER_SEASON_CAP = 25
-# Candidate SQL still bounds episodes; grouped into one search per show+season
+# Candidate SQL still bounds episodes in the proper-search window
 _LIVE_PROPER_EPISODE_CAP = 25
 
 
@@ -26,92 +26,126 @@ class TorrentProvider(GenericProvider):
         self.provider_type = GenericProvider.TORRENT
 
     def find_propers(self, search_date=None):
-        """Cache-first propers; live search only if cache is empty (bounded episode cap)."""
+        """Match PROPER/REPACK/REAL against history.resource fingerprints, then live-search those."""
         results = []
         seen_urls = set()
+        candidates = []
+        for show, episode, resource in self._recent_proper_candidates(search_date):
+            anime = bool(getattr(show, "is_anime", False) or getattr(show, "anime", False))
+            fingerprint = split_release_fingerprint(resource, anime=anime)
+            if fingerprint is None or fingerprint.is_proper:
+                continue
+            candidates.append((show, episode, fingerprint))
 
-        # Prefer TV cache (filled by daily RSS / update_cache) — titles keep PROPER/REPACK/REAL
+        if not candidates:
+            return results
+
+        season_pack_keys = self._shared_season_pack_keys(candidates)
         try:
             for row in self.cache.list_propers(search_date) or []:
-                proper = Proper(row["name"], row["url"], datetime.fromtimestamp(row["time"], tz=sc_timezone), self.show)
-                if proper.url and proper.url not in seen_urls:
-                    seen_urls.add(proper.url)
-                    results.append(proper)
+                title = row.get("name") or ""
+                url = row.get("url") or ""
+                if not url or url in seen_urls:
+                    continue
+                if self._cache_title_matches_candidates(title, candidates, season_pack_keys):
+                    seen_urls.add(url)
+                    results.append(Proper(title, url, datetime.fromtimestamp(row["time"], tz=sc_timezone), self.show))
         except Exception as error:
             logger.debug(f"{self.name}: cache list_propers failed during proper search: {error}")
-
-        if results:
-            logger.debug(f"{self.name}: using {len(results)} cached proper(s); skipping live proper search")
-            return results
 
         if self.is_rate_limited():
             logger.debug(f"{self.name}: skipping live proper search (provider rate limited)")
             return results
 
-        # Fallback: one show+season query per group (not SxxE01, E02, …)
-        groups: dict[tuple, tuple] = {}
-        for show, episode in self._recent_proper_candidates(search_date):
-            season_key = self._live_proper_season_key(episode)
-            groups.setdefault((show.indexerid, season_key), (show, episode))
-
         live_count = 0
-        for show, episode in groups.values():
+        for show, episode, fingerprint, season_pack in self._live_proper_search_plan(candidates, season_pack_keys):
             if self.is_rate_limited():
                 logger.debug(f"{self.name}: stopping live proper searches after rate limit")
                 break
             if live_count >= _LIVE_PROPER_SEASON_CAP:
-                logger.debug(f"{self.name}: live proper search capped at {_LIVE_PROPER_SEASON_CAP} season(s)")
+                logger.debug(f"{self.name}: live proper search capped at {_LIVE_PROPER_SEASON_CAP} searches")
                 break
-            self.show = show
-            self.current_episode_object = episode
-            search_string = self._live_proper_season_search_string(episode)
+            search_string = self._live_proper_search_string(show, episode, fingerprint, season_pack=season_pack)
             if not search_string:
                 continue
+            self.show = show
+            self.current_episode_object = episode
             live_count += 1
             for item in self.search(search_string):
                 title, url = self._get_title_and_url(item)
                 if not url or url in seen_urls:
                     continue
-                if not scene_title_matches_show(title, show.name):
+                if not release_matches_fingerprint(title, fingerprint, require_episode=not season_pack):
                     continue
                 seen_urls.add(url)
                 results.append(Proper(title, url, sc_now(), show))
 
         if live_count:
-            logger.debug(f"{self.name}: live proper searches for {live_count} season group(s); results={len(results)}")
+            logger.debug(f"{self.name}: live proper searches for {live_count} query(ies); results={len(results)}")
         return results
 
     @staticmethod
-    def _live_proper_season_key(episode) -> str:
-        show = episode.show
-        if getattr(show, "air_by_date", False) or getattr(show, "sports", False):
-            airdate = getattr(episode, "airdate", None)
-            return str(airdate).split("-")[0] if airdate else str(episode.season)
-        if uses_absolute_numbering(show):
-            return "Season"
-        season_no = episode.scene_season if getattr(episode, "scene_season", None) is not None else episode.season
-        return str(int(season_no))
+    def _shared_season_pack_keys(candidates):
+        """Seasons where every history fingerprint shares quality + remainder (2+ episodes)."""
+        grouped: dict[tuple, list] = {}
+        for show, episode, fingerprint in candidates:
+            grouped.setdefault((show.indexerid, episode.season), []).append(fingerprint)
+        shared = set()
+        for key, fingerprints in grouped.items():
+            if len(fingerprints) < 2:
+                continue
+            remainders = {fingerprint.remainder for fingerprint in fingerprints}
+            qualities = {fingerprint.quality for fingerprint in fingerprints}
+            if len(remainders) == 1 and len(qualities) == 1:
+                shared.add(key)
+        return shared
 
-    def _live_proper_season_search_string(self, episode) -> dict | None:
-        """Single Episode-mode query: show name + season (no E01-E04 range)."""
-        if not episode or not getattr(episode, "show", None):
+    @staticmethod
+    def _cache_title_matches_candidates(title, candidates, season_pack_keys):
+        for show, episode, fingerprint in candidates:
+            if release_matches_fingerprint(title, fingerprint):
+                return True
+            key = (show.indexerid, episode.season)
+            if key in season_pack_keys and release_matches_fingerprint(title, fingerprint, require_episode=False):
+                return True
+        return False
+
+    @staticmethod
+    def _live_proper_search_plan(candidates, season_pack_keys):
+        """Season-pack query first when suffixes match, then one query per episode."""
+        emitted_season = set()
+        for show, episode, fingerprint in candidates:
+            key = (show.indexerid, episode.season)
+            if key in season_pack_keys and key not in emitted_season:
+                emitted_season.add(key)
+                season_fp = fingerprint._replace(episode=None, episode_tag=f"S{int(episode.season):02d}")
+                yield show, episode, season_fp, True
+            yield show, episode, fingerprint, False
+
+    def _live_proper_search_string(self, show, episode, fingerprint, season_pack=False) -> dict | None:
+        """Same search-string builder as daily/backlog, plus quality token and proper_strings."""
+        if not show or not episode or not fingerprint:
             return None
-        show = episode.show
-        show_name = (show.name or "").strip()
-        if not show_name:
-            return None
-        if getattr(show, "air_by_date", False) or getattr(show, "sports", False):
-            airdate = getattr(episode, "airdate", None)
-            season_part = str(airdate).split("-")[0] if airdate else ""
-        elif uses_absolute_numbering(show):
-            season_part = "Season"
-        else:
-            season_no = episode.scene_season if getattr(episode, "scene_season", None) is not None else episode.season
-            season_part = "S{0:02d}".format(int(season_no))
-        add_string = self.proper_search_add_string()
-        query = f"{show_name} {season_part} {add_string}".strip()
-        logger.debug(f"{self.name}: live proper season search: {query}")
-        return {"Episode": {query}}
+        add_string = " ".join(part for part in (fingerprint.quality_token, self.proper_search_add_string()) if part)
+        self.show = show
+        self.current_episode_object = episode
+        if season_pack:
+            search_strings = {}
+            for block in self.get_season_search_strings(episode):
+                for mode, values in block.items():
+                    search_strings.setdefault(mode, set())
+                    for value in values:
+                        query = f"{value} {add_string}".strip() if add_string else value
+                        logger.debug(f"{self.name}: live proper search: {query}")
+                        search_strings[mode].add(query)
+            return search_strings or None
+        search_strings = {}
+        for block in self.get_episode_search_strings(episode, add_string=add_string):
+            for mode, values in block.items():
+                search_strings.setdefault(mode, set()).update(values)
+                for value in values:
+                    logger.debug(f"{self.name}: live proper search: {value}")
+        return search_strings or None
 
     @staticmethod
     def _recent_proper_candidates(search_date=None):
@@ -131,28 +165,37 @@ class TorrentProvider(GenericProvider):
         db = DBConnection()
         sql_results = db.select(
             f"""
-            SELECT DISTINCT e.showid, e.season, e.episode, MAX(h.date) AS last_hist
-            FROM tv_episodes AS e
-            INNER JOIN history AS h
+            SELECT h.showid, h.season, h.episode, h.resource, h.date
+            FROM history AS h
+            INNER JOIN tv_episodes AS e
                 ON h.showid = e.showid AND h.season = e.season AND h.episode = e.episode
             WHERE e.is_proper = 0
               AND e.status IN ({ep_placeholders})
               AND h.action IN ({hist_placeholders})
               AND h.date >= ?
-            GROUP BY e.showid, e.season, e.episode
-            ORDER BY last_hist DESC
-            LIMIT ?
+            ORDER BY h.date DESC
             """,
-            [*status_quality_list, *history_actions, history_since, _LIVE_PROPER_EPISODE_CAP],
+            [*status_quality_list, *history_actions, history_since],
         )
 
+        seen_episodes = set()
+        yielded = 0
         for result in sql_results or []:
+            episode_key = (int(result["showid"]), int(result["season"]), int(result["episode"]))
+            if episode_key in seen_episodes:
+                continue
+            seen_episodes.add(episode_key)
+            resource = result["resource"] or ""
             show = Show.find(settings.show_list, int(result["showid"]))
             if not show:
                 continue
             episode = show.get_episode(result["season"], result["episode"])
-            if episode:
-                yield show, episode
+            if not episode:
+                continue
+            yield show, episode, resource
+            yielded += 1
+            if yielded >= _LIVE_PROPER_EPISODE_CAP:
+                break
 
     @property
     def is_active(self):
