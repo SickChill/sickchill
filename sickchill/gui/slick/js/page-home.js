@@ -120,7 +120,15 @@ window.SICKCHILL.home = {
             $(this).remove();
         });
 
-        function setTwoLineColumnMins($table) {
+        function wrappingMinWidth($table, maxChars, floorCh) {
+            const textCh = Math.max(floorCh, Math.ceil(maxChars / 2));
+            const $scroll = $table.closest('.horizontal-scroll');
+            const viewportPx = ($scroll.length > 0 ? $scroll.innerWidth() : window.innerWidth) || window.innerWidth || 0;
+            const capPx = Math.max(1, Math.floor(viewportPx * 0.4));
+            return `min(${textCh}ch, max(${floorCh}ch, ${capPx}px))`;
+        }
+
+        function setWrappingColumnMins($table) {
             let $header = $table.find('thead th.home-col-show');
             let $all = $table.find('.home-col-show');
             if ($header.length === 0 || !$header.is(':visible')) {
@@ -130,7 +138,7 @@ window.SICKCHILL.home = {
                 $table.find('tbody td.home-col-show').each(function () {
                     maxChars = Math.max(maxChars, $(this).text().trim().length);
                 });
-                $all.css('min-width', `${Math.max(12, Math.ceil(maxChars / 2))}ch`);
+                $all.css('min-width', wrappingMinWidth($table, maxChars, 12));
             }
 
             $header = $table.find('thead th.home-col-location');
@@ -142,7 +150,7 @@ window.SICKCHILL.home = {
                 $table.find('tbody td.home-col-location').each(function () {
                     maxChars = Math.max(maxChars, $(this).text().trim().length);
                 });
-                $all.css('min-width', `${Math.max(12, Math.ceil(maxChars / 2))}ch`);
+                $all.css('min-width', wrappingMinWidth($table, maxChars, 12));
             }
 
             $header = $table.find('thead th.home-col-network');
@@ -155,7 +163,7 @@ window.SICKCHILL.home = {
                     const label = ($(this).find('span').attr('title') || $(this).text()).trim();
                     maxChars = Math.max(maxChars, label.length);
                 });
-                $all.css('min-width', `${Math.max(8, Math.ceil(maxChars / 2))}ch`);
+                $all.css('min-width', wrappingMinWidth($table, maxChars, 8));
             }
         }
 
@@ -271,11 +279,17 @@ window.SICKCHILL.home = {
                 sortStable: true,
                 sortAppend: [[2, 0]],
             });
-            setTwoLineColumnMins($(this));
+            setWrappingColumnMins($(this));
             $(this).on('columnUpdate', () => {
-                setTwoLineColumnMins($(this));
+                setWrappingColumnMins($(this));
             });
         });
+
+        $(window).on('resize.homeListCols', __.debounce(() => {
+            $('#showListTableShows, #showListTableAnime').each(function () {
+                setWrappingColumnMins($(this));
+            });
+        }, 200));
 
         {
             let sort;

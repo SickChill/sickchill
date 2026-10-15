@@ -3525,7 +3525,7 @@ thead.tablesorter-stickyHeader {
     text-align: center;
 }
 
-/* Home list: Show and Location share leftover width and wrap to at most two lines. */
+/* Home list: Show, Location, and Network share leftover width and wrap as needed. */
 #showListTableShows,
 #showListTableAnime {
     table-layout: auto;
