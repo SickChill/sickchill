@@ -14,7 +14,6 @@
             initConfigComponentTabs();
             $('#config-components').on( "tabsactivate", function( event, ui ){
                 if(ui.newPanel.selector === '#provider-options') {
-                    //TODO: Reload provider options list
                 }
             });
             % if settings.USE_NZBS:

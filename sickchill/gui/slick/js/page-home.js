@@ -120,116 +120,176 @@ window.SICKCHILL.home = {
             $(this).remove();
         });
 
-        $('#showListTableShows:has(tbody tr), #showListTableAnime:has(tbody tr)').tablesorter({
-            sortList: [[7, 1], [2, 0]],
-            textExtraction: {
-                0(node) {
-                    return $(node).find('time').attr('datetime');
-                },
-                1(node) {
-                    return $(node).find('time').attr('datetime');
-                },
-                2(node) {
-                    return latinize($(node).text().normalize('NFC'));
-                },
-                3(node) {
-                    return ($(node).find('span').prop('title') || 'zunknown').toLowerCase();
-                },
-                4(node) {
-                    return $(node).find('span').text().toLowerCase();
-                },
-                5(node) {
-                    const progress = $(node).find('div').attr('data-progress-percentage');
-                    const progressResult = progress === undefined ? -Infinity : (progress.length > 0 && Number.parseFloat(progress)) || 0;
-                    const total = $(node).find('div').attr('data-progress-total');
-                    const totalTesult = total === undefined ? -Infinity : (total.length > 0 && Number.parseInt(total, 10)) || 0;
-                    return (progressResult * 100 * 1000) + totalTesult;
-                },
-                6(node) {
-                    return $(node).data('show-size');
-                },
-                7(node) {
-                    return ($(node).find('span').attr('title') || 'No').toLowerCase();
-                },
-                9(node) {
-                    return latinize($(node).text().normalize('NFC'));
-                },
-            },
-            widgets: ['saveSort', 'zebra', 'stickyHeaders', 'filter', 'columnSelector'],
-            headers: {
-                0: {sorter: 'realISODate'},
-                1: {sorter: 'realISODate'},
-                2: {sorter: 'loadingNames'},
-                4: {sorter: 'quality'},
-                5: {sorter: 'digit'},
-                6: {sorter: 'digit'},
-                7: {filter: 'parsed'},
-                9: {sorter: 'text'},
-            },
-            widgetOptions: {
-                filter_columnFilters: true, // eslint-disable-line camelcase
-                filter_hideFilters: true, // eslint-disable-line camelcase
-                stickyHeaders_offset: 50, // eslint-disable-line camelcase
-                filter_saveFilters: false, // eslint-disable-line camelcase
-                filter_functions: { // eslint-disable-line camelcase
-                    // HOWTO: https://mottie.github.io/tablesorter/docs/example-widget-filter-custom.html#notes
-                    5(exact, normalized, filterInput) {
-                        let isTest = false;
-                        const pct = Math.floor((normalized % 1) * 1000);
-                        const doCompare = {
-                            '<'(a, b) {
-                                return a < b;
-                            },
-                            '<='(a, b) {
-                                return a <= b;
-                            },
-                            '>='(a, b) {
-                                return a >= b;
-                            },
-                            '>'(a, b) {
-                                return a > b;
-                            },
-                        };
+        function wrappingMinWidth($table, maxChars, floorCh) {
+            const textCh = Math.max(floorCh, Math.ceil(maxChars / 2));
+            const $scroll = $table.closest('.horizontal-scroll');
+            const viewportPx = ($scroll.length > 0 ? $scroll.innerWidth() : window.innerWidth) || window.innerWidth || 0;
+            const capPx = Math.max(1, Math.floor(viewportPx * 0.4));
+            return `min(${textCh}ch, max(${floorCh}ch, ${capPx}px))`;
+        }
 
-                        if (filterInput === '') {
-                            isTest = true;
-                        } else {
-                            let result = filterInput.match(/(<|<=|>=|>)\s?(\d+)/);
-                            if (result) {
+        function setWrappingColumnMins($table) {
+            let $header = $table.find('thead th.home-col-show');
+            let $all = $table.find('.home-col-show');
+            if ($header.length === 0 || !$header.is(':visible')) {
+                $all.css('min-width', '');
+            } else {
+                let maxChars = 0;
+                $table.find('tbody td.home-col-show').each(function () {
+                    maxChars = Math.max(maxChars, $(this).text().trim().length);
+                });
+                $all.css('min-width', wrappingMinWidth($table, maxChars, 12));
+            }
+
+            $header = $table.find('thead th.home-col-location');
+            $all = $table.find('.home-col-location');
+            if ($header.length === 0 || !$header.is(':visible')) {
+                $all.css('min-width', '');
+            } else {
+                let maxChars = 0;
+                $table.find('tbody td.home-col-location').each(function () {
+                    maxChars = Math.max(maxChars, $(this).text().trim().length);
+                });
+                $all.css('min-width', wrappingMinWidth($table, maxChars, 12));
+            }
+
+            $header = $table.find('thead th.home-col-network');
+            $all = $table.find('.home-col-network');
+            if ($header.length === 0 || !$header.is(':visible')) {
+                $all.css('min-width', '');
+            } else {
+                let maxChars = 0;
+                $table.find('tbody td.home-col-network').each(function () {
+                    const label = ($(this).find('span').attr('title') || $(this).text()).trim();
+                    maxChars = Math.max(maxChars, label.length);
+                });
+                $all.css('min-width', wrappingMinWidth($table, maxChars, 8));
+            }
+        }
+
+        $('#showListTableShows:has(tbody tr), #showListTableAnime:has(tbody tr)').each(function () {
+            $(this).tablesorter({
+                sortList: [[7, 1], [2, 0]],
+                textExtraction: {
+                    0(node) {
+                        return $(node).find('time').attr('datetime');
+                    },
+                    1(node) {
+                        return $(node).find('time').attr('datetime');
+                    },
+                    2(node) {
+                        return latinize($(node).text().normalize('NFC'));
+                    },
+                    3(node) {
+                        return ($(node).find('span').prop('title') || 'zunknown').toLowerCase();
+                    },
+                    4(node) {
+                        return $(node).find('span').text().toLowerCase();
+                    },
+                    5(node) {
+                        const progress = $(node).find('div').attr('data-progress-percentage');
+                        const progressResult = progress === undefined ? -Infinity : (progress.length > 0 && Number.parseFloat(progress)) || 0;
+                        const total = $(node).find('div').attr('data-progress-total');
+                        const totalTesult = total === undefined ? -Infinity : (total.length > 0 && Number.parseInt(total, 10)) || 0;
+                        return (progressResult * 100 * 1000) + totalTesult;
+                    },
+                    6(node) {
+                        return $(node).data('show-size');
+                    },
+                    7(node) {
+                        return ($(node).find('span').attr('title') || 'No').toLowerCase();
+                    },
+                    9(node) {
+                        return latinize($(node).text().normalize('NFC'));
+                    },
+                },
+                widgets: ['saveSort', 'zebra', 'stickyHeaders', 'filter', 'columnSelector'],
+                headers: {
+                    0: {sorter: 'realISODate'},
+                    1: {sorter: 'realISODate'},
+                    2: {sorter: 'loadingNames'},
+                    4: {sorter: 'quality'},
+                    5: {sorter: 'digit'},
+                    6: {sorter: 'digit'},
+                    7: {filter: 'parsed'},
+                    9: {sorter: 'text'},
+                },
+                widgetOptions: {
+                    filter_columnFilters: true, // eslint-disable-line camelcase
+                    filter_hideFilters: true, // eslint-disable-line camelcase
+                    stickyHeaders_offset: 50, // eslint-disable-line camelcase
+                    stickyHeaders_xScroll: $(this).closest('.horizontal-scroll'), // eslint-disable-line camelcase
+                    filter_saveFilters: false, // eslint-disable-line camelcase
+                    filter_functions: { // eslint-disable-line camelcase
+                    // HOWTO: https://mottie.github.io/tablesorter/docs/example-widget-filter-custom.html#notes
+                        5(exact, normalized, filterInput) {
+                            let isTest = false;
+                            const pct = Math.floor((normalized % 1) * 1000);
+                            const doCompare = {
+                                '<'(a, b) {
+                                    return a < b;
+                                },
+                                '<='(a, b) {
+                                    return a <= b;
+                                },
+                                '>='(a, b) {
+                                    return a >= b;
+                                },
+                                '>'(a, b) {
+                                    return a > b;
+                                },
+                            };
+
+                            if (filterInput === '') {
+                                isTest = true;
+                            } else {
+                                let result = filterInput.match(/(<|<=|>=|>)\s?(\d+)/);
+                                if (result) {
                                 // Compare using the matched operator
-                                const comp = doCompare[result[1]];
-                                if (comp(pct, Number.parseInt(result[2], 10))) {
+                                    const comp = doCompare[result[1]];
+                                    if (comp(pct, Number.parseInt(result[2], 10))) {
+                                        isTest = true;
+                                    }
+                                }
+
+                                result = filterInput.match(/(\d+)\s(-|to)\s+(\d+)/i);
+                                if (result && ((result[2] === '-') || (result[2] === 'to')) && (pct >= Number.parseInt(result[1], 10)) && (pct <= Number.parseInt(result[3], 10))) {
+                                    isTest = true;
+                                }
+
+                                result = filterInput.match(/(=)?\s?(\d+)\s?(=)?/);
+                                if (result && ((result[1] === '=') || (result[3] === '=')) && Number.parseInt(result[2], 10) === pct) {
+                                    isTest = true;
+                                }
+
+                                if (!Number.isNaN(Number.parseFloat(filterInput)) && Number.isFinite(filterInput) && Number.parseInt(filterInput, 10) === pct) {
                                     isTest = true;
                                 }
                             }
 
-                            result = filterInput.match(/(\d+)\s(-|to)\s+(\d+)/i);
-                            if (result && ((result[2] === '-') || (result[2] === 'to')) && (pct >= Number.parseInt(result[1], 10)) && (pct <= Number.parseInt(result[3], 10))) {
-                                isTest = true;
-                            }
-
-                            result = filterInput.match(/(=)?\s?(\d+)\s?(=)?/);
-                            if (result && ((result[1] === '=') || (result[3] === '=')) && Number.parseInt(result[2], 10) === pct) {
-                                isTest = true;
-                            }
-
-                            if (!Number.isNaN(Number.parseFloat(filterInput)) && Number.isFinite(filterInput) && Number.parseInt(filterInput, 10) === pct) {
-                                isTest = true;
-                            }
-                        }
-
-                        return isTest;
+                            return isTest;
+                        },
+                    },
+                    columnSelector_mediaquery: false, // eslint-disable-line camelcase
+                    columnSelector_saveColumns: true, // eslint-disable-line camelcase
+                    columnSelector_columns: { // eslint-disable-line camelcase
+                        9: false,
                     },
                 },
-                columnSelector_mediaquery: false, // eslint-disable-line camelcase
-                columnSelector_saveColumns: true, // eslint-disable-line camelcase
-                columnSelector_columns: { // eslint-disable-line camelcase
-                    9: false,
-                },
-            },
-            sortStable: true,
-            sortAppend: [[2, 0]],
+                sortStable: true,
+                sortAppend: [[2, 0]],
+            });
+            setWrappingColumnMins($(this));
+            $(this).on('columnUpdate', () => {
+                setWrappingColumnMins($(this));
+            });
         });
+
+        $(window).on('resize.homeListCols', __.debounce(() => {
+            $('#showListTableShows, #showListTableAnime').each(function () {
+                setWrappingColumnMins($(this));
+            });
+        }, 200));
 
         {
             let sort;
