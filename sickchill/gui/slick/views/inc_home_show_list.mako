@@ -20,16 +20,16 @@
         <table id="showListTable${curListType}" class="tablesorter">
             <thead>
                 <tr>
-                    <th class="nowrap">${_('Next Ep')}</th>
-                    <th class="nowrap">${_('Prev Ep')}</th>
-                    <th>${_('Show')}</th>
-                    <th>${_('Network')}</th>
-                    <th>${_('Quality')}</th>
-                    <th>${_('Downloads')}</th>
-                    <th>${_('Size')}</th>
-                    <th>${_('Active')}</th>
-                    <th>${_('Status')}</th>
-                    <th class="nowrap columnSelector-false">${_('Location')}</th>
+                    <th class="nowrap home-col-date">${_('Next Ep')}</th>
+                    <th class="nowrap home-col-date">${_('Prev Ep')}</th>
+                    <th class="home-col-show">${_('Show')}</th>
+                    <th class="home-col-network">${_('Network')}</th>
+                    <th class="nowrap home-col-fit">${_('Quality')}</th>
+                    <th class="nowrap home-col-downloads">${_('Downloads')}</th>
+                    <th class="nowrap home-col-fit">${_('Size')}</th>
+                    <th class="nowrap home-col-fit">${_('Active')}</th>
+                    <th class="nowrap home-col-fit">${_('Status')}</th>
+                    <th class="home-col-location columnSelector-false">${_('Location')}</th>
                 </tr>
             </thead>
             <tfoot class="hidden-print">
@@ -50,10 +50,10 @@
                 % for curLoadingShow in settings.showQueueScheduler.action.loading_show_list:
                     <% loading_show = curLoadingShow.info %>
                     <tr>
-                        <td class="text-center">(${_('loading')})</td>
-                        <td class="text-center"></td>
+                        <td class="text-center nowrap home-col-date">(${_('loading')})</td>
+                        <td class="text-center nowrap home-col-date"></td>
                         % if settings.HOME_LAYOUT == 'small':
-                            <td class="tvShow">
+                            <td class="tvShow home-col-show">
                                 <div class="imgsmallposter ${settings.HOME_LAYOUT}">
                                     % if curLoadingShow.show:
                                         <a href="${scRoot}/home/displayShow?show=${loading_show.id}" title="${loading_show.name}">
@@ -71,7 +71,7 @@
                                 </div>
                             </td>
                         % elif settings.HOME_LAYOUT == 'banner':
-                            <td>
+                            <td class="home-col-show">
                                 <span style="display: none;">${_('Loading...')} (${loading_show.name})</span>
                                 <div class="imgbanner ${settings.HOME_LAYOUT}">
                                     % if curLoadingShow.show:
@@ -85,7 +85,7 @@
                                 </div>
                             </td>
                         % elif settings.HOME_LAYOUT == 'simple':
-                            <td class="tvShow">
+                            <td class="tvShow home-col-show">
                                 % if curLoadingShow.show:
                                     <a href="${scRoot}/home/displayShow?show=${loading_show.id}">${loading_show.name}</a>
                                 % else:
@@ -93,13 +93,13 @@
                                 % endif
                             </td>
                         % endif
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
+                        <td class="home-col-network"></td>
+                        <td class="nowrap home-col-fit"></td>
+                        <td class="nowrap home-col-downloads"></td>
+                        <td class="nowrap home-col-fit"></td>
+                        <td class="nowrap home-col-fit"></td>
+                        <td class="nowrap home-col-fit"></td>
+                        <td class="home-col-location"></td>
                     </tr>
                 % endfor
                 % for curShow in myShowList:
@@ -145,31 +145,31 @@
                         % if cur_airs_next:
                         <% air_date = scdatetime.scdatetime.convert_to_setting(network_timezones.parse_date_time(cur_airs_next, curShow.airs, curShow.network)) %>
                         % try:
-                            <td class="text-center nowrap">
+                            <td class="text-center nowrap home-col-date">
                                 <time datetime="${air_date.isoformat('T')}" class="date">${scdatetime.scdatetime.scfdate(air_date)}</time>
                             </td>
                         % except (ValueError, OSError):
-                            <td class="text-center nowrap"></td>
+                            <td class="text-center nowrap home-col-date"></td>
                         % endtry
                         % else:
-                            <td class="text-center nowrap"></td>
+                            <td class="text-center nowrap home-col-date"></td>
                         % endif
 
                         % if cur_airs_prev:
                         <% air_date = scdatetime.scdatetime.convert_to_setting(network_timezones.parse_date_time(cur_airs_prev, curShow.airs, curShow.network)) %>
                         % try:
-                            <td class="text-center nowrap">
+                            <td class="text-center nowrap home-col-date">
                                 <time datetime="${air_date.isoformat('T')}" class="date">${scdatetime.scdatetime.scfdate(air_date)}</time>
                             </td>
                         % except (ValueError, OSError):
-                            <td class="text-center nowrap"></td>
+                            <td class="text-center nowrap home-col-date"></td>
                         % endtry
                         % else:
-                            <td class="text-center nowrap"></td>
+                            <td class="text-center nowrap home-col-date"></td>
                         % endif
 
                         % if settings.HOME_LAYOUT == 'small':
-                            <td class="tvShow">
+                            <td class="tvShow home-col-show">
                                 <div class="imgsmallposter ${settings.HOME_LAYOUT}">
                                     <a href="${scRoot}/home/displayShow?show=${curShow.indexerid}" title="${curShow.name}">
                                         <img src="${static_url('images/poster.png')}" data-src="${static_url(curShow.show_image_url('poster_thumb'))}"
@@ -179,7 +179,7 @@
                                 </div>
                             </td>
                         % elif settings.HOME_LAYOUT == 'banner':
-                            <td>
+                            <td class="home-col-show">
                                 <span style="display: none;">${curShow.name}</span>
                                 <div class="imgbanner ${settings.HOME_LAYOUT}">
                                     <a href="${scRoot}/home/displayShow?show=${curShow.indexerid}">
@@ -189,11 +189,11 @@
                                 </div>
                             </td>
                         % elif settings.HOME_LAYOUT == 'simple':
-                            <td class="tvShow"><a href="${scRoot}/home/displayShow?show=${curShow.indexerid}">${curShow.name}</a></td>
+                            <td class="tvShow home-col-show"><a href="${scRoot}/home/displayShow?show=${curShow.indexerid}">${curShow.name}</a></td>
                         % endif
 
                         % if settings.HOME_LAYOUT != 'simple':
-                            <td class="text-center">
+                            <td class="text-center home-col-network">
                                 % if curShow.network:
                                     <span title="${curShow.network}" class="hidden-print">
                                         <img id="network" width="54" height="27" src="${static_url('images/network/nonetwork.png')}"
@@ -210,14 +210,14 @@
                                 % endif
                             </td>
                         % else:
-                            <td>
+                            <td class="home-col-network">
                                 <span title="${curShow.network}">${curShow.network}</span>
                             </td>
                         % endif
 
-                        <td class="text-center">${renderQualityPill(curShow.quality, showTitle=True)}</td>
+                        <td class="text-center nowrap home-col-fit">${renderQualityPill(curShow.quality, showTitle=True)}</td>
 
-                        <td class="text-center">
+                        <td class="text-center nowrap home-col-downloads">
                             <div class="progressbar hidden-print" style="position:relative;" data-show-id="${curShow.indexerid}"
                                  data-progress-text="${download_stat}"
                                  data-progress-tip="${download_stat_tip}"
@@ -227,13 +227,13 @@
                             <span class="visible-print-inline">${download_stat}</span>
                         </td>
 
-                        <td class="text-center" data-show-size="${show_size}">${pretty_file_size(show_size)}</td>
+                        <td class="text-center nowrap home-col-fit" data-show-size="${show_size}">${pretty_file_size(show_size)}</td>
 
-                        <td class="text-center">
+                        <td class="text-center nowrap home-col-fit">
                             <span class="displayshow-icon-${("disable", "enable")[not bool(curShow.paused)]}" title="${('No', 'Yes')[not bool(curShow.paused)]}"></span>
                         </td>
 
-                        <td class="text-center">
+                        <td class="text-center nowrap home-col-fit">
                             <%
                                 display_status = curShow.status
                                 if display_status:
@@ -246,7 +246,7 @@
                             ${_(display_status)}
                         </td>
 
-                        <td class="nowrap" title="${curShow.get_location | h}">${curShow.get_location | h}</td>
+                        <td class="home-col-location" title="${curShow.get_location | h}">${curShow.get_location | h}</td>
                     </tr>
                 % endfor
             </tbody>

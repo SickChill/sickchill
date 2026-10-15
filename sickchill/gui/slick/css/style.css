@@ -3525,63 +3525,46 @@ thead.tablesorter-stickyHeader {
     text-align: center;
 }
 
-/* Home list: compact columns stay small; Show/Location take most leftover width */
+/* Home list: Show and Location share leftover width and wrap to at most two lines. */
 #showListTableShows,
 #showListTableAnime {
-    table-layout: fixed;
+    table-layout: auto;
+    width: 100%;
 }
 
-#showListTableShows th:nth-child(1),
-#showListTableShows th:nth-child(2),
-#showListTableAnime th:nth-child(1),
-#showListTableAnime th:nth-child(2) {
-    width: 6%;
+#showListTableShows .home-col-date,
+#showListTableAnime .home-col-date {
+    min-width: 86px;
+    white-space: nowrap;
 }
 
-#showListTableShows th:nth-child(3),
-#showListTableAnime th:nth-child(3) {
-    width: 16%;
+#showListTableShows .home-col-fit,
+#showListTableAnime .home-col-fit {
+    white-space: nowrap;
 }
 
-#showListTableShows th:nth-child(4),
-#showListTableAnime th:nth-child(4) {
-    width: 8%;
+#showListTableShows .home-col-show,
+#showListTableAnime .home-col-show,
+#showListTableShows .home-col-location,
+#showListTableAnime .home-col-location,
+#showListTableShows .home-col-network,
+#showListTableAnime .home-col-network {
+    white-space: normal;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    line-height: 1.25;
 }
 
-#showListTableShows th:nth-child(5),
-#showListTableAnime th:nth-child(5) {
-    width: 7%;
+#showListTableShows .home-col-downloads,
+#showListTableAnime .home-col-downloads {
+    min-width: 14ch;
+    white-space: nowrap;
 }
 
-#showListTableShows th:nth-child(6),
-#showListTableAnime th:nth-child(6) {
-    width: 12%;
-}
-
-#showListTableShows th:nth-child(7),
-#showListTableAnime th:nth-child(7) {
-    width: 7%;
-}
-
-#showListTableShows th:nth-child(8),
-#showListTableAnime th:nth-child(8) {
-    width: 5%;
-}
-
-#showListTableShows th:nth-child(9),
-#showListTableAnime th:nth-child(9) {
-    width: 8%;
-}
-
-#showListTableShows th:nth-child(10),
-#showListTableAnime th:nth-child(10) {
-    width: 25%;
-}
-
-#showListTableShows td:nth-child(10),
-#showListTableAnime td:nth-child(10) {
-    overflow: hidden;
-    text-overflow: ellipsis;
+#showListTableShows .home-col-downloads .progressbar,
+#showListTableAnime .home-col-downloads .progressbar {
+    width: 100%;
+    min-width: 14ch;
 }
 
 .tablesorter tfoot tr {
@@ -4025,6 +4008,32 @@ input.tablesorter-filter.disabled {
 
 .horizontal-scroll {
     overflow-x: auto;
+    overflow-y: visible;
+    max-width: 100%;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 6px;
+    scrollbar-width: auto;
+    scrollbar-color: rgba(140, 140, 140, 0.95) rgba(140, 140, 140, 0.28);
+}
+
+.horizontal-scroll::-webkit-scrollbar {
+    height: 18px;
+}
+
+.horizontal-scroll::-webkit-scrollbar-track {
+    background: rgba(140, 140, 140, 0.28);
+    border-radius: 9px;
+}
+
+.horizontal-scroll::-webkit-scrollbar-thumb {
+    background: rgba(140, 140, 140, 0.95);
+    border: 2px solid transparent;
+    border-radius: 9px;
+    background-clip: padding-box;
+}
+
+.horizontal-scroll::-webkit-scrollbar-thumb:hover {
+    background: rgba(180, 180, 180, 1);
 }
 
 #episodeDir {
