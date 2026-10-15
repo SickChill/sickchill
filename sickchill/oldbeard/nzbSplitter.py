@@ -176,9 +176,9 @@ def split_result(obj):
         ep_obj_list = [obj.show.get_episode(season, ep) for ep in parsed_obj.episode_numbers]
 
         # make a result
-        cur_obj = result_classes.NZBDataSearchResult(ep_obj_list)
+        cur_obj = result_classes.NZBDataSearchResult(ep_obj_list, obj.provider, obj.url or "")
         cur_obj.name = new_nzb
-        cur_obj.provider = obj.provider
+        cur_obj.show = obj.show
         cur_obj.quality = obj.quality
         cur_obj.extraInfo = [create_nzb_string(separate_nzbs[new_nzb], xmlns)]
 
