@@ -134,7 +134,7 @@ class ProperFinder(object):
         # take the list of unique propers and get it sorted by date
         sorted_propers = sorted(propers.values(), key=operator.attrgetter("date"), reverse=True)
         final_propers = []
-        pack_seasons = set()
+        pack_episode_keys = set()
 
         for proper in sorted_propers:
             try:
@@ -247,20 +247,32 @@ class ProperFinder(object):
             if best_result.indexerid == -1:
                 continue
 
-            if is_season_pack:
-                if (best_result.indexerid, best_result.season) in pack_seasons:
-                    continue
-                pack_seasons.add((best_result.indexerid, best_result.season))
-                final_propers = [item for item in final_propers if not (item.indexerid == best_result.indexerid and item.season == best_result.season)]
+            if self._merge_selected_proper(final_propers, pack_episode_keys, best_result, is_season_pack, matched_history):
                 logger.info(_("Found a proper that we need: {name}").format(name=best_result.name))
-                final_propers.append(best_result)
-            elif (best_result.indexerid, best_result.season) not in pack_seasons and (best_result.indexerid, best_result.season, best_result.episode) not in {
-                (item.indexerid, item.season, item.episode) for item in final_propers
-            }:
-                logger.info(_("Found a proper that we need: {name}").format(name=best_result.name))
-                final_propers.append(best_result)
 
         return final_propers
+
+    @staticmethod
+    def _merge_selected_proper(final_propers, pack_episode_keys, best_result, is_season_pack, matched_history):
+        """Keep a pack only for its matched episodes; leave unmatched episode propers in that season."""
+        if is_season_pack:
+            new_keys = {(best_result.indexerid, season, episode) for season, episode in matched_history} - pack_episode_keys
+            if len(new_keys) < 2:
+                return False
+            pack_episode_keys.update(new_keys)
+            kept = [item for item in final_propers if (item.indexerid, item.season, item.episode) not in new_keys]
+            final_propers.clear()
+            final_propers.extend(kept)
+            final_propers.append(best_result)
+            return True
+
+        key = (best_result.indexerid, best_result.season, best_result.episode)
+        if key in pack_episode_keys:
+            return False
+        if key in {(item.indexerid, item.season, item.episode) for item in final_propers}:
+            return False
+        final_propers.append(best_result)
+        return True
 
     def _download_propers(self, proper_list):
         """

@@ -553,6 +553,38 @@ class TestProperFinderFingerprint(unittest.TestCase):
         self.assertEqual(episodes, [ep7, ep8])
         snatch.assert_called_once()
 
+    def test_pack_precedence_only_covers_matched_episodes(self):
+        def _proper(name, season, episode):
+            item = mock.Mock()
+            item.indexerid = 1
+            item.season = season
+            item.episode = episode
+            item.name = name
+            return item
+
+        ep7 = _proper("President.Curtis.S01E07.PROPER.1080p.10bit.WEBRip.6CH.x265.HEVC-PSA", 1, 7)
+        ep8 = _proper("President.Curtis.S01E08.PROPER.1080p.10bit.WEBRip.6CH.x265.HEVC-PSA", 1, 8)
+        ep9 = _proper("President.Curtis.S01E09.PROPER.720p.HDTV.x264-NTb", 1, 9)
+        pack = _proper("President.Curtis.S01.PROPER.1080p.10bit.WEBRip.6CH.x265.HEVC-PSA", 1, -1)
+        matched = {(1, 7): "e07", (1, 8): "e08"}
+
+        final_propers = [ep7, ep8, ep9]
+        pack_episode_keys = set()
+        self.assertTrue(ProperFinder._merge_selected_proper(final_propers, pack_episode_keys, pack, True, matched))
+        self.assertEqual(final_propers, [ep9, pack])
+        self.assertEqual(pack_episode_keys, {(1, 1, 7), (1, 1, 8)})
+
+        later_matched = _proper("President.Curtis.S01E07.REPACK.1080p.10bit.WEBRip.6CH.x265.HEVC-PSA", 1, 7)
+        self.assertFalse(ProperFinder._merge_selected_proper(final_propers, pack_episode_keys, later_matched, False, {(1, 7): "e07"}))
+
+        later_unmatched = _proper("President.Curtis.S01E10.PROPER.720p.HDTV.x264-NTb", 1, 10)
+        self.assertTrue(ProperFinder._merge_selected_proper(final_propers, pack_episode_keys, later_unmatched, False, {(1, 10): "e10"}))
+        self.assertEqual(final_propers, [ep9, pack, later_unmatched])
+
+        other_pack = _proper("President.Curtis.S01.PROPER.720p.HDTV.x264-NTb", 1, -1)
+        self.assertTrue(ProperFinder._merge_selected_proper(final_propers, pack_episode_keys, other_pack, True, {(1, 9): "e09", (1, 10): "e10"}))
+        self.assertEqual(final_propers, [pack, other_pack])
+
 
 class TestProviderRateLimit(unittest.TestCase):
     def test_get_url_skips_while_rate_limited(self):
