@@ -1336,7 +1336,8 @@ class CMDPostProcess(ApiCall):
 
         self.force, args = self.check_params(args, kwargs, "force", False, False, "bool", [])
         self.force_replace, args = self.check_params(args, kwargs, "force_replace", False, False, "bool", [])
-        self.force_replace = self.force_replace or self.force
+        if "force_replace" not in kwargs:
+            self.force_replace = self.force_replace or self.force
 
         self.force_next, args = self.check_params(args, kwargs, "force_next", False, False, "bool", [])
         self.no_queue, args = self.check_params(args, kwargs, "no_queue", False, False, "bool", [])
@@ -1344,7 +1345,8 @@ class CMDPostProcess(ApiCall):
 
         self.quiet, args = self.check_params(args, kwargs, "quiet", False, False, "bool", [])
         self.return_data, args = self.check_params(args, kwargs, "return_data", False, False, "bool", [])
-        self.return_data = self.return_data or self.quiet
+        if "return_data" not in kwargs:
+            self.return_data = self.return_data or self.quiet
 
         self.process_method, args = self.check_params(args, kwargs, "process_method", False, False, "string", PROCESS_METHODS)
         self.is_priority, args = self.check_params(args, kwargs, "is_priority", False, False, "bool", [])
