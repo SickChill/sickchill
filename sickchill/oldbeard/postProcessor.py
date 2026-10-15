@@ -1103,7 +1103,6 @@ class PostProcessor(object):
                 self._delete(cur_ep.location, associated_files=True)
                 if cur_ep.location:
                     helpers.delete_empty_folders(os.path.dirname(cur_ep.location), keep_dir=episode_object.show.get_location)
-                cur_ep.cleanup_download_properties()
             except (OSError, IOError):
                 raise EpisodePostProcessingFailedException(_("Unable to delete the existing files"))
 

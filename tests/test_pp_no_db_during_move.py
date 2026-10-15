@@ -154,6 +154,100 @@ class TestProcessMoveThenMassAction(unittest.TestCase):
             self.assertTrue(any("Files were left as-is" in str(c) for c in pp._log.call_args_list))
             ep.get_sql.assert_called()
 
+    def test_process_keeps_release_fields_for_get_sql(self):
+        """cleanup_download_properties must not wipe release_name/group/is_proper before get_sql (#9120)."""
+        captured = {}
+
+        with tempfile.TemporaryDirectory() as tmp:
+            src = Path(tmp) / "Show.S01E01.PROPER.mkv"
+            show_dir = Path(tmp) / "Show Name"
+            show_dir.mkdir()
+            src.write_bytes(b"video")
+
+            show = MagicMock()
+            show.name = "Show Name"
+            show.location = str(show_dir)
+            show.get_location = str(show_dir)
+            show.indexerid = 1
+            show.indexer = 1
+            show.quality = 500
+            show.subtitles = False
+            show.is_anime = False
+            show.air_by_date = False
+            show.sports = False
+            show.season_folders = True
+
+            ep = MagicMock()
+            ep.lock = threading.RLock()
+            ep.location = ""
+            ep.season = 1
+            ep.episode = 1
+            ep.status = 0
+            ep.related_episodes = []
+            ep.pretty_name = "Show Name - S01E01"
+            ep.show = show
+            ep.release_name = "old-name"
+            ep.release_group = "OLD"
+            ep.is_proper = False
+            ep.proper_path.return_value = "Season 01/Show Name - S01E01"
+
+            def fake_cleanup():
+                ep.release_name = ""
+                ep.release_group = ""
+                ep.is_proper = False
+                ep.location = ""
+
+            def capturing_get_sql():
+                captured["release_name"] = ep.release_name
+                captured["release_group"] = ep.release_group
+                captured["is_proper"] = ep.is_proper
+                return self._production_get_sql()
+
+            ep.cleanup_download_properties.side_effect = fake_cleanup
+            ep.get_sql.side_effect = capturing_get_sql
+            ep.refresh_subtitles = MagicMock()
+            ep.download_subtitles = MagicMock()
+            ep.airdate_modify_stamp = MagicMock()
+            ep.create_meta_files = MagicMock()
+
+            mock_db = MagicMock()
+            mock_db.mass_action.side_effect = RuntimeError("stop after get_sql")
+            mock_db.select.return_value = [{"last_season": 1}]
+
+            pp = PostProcessor(str(src), process_method=METHOD_MOVE)
+            pp._log = MagicMock()
+            pp.history = MagicMock()
+            pp.in_history = False
+            pp.is_proper = True
+            pp.release_group = "GROUP"
+            pp.release_name = "Show.S01E01.PROPER"
+
+            with (
+                patch.object(pp, "_find_info", return_value=(show, 1, [1], None, -1)),
+                patch.object(pp, "_get_ep_obj", return_value=ep),
+                patch.object(pp, "_get_quality", return_value=1),
+                patch.object(pp, "_is_priority", return_value=True),
+                patch.object(pp, "_checkForExistingFile", return_value=PostProcessor.DOESNT_EXIST),
+                patch.object(pp, "_delete"),
+                patch.object(pp, "_move"),
+                patch("sickchill.oldbeard.postProcessor.db.DBConnection", return_value=mock_db),
+                patch("sickchill.oldbeard.postProcessor.helpers.make_dirs", return_value=True),
+                patch("sickchill.oldbeard.postProcessor.helpers.delete_empty_folders"),
+                patch("sickchill.oldbeard.postProcessor.show_name_helpers.determine_release_name", return_value=None),
+                patch("sickchill.oldbeard.postProcessor.settings.USE_FREE_SPACE_CHECK", False),
+                patch("sickchill.oldbeard.postProcessor.settings.RENAME_EPISODES", True),
+                patch("sickchill.oldbeard.postProcessor.settings.CREATE_MISSING_SHOW_DIRS", False),
+                patch("sickchill.oldbeard.postProcessor.settings.USE_SUBTITLES", False),
+                patch("sickchill.oldbeard.postProcessor.settings.MOVE_ASSOCIATED_FILES", False),
+            ):
+                with self.assertRaises(EpisodePostProcessingFailedException):
+                    pp.process()
+
+            ep.cleanup_download_properties.assert_not_called()
+            self.assertEqual(captured["release_name"], "Show.S01E01.PROPER")
+            self.assertEqual(captured["release_group"], "GROUP")
+            self.assertTrue(captured["is_proper"])
+
 
 if __name__ == "__main__":
     unittest.main()
