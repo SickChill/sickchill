@@ -134,6 +134,7 @@ class ProperFinder(object):
         # take the list of unique propers and get it sorted by date
         sorted_propers = sorted(propers.values(), key=operator.attrgetter("date"), reverse=True)
         final_propers = []
+        pack_episode_keys = set()
 
         for proper in sorted_propers:
             try:
@@ -149,7 +150,8 @@ class ProperFinder(object):
                 logger.debug(_("Ignoring {name} because {show} is paused").format(name=proper.name, show=proper.show.name))
                 continue
 
-            if not parse_result.episode_numbers:
+            is_season_pack = not parse_result.episode_numbers
+            if is_season_pack and parse_result.season_number is None:
                 logger.debug(_("Ignoring {name} because it's for a full season rather than specific episode").format(name=proper.name))
                 continue
 
@@ -166,7 +168,7 @@ class ProperFinder(object):
             # populate our Proper instance
             proper.show = parse_result.show
             proper.season = parse_result.season_number if parse_result.season_number is not None else 1
-            proper.episode = parse_result.episode_numbers[0]
+            proper.episode = parse_result.episode_numbers[0] if parse_result.episode_numbers else -1
             proper.release_group = parse_result.release_group
             proper.version = parse_result.version
             proper.quality = Quality.nameQuality(proper.name, parse_result.is_anime)
@@ -183,23 +185,34 @@ class ProperFinder(object):
                 logger.debug(_("Proper {name} doesn't have a release group and version, ignoring it").format(name=best_result.name))
                 continue
 
-            # check if we actually want this proper (if it's the right quality)
             main_db_con = db.DBConnection()
-            sql_results = main_db_con.select(
-                "SELECT status FROM tv_episodes WHERE showid = ? AND season = ? AND episode = ?",
-                [best_result.indexerid, best_result.season, best_result.episode],
-            )
-            if not sql_results:
-                continue
+            if is_season_pack:
+                sql_results = main_db_con.select(
+                    "SELECT episode, status FROM tv_episodes WHERE showid = ? AND season = ?",
+                    [best_result.indexerid, best_result.season],
+                )
+                matching_status = 0
+                for row in sql_results or []:
+                    old_status, old_quality = Quality.splitCompositeStatus(int(row["status"]))
+                    if old_status in (DOWNLOADED, SNATCHED) and old_quality == best_result.quality:
+                        matching_status += 1
+                if matching_status < 2:
+                    continue
+            else:
+                sql_results = main_db_con.select(
+                    "SELECT status FROM tv_episodes WHERE showid = ? AND season = ? AND episode = ?",
+                    [best_result.indexerid, best_result.season, best_result.episode],
+                )
+                if not sql_results:
+                    continue
 
-            # only keep the proper if we have already retrieved the same quality ep (don't get better/worse ones)
-            old_status, old_quality = Quality.splitCompositeStatus(int(sql_results[0]["status"]))
-            if old_status not in (DOWNLOADED, SNATCHED) or old_quality != best_result.quality:
-                continue
+                # only keep the proper if we have already retrieved the same quality ep (don't get better/worse ones)
+                old_status, old_quality = Quality.splitCompositeStatus(int(sql_results[0]["status"]))
+                if old_status not in (DOWNLOADED, SNATCHED) or old_quality != best_result.quality:
+                    continue
 
             # check if we actually want this proper (if it's the right release group and a higher version)
-            if best_result.show.is_anime:
-                main_db_con = db.DBConnection()
+            if best_result.show.is_anime and not is_season_pack:
                 sql_results = main_db_con.select(
                     "SELECT release_group, version FROM tv_episodes WHERE showid = ? AND season = ? AND episode = ?",
                     [best_result.indexerid, best_result.season, best_result.episode],
@@ -221,14 +234,45 @@ class ProperFinder(object):
                     )
                     continue
 
-            # if the show is in our list and there hasn't been a proper already added for that particular episode then add it to our list of propers
-            if best_result.indexerid != -1 and (best_result.indexerid, best_result.season, best_result.episode) not in {
-                (p.indexerid, p.season, p.episode) for p in final_propers
-            }:
+            history_age = sc_now() - datetime.timedelta(days=30)
+            matched_history = self._fingerprint_matching_history(best_result, is_season_pack, history_age)
+            if is_season_pack:
+                if len(matched_history) < 2:
+                    logger.debug(_("Ignoring season pack {name} because fewer than two history releases share its remainder").format(name=best_result.name))
+                    continue
+            elif not matched_history:
+                logger.debug(_("Ignoring {name} because it does not match the original history release").format(name=best_result.name))
+                continue
+
+            if best_result.indexerid == -1:
+                continue
+
+            if self._merge_selected_proper(final_propers, pack_episode_keys, best_result, is_season_pack, matched_history):
                 logger.info(_("Found a proper that we need: {name}").format(name=best_result.name))
-                final_propers.append(best_result)
 
         return final_propers
+
+    @staticmethod
+    def _merge_selected_proper(final_propers, pack_episode_keys, best_result, is_season_pack, matched_history):
+        """Keep a pack only for its matched episodes; leave unmatched episode propers in that season."""
+        if is_season_pack:
+            matched_keys = {(best_result.indexerid, season, episode) for season, episode in matched_history}
+            if len(matched_keys) < 2 or matched_keys & pack_episode_keys:
+                return False
+            pack_episode_keys.update(matched_keys)
+            kept = [item for item in final_propers if (item.indexerid, item.season, item.episode) not in matched_keys]
+            final_propers.clear()
+            final_propers.extend(kept)
+            final_propers.append(best_result)
+            return True
+
+        key = (best_result.indexerid, best_result.season, best_result.episode)
+        if key in pack_episode_keys:
+            return False
+        if key in {(item.indexerid, item.season, item.episode) for item in final_propers}:
+            return False
+        final_propers.append(best_result)
+        return True
 
     def _download_propers(self, proper_list):
         """
@@ -239,51 +283,99 @@ class ProperFinder(object):
 
         for proper in proper_list:
             history_age = sc_now() - datetime.timedelta(days=30)
-
-            # make sure the episode has been downloaded before
-            main_db_con = db.DBConnection()
-            history_results = main_db_con.select(
-                "SELECT resource FROM history "
-                + "WHERE showid = ? AND season = ? AND episode = ? AND quality = ? AND date >= ? "
-                + "AND action IN ("
-                + ",".join([str(x) for x in Quality.SNATCHED + Quality.DOWNLOADED])
-                + ")",
-                [proper.indexerid, proper.season, proper.episode, proper.quality, history_age.strftime(History.date_format)],
+            is_season_pack = proper.episode < 1
+            clean_proper_name = self._generic_name(helpers.remove_non_release_groups(proper.name))
+            latest_resources = self._latest_history_resources(
+                proper.indexerid,
+                proper.season,
+                None if is_season_pack else proper.episode,
+                proper.quality,
+                history_age,
             )
 
-            # if we didn't download this episode in the first place we don't know what quality to use for the proper, so we can't do it
-            if not history_results:
+            if not latest_resources:
                 logger.info(_("Unable to find an original history entry for proper {name} so I'm not downloading it.").format(name=proper.name))
                 continue
 
-            else:
-                # make sure that none of the existing history downloads are the same proper we're trying to download
-                clean_proper_name = self._generic_name(helpers.remove_non_release_groups(proper.name))
-                is_same = False
-                for result in history_results:
-                    # if the result exists in history already we need to skip it
-                    if self._generic_name(helpers.remove_non_release_groups(result["resource"])) == clean_proper_name:
-                        is_same = True
-                        break
-                if is_same:
-                    logger.debug(_("This proper is already in history, skipping it"))
+            if any(self._generic_name(helpers.remove_non_release_groups(resource)) == clean_proper_name for resource in latest_resources.values()):
+                logger.debug(_("This proper is already in history, skipping it"))
+                continue
+
+            episode_objects = []
+            anime = bool(getattr(proper.show, "is_anime", False))
+            for (season, episode), resource in latest_resources.items():
+                if re.search(r"\b(proper|repack|real)\b", resource, re.IGNORECASE):
                     continue
+                fingerprint = helpers.split_release_fingerprint(resource, anime=anime)
+                if not helpers.release_matches_fingerprint(proper.name, fingerprint, require_episode=not is_season_pack, anime=anime):
+                    continue
+                episode_object = proper.show.get_episode(season, episode)
+                if episode_object:
+                    episode_objects.append(episode_object)
 
-                # get the episode object
-                episode_object = proper.show.get_episode(proper.season, proper.episode)
+            if is_season_pack and len(episode_objects) < 2:
+                logger.debug(_("Ignoring season pack {name} because fewer than two matching history episodes").format(name=proper.name))
+                continue
+            if not episode_objects:
+                logger.debug(_("Ignoring {name} because it does not match the original history release").format(name=proper.name))
+                continue
 
-                # make the result object
-                result = proper.provider.get_result([episode_object], proper.url)
-                result.show = proper.show
-                result.name = proper.name
-                result.quality = proper.quality
-                result.release_group = proper.release_group
-                result.version = proper.version
-                result.content = proper.content
+            result = proper.provider.get_result(episode_objects, proper.url)
+            result.show = proper.show
+            result.name = proper.name
+            result.quality = proper.quality
+            result.release_group = proper.release_group
+            result.version = proper.version
+            result.content = proper.content
 
-                # snatch it
-                snatch_episode(result, SNATCHED_PROPER)
-                time.sleep(cpu_presets[settings.CPU_PRESET])
+            snatch_episode(result, SNATCHED_PROPER)
+            time.sleep(cpu_presets[settings.CPU_PRESET])
+
+    @staticmethod
+    def _latest_history_resources(indexerid, season, episode, quality, since):
+        """Latest snatch/download resource per episode in the history window."""
+        main_db_con = db.DBConnection()
+        actions = ",".join(str(action) for action in Quality.SNATCHED + Quality.DOWNLOADED)
+        since_stamp = since.strftime(History.date_format)
+        if episode is None or episode < 1:
+            rows = main_db_con.select(
+                "SELECT season, episode, resource FROM history "
+                f"WHERE showid = ? AND season = ? AND quality = ? AND date >= ? AND action IN ({actions}) "
+                "ORDER BY date DESC",
+                [indexerid, season, quality, since_stamp],
+            )
+        else:
+            rows = main_db_con.select(
+                "SELECT season, episode, resource FROM history "
+                f"WHERE showid = ? AND season = ? AND episode = ? AND quality = ? AND date >= ? AND action IN ({actions}) "
+                "ORDER BY date DESC",
+                [indexerid, season, episode, quality, since_stamp],
+            )
+        latest = {}
+        for row in rows or []:
+            key = (int(row["season"]), int(row["episode"]))
+            if key in latest:
+                continue
+            latest[key] = row["resource"] or ""
+        return latest
+
+    def _fingerprint_matching_history(self, proper, is_season_pack, since):
+        latest = self._latest_history_resources(
+            proper.indexerid,
+            proper.season,
+            None if is_season_pack else proper.episode,
+            proper.quality,
+            since,
+        )
+        anime = bool(getattr(proper.show, "is_anime", False))
+        matched = {}
+        for key, resource in latest.items():
+            if re.search(r"\b(proper|repack|real)\b", resource, re.IGNORECASE):
+                continue
+            fingerprint = helpers.split_release_fingerprint(resource, anime=anime)
+            if helpers.release_matches_fingerprint(proper.name, fingerprint, require_episode=not is_season_pack, anime=anime):
+                matched[key] = resource
+        return matched
 
     @staticmethod
     def _generic_name(name):

@@ -634,6 +634,101 @@ class HelpersMiscTests(unittest.TestCase):
         self.assertTrue(helpers.scene_title_matches_show("The.Daily.Show.2024.10.13.REPACK", "The Daily Show"))
         self.assertFalse(helpers.scene_title_matches_show("The.Daily.Show.2024.REPACK", "The Daily Show"))
 
+    def test_split_release_fingerprint_president_curtis(self):
+        original = "President.Curtis.S01E08.1080p.10bit.WEBRip.6CH.x265.HEVC-PSA"
+        fingerprint = helpers.split_release_fingerprint(original)
+        self.assertIsNotNone(fingerprint)
+        self.assertEqual(fingerprint.quality_token.lower(), "1080p")
+        self.assertEqual(fingerprint.episode_tag, "S01E08")
+        self.assertEqual(fingerprint.season, 1)
+        self.assertEqual(fingerprint.episode, 8)
+        self.assertEqual(fingerprint.remainder, ("10bit", "webrip", "6ch", "x265", "hevc", "psa"))
+        self.assertEqual(fingerprint.title, "president.curtis")
+
+        from_path = helpers.split_release_fingerprint("/tv/President.Curtis.S01E08.1080p.10bit.WEBRip.6CH.x265.HEVC-PSA.mkv")
+        self.assertEqual(from_path.remainder, fingerprint.remainder)
+        self.assertEqual(from_path.quality_token.lower(), "1080p")
+
+        hdtv = helpers.split_release_fingerprint("President.Curtis.S01E08.HDTV.x264-GROUP")
+        self.assertEqual(hdtv.quality_token, "")
+        self.assertEqual(hdtv.remainder, ("hdtv", "x264", "group"))
+
+    def test_release_matches_fingerprint_quality_and_remainder(self):
+        original = "President.Curtis.S01E08.1080p.10bit.WEBRip.6CH.x265.HEVC-PSA"
+        fingerprint = helpers.split_release_fingerprint(original)
+        self.assertTrue(
+            helpers.release_matches_fingerprint(
+                "President.Curtis.S01E08.PROPER.1080p.10bit.WEBRip.6CH.x265.HEVC-PSA",
+                fingerprint,
+            )
+        )
+        self.assertTrue(
+            helpers.release_matches_fingerprint(
+                "President.Curtis.S01E08.REPACK.1080p.10bit.WEBRip.6CH.x265.HEVC-PSA",
+                fingerprint,
+            )
+        )
+        self.assertFalse(
+            helpers.release_matches_fingerprint(
+                "President.Curtis.S01E08.PROPER.720p.10bit.WEBRip.6CH.x265.HEVC-PSA",
+                fingerprint,
+            )
+        )
+        self.assertFalse(
+            helpers.release_matches_fingerprint(
+                "President.Curtis.S01E08.PROPER.1080p.10bit.WEBRip.6CH.x265.HEVC-NTb",
+                fingerprint,
+            )
+        )
+        self.assertFalse(
+            helpers.release_matches_fingerprint(
+                "President.Curtis.S01E08.1080p.10bit.WEBRip.6CH.x265.HEVC-PSA",
+                fingerprint,
+            )
+        )
+        self.assertFalse(
+            helpers.release_matches_fingerprint(
+                "Saint-Pierre.S01E08.REPACK.1080p.10bit.WEBRip.6CH.x265.HEVC-PSA",
+                fingerprint,
+            )
+        )
+        self.assertFalse(
+            helpers.release_matches_fingerprint(
+                "President.Curtis.S01E07.PROPER.1080p.10bit.WEBRip.6CH.x265.HEVC-PSA",
+                fingerprint,
+            )
+        )
+        self.assertTrue(
+            helpers.release_matches_fingerprint(
+                "President.Curtis.S01.PROPER.1080p.10bit.WEBRip.6CH.x265.HEVC-PSA",
+                fingerprint,
+                require_episode=False,
+            )
+        )
+
+        original_720p = "President.Curtis.S01E08.720p.10bit.WEBRip.6CH.x265.HEVC-PSA"
+        fingerprint_720p = helpers.split_release_fingerprint(original_720p)
+        self.assertEqual(fingerprint_720p.quality_token.lower(), "720p")
+        self.assertTrue(
+            helpers.release_matches_fingerprint(
+                "President.Curtis.S01E08.PROPER.720p.10bit.WEBRip.6CH.x265.HEVC-PSA",
+                fingerprint_720p,
+            )
+        )
+        self.assertFalse(
+            helpers.release_matches_fingerprint(
+                "President.Curtis.S01E08.PROPER.1080p.10bit.WEBRip.6CH.x265.HEVC-PSA",
+                fingerprint_720p,
+            )
+        )
+
+    def test_release_matches_fingerprint_uses_anime_quality_path(self):
+        original = "Naruto.S01E01.1080p.WEBRip.x265-SubsPlease"
+        proper = "Naruto.S01E01.PROPER.1080p.WEBRip.x265-SubsPlease"
+        fingerprint = helpers.split_release_fingerprint(original, anime=True)
+        self.assertTrue(helpers.release_matches_fingerprint(proper, fingerprint, anime=True))
+        self.assertFalse(helpers.release_matches_fingerprint(proper, fingerprint, anime=False))
+
     def test_full_sanitize_scene_name(self):
         cases = [
             {"name": "Name, with: bad (chars)!", "expected": "name with bad chars"},
