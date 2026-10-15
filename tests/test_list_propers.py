@@ -577,6 +577,12 @@ class TestProperFinderFingerprint(unittest.TestCase):
         later_matched = _proper("President.Curtis.S01E07.REPACK.1080p.10bit.WEBRip.6CH.x265.HEVC-PSA", 1, 7)
         self.assertFalse(ProperFinder._merge_selected_proper(final_propers, pack_episode_keys, later_matched, False, {(1, 7): "e07"}))
 
+        overlapping_pack = _proper("President.Curtis.S01.PROPER.1080p.WEBRip-GROUP", 1, -1)
+        self.assertFalse(
+            ProperFinder._merge_selected_proper(final_propers, pack_episode_keys, overlapping_pack, True, {(1, 8): "e08", (1, 9): "e09", (1, 10): "e10"})
+        )
+        self.assertEqual(final_propers, [ep9, pack])
+
         later_unmatched = _proper("President.Curtis.S01E10.PROPER.720p.HDTV.x264-NTb", 1, 10)
         self.assertTrue(ProperFinder._merge_selected_proper(final_propers, pack_episode_keys, later_unmatched, False, {(1, 10): "e10"}))
         self.assertEqual(final_propers, [ep9, pack, later_unmatched])

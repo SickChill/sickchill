@@ -256,11 +256,11 @@ class ProperFinder(object):
     def _merge_selected_proper(final_propers, pack_episode_keys, best_result, is_season_pack, matched_history):
         """Keep a pack only for its matched episodes; leave unmatched episode propers in that season."""
         if is_season_pack:
-            new_keys = {(best_result.indexerid, season, episode) for season, episode in matched_history} - pack_episode_keys
-            if len(new_keys) < 2:
+            matched_keys = {(best_result.indexerid, season, episode) for season, episode in matched_history}
+            if len(matched_keys) < 2 or matched_keys & pack_episode_keys:
                 return False
-            pack_episode_keys.update(new_keys)
-            kept = [item for item in final_propers if (item.indexerid, item.season, item.episode) not in new_keys]
+            pack_episode_keys.update(matched_keys)
+            kept = [item for item in final_propers if (item.indexerid, item.season, item.episode) not in matched_keys]
             final_propers.clear()
             final_propers.extend(kept)
             final_propers.append(best_result)
