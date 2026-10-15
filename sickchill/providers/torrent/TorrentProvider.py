@@ -43,8 +43,8 @@ class TorrentProvider(GenericProvider):
         season_pack_keys = self._shared_season_pack_keys(candidates)
         try:
             for row in self.cache.list_propers(search_date) or []:
-                title = row.get("name") or ""
-                url = row.get("url") or ""
+                title = row["name"] or ""
+                url = row["url"] or ""
                 if not url or url in seen_urls:
                     continue
                 matched_show = self._cache_title_matches_candidates(title, candidates, season_pack_keys)

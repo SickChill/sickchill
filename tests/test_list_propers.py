@@ -180,12 +180,22 @@ class TestTorrentFindPropersCacheFirst(unittest.TestCase):
 
         provider = TorrentProvider("CacheProperGrp")
         provider.cache = mock.Mock()
+
+        class _Row:
+            def __init__(self, data):
+                self._data = data
+
+            def __getitem__(self, key):
+                return self._data[key]
+
         provider.cache.list_propers.return_value = [
-            {
-                "name": "Show.S01E01.PROPER-GRP.720p.HDTV",
-                "url": "http://example/proper-grp",
-                "time": int(time.time()),
-            },
+            _Row(
+                {
+                    "name": "Show.S01E01.PROPER-GRP.720p.HDTV",
+                    "url": "http://example/proper-grp",
+                    "time": int(time.time()),
+                }
+            ),
         ]
         provider.search = mock.Mock(return_value=[])
         candidates = [_proper_candidate("Show", 1, 1, 1, "Show.S01E01.720p.HDTV")]
