@@ -1,5 +1,6 @@
 import logging
 import os
+import re
 import shutil
 import stat
 import traceback
@@ -143,6 +144,14 @@ def process_dir(process_path, release_name=None, process_method=None, force=Fals
 
         # if we didn't find a real dir then quit
         if not Path(process_path).is_dir():
+            # A downloader can delete a failed job before anything is written (e.g. NZBGet's health check),
+            # so the folder never exists. Still record the failure and search for another release.
+            if failed:
+                release_name = release_name or re.sub(r"\.#\d+$", "", os.path.basename(os.path.normpath(process_path)))
+                result.output += log_helper(f"Folder {process_path} does not exist, processing as a failed download of {release_name}")
+                process_failed(process_path, release_name, result)
+                return result.output
+
             result.output += log_helper(
                 "Unable to figure out what folder to process. "
                 "If your downloader and SickChill aren't on the same PC "
