@@ -295,7 +295,7 @@ class ProperFinder(object):
                 if re.search(r"\b(proper|repack|real)\b", resource, re.IGNORECASE):
                     continue
                 fingerprint = helpers.split_release_fingerprint(resource, anime=anime)
-                if not helpers.release_matches_fingerprint(proper.name, fingerprint, require_episode=not is_season_pack):
+                if not helpers.release_matches_fingerprint(proper.name, fingerprint, require_episode=not is_season_pack, anime=anime):
                     continue
                 episode_object = proper.show.get_episode(season, episode)
                 if episode_object:
@@ -361,7 +361,7 @@ class ProperFinder(object):
             if re.search(r"\b(proper|repack|real)\b", resource, re.IGNORECASE):
                 continue
             fingerprint = helpers.split_release_fingerprint(resource, anime=anime)
-            if helpers.release_matches_fingerprint(proper.name, fingerprint, require_episode=not is_season_pack):
+            if helpers.release_matches_fingerprint(proper.name, fingerprint, require_episode=not is_season_pack, anime=anime):
                 matched[key] = resource
         return matched
 

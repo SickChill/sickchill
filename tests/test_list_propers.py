@@ -196,6 +196,7 @@ class TestTorrentFindPropersCacheFirst(unittest.TestCase):
         self.assertEqual(len(results), 1)
         self.assertEqual(results[0].name, "Show.S01E01.PROPER-GRP.720p.HDTV")
         self.assertEqual(results[0].url, "http://example/proper-grp")
+        self.assertIs(results[0].show, candidates[0][0])
         provider.search.assert_called()
         provider.cache.list_propers.assert_called_once()
 

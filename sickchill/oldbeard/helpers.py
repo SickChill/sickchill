@@ -788,11 +788,11 @@ def split_release_fingerprint(name, anime=False):
     )
 
 
-def release_matches_fingerprint(title, fingerprint, require_episode=True):
+def release_matches_fingerprint(title, fingerprint, require_episode=True, anime=False):
     """True when title is a proper of the same show/episode, Quality, and remainder."""
     if not title or fingerprint is None:
         return False
-    candidate = split_release_fingerprint(title)
+    candidate = split_release_fingerprint(title, anime=anime)
     if candidate is None or not candidate.is_proper or candidate.title != fingerprint.title:
         return False
     if fingerprint.quality not in (None, Quality.UNKNOWN) and candidate.quality != fingerprint.quality:

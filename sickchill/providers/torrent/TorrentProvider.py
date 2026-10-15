@@ -47,9 +47,10 @@ class TorrentProvider(GenericProvider):
                 url = row.get("url") or ""
                 if not url or url in seen_urls:
                     continue
-                if self._cache_title_matches_candidates(title, candidates, season_pack_keys):
+                matched_show = self._cache_title_matches_candidates(title, candidates, season_pack_keys)
+                if matched_show:
                     seen_urls.add(url)
-                    results.append(Proper(title, url, datetime.fromtimestamp(row["time"], tz=sc_timezone), self.show))
+                    results.append(Proper(title, url, datetime.fromtimestamp(row["time"], tz=sc_timezone), matched_show))
         except Exception as error:
             logger.debug(f"{self.name}: cache list_propers failed during proper search: {error}")
 
@@ -75,7 +76,8 @@ class TorrentProvider(GenericProvider):
                 title, url = self._get_title_and_url(item)
                 if not url or url in seen_urls:
                     continue
-                if not release_matches_fingerprint(title, fingerprint, require_episode=not season_pack):
+                anime = bool(getattr(show, "is_anime", False) or getattr(show, "anime", False))
+                if not release_matches_fingerprint(title, fingerprint, require_episode=not season_pack, anime=anime):
                     continue
                 seen_urls.add(url)
                 results.append(Proper(title, url, sc_now(), show))
@@ -103,12 +105,13 @@ class TorrentProvider(GenericProvider):
     @staticmethod
     def _cache_title_matches_candidates(title, candidates, season_pack_keys):
         for show, episode, fingerprint in candidates:
-            if release_matches_fingerprint(title, fingerprint):
-                return True
+            anime = bool(getattr(show, "is_anime", False) or getattr(show, "anime", False))
+            if release_matches_fingerprint(title, fingerprint, anime=anime):
+                return show
             key = (show.indexerid, episode.season)
-            if key in season_pack_keys and release_matches_fingerprint(title, fingerprint, require_episode=False):
-                return True
-        return False
+            if key in season_pack_keys and release_matches_fingerprint(title, fingerprint, require_episode=False, anime=anime):
+                return show
+        return None
 
     @staticmethod
     def _live_proper_search_plan(candidates, season_pack_keys):

@@ -722,6 +722,13 @@ class HelpersMiscTests(unittest.TestCase):
             )
         )
 
+    def test_release_matches_fingerprint_uses_anime_quality_path(self):
+        original = "Naruto.S01E01.1080p.WEBRip.x265-SubsPlease"
+        proper = "Naruto.S01E01.PROPER.1080p.WEBRip.x265-SubsPlease"
+        fingerprint = helpers.split_release_fingerprint(original, anime=True)
+        self.assertTrue(helpers.release_matches_fingerprint(proper, fingerprint, anime=True))
+        self.assertFalse(helpers.release_matches_fingerprint(proper, fingerprint, anime=False))
+
     def test_full_sanitize_scene_name(self):
         cases = [
             {"name": "Name, with: bad (chars)!", "expected": "name with bad chars"},
