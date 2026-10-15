@@ -60,6 +60,11 @@ class PostProcessApiFallbackTests(unittest.TestCase):
         self.assertTrue(command.force_replace)
         self.assertTrue(command.return_data)
 
+    def test_explicit_false_wins_over_deprecated_alias(self):
+        command = CMDPostProcess([], {"path": "/downloads/x", "force_replace": "0", "force": "1", "return_data": "0", "quiet": "1"})
+        self.assertFalse(command.force_replace)
+        self.assertFalse(command.return_data)
+
 
 if __name__ == "__main__":
     unittest.main()
