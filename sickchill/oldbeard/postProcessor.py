@@ -1104,6 +1104,8 @@ class PostProcessor(object):
                 if cur_ep.location:
                     helpers.delete_empty_folders(os.path.dirname(cur_ep.location), keep_dir=episode_object.show.get_location)
             except (OSError, IOError):
+                for failed_ep in episodes:
+                    failed_ep.cleanup_download_properties()
                 raise EpisodePostProcessingFailedException(_("Unable to delete the existing files"))
 
         if not os.path.isdir(episode_object.show.get_location) and settings.CREATE_MISSING_SHOW_DIRS:

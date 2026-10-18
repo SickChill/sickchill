@@ -477,9 +477,10 @@ def search_providers(show, episodes, manual=False, downCurQuality=False):
     providers = [
         x for x in sickchill.oldbeard.providers.sorted_provider_list(settings.RANDOMIZE_PROVIDERS) if x.is_active and x.can_backlog and x.enable_backlog
     ]
-    for curProvider in providers:
-        threading.current_thread().name = f"{original_thread_name} :: [{curProvider.name}]"
-        curProvider.cache.update_cache()
+    if not manual:
+        for curProvider in providers:
+            threading.current_thread().name = f"{original_thread_name} :: [{curProvider.name}]"
+            curProvider.cache.update_cache()
 
     threading.current_thread().name = original_thread_name
 

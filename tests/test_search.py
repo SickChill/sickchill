@@ -263,19 +263,80 @@ class SeasonModeCacheTests(unittest.TestCase):
         self.assertEqual(results[1], cache_hit)
         self.assertEqual(results[2], cache_hit)
 
-    def test_episode_mode_skips_live_search_when_cache_covers_all(self):
+    def test_episode_mode_still_searches_when_cache_covers_all(self):
         provider = GenericProvider("CacheEpisode")
         provider.cache = MagicMock()
-        provider.cache.search_cache.return_value = [MagicMock()]
+        cache_hit = [MagicMock()]
+        provider.cache.search_cache.return_value = cache_hit
         provider.search = MagicMock(return_value=[])
         provider.get_episode_search_strings = MagicMock(return_value=[{"Episode": {"Show S01E01"}}])
 
         show = MagicMock()
         show.is_anime = False
+        results = provider.find_search_results(show, [_episode(1)], "episode")
+
+        provider.search.assert_called()
+        provider.get_episode_search_strings.assert_called()
+        self.assertEqual(results[1], cache_hit)
+
+    def test_episode_mode_appends_show_quality_tokens(self):
+        provider = GenericProvider("QualityEpisode")
+        provider.cache = MagicMock()
+        provider.cache.search_cache.return_value = []
+        provider.search = MagicMock(return_value=[])
+
+        def fake_episode_strings(_episode, add_string=""):
+            label = "Show S01E01"
+            if add_string:
+                label = f"{label} {add_string}"
+            return [{"Episode": {label}}]
+
+        provider.get_episode_search_strings = MagicMock(side_effect=fake_episode_strings)
+
+        show = MagicMock()
+        show.is_anime = False
+        show.quality = common.Quality.FULLHDWEBDL
         provider.find_search_results(show, [_episode(1)], "episode")
 
-        provider.search.assert_not_called()
-        provider.get_episode_search_strings.assert_not_called()
+        self.assertEqual(provider.get_episode_search_strings.call_args.kwargs["add_string"], "1080p WEB-DL")
+        searched = provider.search.call_args[0][0]
+        self.assertIn("Show S01E01 1080p WEB-DL", searched["Episode"])
+
+    def test_season_mode_appends_show_quality_tokens(self):
+        provider = GenericProvider("QualitySeason")
+        provider.cache = MagicMock()
+        provider.cache.search_cache.return_value = []
+        provider.search = MagicMock(return_value=[])
+        provider.get_season_search_strings = MagicMock(return_value=[{"Season": {"Show S01"}}])
+
+        show = MagicMock()
+        show.is_anime = False
+        show.quality = common.Quality.HDTV | common.Quality.FULLHDWEBDL
+        provider.find_search_results(show, [_episode(1), _episode(2)], "season")
+
+        searched = provider.search.call_args[0][0]
+        self.assertEqual(len(searched["Season"]), 1)
+        (query,) = searched["Season"]
+        self.assertTrue(query.startswith("Show S01 "))
+        self.assertIn("720p HDTV", query)
+        self.assertIn("1080p WEB-DL", query)
+        self.assertIn("|", query)
+
+
+class ManualBacklogLiveSearchTests(unittest.TestCase):
+    def test_manual_skips_rss_cache_update(self):
+        provider = _provider(search_mode="episode")
+        provider.find_search_results.return_value = {}
+        with patch("sickchill.oldbeard.providers.sorted_provider_list", return_value=[provider]):
+            search_providers(_show(), [_episode(1)], manual=True)
+        provider.cache.update_cache.assert_not_called()
+
+    def test_backlog_still_updates_rss_cache(self):
+        provider = _provider(search_mode="episode")
+        provider.find_search_results.return_value = {}
+        with patch("sickchill.oldbeard.providers.sorted_provider_list", return_value=[provider]):
+            search_providers(_show(), [_episode(1)], manual=False)
+        provider.cache.update_cache.assert_called()
 
 
 if __name__ == "__main__":
