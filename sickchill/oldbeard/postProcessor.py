@@ -1047,6 +1047,21 @@ class PostProcessor(object):
 
         episodes = [episode_object] + episode_object.related_episodes
         created_show_dir = False
+        previous_download_state = [
+            {
+                "episode": cur_ep,
+                "release_name": cur_ep.release_name,
+                "release_group": cur_ep.release_group,
+                "is_proper": cur_ep.is_proper,
+                "status": cur_ep.status,
+                "subtitles": cur_ep.subtitles,
+                "subtitles_searchcount": cur_ep.subtitles_searchcount,
+                "subtitles_lastsearch": cur_ep.subtitles_lastsearch,
+                "version": cur_ep.version,
+                "location": cur_ep.location,
+            }
+            for cur_ep in episodes
+        ]
 
         for cur_ep in episodes:
             with cur_ep.lock:
@@ -1104,8 +1119,19 @@ class PostProcessor(object):
                 if cur_ep.location:
                     helpers.delete_empty_folders(os.path.dirname(cur_ep.location), keep_dir=episode_object.show.get_location)
             except (OSError, IOError):
-                for failed_ep in episodes:
-                    failed_ep.cleanup_download_properties()
+                for saved in previous_download_state:
+                    failed_ep = saved["episode"]
+                    with failed_ep.lock:
+                        failed_ep.release_name = saved["release_name"]
+                        failed_ep.release_group = saved["release_group"]
+                        failed_ep.is_proper = saved["is_proper"]
+                        failed_ep.status = saved["status"]
+                        failed_ep.subtitles = saved["subtitles"]
+                        failed_ep.subtitles_searchcount = saved["subtitles_searchcount"]
+                        failed_ep.subtitles_lastsearch = saved["subtitles_lastsearch"]
+                        failed_ep.version = saved["version"]
+                        old_location = saved["location"]
+                        failed_ep.location = old_location if old_location and os.path.isfile(old_location) else ""
                 raise EpisodePostProcessingFailedException(_("Unable to delete the existing files"))
 
         if not os.path.isdir(episode_object.show.get_location) and settings.CREATE_MISSING_SHOW_DIRS:

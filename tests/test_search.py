@@ -285,6 +285,28 @@ class SearchFallbackTests(unittest.TestCase):
         finder_cls.assert_not_called()
         provider.find_propers.assert_not_called()
 
+    def test_daily_search_processes_cached_propers_with_no_wanted_episodes(self):
+        provider = _provider(search_mode="episode", search_fallback=True)
+        provider.enable_daily = True
+        provider.can_daily = True
+
+        show = _show()
+        show.paused = False
+        with (
+            patch("sickchill.oldbeard.providers.sorted_provider_list", return_value=[provider]),
+            patch("sickchill.oldbeard.search.settings.show_list", [show]),
+            patch("sickchill.oldbeard.search.settings.RANDOMIZE_PROVIDERS", False),
+            patch("sickchill.oldbeard.search.settings.DOWNLOAD_PROPERS", True),
+            patch("sickchill.oldbeard.search.wanted_episodes", return_value=[]),
+            patch("sickchill.oldbeard.properFinder.ProperFinder") as finder_cls,
+        ):
+            search_for_needed_episodes()
+
+        provider.cache.update_cache.assert_not_called()
+        provider.search_rss.assert_not_called()
+        finder_cls.return_value.process_cached_propers.assert_called_once_with([provider])
+        provider.find_propers.assert_not_called()
+
 
 class SeasonModeCacheTests(unittest.TestCase):
     def test_season_mode_still_searches_when_every_episode_is_cached(self):

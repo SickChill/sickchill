@@ -248,13 +248,41 @@ class TestProcessMoveThenMassAction(unittest.TestCase):
             self.assertEqual(captured["release_group"], "GROUP")
             self.assertTrue(captured["is_proper"])
 
+    def _episode_for_process(self, show, episode=1, location=""):
+        ep = MagicMock()
+        ep.lock = threading.RLock()
+        ep.location = location
+        ep.season = 1
+        ep.episode = episode
+        ep.status = 0
+        ep.related_episodes = []
+        ep.pretty_name = f"Show Name - S01E{episode:02d}"
+        ep.show = show
+        ep.release_name = "old-name"
+        ep.release_group = "OLD"
+        ep.is_proper = False
+        ep.version = -1
+        ep.subtitles = "en"
+        ep.subtitles_searchcount = 3
+        ep.subtitles_lastsearch = "2020-01-01 00:00:00"
+        ep.proper_path.return_value = f"Season 01/Show Name - S01E{episode:02d}"
+        ep.get_sql = MagicMock()
+        ep.cleanup_download_properties = MagicMock()
+        ep.refresh_subtitles = MagicMock()
+        ep.download_subtitles = MagicMock()
+        ep.airdate_modify_stamp = MagicMock()
+        ep.create_meta_files = MagicMock()
+        return ep
+
     def test_process_clears_release_fields_when_delete_fails(self):
-        """Delete IOError should revert attempted download properties; get_sql must not run."""
+        """Delete IOError should restore pre-attempt download properties; get_sql must not run."""
         with tempfile.TemporaryDirectory() as tmp:
             src = Path(tmp) / "Show.S01E01.PROPER.mkv"
             show_dir = Path(tmp) / "Show Name"
             show_dir.mkdir()
             src.write_bytes(b"video")
+            old_file = show_dir / "old.mkv"
+            old_file.write_bytes(b"old")
 
             show = MagicMock()
             show.name = "Show Name"
@@ -269,22 +297,7 @@ class TestProcessMoveThenMassAction(unittest.TestCase):
             show.sports = False
             show.season_folders = True
 
-            ep = MagicMock()
-            ep.lock = threading.RLock()
-            ep.location = str(show_dir / "old.mkv")
-            ep.season = 1
-            ep.episode = 1
-            ep.status = 0
-            ep.related_episodes = []
-            ep.pretty_name = "Show Name - S01E01"
-            ep.show = show
-            ep.proper_path.return_value = "Season 01/Show Name - S01E01"
-            ep.get_sql = MagicMock()
-            ep.cleanup_download_properties = MagicMock()
-            ep.refresh_subtitles = MagicMock()
-            ep.download_subtitles = MagicMock()
-            ep.airdate_modify_stamp = MagicMock()
-            ep.create_meta_files = MagicMock()
+            ep = self._episode_for_process(show, location=str(old_file))
 
             pp = PostProcessor(str(src), process_method=METHOD_MOVE)
             pp._log = MagicMock()
@@ -314,8 +327,87 @@ class TestProcessMoveThenMassAction(unittest.TestCase):
                 with self.assertRaises(EpisodePostProcessingFailedException):
                     pp.process()
 
-            ep.cleanup_download_properties.assert_called()
+            ep.cleanup_download_properties.assert_not_called()
             ep.get_sql.assert_not_called()
+            self.assertEqual(ep.release_name, "old-name")
+            self.assertEqual(ep.release_group, "OLD")
+            self.assertFalse(ep.is_proper)
+            self.assertEqual(ep.status, 0)
+            self.assertEqual(ep.version, -1)
+            self.assertEqual(ep.subtitles, "en")
+            self.assertEqual(ep.location, str(old_file))
+
+    def test_process_clears_location_only_for_deleted_files_on_partial_delete_fail(self):
+        """Multi-episode: keep location when the old file still exists; clear it after a successful delete."""
+        with tempfile.TemporaryDirectory() as tmp:
+            src = Path(tmp) / "Show.S01E01.PROPER.mkv"
+            show_dir = Path(tmp) / "Show Name"
+            show_dir.mkdir()
+            src.write_bytes(b"video")
+            kept = show_dir / "keep.mkv"
+            removed = show_dir / "gone.mkv"
+            kept.write_bytes(b"keep")
+            removed.write_bytes(b"gone")
+
+            show = MagicMock()
+            show.name = "Show Name"
+            show.location = str(show_dir)
+            show.get_location = str(show_dir)
+            show.indexerid = 1
+            show.indexer = 1
+            show.quality = 500
+            show.subtitles = False
+            show.is_anime = False
+            show.air_by_date = False
+            show.sports = False
+            show.season_folders = True
+
+            ep1 = self._episode_for_process(show, episode=1, location=str(removed))
+            ep2 = self._episode_for_process(show, episode=2, location=str(kept))
+            ep1.related_episodes = [ep2]
+
+            def delete_first_then_fail(path, associated_files=False):
+                if path == str(removed):
+                    Path(path).unlink()
+                    return
+                raise OSError("busy")
+
+            pp = PostProcessor(str(src), process_method=METHOD_MOVE)
+            pp._log = MagicMock()
+            pp.history = MagicMock()
+            pp.in_history = False
+            pp.is_proper = True
+            pp.release_group = "GROUP"
+            pp.release_name = "Show.S01E01.PROPER"
+
+            with (
+                patch.object(pp, "_find_info", return_value=(show, 1, [1, 2], None, -1)),
+                patch.object(pp, "_get_ep_obj", return_value=ep1),
+                patch.object(pp, "_get_quality", return_value=1),
+                patch.object(pp, "_is_priority", return_value=True),
+                patch.object(pp, "_checkForExistingFile", return_value=PostProcessor.DOESNT_EXIST),
+                patch.object(pp, "_delete", side_effect=delete_first_then_fail),
+                patch.object(pp, "_move"),
+                patch("sickchill.oldbeard.postProcessor.helpers.make_dirs", return_value=True),
+                patch("sickchill.oldbeard.postProcessor.helpers.delete_empty_folders"),
+                patch("sickchill.oldbeard.postProcessor.show_name_helpers.determine_release_name", return_value=None),
+                patch("sickchill.oldbeard.postProcessor.settings.USE_FREE_SPACE_CHECK", False),
+                patch("sickchill.oldbeard.postProcessor.settings.RENAME_EPISODES", True),
+                patch("sickchill.oldbeard.postProcessor.settings.CREATE_MISSING_SHOW_DIRS", False),
+                patch("sickchill.oldbeard.postProcessor.settings.USE_SUBTITLES", False),
+                patch("sickchill.oldbeard.postProcessor.settings.MOVE_ASSOCIATED_FILES", False),
+            ):
+                with self.assertRaises(EpisodePostProcessingFailedException):
+                    pp.process()
+
+            ep1.cleanup_download_properties.assert_not_called()
+            ep2.cleanup_download_properties.assert_not_called()
+            self.assertEqual(ep1.location, "")
+            self.assertEqual(ep2.location, str(kept))
+            self.assertEqual(ep1.release_name, "old-name")
+            self.assertEqual(ep2.release_name, "old-name")
+            self.assertEqual(ep1.status, 0)
+            self.assertEqual(ep2.status, 0)
 
 
 if __name__ == "__main__":
