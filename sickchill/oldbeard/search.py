@@ -373,59 +373,63 @@ def search_for_needed_episodes():
         if not curShow.paused:
             episodes.extend(wanted_episodes(curShow, from_date))
 
-    if not episodes:
-        # nothing wanted so early out, ie: avoid whatever arbitrarily
-        # complex thing a provider cache update entails, for example,
-        # reading rss feeds
-        logger.info("No episodes needed.")
-        return list(found_results.values())
-
-    # noinspection DuplicatedCode
-    original_thread_name = threading.current_thread().name
-
-    # Daily search is RSS/cache only; search_mode and search_fallback apply to backlog.
     providers = [x for x in sickchill.oldbeard.providers.sorted_provider_list(settings.RANDOMIZE_PROVIDERS) if x.is_active and x.enable_daily and x.can_daily]
-    for curProvider in providers:
-        threading.current_thread().name = f"{original_thread_name} :: [{curProvider.name}]"
-        curProvider.cache.update_cache()
 
-    for curProvider in providers:
-        threading.current_thread().name = f"{original_thread_name} :: [{curProvider.name}]"
+    if not episodes:
+        # Skip RSS refresh when nothing is wanted; cached propers still run below.
+        logger.info("No episodes needed.")
+    else:
+        original_thread_name = threading.current_thread().name
+
+        for curProvider in providers:
+            threading.current_thread().name = f"{original_thread_name} :: [{curProvider.name}]"
+            curProvider.cache.update_cache()
+
+        for curProvider in providers:
+            threading.current_thread().name = f"{original_thread_name} :: [{curProvider.name}]"
+            try:
+                found_rss_results = curProvider.search_rss(episodes)
+            except AuthException as error:
+                logger.warning(f"Authentication error: {error}")
+                continue
+            except Exception as error:
+                logger.exception(f"Error while searching {curProvider.name}, skipping: {error}")
+                logger.debug(traceback.format_exc())
+                continue
+
+            did_search = True
+
+            # pick a single result for each episode, respecting existing results
+            for current_episode in found_rss_results:
+                if not current_episode.show or current_episode.show.paused:
+                    logger.debug(f"Skipping {current_episode.pretty_name} because the show is paused ")
+                    continue
+
+                best_result = pick_best_result(found_rss_results[current_episode], current_episode.show)
+
+                # if all results were rejected move on to the next episode
+                if not best_result:
+                    logger.debug(f"All found results for {current_episode.pretty_name} were rejected.")
+                    continue
+
+                # if it's already in the list (from another provider) and the newly found quality is no better, then skip it
+                if current_episode in found_results and best_result.quality <= found_results[current_episode].quality:
+                    continue
+
+                found_results[current_episode] = best_result
+
+        threading.current_thread().name = original_thread_name
+
+        if not did_search:
+            logger.info("No NZB/Torrent providers found or enabled in the sickchill config for daily searches. Please check your settings.")
+
+    if settings.DOWNLOAD_PROPERS:
         try:
-            found_rss_results = curProvider.search_rss(episodes)
-        except AuthException as error:
-            logger.warning(f"Authentication error: {error}")
-            continue
+            from sickchill.oldbeard.properFinder import ProperFinder
+
+            ProperFinder().process_cached_propers(providers)
         except Exception as error:
-            logger.exception(f"Error while searching {curProvider.name}, skipping: {error}")
-            logger.debug(traceback.format_exc())
-            continue
-
-        did_search = True
-
-        # pick a single result for each episode, respecting existing results
-        for current_episode in found_rss_results:
-            if not current_episode.show or current_episode.show.paused:
-                logger.debug(f"Skipping {current_episode.pretty_name} because the show is paused ")
-                continue
-
-            best_result = pick_best_result(found_rss_results[current_episode], current_episode.show)
-
-            # if all results were rejected move on to the next episode
-            if not best_result:
-                logger.debug(f"All found results for {current_episode.pretty_name} were rejected.")
-                continue
-
-            # if it's already in the list (from another provider) and the newly found quality is no better, then skip it
-            if current_episode in found_results and best_result.quality <= found_results[current_episode].quality:
-                continue
-
-            found_results[current_episode] = best_result
-
-    threading.current_thread().name = original_thread_name
-
-    if not did_search:
-        logger.info("No NZB/Torrent providers found or enabled in the sickchill config for daily searches. Please check your settings.")
+            logger.debug(f"Daily proper processing failed: {error}")
 
     return list(found_results.values())
 
@@ -468,18 +472,16 @@ def search_providers(show, episodes, manual=False, downCurQuality=False):
 
     did_search = False
 
-    # Name cache is process-global (built at startup / exception refresh / show add).
-    # Daily and backlog search use dict lookups only — do not rebuild from SQLite here.
-
     # noinspection DuplicatedCode
     original_thread_name = threading.current_thread().name
 
     providers = [
         x for x in sickchill.oldbeard.providers.sorted_provider_list(settings.RANDOMIZE_PROVIDERS) if x.is_active and x.can_backlog and x.enable_backlog
     ]
-    for curProvider in providers:
-        threading.current_thread().name = f"{original_thread_name} :: [{curProvider.name}]"
-        curProvider.cache.update_cache()
+    if not manual:
+        for curProvider in providers:
+            threading.current_thread().name = f"{original_thread_name} :: [{curProvider.name}]"
+            curProvider.cache.update_cache()
 
     threading.current_thread().name = original_thread_name
 

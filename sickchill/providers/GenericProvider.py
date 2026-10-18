@@ -212,29 +212,42 @@ class GenericProvider(object):
                 else:
                     results[episode.episode].extend(cache_result)
 
-                # Episode cache hits are not season packs; keep going so we still search for packs.
-                if search_mode != "season":
-                    continue
-
             if search_mode == "season" and searched_scene_season == episode.scene_season:
                 continue
 
             search_strings = []
             searched_scene_season = episode.scene_season
 
+            quality_add = ""
+            quality = getattr(show, "quality", None)
+            if isinstance(quality, int):
+                tokens = []
+                seen = set()
+                allowed, preferred = Quality.splitQuality(quality)
+                for cur_qual in (*allowed, *preferred):
+                    token = (Quality.sceneQualityStrings.get(cur_qual) or "").strip()
+                    if token and token not in {"N/A", "Unknown"} and token not in seen:
+                        seen.add(token)
+                        tokens.append(token)
+                quality_add = "|".join(tokens)
+
             if search_mode == "season":
                 search_strings = self.get_season_search_strings(episode)
+                if quality_add:
+                    for block in search_strings or []:
+                        if not isinstance(block, dict):
+                            continue
+                        for mode, values in list(block.items()):
+                            if isinstance(values, (set, list, tuple)):
+                                block[mode] = {f"{value} {quality_add}".strip() if isinstance(value, str) else value for value in values}
             elif search_mode == "episode":
-                search_strings = self.get_episode_search_strings(episode)
+                search_strings = self.get_episode_search_strings(episode, add_string=quality_add)
 
             self.current_episode_object = episode
+            logger.debug(f"{self.name}: live {search_mode} search for {getattr(episode, 'pretty_name', episode)}")
 
             for search_string in search_strings:
                 items_list += self.search(search_string)
-
-        # Cache covering every episode is enough for episode search; season search still needs items_list.
-        if search_mode != "season" and len(results) == len(episodes):
-            return results
 
         if items_list:
             items = {}

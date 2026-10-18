@@ -82,7 +82,19 @@ class ProperFinder(object):
         last_dt = datetime.datetime.combine(last, datetime.time(), tzinfo=now.tzinfo)
         return max(last_dt - self._PROPER_OVERLAP, floor)
 
-    def _get_propers(self):
+    def process_cached_propers(self, providers):
+        """Snatch RSS-cache PROPER/REPACK/REAL that already match history (daily path)."""
+        if not providers or not getattr(settings, "DOWNLOAD_PROPERS", False):
+            return
+        if self.amActive:
+            logger.debug(_("Proper search already active, skipping daily cached propers"))
+            return
+
+        propers = self._get_propers(providers=providers, cache_only=True)
+        if propers:
+            self._download_propers(propers)
+
+    def _get_propers(self, providers=None, cache_only=False):
         """
         Walk providers for propers
         """
@@ -93,22 +105,34 @@ class ProperFinder(object):
 
         # for each provider get a list of the proper releases
         original_thread_name = threading.current_thread().name
-        providers = [x for x in oldbeard.providers.sorted_provider_list(settings.RANDOMIZE_PROVIDERS) if x.is_active]
+        if providers is None:
+            providers = [x for x in oldbeard.providers.sorted_provider_list(settings.RANDOMIZE_PROVIDERS) if x.is_active]
         for provider in providers:
             threading.current_thread().name = f"{original_thread_name} :: [{provider.name}]"
 
-            logger.info(_("Searching for any new PROPER releases from {name}").format(name=provider.name))
+            if cache_only:
+                logger.debug(_("Checking cached PROPER releases from {name}").format(name=provider.name))
+            else:
+                logger.info(_("Searching for any new PROPER releases from {name}").format(name=provider.name))
 
             try:
-                # Refresh RSS/cache under min_time so NZB/torrent list_propers sees recent titles
-                # without forcing an extra hit when daily search already updated the cache.
-                if getattr(provider, "cache", None) is not None:
-                    try:
-                        provider.cache.update_cache()
-                    except Exception as error:
-                        logger.debug(_("Cache update before propers failed for {name}: {error}").format(name=provider.name, error=error))
+                if cache_only:
+                    if getattr(provider, "cache", None) is None:
+                        continue
+                    from sickchill.providers.GenericProvider import GenericProvider
 
-                provider_propers = provider.find_propers(search_date)
+                    # Base find_propers is cache.list_propers; skip TorrentProvider live search.
+                    provider_propers = GenericProvider.find_propers(provider, search_date)
+                else:
+                    # Refresh RSS/cache under min_time so NZB/torrent list_propers sees recent titles
+                    # without forcing an extra hit when daily search already updated the cache.
+                    if getattr(provider, "cache", None) is not None:
+                        try:
+                            provider.cache.update_cache()
+                        except Exception as error:
+                            logger.debug(_("Cache update before propers failed for {name}: {error}").format(name=provider.name, error=error))
+
+                    provider_propers = provider.find_propers(search_date)
             except AuthException as error:
                 logger.warning(_("Authentication error: {error}").format(error=error))
                 continue

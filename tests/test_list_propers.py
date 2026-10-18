@@ -8,6 +8,7 @@ import time
 import unittest
 from unittest import mock
 
+from sickchill import settings
 from sickchill.oldbeard import db
 from sickchill.oldbeard.network_timezones import sc_now, sc_timezone
 from sickchill.oldbeard.properFinder import ProperFinder
@@ -104,6 +105,50 @@ class TestProperSearchDate(unittest.TestCase):
                 got = finder._proper_search_date()
         expected = datetime.datetime.combine(last, datetime.time(), tzinfo=sc_timezone) - datetime.timedelta(hours=6)
         self.assertEqual(got, expected)
+
+
+class TestProcessCachedPropers(unittest.TestCase):
+    def test_downloads_selected_cache_hits(self):
+        finder = ProperFinder()
+        providers = [mock.Mock()]
+        selected = [mock.Mock()]
+        with mock.patch.object(settings, "DOWNLOAD_PROPERS", True):
+            with mock.patch.object(finder, "_get_propers", return_value=selected) as get:
+                with mock.patch.object(finder, "_download_propers") as download:
+                    finder.process_cached_propers(providers)
+        get.assert_called_once_with(providers=providers, cache_only=True)
+        download.assert_called_once_with(selected)
+
+    def test_skips_when_download_propers_disabled(self):
+        finder = ProperFinder()
+        with mock.patch.object(settings, "DOWNLOAD_PROPERS", False):
+            with mock.patch.object(finder, "_get_propers") as get:
+                finder.process_cached_propers([mock.Mock()])
+        get.assert_not_called()
+
+    def test_skips_when_proper_search_already_active(self):
+        finder = ProperFinder()
+        finder.amActive = True
+        with mock.patch.object(settings, "DOWNLOAD_PROPERS", True):
+            with mock.patch.object(finder, "_get_propers") as get:
+                finder.process_cached_propers([mock.Mock()])
+        get.assert_not_called()
+
+    def test_cache_only_uses_generic_find_propers_not_live_search(self):
+        finder = ProperFinder()
+        provider = mock.Mock()
+        provider.name = "TorrentDay"
+        provider.cache = mock.Mock()
+        cached_proper = mock.Mock()
+        cached_proper.name = "Show.S01E01.PROPER.720p.HDTV"
+
+        with mock.patch("sickchill.providers.GenericProvider.GenericProvider.find_propers", return_value=[cached_proper]) as cached:
+            with mock.patch.object(finder, "_proper_search_date", return_value=sc_now()):
+                finder._get_propers(providers=[provider], cache_only=True)
+
+        cached.assert_called_once()
+        provider.find_propers.assert_not_called()
+        provider.cache.update_cache.assert_not_called()
 
 
 class TestProperSearchAddString(unittest.TestCase):
