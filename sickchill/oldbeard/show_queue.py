@@ -663,6 +663,10 @@ class QueueItemRefresh(ShowQueueItem):
             logger.info(f"Performing refresh on {self.show.name}")
 
         self.show.refresh_dir()
+        try:
+            self.show.recalculate_show_size()
+        except Exception as error:
+            logger.debug(f"show_size update failed for {getattr(self.show, 'indexerid', '?')}: {error}")
         # Do not re-fetch artwork from TVDB on refresh/update — loaded once on add;
         # user changes art via edit show. Still write NFOs and sync cache from local files.
         self.show.write_metadata(fetch_images=False)

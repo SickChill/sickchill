@@ -112,7 +112,7 @@
                     cur_snatched = 0
                     cur_downloaded = 0
                     cur_total = 0
-                    show_size = 0
+                    show_size = curShow.show_size or 0
                     download_stat_tip = ''
 
                     if curShow.indexerid in show_stat:
@@ -122,7 +122,6 @@
                         cur_snatched = show_stat[curShow.indexerid]['ep_snatched'] or 0
                         cur_downloaded = show_stat[curShow.indexerid]['ep_downloaded'] or 0
                         cur_total = show_stat[curShow.indexerid]['ep_total'] or 0
-                        show_size = show_stat[curShow.indexerid]['show_size']
 
                         download_stat = str(cur_downloaded)
                         download_stat_tip = _('Downloaded') + ": " + str(cur_downloaded)
