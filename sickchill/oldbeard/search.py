@@ -427,6 +427,14 @@ def search_for_needed_episodes():
     if not did_search:
         logger.info("No NZB/Torrent providers found or enabled in the sickchill config for daily searches. Please check your settings.")
 
+    if settings.DOWNLOAD_PROPERS:
+        try:
+            from sickchill.oldbeard.properFinder import ProperFinder
+
+            ProperFinder().process_cached_propers(providers)
+        except Exception as error:
+            logger.debug(f"Daily proper processing failed: {error}")
+
     return list(found_results.values())
 
 

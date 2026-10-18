@@ -241,6 +241,49 @@ class SearchFallbackTests(unittest.TestCase):
 
         provider.search_rss.assert_called()
         provider.find_search_results.assert_not_called()
+        provider.find_propers.assert_not_called()
+
+    def test_daily_search_processes_cached_propers_when_enabled(self):
+        provider = _provider(search_mode="episode", search_fallback=True)
+        provider.enable_daily = True
+        provider.can_daily = True
+        provider.search_rss.return_value = {}
+
+        show = _show()
+        show.paused = False
+        with (
+            patch("sickchill.oldbeard.providers.sorted_provider_list", return_value=[provider]),
+            patch("sickchill.oldbeard.search.settings.show_list", [show]),
+            patch("sickchill.oldbeard.search.settings.RANDOMIZE_PROVIDERS", False),
+            patch("sickchill.oldbeard.search.settings.DOWNLOAD_PROPERS", True),
+            patch("sickchill.oldbeard.search.wanted_episodes", return_value=[_episode(1)]),
+            patch("sickchill.oldbeard.properFinder.ProperFinder") as finder_cls,
+        ):
+            search_for_needed_episodes()
+
+        finder_cls.return_value.process_cached_propers.assert_called_once_with([provider])
+        provider.find_propers.assert_not_called()
+
+    def test_daily_search_skips_cached_propers_when_disabled(self):
+        provider = _provider(search_mode="episode", search_fallback=True)
+        provider.enable_daily = True
+        provider.can_daily = True
+        provider.search_rss.return_value = {}
+
+        show = _show()
+        show.paused = False
+        with (
+            patch("sickchill.oldbeard.providers.sorted_provider_list", return_value=[provider]),
+            patch("sickchill.oldbeard.search.settings.show_list", [show]),
+            patch("sickchill.oldbeard.search.settings.RANDOMIZE_PROVIDERS", False),
+            patch("sickchill.oldbeard.search.settings.DOWNLOAD_PROPERS", False),
+            patch("sickchill.oldbeard.search.wanted_episodes", return_value=[_episode(1)]),
+            patch("sickchill.oldbeard.properFinder.ProperFinder") as finder_cls,
+        ):
+            search_for_needed_episodes()
+
+        finder_cls.assert_not_called()
+        provider.find_propers.assert_not_called()
 
 
 class SeasonModeCacheTests(unittest.TestCase):
