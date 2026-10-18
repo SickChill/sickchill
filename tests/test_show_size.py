@@ -6,7 +6,7 @@ import unittest
 from unittest.mock import MagicMock, patch
 
 from sickchill.oldbeard import db
-from sickchill.oldbeard.databases.main import TARGET_DB_MAJOR, TARGET_DB_MINOR, ReconcileSchemaVersion, _full_schema_present
+from sickchill.oldbeard.databases.main import TARGET_DB_MAJOR, TARGET_DB_MINOR, AddShowSize, ReconcileSchemaVersion, _full_schema_present
 from sickchill.oldbeard.processTV import ProcessResult, _update_processed_show_sizes, process_media
 from sickchill.oldbeard.show_queue import QueueItemRefresh
 from sickchill.tv import TVShow
@@ -26,6 +26,16 @@ class TestShowSizeSchema(conftest.SickChillTestDBCase):
         con.action("UPDATE db_version SET db_minor_version = 4")
         self.assertTrue(_full_schema_present(con))
         ReconcileSchemaVersion(con).execute()
+        self.assertEqual(con.version, (44, 8))
+
+    def test_add_show_size_runs_when_column_exists_but_version_is_behind(self):
+        con = db.DBConnection()
+        con.action("UPDATE db_version SET db_minor_version = 7")
+        migration = AddShowSize(con)
+        self.assertTrue(con.has_column("tv_shows", "show_size"))
+        self.assertFalse(migration.test())
+        with patch("sickchill.oldbeard.databases.main.backup_database"):
+            migration.execute()
         self.assertEqual(con.version, (44, 8))
 
 
@@ -51,6 +61,30 @@ class TestRecalculateShowSize(conftest.SickChillTestDBCase):
 
         row = con.select("SELECT show_size FROM tv_shows WHERE indexer_id = ?", [4242])
         self.assertEqual(int(row[0]["show_size"]), 350)
+
+    def test_recalculate_show_size_counts_each_location_once(self):
+        show = TVShow(1, 4243, "en")
+        show.name = "Multi Ep Size Show"
+        show._location = "/tmp/multi-size-show"
+        show.save_to_db()
+
+        con = db.DBConnection()
+        shared = "/tmp/show.s01e01e02.mkv"
+        con.action(
+            "INSERT INTO tv_episodes (showid, indexerid, indexer, season, episode, status, location, file_size) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+            [4243, 1, 1, 1, 1, 1, shared, 100],
+        )
+        con.action(
+            "INSERT INTO tv_episodes (showid, indexerid, indexer, season, episode, status, location, file_size) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+            [4243, 2, 1, 1, 2, 1, shared, 100],
+        )
+        con.action(
+            "INSERT INTO tv_episodes (showid, indexerid, indexer, season, episode, status, location, file_size) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+            [4243, 3, 1, 1, 3, 1, "", 50],
+        )
+
+        show.recalculate_show_size()
+        self.assertEqual(show.show_size, 100)
 
     def test_recalculate_show_size_zero_when_no_episodes(self):
         show = TVShow(1, 4343, "en")

@@ -1458,9 +1458,15 @@ class TVShow(object):
             main_db_con.mass_action(sql_l)
 
     def recalculate_show_size(self):
-        """Set show_size from SUM(tv_episodes.file_size) and persist once."""
+        """Set show_size from unique episode locations and persist once."""
         main_db_con = db.DBConnection()
-        sql_results = main_db_con.select("SELECT COALESCE(SUM(file_size), 0) AS show_size FROM tv_episodes WHERE showid = ?", [self.indexerid])
+        sql_results = main_db_con.select(
+            "SELECT COALESCE(SUM(ep_size), 0) AS show_size FROM ("
+            "SELECT MAX(file_size) AS ep_size FROM tv_episodes "
+            "WHERE showid = ? AND IFNULL(location, '') != '' GROUP BY location"
+            ")",
+            [self.indexerid],
+        )
         self.show_size = int((sql_results[0]["show_size"] if sql_results else 0) or 0)
         self.save_to_db()
 

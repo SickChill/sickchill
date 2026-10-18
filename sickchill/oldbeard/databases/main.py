@@ -352,18 +352,30 @@ class AddSeasonsOrder(AddEpisodeLastUpdateIndexer):
 
 
 class AddShowSize(AddSeasonsOrder):
-    """Stored show size (sum of tv_episodes.file_size) on tv_shows."""
+    """Stored show size (one file_size per episode location) on tv_shows."""
 
     def test(self):
-        return self.has_column("tv_shows", "show_size")
+        # Version is the completion marker so a pre-existing column does not skip backfill.
+        major, minor = self.connection.version
+        return major > TARGET_DB_MAJOR or (major == TARGET_DB_MAJOR and minor >= TARGET_DB_MINOR)
 
     def execute(self):
         backup_database(self.connection.full_path, self.connection.version)
 
-        logger.info("Adding column show_size to tv_shows")
-        self.add_column("tv_shows", "show_size", "NUMERIC", 0)
-        self.connection.action("UPDATE tv_shows SET show_size = COALESCE((SELECT SUM(file_size) FROM tv_episodes WHERE showid = tv_shows.indexer_id), 0)")
-        self.inc_minor_version()
+        if not self.has_column("tv_shows", "show_size"):
+            logger.info("Adding column show_size to tv_shows")
+            self.add_column("tv_shows", "show_size", "NUMERIC", 0)
+        self.connection.action(
+            "UPDATE tv_shows SET show_size = COALESCE(("
+            "SELECT SUM(sizes.ep_size) FROM ("
+            "SELECT showid, location, MAX(file_size) AS ep_size FROM tv_episodes "
+            "WHERE IFNULL(location, '') != '' GROUP BY showid, location"
+            ") AS sizes WHERE sizes.showid = tv_shows.indexer_id"
+            "), 0)"
+        )
+        major, minor = self.connection.version
+        if major == TARGET_DB_MAJOR and minor < TARGET_DB_MINOR:
+            self.inc_minor_version()
         logger.info("Updated to: {0:d}.{1:d}".format(*self.connection.version))
 
 
