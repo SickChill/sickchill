@@ -122,6 +122,7 @@ class TVShow(object):
     rls_prefer_words = DirtySetter("")
     default_ep_status = DirtySetter(SKIPPED)
     custom_name = DirtySetter("")
+    show_size = DirtySetter(0)
 
     def __init__(self, indexer, indexerid: int, lang=""):
         self.dirty = True
@@ -1080,6 +1081,11 @@ class TVShow(object):
 
             self.subtitles_sc_metadata = int(sql_results[0]["sub_use_sr_metadata"] or 0)
 
+            try:
+                self.show_size = int(sql_results[0]["show_size"] or 0)
+            except (KeyError, IndexError, TypeError):
+                self.show_size = 0
+
         main_db_con = db.DBConnection()
         sql_results = main_db_con.select("SELECT * FROM imdb_info WHERE indexer_id = ?", [self.indexerid])
 
@@ -1451,6 +1457,13 @@ class TVShow(object):
             main_db_con = db.DBConnection()
             main_db_con.mass_action(sql_l)
 
+    def recalculate_show_size(self):
+        """Set show_size from SUM(tv_episodes.file_size) and persist once."""
+        main_db_con = db.DBConnection()
+        sql_results = main_db_con.select("SELECT COALESCE(SUM(file_size), 0) AS show_size FROM tv_episodes WHERE showid = ?", [self.indexerid])
+        self.show_size = int((sql_results[0]["show_size"] if sql_results else 0) or 0)
+        self.save_to_db()
+
     def download_subtitles(self):
         if not os.path.isdir(self._location):
             logger.debug(f"{self.indexerid}: Show dir doesn't exist, can't download subtitles")
@@ -1508,6 +1521,7 @@ class TVShow(object):
             "rls_prefer_words": self.rls_prefer_words,
             "default_ep_status": self.default_ep_status,
             "sub_use_sr_metadata": self.subtitles_sc_metadata,
+            "show_size": int(self.show_size or 0),
         }
 
         main_db_con = db.DBConnection()

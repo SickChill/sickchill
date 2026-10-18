@@ -3,7 +3,7 @@
     import datetime
     from urllib.parse import quote, urljoin
     from sickchill import settings
-    from sickchill.oldbeard import subtitles, notifiers, scdatetime, network_timezones, helpers
+    from sickchill.oldbeard import subtitles, notifiers, scdatetime, network_timezones
 
     from sickchill.oldbeard.common import SKIPPED, WANTED, UNAIRED, ARCHIVED, IGNORED, FAILED, DOWNLOADED
     from sickchill.oldbeard.common import Quality, qualityPresets, statusStrings, Overview, uses_absolute_numbering
@@ -265,7 +265,7 @@
                                             % endif
                                             <tr>
                                                 <td class="showLegend">${_('Size')}:</td>
-                                                <td>${pretty_file_size(helpers.get_size(show_location[0]))}</td>
+                                                <td>${pretty_file_size(show.show_size or 0)}</td>
                                             </tr>
                                         </table>
                                     </div>

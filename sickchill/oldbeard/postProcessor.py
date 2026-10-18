@@ -86,6 +86,7 @@ class PostProcessor(object):
         self.anidbEpisode = None
 
         self.history = History()
+        self.show = None
 
         # Set before every soft failure (``return False``) so processTV can surface it.
         self.failure_reason = ""
@@ -964,6 +965,7 @@ class PostProcessor(object):
 
         # retrieve/create the corresponding TVEpisode objects
         episode_object = self._get_ep_obj(show, season, episodes)
+        self.show = episode_object.show
         old_ep_status_, old_ep_quality = common.Quality.splitCompositeStatus(episode_object.status)
         self._log(_("Processing as - {pretty_name}").format(pretty_name=episode_object.pretty_name))
 

@@ -24,6 +24,16 @@ class ProcessResult(object):
         self.output = ""
         self.missed_files = []
         self.aggresult = True
+        self.processed_shows = set()
+
+
+def _update_processed_show_sizes(result):
+    """Recalculate stored show_size once per show that succeeded in this batch."""
+    for show in result.processed_shows:
+        try:
+            show.recalculate_show_size()
+        except Exception as error:
+            logger.debug(f"show_size update failed for {getattr(show, 'indexerid', '?')}: {error}")
 
 
 def delete_folder(folder, check_empty=True):
@@ -252,6 +262,8 @@ def process_dir(process_path, release_name=None, process_method=None, force=Fals
     except Exception:
         logger.debug(traceback.format_exc())
         return result.output
+    finally:
+        _update_processed_show_sizes(result)
 
 
 def validate_dir(process_path, release_name, failed, result):
@@ -519,6 +531,9 @@ def process_media(process_path, video_files, release_name, process_method, force
 
         if result.result:
             result.output += log_helper(f"Processing succeeded for {cur_video_file_path}")
+            show = getattr(processor, "show", None)
+            if show is not None:
+                result.processed_shows.add(show)
         else:
             result.output += log_helper(f"Processing failed for {cur_video_file_path}: {process_fail_message}", logger.WARNING)
             result.missed_files.append(f"{cur_video_file_path} : Processing failed: {process_fail_message}")
