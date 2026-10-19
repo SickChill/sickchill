@@ -218,7 +218,7 @@ class TestTorrentFindPropersCacheFirst(unittest.TestCase):
 
         self.assertEqual(results, [])
         provider.search.assert_called()
-        self.assertIn("President Curtis S01E08 1080p PROPER|REPACK|REAL", _queries(provider))
+        self.assertIn("President Curtis S01E08 PROPER|REPACK|REAL", _queries(provider))
 
     def test_consumes_cached_proper_that_matches_history_and_still_searches_live(self):
         from sickchill.providers.torrent.TorrentProvider import TorrentProvider
@@ -303,9 +303,9 @@ class TestTorrentFindPropersCacheFirst(unittest.TestCase):
 
         queries = _queries(provider)
         self.assertEqual(provider.search.call_count, 5)
-        self.assertIn("The Walking Dead: Daryl Dixon S03 1080p PROPER|REPACK|REAL", queries)
-        self.assertIn("The Walking Dead: Daryl Dixon S03E01 1080p PROPER|REPACK|REAL", queries)
-        self.assertIn("The Walking Dead: Daryl Dixon S03E04 1080p PROPER|REPACK|REAL", queries)
+        self.assertIn("The Walking Dead: Daryl Dixon S03 PROPER|REPACK|REAL", queries)
+        self.assertIn("The Walking Dead: Daryl Dixon S03E01 PROPER|REPACK|REAL", queries)
+        self.assertIn("The Walking Dead: Daryl Dixon S03E04 PROPER|REPACK|REAL", queries)
 
     def test_mixed_remainders_stay_per_episode(self):
         from sickchill.providers.torrent.TorrentProvider import TorrentProvider
@@ -383,7 +383,8 @@ class TestTorrentFindPropersCacheFirst(unittest.TestCase):
         self.assertEqual(provider.search.call_count, 2)
         self.assertTrue(any(query.startswith(("Naruto 001 ", "Naruto 01 ")) for query in queries))
         self.assertTrue(any(query.startswith(("Naruto 005 ", "Naruto 05 ")) for query in queries))
-        self.assertTrue(all("1080p PROPER|REPACK|REAL" in query for query in queries))
+        self.assertTrue(all("PROPER|REPACK|REAL" in query for query in queries))
+        self.assertFalse(any("1080p" in query for query in queries))
 
     def test_stops_live_groups_after_429(self):
         from sickchill.providers.torrent.TorrentProvider import TorrentProvider
@@ -457,7 +458,7 @@ class TestTorrentFindPropersCacheFirst(unittest.TestCase):
 
         names = [result.name for result in results]
         self.assertEqual(names, ["President.Curtis.S01E08.PROPER.1080p.10bit.WEBRip.6CH.x265.HEVC-PSA"])
-        self.assertEqual(_queries(provider), ["President Curtis S01E08 1080p PROPER|REPACK|REAL"])
+        self.assertEqual(_queries(provider), ["President Curtis S01E08 PROPER|REPACK|REAL"])
 
     def test_president_curtis_720p_history_keeps_720p_proper(self):
         from sickchill.providers.torrent.TorrentProvider import TorrentProvider
@@ -486,7 +487,7 @@ class TestTorrentFindPropersCacheFirst(unittest.TestCase):
 
         names = [result.name for result in results]
         self.assertEqual(names, ["President.Curtis.S01E08.PROPER.720p.10bit.WEBRip.6CH.x265.HEVC-PSA"])
-        self.assertEqual(_queries(provider), ["President Curtis S01E08 720p PROPER|REPACK|REAL"])
+        self.assertEqual(_queries(provider), ["President Curtis S01E08 PROPER|REPACK|REAL"])
 
     def test_season_pack_kept_when_remainder_matches(self):
         from sickchill.providers.torrent.TorrentProvider import TorrentProvider
@@ -523,9 +524,9 @@ class TestTorrentFindPropersCacheFirst(unittest.TestCase):
         names = [result.name for result in results]
         self.assertEqual(names, ["President.Curtis.S01.PROPER.1080p.10bit.WEBRip.6CH.x265.HEVC-PSA"])
         queries = _queries(provider)
-        self.assertEqual(queries[0], "President Curtis S01 1080p PROPER|REPACK|REAL")
-        self.assertIn("President Curtis S01E07 1080p PROPER|REPACK|REAL", queries)
-        self.assertIn("President Curtis S01E08 1080p PROPER|REPACK|REAL", queries)
+        self.assertEqual(queries[0], "President Curtis S01 PROPER|REPACK|REAL")
+        self.assertIn("President Curtis S01E07 PROPER|REPACK|REAL", queries)
+        self.assertIn("President Curtis S01E08 PROPER|REPACK|REAL", queries)
 
 
 class TestProperFinderFingerprint(unittest.TestCase):
