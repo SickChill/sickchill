@@ -126,10 +126,10 @@ class TorrentProvider(GenericProvider):
             yield show, episode, fingerprint, False
 
     def _live_proper_search_string(self, show, episode, fingerprint, season_pack=False) -> dict | None:
-        """Same search-string builder as daily/backlog, plus quality token and proper_strings."""
+        """Title + Sxx/SxxExx plus PROPER|REPACK|REAL. Quality is in provider categories and fingerprint match."""
         if not show or not episode or not fingerprint:
             return None
-        add_string = " ".join(part for part in (fingerprint.quality_token, self.proper_search_add_string()) if part)
+        add_string = self.proper_search_add_string()
         self.show = show
         self.current_episode_object = episode
         if season_pack:
