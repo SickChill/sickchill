@@ -8889,10 +8889,10 @@ toidentifier@1.0.1, toidentifier@~1.0.1:
   resolved "https://registry.npmjs.org/toidentifier/-/toidentifier-1.0.1.tgz"
   integrity sha512-o5sSPKEkg/DIQNmH43V0/uerLrpzVedkUh8tGNvaeXpfpuwjKenlSox/2O/BTlZUtEe+JG7s5YhEz608PlAHRA==
 
-toml@^5.0.0:
-  version "5.0.0"
-  resolved "https://registry.npmjs.org/toml/-/toml-5.0.0.tgz"
-  integrity sha512-bsqEd+g7fzlrw7LEynQ6W6aOK/lTOlepz5x1sJyIV9fTZVJS2Q76nuju6FK+gZhW5bUpvB7mCEqdR0u4WziMFw==
+toml@^5.0.1:
+  version "5.0.1"
+  resolved "https://registry.yarnpkg.com/toml/-/toml-5.0.1.tgz#67ca011810a2dd8741c2cede1027ee2084b73d67"
+  integrity sha512-EqYNA/YvUNndrA2B3O2ojzLQoTQrBxeZ9UIjQwk8t10oe6n7dwclBwd9IdZQTOKwe6vWX+AXtl6IntXRbepdxQ==
 
 tough-cookie@^2.3.3, tough-cookie@^2.5.0, tough-cookie@~2.5.0:
   version "2.5.0"
