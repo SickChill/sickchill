@@ -2,7 +2,7 @@
 # Uses Python 3.13 (Debian 13 / Trixie)
 #
 # Usage (example):
-#   docker build -f Dockerfile.rpi.bundle -t sickchill-rpi-build .
+#   docker build -f contrib/Dockerfile.rpi.bundle -t sickchill-rpi-build .
 #   docker run --rm -v $(pwd)/dist:/output sickchill-rpi-build
 
 FROM debian:trixie-slim
