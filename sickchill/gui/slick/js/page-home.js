@@ -291,241 +291,176 @@ window.SICKCHILL.home = {
             });
         }, 200));
 
-        {
-            let sort;
-            switch (getMeta('settings.POSTER_SORTBY')) {
+        function posterSortCriteria(sortValue) {
+            switch (sortValue) {
                 case 'progress': {
-                    sort = ['progress', 'total', 'name'];
-                    break;
+                    return ['progress', 'total', 'name'];
                 }
 
                 case 'date': {
-                    sort = ['date', 'status', 'name'];
-                    break;
+                    return ['date', 'status', 'name'];
                 }
 
                 case 'status': {
-                    sort = ['status', 'progress', 'name'];
-                    break;
+                    return ['status', 'progress', 'name'];
+                }
+
+                case 'network': {
+                    return ['network', 'name'];
                 }
 
                 default: {
-                    sort = getMeta('settings.POSTER_SORTBY');
-                    break;
+                    return 'name';
                 }
             }
+        }
 
-            $('.loading-spinner').hide();
-            $('.show-grid').show().isotope({
-                itemSelector: '.show-container',
-                sortBy: sort,
-                sortAscending: getMeta('settings.POSTER_SORTDIR'),
-                layoutMode: 'masonry',
-                masonry: {
-                    isFitWidth: true,
-                    horizontalOrder: true,
-                },
-                getSortData: {
-                    name(itemElement) {
-                        const name = $(itemElement).attr('data-name') || '';
-                        const regex = new RegExp('^((?:' + getMeta('settings.GRAMMAR_ARTICLES') + String.raw`)\s)`, 'i');
-                        return latinize((metaToBool('settings.SORT_ARTICLE') ? name : name.replace(regex, '')).toLowerCase().normalize('NFC'));
-                    },
-                    network: '[data-network]',
-                    date(itemElement) {
-                        const date = $(itemElement).attr('data-date');
-                        return (date.length > 0 && Number.parseInt(date, 10)) || Infinity;
-                    },
-                    progress(itemElement) {
-                        const progress = $(itemElement).attr('data-progress');
-                        return (progress.length > 0 && Number.parseFloat(progress)) || 0;
-                    },
-                    total(itemElement) {
-                        const totalEps = $(itemElement).attr('data-progress-total');
-                        return (totalEps.length > 0 && Number.parseInt(totalEps, 10)) || 0;
-                    },
-                    status: '[data-status]',
-                },
-            });
-            bindMasonryImageLayout($('.show-grid'));
+        const posterSortData = {
+            name(itemElement) {
+                const name = $(itemElement).attr('data-name') || '';
+                const regex = new RegExp('^((?:' + getMeta('settings.GRAMMAR_ARTICLES') + String.raw`)\s)`, 'i');
+                return latinize((metaToBool('settings.SORT_ARTICLE') ? name : name.replace(regex, '')).toLowerCase().normalize('NFC'));
+            },
+            network(itemElement) {
+                const network = $(itemElement).attr('data-network') || '';
+                return latinize(network.toLowerCase().normalize('NFC'));
+            },
+            date(itemElement) {
+                const date = $(itemElement).attr('data-date') || '';
+                return (date.length > 0 && Number.parseInt(date, 10)) || Infinity;
+            },
+            progress(itemElement) {
+                const progress = $(itemElement).attr('data-progress') || '';
+                return (progress.length > 0 && Number.parseFloat(progress)) || 0;
+            },
+            total(itemElement) {
+                const totalEps = $(itemElement).attr('data-progress-total') || '';
+                return (totalEps.length > 0 && Number.parseInt(totalEps, 10)) || 0;
+            },
+            status: '[data-status]',
+        };
 
-            // When posters are small enough to not display the .show-details
-            // table, display a larger poster when hovering.
-            $('.show-container').on('mouseenter', function () {
+        const posterMasonry = {
+            layoutMode: 'masonry',
+            masonry: {
+                isFitWidth: true,
+                horizontalOrder: true,
+            },
+        };
+
+        $('.loading-spinner').hide();
+        $('.show-grid').show().isotope({
+            itemSelector: '.show-container',
+            sortBy: posterSortCriteria(getMeta('settings.POSTER_SORTBY')),
+            sortAscending: getMeta('settings.POSTER_SORTDIR'),
+            ...posterMasonry,
+            getSortData: posterSortData,
+        });
+        bindMasonryImageLayout($('.show-grid'));
+
+        // When posters are small enough to not display the .show-details
+        // table, display a larger poster when hovering.
+        $('.show-container').on('mouseenter', function () {
+            if (posterPopupDisabled) {
+                return;
+            }
+
+            const poster = $(this);
+            const details = poster.find('.show-network-image');
+            if (details[0].style.cssText !== 'width: 0px;') {
+                return;
+            }
+
+            posterHoverTimer = setTimeout(() => {
+                posterHoverTimer = null;
                 if (posterPopupDisabled) {
                     return;
                 }
 
-                const poster = $(this);
-                const details = poster.find('.show-network-image');
-                if (details[0].style.cssText !== 'width: 0px;') {
-                    return;
-                }
+                $('#posterPopup').remove();
 
-                posterHoverTimer = setTimeout(() => {
-                    posterHoverTimer = null;
-                    if (posterPopupDisabled) {
-                        return;
-                    }
+                const popup = poster.clone().attr({
+                    id: 'posterPopup',
+                });
+                const origLeft = poster.offset().left;
+                const origWidth = poster.width();
+                const origHeight = poster.height();
+                const origTop = poster.offset().top;
+                popup.css({
+                    position: 'absolute',
+                    margin: 0,
+                    top: origTop,
+                    left: origLeft,
+                    zIndex: 9999,
+                });
 
-                    $('#posterPopup').remove();
-
-                    const popup = poster.clone().attr({
-                        id: 'posterPopup',
-                    });
-                    const origLeft = poster.offset().left;
-                    const origWidth = poster.width();
-                    const origHeight = poster.height();
-                    const origTop = poster.offset().top;
-                    popup.css({
-                        position: 'absolute',
-                        margin: 0,
+                popup.find('.show-details').show();
+                popup.on('mouseleave', function () {
+                    $(this).animate({
+                        height: origHeight + 8,
+                        width: origWidth + 8,
                         top: origTop,
                         left: origLeft,
-                        zIndex: 9999,
                     });
+                });
+                popup.appendTo('body');
 
-                    popup.find('.show-details').show();
-                    popup.on('mouseleave', function () {
-                        $(this).animate({
-                            height: origHeight + 8,
-                            width: origWidth + 8,
-                            top: origTop,
-                            left: origLeft,
-                        });
-                    });
-                    popup.appendTo('body');
+                const height = 438;
+                const width = 250;
+                let newTop = (origTop + (poster.height() / 2)) - (height / 2);
+                let newLeft = (origLeft + (poster.width() / 2)) - (width / 2);
 
-                    const height = 438;
-                    const width = 250;
-                    let newTop = (origTop + (poster.height() / 2)) - (height / 2);
-                    let newLeft = (origLeft + (poster.width() / 2)) - (width / 2);
-
-                    // Make sure the popup isn't outside the viewport
-                    const margin = 5;
-                    const scrollTop = $(window).scrollTop();
-                    const scrollLeft = $(window).scrollLeft();
-                    const scrollBottom = scrollTop + $(window).innerHeight();
-                    const scrollRight = scrollLeft + $(window).innerWidth();
-                    if (newTop < scrollTop + margin) {
-                        newTop = scrollTop + margin;
-                    }
-
-                    if (newLeft < scrollLeft + margin) {
-                        newLeft = scrollLeft + margin;
-                    }
-
-                    if (newTop + height + margin > scrollBottom) {
-                        newTop = scrollBottom - height - margin;
-                    }
-
-                    if (newLeft + width + margin > scrollRight) {
-                        newLeft = scrollRight - width - margin;
-                    }
-
-                    popup.animate({
-                        top: newTop,
-                        left: newLeft,
-                        width: 250,
-                        height: 438,
-                    });
-                }, 300);
-            }).on('mouseleave', () => {
-                if (posterHoverTimer !== null) {
-                    clearTimeout(posterHoverTimer);
+                // Make sure the popup isn't outside the viewport
+                const margin = 5;
+                const scrollTop = $(window).scrollTop();
+                const scrollLeft = $(window).scrollLeft();
+                const scrollBottom = scrollTop + $(window).innerHeight();
+                const scrollRight = scrollLeft + $(window).innerWidth();
+                if (newTop < scrollTop + margin) {
+                    newTop = scrollTop + margin;
                 }
-            });
-        }
+
+                if (newLeft < scrollLeft + margin) {
+                    newLeft = scrollLeft + margin;
+                }
+
+                if (newTop + height + margin > scrollBottom) {
+                    newTop = scrollBottom - height - margin;
+                }
+
+                if (newLeft + width + margin > scrollRight) {
+                    newLeft = scrollRight - width - margin;
+                }
+
+                popup.animate({
+                    top: newTop,
+                    left: newLeft,
+                    width: 250,
+                    height: 438,
+                });
+            }, 300);
+        }).on('mouseleave', () => {
+            if (posterHoverTimer !== null) {
+                clearTimeout(posterHoverTimer);
+            }
+        });
 
         $('#layout').on('change', function () {
             window.location.assign($(this).find('option:selected').val());
         });
 
         $('#postersort').on('change', function () {
-            let sort;
-            switch ($(this).val()) {
-                case 'progress': {
-                    sort = ['progress', 'total', 'name'];
-                    break;
-                }
-
-                case 'date': {
-                    sort = ['date', 'status', 'name'];
-                    break;
-                }
-
-                case 'status': {
-                    sort = ['status', 'progress', 'name'];
-                    break;
-                }
-
-                default: {
-                    sort = getMeta('settings.POSTER_SORTBY');
-                    break;
-                }
-            }
-
             $('.show-grid').isotope({
-                layoutMode: 'masonry',
-                masonry: {
-                    isFitWidth: true,
-                    horizontalOrder: true,
-                },
-                sortBy: sort,
-                getSortData: {
-                    name(itemElement) {
-                        const name = $(itemElement).attr('data-name') || '';
-                        const regex = new RegExp('^((?:' + getMeta('settings.GRAMMAR_ARTICLES') + String.raw`)\s)`, 'i');
-                        return latinize((metaToBool('settings.SORT_ARTICLE') ? name : name.replace(regex, '')).toLowerCase().normalize('NFC'));
-                    },
-                    network: '[data-network]',
-                    date(itemElement) {
-                        const date = $(itemElement).attr('data-date');
-                        return (date.length > 0 && Number.parseInt(date, 10)) || Infinity;
-                    },
-                    progress(itemElement) {
-                        const progress = $(itemElement).attr('data-progress');
-                        return (progress.length > 0 && Number.parseFloat(progress)) || 0;
-                    },
-                    total(itemElement) {
-                        const totalEps = $(itemElement).attr('data-progress-total');
-                        return (totalEps.length > 0 && Number.parseInt(totalEps, 10)) || 0;
-                    },
-                    status: '[data-status]',
-                },
+                ...posterMasonry,
+                sortBy: posterSortCriteria($(this).val()),
             });
             $.post($(this).find('option:selected').data('sort'));
         });
 
         $('#postersortdirection').on('change', function () {
             $('.show-grid').isotope({
-                layoutMode: 'masonry',
-                masonry: {
-                    isFitWidth: true,
-                    horizontalOrder: true,
-                },
+                ...posterMasonry,
                 sortAscending: ($(this).val() === 'true'),
-                getSortData: {
-                    name(itemElement) {
-                        const name = $(itemElement).attr('data-name') || '';
-                        const regex = new RegExp('^((?:' + getMeta('settings.GRAMMAR_ARTICLES') + String.raw`)\s)`, 'i');
-                        return latinize((metaToBool('settings.SORT_ARTICLE') ? name : name.replace(regex, '')).toLowerCase().normalize('NFC'));
-                    },
-                    network: '[data-network]',
-                    date(itemElement) {
-                        const date = $(itemElement).attr('data-date');
-                        return (date.length > 0 && Number.parseInt(date, 10)) || Infinity;
-                    },
-                    progress(itemElement) {
-                        const progress = $(itemElement).attr('data-progress');
-                        return (progress.length > 0 && Number.parseFloat(progress)) || 0;
-                    },
-                    total(itemElement) {
-                        const totalEps = $(itemElement).attr('data-progress-total');
-                        return (totalEps.length > 0 && Number.parseInt(totalEps, 10)) || 0;
-                    },
-                    status: '[data-status]',
-                },
             });
             $.post($(this).find('option:selected').data('sort'));
         });
