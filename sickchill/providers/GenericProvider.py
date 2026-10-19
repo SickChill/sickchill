@@ -218,18 +218,20 @@ class GenericProvider(object):
             search_strings = []
             searched_scene_season = episode.scene_season
 
+            # Backlog q= is title + Sxx/SxxExx only; quality is in provider categories and result filters.
             quality_add = ""
-            quality = getattr(show, "quality", None)
-            if isinstance(quality, int):
-                tokens = []
-                seen = set()
-                allowed, preferred = Quality.splitQuality(quality)
-                for cur_qual in (*allowed, *preferred):
-                    token = (Quality.sceneQualityStrings.get(cur_qual) or "").strip()
-                    if token and token not in {"N/A", "Unknown"} and token not in seen:
-                        seen.add(token)
-                        tokens.append(token)
-                quality_add = "|".join(tokens)
+            if manual_search:
+                quality = getattr(show, "quality", None)
+                if isinstance(quality, int):
+                    tokens = []
+                    seen = set()
+                    allowed, preferred = Quality.splitQuality(quality)
+                    for cur_qual in (*allowed, *preferred):
+                        token = (Quality.sceneQualityStrings.get(cur_qual) or "").strip()
+                        if token and token not in {"N/A", "Unknown"} and token not in seen:
+                            seen.add(token)
+                            tokens.append(token)
+                    quality_add = "|".join(tokens)
 
             if search_mode == "season":
                 search_strings = self.get_season_search_strings(episode)
