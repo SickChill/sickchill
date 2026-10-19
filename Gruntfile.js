@@ -2,13 +2,36 @@
 
 module.exports = function (grunt) {
     const CI = Boolean(process.env.CI);
+    const bowerJsFiles = {};
+
+    function isAlreadyMinified(filepath) {
+        return /\.min\.js$/.test(filepath) || /-min\.js$/.test(filepath);
+    }
+
+    function preferMinJs(filepath) {
+        if (!filepath.endsWith('.js') || isAlreadyMinified(filepath)) {
+            return filepath;
+        }
+
+        const minDot = filepath.replace(/\.js$/, '.min.js');
+        if (grunt.file.exists(minDot)) {
+            return minDot;
+        }
+
+        const minDash = filepath.replace(/\.js$/, '-min.js');
+        if (grunt.file.exists(minDash)) {
+            return minDash;
+        }
+
+        return filepath;
+    }
 
     grunt.registerTask('default', [
         'clean',
         'bower',
         'bower_concat',
         'copy',
-        'uglify',
+        'vendor_js_minify',
         'cssmin',
     ]);
 
@@ -101,7 +124,15 @@ module.exports = function (grunt) {
                     js: './dist/bower.js',
                     css: './dist/bower.css',
                 },
-                exclude: [],
+                // isotope.pkgd.min.js already bundles these; imagesloaded.pkgd.min.js bundles ev-emitter
+                exclude: [
+                    'outlayer',
+                    'masonry-layout',
+                    'get-size',
+                    'fizzy-ui-utils',
+                    'desandro-matches-selector',
+                    'ev-emitter',
+                ],
                 dependencies: {},
                 mainFiles: {
                     tablesorter: [
@@ -120,17 +151,48 @@ module.exports = function (grunt) {
                     isotope: [
                         'dist/isotope.pkgd.min.js',
                     ],
-                    outlayer: [
-                        'item.js',
-                        'outlayer.js',
-                    ],
                     'open-sans-fontface': [
                         '*.css',
                         'fonts/**/*',
                     ],
                     'jqueryui-touch-punch': [
-                        'jquery.ui.touch-punch.min.js',
+                        'jquery.ui.touch-punch.js',
                     ],
+                    jquery: [
+                        'dist/jquery.min.js',
+                    ],
+                    'jquery-ui': [
+                        'jquery-ui.min.js',
+                    ],
+                    underscore: [
+                        'underscore-min.js',
+                    ],
+                    qtip2: [
+                        'jquery.qtip.min.js',
+                    ],
+                    imagesloaded: [
+                        'imagesloaded.pkgd.min.js',
+                    ],
+                    'jquery-backstretch': [
+                        'jquery.backstretch.min.js',
+                    ],
+                    'jquery-confirm': [
+                        'jquery.confirm.min.js',
+                    ],
+                    'bootstrap-hover-dropdown': [
+                        'bootstrap-hover-dropdown.min.js',
+                    ],
+                    'bootstrap3-typeahead': [
+                        'bootstrap3-typeahead.min.js',
+                    ],
+                    'jquery-tokeninput': [
+                        'build/jquery.tokeninput.min.js',
+                    ],
+                },
+                callback(mainFiles, name) {
+                    const preferred = mainFiles.map(preferMinJs);
+                    bowerJsFiles[name] = preferred.filter(filepath => filepath.endsWith('.js') && grunt.file.exists(filepath));
+                    return preferred;
                 },
                 bowerOptions: {
                     relative: false,
@@ -191,18 +253,7 @@ module.exports = function (grunt) {
                 }],
             },
         },
-        uglify: {
-            bower: {
-                files: {
-                    './sickchill/gui/slick/js/vendor.min.js': ['./dist/bower.js'],
-                },
-            },
-            core: {
-                files: {
-                    './sickchill/gui/slick/js/core.min.js': ['./sickchill/gui/slick/js/core.js'],
-                },
-            },
-        },
+        // JS vendor minify is vendor_js_minify (skips files that are already .min.js / -min.js)
         cssmin: {
             options: {
                 shorthandCompacting: false,
@@ -323,9 +374,9 @@ module.exports = function (grunt) {
                         commitPaths.push('CHANGES.md');
                     }
 
-                    if (/sickchill\/gui\/.*(vendor|core)\.min\.(js|css)$/gm.test(stdout)) {
+                    if (/sickchill\/gui\/.*vendor\.min\.(js|css)$/gm.test(stdout)) {
                         commitMessage.push('Grunt');
-                        commitPaths.push('sickchill/gui/**/vendor.min.*', 'sickchill/gui/**/core.min.*');
+                        commitPaths.push('sickchill/gui/**/vendor.min.*');
                     }
 
                     if (/sickchill\/locale\/.*(pot|po|mo|json)$/gm.test(stdout)) {
@@ -457,6 +508,72 @@ module.exports = function (grunt) {
                 },
             },
         },
+    });
+
+    grunt.registerTask('vendor_js_minify', 'Build vendor.min.js, skipping already-minified sources', function () {
+        const done = this.async();
+        const bower = require('bower');
+        const UglifyJS = require('uglify-js');
+        const dependencyTools = require('grunt-bower-concat/lib/dependencyTools');
+        const dest = './sickchill/gui/slick/js/vendor.min.js';
+
+        bower.commands.list({map: true}, {offline: true})
+            .on('error', error => {
+                grunt.fatal(error);
+            })
+            .on('end', map => {
+                const graph = {};
+                const resolved = [];
+                const unresolved = [];
+                if (map.dependencies) {
+                    dependencyTools.buildDependencyGraph(undefined, map.dependencies, graph);
+                    dependencyTools.resolveDependencyGraph(undefined, resolved, unresolved, graph);
+                }
+
+                const names = resolved.length > 0 ? resolved : Object.keys(bowerJsFiles);
+                const parts = [];
+                let skippedFiles = 0;
+                let skippedBytes = 0;
+                let uglifiedFiles = 0;
+                let uglifiedSrcBytes = 0;
+                let uglifiedOutBytes = 0;
+
+                for (const name of names) {
+                    const files = bowerJsFiles[name] || [];
+                    for (const filepath of files) {
+                        const src = grunt.file.read(filepath);
+                        if (isAlreadyMinified(filepath)) {
+                            parts.push(src);
+                            skippedFiles += 1;
+                            skippedBytes += src.length;
+                            continue;
+                        }
+
+                        const result = UglifyJS.minify(src, {module: false});
+                        if (result.error) {
+                            grunt.fatal(filepath + ': ' + result.error);
+                        }
+
+                        parts.push(result.code);
+                        uglifiedFiles += 1;
+                        uglifiedSrcBytes += src.length;
+                        uglifiedOutBytes += result.code.length;
+                    }
+                }
+
+                if (parts.length === 0) {
+                    grunt.fatal('vendor_js_minify: no JS files collected. Run bower_concat first.');
+                }
+
+                const output = parts.join('\n');
+                grunt.file.write(dest, output);
+                grunt.log.ok(
+                    dest + ' (' + output.length + ' bytes): skipped ' + skippedFiles
+                    + ' already-min files (' + skippedBytes + ' bytes), uglified '
+                    + uglifiedFiles + ' files (' + uglifiedSrcBytes + ' -> ' + uglifiedOutBytes + ' bytes)',
+                );
+                done();
+            });
     });
 
     /****************************************

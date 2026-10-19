@@ -403,11 +403,7 @@
                 <script type="text/javascript" src="${static_url('js/lib/formwizard.js')}"></script><!-- Can't be added to bower -->
                 <script type="text/javascript" src="${static_url('js/parsers.js')}"></script>
                 <script type="text/javascript" src="${static_url('js/rootDirs.js')}"></script>
-                % if settings.DEVELOPER:
-                    <script type="text/javascript" src="${static_url('js/core.js')}"></script>
-                % else:
-                    <script type="text/javascript" src="${static_url('js/core.min.js')}"></script>
-                % endif
+                <script type="text/javascript" src="${static_url('js/core.js')}"></script>
                 % if controller in ('config', 'home', 'manage', 'history', 'errorlogs', 'schedule', 'addShows', 'movies'):
                     <script type="text/javascript" src="${static_url('js/page-' + controller + '.js')}"></script>
                 % endif

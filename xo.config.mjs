@@ -3,7 +3,6 @@ import globals from 'globals';
 const xoConfig = [
     {
         ignores: [
-            '**/core.min.js',
             '**/vendor.min.js',
             'lib/**/*',
             'Gruntfile.js',
