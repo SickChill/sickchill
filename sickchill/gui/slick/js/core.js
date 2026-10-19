@@ -102,6 +102,13 @@ function hydrateLazyImages() {
             image.setAttribute('loading', 'lazy');
         }
 
+        // Network logos may not exist in images/network/, so hide them instead of showing a broken image icon
+        if (image.classList.contains('show-network-image')) {
+            image.addEventListener('error', () => {
+                image.style.display = 'none';
+            }, {once: true});
+        }
+
         image.setAttribute('src', image.dataset.src);
     }
 }
