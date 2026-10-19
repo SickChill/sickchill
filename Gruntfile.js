@@ -425,9 +425,13 @@ module.exports = function (grunt) {
                         commitPaths.push('CHANGES.md');
                     }
 
-                    if (/sickchill\/gui\/.*vendor(?:-core|-extra)?\.min\.(js|css)$/gm.test(stdout)) {
+                    const vendorAssetsChanged = /sickchill\/gui\/.*vendor(?:-core|-extra)?\.min\.(js|css)$/gm.test(stdout);
+                    const pageLibPaths = Object.values(vendorJsPage).map(filepath => filepath.replace(/^\.\//, ''));
+                    const pageLibsChanged = pageLibPaths.some(filepath => stdout.includes(filepath));
+                    if (vendorAssetsChanged || pageLibsChanged) {
                         commitMessage.push('Grunt');
                         commitPaths.push('sickchill/gui/**/vendor*.min.*');
+                        commitPaths.push(...pageLibPaths);
                     }
 
                     if (/sickchill\/locale\/.*(pot|po|mo|json)$/gm.test(stdout)) {
