@@ -40,10 +40,10 @@ done
 internal_ip=$(ip r g 8.8.8.8 | awk 'NR==1{print $7};')
 
 # Update package lists
-apt-get update -qq
+apt-get update -qq || { echo "apt-get update failed"; exit 1; }
 
 # Install whiptail for script prerequisite
-apt-get install -y whiptail
+apt-get install -y whiptail || { echo "Failed to install whiptail"; exit 1; }
 
 # Required packages for SickChill on Debian 13 / Ubuntu 24.04
 # - python3-venv is required for `python3 -m venv`
@@ -215,7 +215,7 @@ echo "If you run sickchill as the sickchill user like this:"
 echo ">> PATH= /opt/sickchill/bin/SickChill --datadir=/opt/sickchill"
 echo "Your config.ini and database will be in '/opt/sickchill'"
 echo "It is recommended to run sickchill as the sickchill user, as in the first example"
-echo "To update sickchill, run the following command:"
+echo "To update sickchill to run as user sickchill, run the following command:"
 echo ">> sudo -u sickchill -g sickchill ${LOCATION}/bin/pip install -U sickchill"
 
 if [[ $SERVICE_RESULT != 0 ]]; then
