@@ -48,7 +48,7 @@ apt-get install -y whiptail || { echo "Failed to install whiptail"; exit 1; }
 # Required packages for SickChill on Debian 13 / Ubuntu 24.04
 # - python3-venv is required for `python3 -m venv`
 # - build tools + headers are needed to compile native wheels (greenlet, cryptography, lxml, etc.)
-# - mediainfo for pymediainfo, unrar for rarfile
+# - mediainfo for pymediainfo; unrar (rarfile) is optional — Debian packages it in non-free
 REQUIRED_PACKAGES=(
   python3
   python3-venv
@@ -57,9 +57,10 @@ REQUIRED_PACKAGES=(
   build-essential
   libffi-dev
   libssl-dev
+  libxml2-dev
+  libxslt1-dev
   git
   curl
-  unrar
   mediainfo
 )
 
@@ -71,11 +72,14 @@ Please resolve package issues and re-run this script." 12 70
   exit 1
 fi
 
-# Optional: enable non-free on Debian if unrar was not available
-if [[ "${distro}" == "debian" ]] && ! command -v unrar >/dev/null 2>&1; then
-  echo "unrar not found. You may need to enable the non-free component:"
-  echo "  sed -i 's/Components: main/Components: main contrib non-free non-free-firmware/' /etc/apt/sources.list.d/debian.sources"
-  echo "  apt-get update && apt-get install -y unrar"
+# unrar is in Debian non-free; do not fail the install if APT cannot fetch it
+if ! command -v unrar >/dev/null 2>&1; then
+  echo "Installing optional package: unrar"
+  if ! apt-get install -y unrar; then
+    echo "unrar was not installed (needed for rarfile). On Debian enable non-free, then:"
+    echo "  sed -i 's/Components: main/Components: main contrib non-free non-free-firmware/' /etc/apt/sources.list.d/debian.sources"
+    echo "  apt-get update && apt-get install -y unrar"
+  fi
 fi
 
 # Check to see if sickchill exists; If not make user/group
@@ -215,7 +219,7 @@ echo "If you run sickchill as the sickchill user like this:"
 echo ">> PATH= /opt/sickchill/bin/SickChill --datadir=/opt/sickchill"
 echo "Your config.ini and database will be in '/opt/sickchill'"
 echo "It is recommended to run sickchill as the sickchill user, as in the first example"
-echo "To update sickchill to run as user sickchill, run the following command:"
+echo "To update sickchill, run the following command as the sickchill user:"
 echo ">> sudo -u sickchill -g sickchill ${LOCATION}/bin/pip install -U sickchill"
 
 if [[ $SERVICE_RESULT != 0 ]]; then
