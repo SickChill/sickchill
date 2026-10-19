@@ -1922,7 +1922,9 @@ class Home(WebRoot):
         return self.redirect(f"/home/displayShow?show={show}")
 
     def testRename(self):
-        show = self.get_query_argument("show")
+        show = self.get_query_argument("show", None)
+        if not show:
+            return self._genericMessage(_("Error"), _("You must specify a show"))
 
         show_obj = Show.find(settings.show_list, show)
 

@@ -265,6 +265,8 @@ class WebHandler(BaseHandler):
             return function(**kwargs)
         except TypeError:
             return function()
+        except HTTPError:
+            raise
         except Exception as error:
             return WebRoot(application=self.application, request=self.request).print_traceback(error=error, **self.request.arguments)
 

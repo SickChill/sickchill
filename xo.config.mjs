@@ -4,6 +4,8 @@ const xoConfig = [
     {
         ignores: [
             '**/vendor.min.js',
+            '**/vendor-core.min.js',
+            '**/vendor-extra.min.js',
             'lib/**/*',
             'Gruntfile.js',
             'sickchill/gui/slick/js/lib/**',

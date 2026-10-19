@@ -5,6 +5,7 @@
     from sickchill import indexer as show_indexer
 %>
 <%block name="scripts">
+    <script type="text/javascript" src="${static_url('js/lib/bootstrap-formhelpers.min.js')}"></script>
     <script type="text/javascript" src="${static_url('js/plotTooltip.js')}"></script>
     <script type="text/javascript" src="${static_url('js/blackwhite.js')}"></script>
 </%block>

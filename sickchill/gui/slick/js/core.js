@@ -141,7 +141,7 @@ function bindMasonryImageLayout($grid) {
     }
 
     const relayout = __.debounce(() => {
-        if ($grid.data('isotope')) {
+        if (typeof $.fn.isotope === 'function' && $grid.data('isotope')) {
             $grid.isotope('layout');
         }
     }, 100);
@@ -239,7 +239,7 @@ SICKCHILL.common = {
         hydrateLazyImages();
         initProgressBars();
 
-        if (metaToBool('settings.SICKCHILL_BACKGROUND')) {
+        if (metaToBool('settings.SICKCHILL_BACKGROUND') && typeof $.backstretch === 'function') {
             $.backstretch(scRoot + '/ui/sickchill_background');
             $('.backstretch').css('opacity', getMeta('settings.FANART_BACKGROUND_OPACITY')).fadeIn('500');
         }

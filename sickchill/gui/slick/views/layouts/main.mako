@@ -397,11 +397,16 @@
                         </div>
                     </div>
                 </div>
-                <script type="text/javascript" src="${static_url('js/vendor.min.js')}"></script>
+                <script type="text/javascript" src="${static_url('js/vendor-core.min.js')}"></script>
+                % if controller in ('config', 'home', 'manage', 'history', 'schedule', 'addShows', 'movies'):
+                    <script type="text/javascript" src="${static_url('js/vendor-extra.min.js')}"></script>
+                % endif
                 <script type="text/javascript" src="${static_url('js/lib/jquery.form.min.js')}"></script>
                 <script type="text/javascript" src="${static_url('js/lib/jquery.selectboxes.min.js')}"></script>
                 <script type="text/javascript" src="${static_url('js/lib/formwizard.js')}"></script><!-- Can't be added to bower -->
-                <script type="text/javascript" src="${static_url('js/parsers.js')}"></script>
+                % if controller in ('config', 'home', 'manage', 'history', 'schedule', 'addShows', 'movies'):
+                    <script type="text/javascript" src="${static_url('js/parsers.js')}"></script>
+                % endif
                 <script type="text/javascript" src="${static_url('js/rootDirs.js')}"></script>
                 <script type="text/javascript" src="${static_url('js/core.js')}"></script>
                 % if controller in ('config', 'home', 'manage', 'history', 'errorlogs', 'schedule', 'addShows', 'movies'):

@@ -8,6 +8,59 @@ module.exports = function (grunt) {
         return /\.min\.js$/.test(filepath) || /-min\.js$/.test(filepath);
     }
 
+    // Widgets the slick GUI actually calls, plus their 1.12 internals.
+    // Dropped: datepicker, effect.js + effects/*, accordion, tooltip, spinner,
+    // droppable, selectable, selectmenu, progressbar.
+    const jqueryUiCustomJs = [
+        'ui/version.js',
+        'ui/widget.js',
+        'ui/plugin.js',
+        'ui/position.js',
+        'ui/data.js',
+        'ui/disable-selection.js',
+        'ui/focusable.js',
+        'ui/form.js',
+        'ui/form-reset-mixin.js',
+        'ui/ie.js',
+        'ui/keycode.js',
+        'ui/labels.js',
+        'ui/jquery-1-7.js',
+        'ui/safe-active-element.js',
+        'ui/safe-blur.js',
+        'ui/scroll-parent.js',
+        'ui/tabbable.js',
+        'ui/unique-id.js',
+        'ui/escape-selector.js',
+        'ui/widgets/mouse.js',
+        'ui/widgets/draggable.js',
+        'ui/widgets/resizable.js',
+        'ui/widgets/controlgroup.js',
+        'ui/widgets/checkboxradio.js',
+        'ui/widgets/button.js',
+        'ui/widgets/menu.js',
+        'ui/widgets/autocomplete.js',
+        'ui/widgets/dialog.js',
+        'ui/widgets/slider.js',
+        'ui/widgets/sortable.js',
+        'ui/widgets/tabs.js',
+    ];
+
+    // Home/manage/history/schedule/addShows/movies/config. Core pages skip these.
+    const vendorJsExtra = new Set([
+        'isotope',
+        'tablesorter',
+        'qtip2',
+        'imagesloaded',
+    ]);
+
+    // Copied to js/lib and loaded from the templates that call them.
+    const vendorJsPage = {
+        'bootstrap-formhelpers': './sickchill/gui/slick/js/lib/bootstrap-formhelpers.min.js',
+        'jquery-tokeninput': './sickchill/gui/slick/js/lib/jquery.tokeninput.min.js',
+        'bootstrap3-typeahead': './sickchill/gui/slick/js/lib/bootstrap3-typeahead.min.js',
+        'jquery.redirect': './sickchill/gui/slick/js/lib/jquery.redirect.min.js',
+    };
+
     function preferMinJs(filepath) {
         if (!filepath.endsWith('.js') || isAlreadyMinified(filepath)) {
             return filepath;
@@ -161,9 +214,7 @@ module.exports = function (grunt) {
                     jquery: [
                         'dist/jquery.min.js',
                     ],
-                    'jquery-ui': [
-                        'jquery-ui.min.js',
-                    ],
+                    'jquery-ui': jqueryUiCustomJs,
                     underscore: [
                         'underscore-min.js',
                     ],
@@ -374,9 +425,9 @@ module.exports = function (grunt) {
                         commitPaths.push('CHANGES.md');
                     }
 
-                    if (/sickchill\/gui\/.*vendor\.min\.(js|css)$/gm.test(stdout)) {
+                    if (/sickchill\/gui\/.*vendor(?:-core|-extra)?\.min\.(js|css)$/gm.test(stdout)) {
                         commitMessage.push('Grunt');
-                        commitPaths.push('sickchill/gui/**/vendor.min.*');
+                        commitPaths.push('sickchill/gui/**/vendor*.min.*');
                     }
 
                     if (/sickchill\/locale\/.*(pot|po|mo|json)$/gm.test(stdout)) {
@@ -510,12 +561,76 @@ module.exports = function (grunt) {
         },
     });
 
-    grunt.registerTask('vendor_js_minify', 'Build vendor.min.js, skipping already-minified sources', function () {
+    grunt.registerTask('vendor_js_minify', 'Build vendor-core.min.js and vendor-extra.min.js, skipping already-minified sources', function () {
         const done = this.async();
         const bower = require('bower');
         const UglifyJS = require('uglify-js');
         const dependencyTools = require('grunt-bower-concat/lib/dependencyTools');
-        const dest = './sickchill/gui/slick/js/vendor.min.js';
+        const coreDest = './sickchill/gui/slick/js/vendor-core.min.js';
+        const extraDest = './sickchill/gui/slick/js/vendor-extra.min.js';
+        const staleDest = './sickchill/gui/slick/js/vendor.min.js';
+
+        function minifyFile(filepath) {
+            const src = grunt.file.read(filepath);
+            if (isAlreadyMinified(filepath)) {
+                return {code: src, skipped: true, srcBytes: src.length, outBytes: src.length};
+            }
+
+            const result = UglifyJS.minify(src, {module: false});
+            if (result.error) {
+                grunt.fatal(filepath + ': ' + result.error);
+            }
+
+            return {code: result.code, skipped: false, srcBytes: src.length, outBytes: result.code.length};
+        }
+
+        function collectParts(names) {
+            const parts = [];
+            const used = [];
+            let skippedFiles = 0;
+            let skippedBytes = 0;
+            let uglifiedFiles = 0;
+            let uglifiedSrcBytes = 0;
+            let uglifiedOutBytes = 0;
+
+            for (const name of names) {
+                const files = bowerJsFiles[name] || [];
+                if (files.length === 0) {
+                    continue;
+                }
+
+                used.push(name);
+                for (const filepath of files) {
+                    const result = minifyFile(filepath);
+                    parts.push(result.code);
+                    if (result.skipped) {
+                        skippedFiles += 1;
+                        skippedBytes += result.srcBytes;
+                    } else {
+                        uglifiedFiles += 1;
+                        uglifiedSrcBytes += result.srcBytes;
+                        uglifiedOutBytes += result.outBytes;
+                    }
+                }
+            }
+
+            return {parts, used, skippedFiles, skippedBytes, uglifiedFiles, uglifiedSrcBytes, uglifiedOutBytes};
+        }
+
+        function writeBundle(dest, collected) {
+            if (collected.parts.length === 0) {
+                grunt.fatal('vendor_js_minify: no JS files for ' + dest + '. Run bower_concat first.');
+            }
+
+            const output = collected.parts.join('\n');
+            grunt.file.write(dest, output);
+            grunt.log.ok(
+                dest + ' (' + output.length + ' bytes, ' + collected.used.join(', ')
+                + '): skipped ' + collected.skippedFiles + ' already-min files ('
+                + collected.skippedBytes + ' bytes), uglified ' + collected.uglifiedFiles
+                + ' files (' + collected.uglifiedSrcBytes + ' -> ' + collected.uglifiedOutBytes + ' bytes)',
+            );
+        }
 
         bower.commands.list({map: true}, {offline: true})
             .on('error', error => {
@@ -531,47 +646,43 @@ module.exports = function (grunt) {
                 }
 
                 const names = resolved.length > 0 ? resolved : Object.keys(bowerJsFiles);
-                const parts = [];
-                let skippedFiles = 0;
-                let skippedBytes = 0;
-                let uglifiedFiles = 0;
-                let uglifiedSrcBytes = 0;
-                let uglifiedOutBytes = 0;
+                const coreNames = [];
+                const extraNames = [];
 
                 for (const name of names) {
-                    const files = bowerJsFiles[name] || [];
-                    for (const filepath of files) {
-                        const src = grunt.file.read(filepath);
-                        if (isAlreadyMinified(filepath)) {
-                            parts.push(src);
-                            skippedFiles += 1;
-                            skippedBytes += src.length;
-                            continue;
+                    if (Object.hasOwn(vendorJsPage, name)) {
+                        const files = bowerJsFiles[name] || [];
+                        const parts = [];
+                        for (const filepath of files) {
+                            parts.push(minifyFile(filepath).code);
                         }
 
-                        const result = UglifyJS.minify(src, {module: false});
-                        if (result.error) {
-                            grunt.fatal(filepath + ': ' + result.error);
+                        if (parts.length === 0) {
+                            grunt.fatal('vendor_js_minify: no JS files for page lib ' + name);
                         }
 
-                        parts.push(result.code);
-                        uglifiedFiles += 1;
-                        uglifiedSrcBytes += src.length;
-                        uglifiedOutBytes += result.code.length;
+                        const dest = vendorJsPage[name];
+                        const output = parts.join('\n');
+                        grunt.file.write(dest, output);
+                        grunt.log.ok(dest + ' (' + output.length + ' bytes) from ' + name);
+                        continue;
+                    }
+
+                    if (vendorJsExtra.has(name)) {
+                        extraNames.push(name);
+                    } else if (bowerJsFiles[name] && bowerJsFiles[name].length > 0) {
+                        coreNames.push(name);
                     }
                 }
 
-                if (parts.length === 0) {
-                    grunt.fatal('vendor_js_minify: no JS files collected. Run bower_concat first.');
+                writeBundle(coreDest, collectParts(coreNames));
+                writeBundle(extraDest, collectParts(extraNames));
+
+                if (grunt.file.exists(staleDest)) {
+                    grunt.file.delete(staleDest);
+                    grunt.log.ok('removed ' + staleDest);
                 }
 
-                const output = parts.join('\n');
-                grunt.file.write(dest, output);
-                grunt.log.ok(
-                    dest + ' (' + output.length + ' bytes): skipped ' + skippedFiles
-                    + ' already-min files (' + skippedBytes + ' bytes), uglified '
-                    + uglifiedFiles + ' files (' + uglifiedSrcBytes + ' -> ' + uglifiedOutBytes + ' bytes)',
-                );
                 done();
             });
     });
