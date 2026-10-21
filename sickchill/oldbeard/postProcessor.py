@@ -33,6 +33,7 @@ METHOD_SYMLINK = "symlink"
 METHOD_SYMLINK_REVERSED = "symlink_reversed"
 
 PROCESS_METHODS = [METHOD_COPY, METHOD_MOVE, METHOD_HARDLINK, METHOD_SYMLINK, METHOD_SYMLINK_REVERSED]
+SOURCE_PRESERVING_METHODS = frozenset({METHOD_COPY, METHOD_HARDLINK, METHOD_SYMLINK_REVERSED})
 
 
 class PostProcessor(object):
@@ -142,7 +143,7 @@ class PostProcessor(object):
             self._log(_("File {existing_file} doesn't exist so there's no worries about replacing it").format(existing_file=existing_file), logger.DEBUG)
             return PostProcessor.DOESNT_EXIST
 
-    def list_associated_files(self, file_path, subtitles_only=False, subfolders=False, rename=False):
+    def list_associated_files(self, file_path, subtitles_only=False, subfolders=False, rename=False, delete_unwanted=True):
         """
         For a given file path searches for files with the same name but different extension and returns their absolute paths
 
@@ -150,6 +151,7 @@ class PostProcessor(object):
         :param subfolders: check in subfolders
         :param rename: if we are looking for all files to rename
         :param file_path: The file to check for associated files
+        :param delete_unwanted: when False, skip deleting disallowed associated files (copy/hardlink/symlink_reversed)
         :return: A list containing all files which are associated to the given file
         """
 
@@ -203,7 +205,7 @@ class PostProcessor(object):
                 file_ext = Path(associated_file_path).suffix.lstrip(".").lower()
                 if settings.MOVE_ASSOCIATED_FILES and (not allowed_exts or file_ext in allowed_exts):
                     file_path_list_to_allow.append(associated_file_path)
-                elif settings.DELETE_NON_ASSOCIATED_FILES:
+                elif settings.DELETE_NON_ASSOCIATED_FILES and delete_unwanted:
                     file_path_list_to_delete.append(associated_file_path)
 
         if file_path_list_to_allow or file_path_list_to_delete:
@@ -297,10 +299,11 @@ class PostProcessor(object):
 
         file_list = [file_path]
         subfolders = os.path.normpath(os.path.dirname(file_path)) != os.path.normpath(settings.TV_DOWNLOAD_DIR)
+        delete_unwanted = self.process_method not in SOURCE_PRESERVING_METHODS
         if associated_files:
-            file_list += self.list_associated_files(file_path, subfolders=subfolders)
+            file_list += self.list_associated_files(file_path, subfolders=subfolders, delete_unwanted=delete_unwanted)
         elif subtitles:
-            file_list += self.list_associated_files(file_path, subtitles_only=True, subfolders=subfolders)
+            file_list += self.list_associated_files(file_path, subtitles_only=True, subfolders=subfolders, delete_unwanted=delete_unwanted)
 
         if not file_list:
             self._log(_("There were no files associated with {file_path}, not moving anything").format(file_path=file_path), logger.DEBUG)
