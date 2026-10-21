@@ -690,6 +690,16 @@ span.movie-option {
     height: auto;
 }
 
+.show-network-name {
+    display: block;
+    max-width: 100%;
+    overflow: hidden;
+    font-size: 11px;
+    line-height: 1.2;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
 .show-dlstats, .movie-dlstats {
     display: block;
     margin-left: 4px;

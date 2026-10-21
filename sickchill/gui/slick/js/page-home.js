@@ -52,7 +52,7 @@ window.SICKCHILL.home = {
                 $('.show-details').hide();
             } else {
                 $('.show-details').show();
-                $('.show-dlstats, .show-quality').css('fontSize', fontSize);
+                $('.show-dlstats, .show-quality, .show-network-name').css('fontSize', fontSize);
                 $('.show-network-image').css('width', logoWidth);
             }
 

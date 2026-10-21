@@ -411,9 +411,8 @@ class NameParser(object):
             else:
                 number = 0
 
-        except Exception as error:
-            logger.debug(error)
-            # on error try converting from Roman numerals
+        except (TypeError, ValueError):
+            # Non-decimal tokens (e.g. Part.I) fall through to Roman numerals.
             roman_to_int_map = (
                 ("M", 1000),
                 ("CM", 900),
