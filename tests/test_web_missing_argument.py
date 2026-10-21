@@ -5,10 +5,11 @@ from __future__ import annotations
 from unittest.mock import MagicMock
 
 import pytest
-from tornado.web import MissingArgumentError
+from tornado.testing import AsyncHTTPTestCase
+from tornado.web import Application, MissingArgumentError
 
 from sickchill.views.home import Home
-from sickchill.views.index import WebHandler
+from sickchill.views.index import BaseHandler, WebHandler
 
 
 def test_test_rename_missing_show_returns_generic_message():
@@ -31,3 +32,22 @@ def test_async_call_reraises_missing_argument_error():
 
     with pytest.raises(MissingArgumentError):
         inner(handler, boom, False)
+
+
+class _NeedShowHandler(BaseHandler):
+    def get(self):
+        self.get_query_argument("show")
+        self.write("ok")
+
+
+class TestMissingArgumentHTTP(AsyncHTTPTestCase):
+    def get_app(self):
+        return Application([("/", _NeedShowHandler)])
+
+    def test_missing_argument_returns_400_body(self):
+        response = self.fetch("/")
+        self.assertEqual(response.code, 400)
+        self.assertTrue(response.body)
+        body = response.body.decode("utf-8", errors="replace").lower()
+        self.assertIn("400", body)
+        self.assertNotIn("mako error", body)
