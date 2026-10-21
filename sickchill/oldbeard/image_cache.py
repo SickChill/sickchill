@@ -153,7 +153,7 @@ class ImageCache(object):
 
         width, height = imagesize.get(path)
 
-        if not (width and height):
+        if width <= 0 or height <= 0:
             logger.debug(f"Unable to get metadata from {path}, not using your existing image")
             return None
 
