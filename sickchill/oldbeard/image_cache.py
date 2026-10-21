@@ -280,7 +280,6 @@ class ImageCache(object):
             return False
 
         # retrieve the image from indexer using the generic metadata class
-        # TODO: refactor
         img_data = getShowImage(img_url)
         result = metadata_generator._write_image(img_data, dest_path)
 

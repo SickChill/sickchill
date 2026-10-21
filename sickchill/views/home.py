@@ -736,7 +736,7 @@ class Home(WebRoot):
 
         entries = {"emails": emails, "prowlAPIs": prowl_apis}
 
-        # TODO: Split emails and do validators.email
+        # TODO: Split emails and do validate.email
         if emails or prowl_apis:
             result = main_db_con.action("UPDATE tv_shows SET notify_list = ? WHERE indexer_id = ?", [str(entries), show])
         else:

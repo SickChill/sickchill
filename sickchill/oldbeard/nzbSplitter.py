@@ -17,7 +17,7 @@ def get_season_nzbs(name, url_data, season):
     :return: dict of (episode files, xml matches)
     """
 
-    # TODO: clean up these regex'es, comment them, and make them all raw strings
+    # TODO: clean up these regex'es and comment them
     regex_string = {
         # Match the xmlns in an nzb
         # Example:  nzbElement.getchildren()[1].tag == '{http://www.newzbin.com/DTD/2003/nzb}file'
