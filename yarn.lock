@@ -8345,10 +8345,10 @@ smob@^1.0.0:
   resolved "https://registry.npmjs.org/smob/-/smob-1.6.2.tgz"
   integrity sha512-RQsvleCbF8cVHEv+xuDGaA4pOizFqJ0GgjtMSRo6oP8pnN7WsigHgVGey6aILRBKv4W2YOMHLqbKdnB6hpB9fw==
 
-snyk@^1.1308.0:
-  version "1.1308.0"
-  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.1308.0.tgz#3fd82ef26a9d271ec834d31b2a1aca0e890e01df"
-  integrity sha512-9UUtJRAbPpOC+IkRkpcv+FE/3FhU1AfqmaaWEg6keP2hO9nMpQE8t9nq2ArfoPpfm3o38skjw9KKtcx4OAlNmg==
+snyk@^1.1308.1:
+  version "1.1308.1"
+  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.1308.1.tgz#9293bcf09bf660f75ffaad54e890e620767c906a"
+  integrity sha512-uXfDnZ9ixMyg+Zc4QEDZ/tJI/BpQdPAigUqg/gQuaW8dD7shHBaaiSRmHJ7jF0HyVYp58LoJRhpkTq4RLzgDsg==
   dependencies:
     "@sentry/node" "^7.36.0"
     boolean "*"
