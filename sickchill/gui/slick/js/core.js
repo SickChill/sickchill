@@ -102,10 +102,19 @@ function hydrateLazyImages() {
             image.setAttribute('loading', 'lazy');
         }
 
-        // Network logos may not exist in images/network/, so hide them instead of showing a broken image icon
-        if (image.classList.contains('show-network-image')) {
+        // Network logos may not exist in images/network/; hide the broken image and show the name
+        if (image.classList.contains('show-network-image') || image.classList.contains('movie-network-image')) {
             image.addEventListener('error', () => {
                 image.style.display = 'none';
+                const name = image.getAttribute('alt') || image.getAttribute('title');
+                if (!name || image.nextElementSibling) {
+                    return;
+                }
+
+                const label = document.createElement('span');
+                label.className = 'show-network-name';
+                label.textContent = name;
+                image.after(label);
             }, {once: true});
         }
 
