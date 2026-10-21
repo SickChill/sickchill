@@ -497,8 +497,7 @@ def search_providers(show, episodes, manual=False, downCurQuality=False):
         search_count = 0
         search_mode = curProvider.search_mode
 
-        # Always search for episode when manually searching when in season
-        if search_mode == "season" and manual is True:
+        if manual:
             search_mode = "episode"
 
         while True:
@@ -534,11 +533,8 @@ def search_providers(show, episodes, manual=False, downCurQuality=False):
             # Episode search succeeds when every requested episode is covered.
             found_wanted_results = _search_results_cover_requested(search_results, episodes, search_mode, show)
 
-            # Episode → season pack only on backlog. Daily RSS never uses this loop;
-            # manual/failed searches stay on the episode that was requested.
-            allow_fallback = bool(curProvider.search_fallback) and search_count == 1
-            if search_mode == "episode" and manual:
-                allow_fallback = False
+            # Fallback (episode ↔ season pack) is backlog-only.
+            allow_fallback = bool(curProvider.search_fallback) and search_count == 1 and not manual
 
             if found_wanted_results or not allow_fallback:
                 break
