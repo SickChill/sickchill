@@ -1,6 +1,8 @@
 import json
 import re
 
+from tornado.web import HTTPError
+
 import sickchill
 from sickchill import settings
 from sickchill.oldbeard.helpers import make_indexer_session
@@ -70,7 +72,7 @@ class ImageSelector(Home):
 
         url = self.get_query_argument("url")
         if not is_allowed_show_image_url(url):
-            return self.write_error(404)
+            raise HTTPError(404)
 
         request = self.indexer_session.get(url, stream=True)
         return request.content

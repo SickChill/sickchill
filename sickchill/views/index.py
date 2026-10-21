@@ -53,18 +53,20 @@ class BaseHandler(RequestHandler):
 
             if url[:3] != "api":
                 t = PageTemplate(rh=self, filename="404.mako")
-                return t.render(title="404", header=_("Oops: 404 Not Found"))
+                self.finish(t.render(title="404", header=_("Oops: 404 Not Found")))
+                return
 
-            return self.finish(_("Wrong API key used"))
+            self.finish(_("Wrong API key used"))
+            return
 
-        elif self.settings.get("debug") and "exc_info" in kwargs:
+        if self.settings.get("debug") and "exc_info" in kwargs:
             exc_info = kwargs["exc_info"]
             trace_info = "".join(["{0}<br>".format(line) for line in traceback.format_exception(*exc_info)])
             request_info = "".join(["<strong>{0}</strong>: {1}<br>".format(k, self.request.__dict__[k]) for k in self.request.__dict__])
             error = exc_info[1]
 
             self.set_header("Content-Type", "text/html")
-            return self.finish(
+            self.finish(
                 """<html>
                     <title>{0}</title>
                     <body>
@@ -78,6 +80,9 @@ class BaseHandler(RequestHandler):
                     </body>
                     </html>""".format(error, error, trace_info, request_info, settings.WEB_ROOT)
             )
+            return
+
+        super().write_error(status_code, **kwargs)
 
     def redirect(self, url, permanent=False, status=None):
         """Sends a redirect to the given (optionally relative) URL.
@@ -265,6 +270,8 @@ class WebHandler(BaseHandler):
             return function(**kwargs)
         except TypeError:
             return function()
+        except HTTPError:
+            raise
         except Exception as error:
             return WebRoot(application=self.application, request=self.request).print_traceback(error=error, **self.request.arguments)
 
