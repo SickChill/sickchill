@@ -1,5 +1,5 @@
 #!/bin/bash --
-# Author: @DirtyCajunRice
+# Original Author: @DirtyCajunRice
 # Updated for Debian 13 (Trixie) and Ubuntu 24.04 (Noble)
 
 LOCATION=/opt/sickchill
@@ -114,6 +114,29 @@ if [[ ${#username} -gt 0 ]]; then
   fi
 fi
 
+# Prompt for install source before any rename of an existing installation
+if ! INSTALL_SOURCE=$(whiptail --title "SickChill Install Source" --menu \
+  "Choose which version to install:" 15 60 3 \
+  "release" "Latest release from PyPI (recommended)" \
+  "develop" "Latest develop branch from GitHub" \
+  "master"  "Latest master branch from GitHub" \
+  3>&1 1>&2 2>&3); then
+  echo "Install cancelled"
+  exit 1
+fi
+
+case "${INSTALL_SOURCE}" in
+  develop)
+    SICKCHILL_SPEC="git+https://github.com/SickChill/SickChill.git@develop"
+    ;;
+  master)
+    SICKCHILL_SPEC="git+https://github.com/SickChill/SickChill.git@master"
+    ;;
+  *)
+    SICKCHILL_SPEC="sickchill"
+    ;;
+esac
+
 if [[ -d ${LOCATION} ]]; then
   if whiptail --title 'Rename?' --yesno "${LOCATION} already exists, do you want to rename it? If not, we will exit and you can fix the issues and re-run this script" 8 140;
   then
@@ -169,9 +192,8 @@ if ! sudo -u sickchill -g sickchill "${LOCATION}/bin/pip" install -U "${WHEELS[@
   exit 1
 fi
 
-WHEELS=("sickchill")
-echo "Installing SickChill"
-if ! sudo -u sickchill -g sickchill "${LOCATION}/bin/pip" install -U "${WHEELS[@]}" "${INDEXES[@]}"; then
+echo "Installing SickChill from: ${SICKCHILL_SPEC}"
+if ! sudo -u sickchill -g sickchill "${LOCATION}/bin/pip" install -U "${SICKCHILL_SPEC}" "${INDEXES[@]}"; then
   whiptail --title "Failed to install SickChill" --msgbox "Failed to install SickChill" 8 128
   exit 1
 fi
@@ -220,7 +242,7 @@ echo ">> PATH= /opt/sickchill/bin/SickChill --datadir=/opt/sickchill"
 echo "Your config.ini and database will be in '/opt/sickchill'"
 echo "It is recommended to run sickchill as the sickchill user, as in the first example"
 echo "To update sickchill, run the following command as the sickchill user:"
-echo ">> sudo -u sickchill -g sickchill ${LOCATION}/bin/pip install -U sickchill"
+echo ">> sudo -u sickchill -g sickchill ${LOCATION}/bin/pip install -U \"${SICKCHILL_SPEC}\""
 
 if [[ $SERVICE_RESULT != 0 ]]; then
   whiptail --title "Failed to start SickChill" --msgbox "Failed to start SickChill, edit your service file at ${SERVICE_FILE}" 8 128
