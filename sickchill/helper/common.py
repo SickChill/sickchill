@@ -405,6 +405,11 @@ def sanitize_filename(filename):
     """
     Remove specific characters from the provided ``filename`` and ensure it is
     encodable in the current filesystem encoding.
+
+    Invalid filesystem characters are always stripped. Characters that cannot be
+    represented in the current filesystem encoding (common with non-UTF-8 locales
+    and smart quotes / dashes) are transliterated with unidecode only as a fallback,
+    so existing UTF-8 filenames are left unchanged when the encoding supports them.
     """
     if isinstance(filename, bytes):
         filename = filename.decode(errors="replace")
@@ -412,26 +417,14 @@ def sanitize_filename(filename):
     if not isinstance(filename, str):
         return ""
 
-    # Normalize common Unicode punctuation that breaks latin-1 / non-UTF-8 locales
-    replacements = {
-        "\u2018": "'",  # LEFT SINGLE QUOTATION MARK
-        "\u2019": "'",  # RIGHT SINGLE QUOTATION MARK
-        "\u201c": '"',  # LEFT DOUBLE QUOTATION MARK
-        "\u201d": '"',  # RIGHT DOUBLE QUOTATION MARK
-        "\u2013": "-",  # EN DASH
-        "\u2014": "-",  # EM DASH
-        "\u2026": "...",  # HORIZONTAL ELLIPSIS
-        "\u00a0": " ",  # NON-BREAKING SPACE
-    }
-    for src, dst in replacements.items():
-        filename = filename.replace(src, dst)
-
+    # Always strip characters that are invalid on common filesystems
     filename = re.sub(r"[\\/*]", "-", filename)
-    filename = re.sub(r'[:\"<>|?]', "", filename)
+    filename = re.sub(r"[:\"<>|?]", "", filename)
     filename = re.sub(r"™|-u2122", "", filename)
     filename = filename.strip(" .")
 
-    # Final safety net for any remaining non-encodable characters
+    # Fallback: if the result cannot be encoded in the filesystem encoding,
+    # transliterate to ASCII (handles curly quotes, dashes, etc. on latin-1/C locales)
     fs_encoding = sys.getfilesystemencoding() or "utf-8"
     try:
         filename.encode(fs_encoding, errors="strict")
@@ -439,7 +432,7 @@ def sanitize_filename(filename):
         filename = unidecode(filename)
         # Re-apply basic invalid-character stripping after transliteration
         filename = re.sub(r"[\\/*]", "-", filename)
-        filename = re.sub(r'[:\"<>|?]', "", filename)
+        filename = re.sub(r"[:\"<>|?]", "", filename)
         filename = filename.strip(" .")
 
     return filename
