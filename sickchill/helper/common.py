@@ -1,10 +1,12 @@
 import os
 import platform
 import re
+import sys
 import uuid
 from fnmatch import fnmatch
 from os import PathLike
 from pathlib import Path
+from text_unidecode import unidecode
 from typing import Union
 from urllib.parse import parse_qs, unquote, unquote_plus, urlparse
 
@@ -401,23 +403,46 @@ def replace_extension(filename: Union[Path, PathLike, str], new_extension: str) 
 
 def sanitize_filename(filename):
     """
-    Remove specific characters from the provided ``filename``.
-    :param filename: The filename to clean
-    :return: The ``filename``cleaned
+    Remove specific characters from the provided ``filename`` and ensure it is
+    encodable in the current filesystem encoding.
     """
-
     if isinstance(filename, bytes):
-        filename = filename.decode()
+        filename = filename.decode(errors="replace")
 
-    if isinstance(filename, str):
+    if not isinstance(filename, str):
+        return ""
+
+    # Normalize common Unicode punctuation that breaks latin-1 / non-UTF-8 locales
+    replacements = {
+        "\u2018": "'",  # LEFT SINGLE QUOTATION MARK
+        "\u2019": "'",  # RIGHT SINGLE QUOTATION MARK
+        "\u201c": '"',  # LEFT DOUBLE QUOTATION MARK
+        "\u201d": '"',  # RIGHT DOUBLE QUOTATION MARK
+        "\u2013": "-",  # EN DASH
+        "\u2014": "-",  # EM DASH
+        "\u2026": "...",  # HORIZONTAL ELLIPSIS
+        "\u00a0": " ",  # NON-BREAKING SPACE
+    }
+    for src, dst in replacements.items():
+        filename = filename.replace(src, dst)
+
+    filename = re.sub(r"[\\/*]", "-", filename)
+    filename = re.sub(r'[:\"<>|?]', "", filename)
+    filename = re.sub(r"™|-u2122", "", filename)
+    filename = filename.strip(" .")
+
+    # Final safety net for any remaining non-encodable characters
+    fs_encoding = sys.getfilesystemencoding() or "utf-8"
+    try:
+        filename.encode(fs_encoding, errors="strict")
+    except UnicodeEncodeError:
+        filename = unidecode(filename)
+        # Re-apply basic invalid-character stripping after transliteration
         filename = re.sub(r"[\\/*]", "-", filename)
-        filename = re.sub(r'[:"<>|?]', "", filename)
-        filename = re.sub(r"™|-u2122", "", filename)  # Trademark Sign unicode: \u2122
+        filename = re.sub(r'[:\"<>|?]', "", filename)
         filename = filename.strip(" .")
 
-        return filename
-
-    return ""
+    return filename
 
 
 def valid_url(url):
