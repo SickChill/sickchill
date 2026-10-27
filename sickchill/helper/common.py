@@ -6,12 +6,12 @@ import uuid
 from fnmatch import fnmatch
 from os import PathLike
 from pathlib import Path
-from text_unidecode import unidecode
 from typing import Union
 from urllib.parse import parse_qs, unquote, unquote_plus, urlparse
 
 import appdirs
 import rarfile
+from text_unidecode import unidecode
 
 from sickchill import settings
 from sickchill.init_helpers import get_current_version
