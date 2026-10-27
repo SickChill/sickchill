@@ -410,6 +410,9 @@ def sanitize_filename(filename):
     represented in the current filesystem encoding (common with non-UTF-8 locales
     and smart quotes / dashes) are transliterated with unidecode only as a fallback,
     so existing UTF-8 filenames are left unchanged when the encoding supports them.
+
+    If transliteration removes every remaining character, a safe nonempty
+    placeholder is returned so callers such as AddShows.addNewShow() remain usable.
     """
     if isinstance(filename, bytes):
         filename = filename.decode(errors="replace")
@@ -434,6 +437,10 @@ def sanitize_filename(filename):
         filename = re.sub(r"[\\/*]", "-", filename)
         filename = re.sub(r"[:\"<>|?]", "", filename)
         filename = filename.strip(" .")
+
+        # Ensure a usable nonempty result for callers that create directories
+        if not filename:
+            filename = "Unknown"
 
     return filename
 
