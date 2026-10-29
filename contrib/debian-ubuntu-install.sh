@@ -140,7 +140,10 @@ esac
 PYTHON_BIN=""
 for candidate in python3.14 python3.13 python3.12 python3.11 python3; do
   candidate_path="$(command -v "${candidate}" 2>/dev/null)" || continue
-  if "${candidate_path}" -c "import ensurepip, sys; raise SystemExit(sys.version_info < (3, 11))"; then
+  case "${candidate_path}" in
+    "${LOCATION}"|"${LOCATION}"/*) continue ;;
+  esac
+  if "${candidate_path}" -I -c "import ensurepip, sys; raise SystemExit(sys.version_info < (3, 11))"; then
     PYTHON_BIN="${candidate_path}"
     break
   fi
