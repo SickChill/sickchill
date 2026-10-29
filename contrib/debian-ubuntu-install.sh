@@ -137,6 +137,14 @@ case "${INSTALL_SOURCE}" in
     ;;
 esac
 
+python_is_311_plus() {
+  "$1" -I -c "import sys; raise SystemExit(sys.version_info < (3, 11))"
+}
+
+python_has_ensurepip() {
+  "$1" -I -c "import ensurepip"
+}
+
 python_has_dev_headers() {
   "$1" -I -c "import pathlib, sysconfig; raise SystemExit(not pathlib.Path(sysconfig.get_path('include')).joinpath('Python.h').is_file())"
 }
@@ -147,19 +155,14 @@ for candidate in python3.14 python3.13 python3.12 python3.11 python3; do
   case "${candidate_path}" in
     "${LOCATION}"|"${LOCATION}"/*) continue ;;
   esac
-  if ! "${candidate_path}" -I -c "import ensurepip, sys; raise SystemExit(sys.version_info < (3, 11))"; then
+  if ! python_is_311_plus "${candidate_path}"; then
     continue
   fi
-  if ! python_has_dev_headers "${candidate_path}"; then
+  if ! python_has_ensurepip "${candidate_path}" || ! python_has_dev_headers "${candidate_path}"; then
     py_mm="$("${candidate_path}" -I -c "import sys; print(f'{sys.version_info.major}.{sys.version_info.minor}')")"
     echo "Installing python${py_mm}-dev python${py_mm}-venv for ${candidate_path}"
-    if ! apt-get install -y "python${py_mm}-dev" "python${py_mm}-venv"; then
-      continue
-    fi
-    if ! "${candidate_path}" -I -c "import ensurepip, sys; raise SystemExit(sys.version_info < (3, 11))"; then
-      continue
-    fi
-    if ! python_has_dev_headers "${candidate_path}"; then
+    apt-get install -y "python${py_mm}-dev" "python${py_mm}-venv" || true
+    if ! python_has_ensurepip "${candidate_path}" || ! python_has_dev_headers "${candidate_path}"; then
       continue
     fi
   fi
