@@ -51,7 +51,7 @@ Issue/Bug tracking, feature requests, support, and developer communication is st
 
 ### Dependencies
 
-To run SickChill you will need Python 3.11+, preferably 3.13.
+To run SickChill you will need Python 3.11+ (tested through 3.14).
 
 ### Important notes on switching from other forks
 

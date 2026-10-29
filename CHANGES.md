@@ -1,3 +1,7 @@
+### Unreleased
+
+* ci: test Python 3.14 on Ubuntu, Windows, and macOS while keeping 3.11–3.13
+
 ### 2026.10.8
 
 [full changelog](https://github.com/SickChill/SickChill/compare/2026.9.18...2026.10.8)

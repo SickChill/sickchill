@@ -163,8 +163,20 @@ if [[ ! -d ${LOCATION} ]]; then
   fi
 fi
 
-echo "Creating virtual environment with $(python3 --version)"
-if ! sudo -u sickchill -g sickchill python3 -m venv "${LOCATION}"; then
+PYTHON_BIN=""
+for candidate in python3.14 python3.13 python3.12 python3.11 python3; do
+  if command -v "${candidate}" >/dev/null 2>&1 && "${candidate}" -c "import sys; raise SystemExit(sys.version_info < (3, 11))"; then
+    PYTHON_BIN="${candidate}"
+    break
+  fi
+done
+if [[ -z ${PYTHON_BIN} ]]; then
+  echo "No Python 3.11+ interpreter found"
+  exit 1
+fi
+
+echo "Creating virtual environment with $(${PYTHON_BIN} --version)"
+if ! sudo -u sickchill -g sickchill "${PYTHON_BIN}" -m venv "${LOCATION}"; then
   whiptail --title "Failed to create virtual environment" --msgbox "Failed to create virtual environment. Ensure python3-venv is installed." 8 128
   exit 1
 fi
