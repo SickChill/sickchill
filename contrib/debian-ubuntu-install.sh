@@ -137,6 +137,19 @@ case "${INSTALL_SOURCE}" in
     ;;
 esac
 
+PYTHON_BIN=""
+for candidate in python3.14 python3.13 python3.12 python3.11 python3; do
+  candidate_path="$(command -v "${candidate}" 2>/dev/null)" || continue
+  if "${candidate_path}" -c "import ensurepip, sys; raise SystemExit(sys.version_info < (3, 11))"; then
+    PYTHON_BIN="${candidate_path}"
+    break
+  fi
+done
+if [[ -z ${PYTHON_BIN} ]]; then
+  echo "No Python 3.11+ interpreter found"
+  exit 1
+fi
+
 if [[ -d ${LOCATION} ]]; then
   if whiptail --title 'Rename?' --yesno "${LOCATION} already exists, do you want to rename it? If not, we will exit and you can fix the issues and re-run this script" 8 140;
   then
@@ -161,18 +174,6 @@ if [[ ! -d ${LOCATION} ]]; then
     whiptail --title "Failed to change ownership of ${LOCATION}" --msgbox "Failed to change ownership of ${LOCATION}" 8 128
     exit 1
   fi
-fi
-
-PYTHON_BIN=""
-for candidate in python3.14 python3.13 python3.12 python3.11 python3; do
-  if command -v "${candidate}" >/dev/null 2>&1 && "${candidate}" -c "import sys; raise SystemExit(sys.version_info < (3, 11))"; then
-    PYTHON_BIN="${candidate}"
-    break
-  fi
-done
-if [[ -z ${PYTHON_BIN} ]]; then
-  echo "No Python 3.11+ interpreter found"
-  exit 1
 fi
 
 echo "Creating virtual environment with $(${PYTHON_BIN} --version)"
