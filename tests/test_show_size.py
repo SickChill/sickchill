@@ -102,11 +102,12 @@ class TestRefreshRecalculatesShowSize(unittest.TestCase):
         with (
             patch.object(item, "finish"),
             patch("sickchill.oldbeard.show_queue.scene_numbering.xem_refresh"),
-            patch("sickchill.oldbeard.show_dir_mtime.stamp_show_dir_mtime"),
+            patch("sickchill.oldbeard.show_dir_mtime.stamp_show_dir_mtime") as stamp,
         ):
             item.run()
         show.refresh_dir.assert_called_once()
         show.recalculate_show_size.assert_called_once()
+        stamp.assert_called_once_with(show)
 
     def test_queue_item_refresh_continues_when_write_metadata_fails(self):
         show = MagicMock()
@@ -116,11 +117,12 @@ class TestRefreshRecalculatesShowSize(unittest.TestCase):
         with (
             patch.object(item, "finish") as finish,
             patch("sickchill.oldbeard.show_queue.scene_numbering.xem_refresh") as xem,
-            patch("sickchill.oldbeard.show_dir_mtime.stamp_show_dir_mtime"),
+            patch("sickchill.oldbeard.show_dir_mtime.stamp_show_dir_mtime") as stamp,
         ):
             item.run()
         show.populate_cache.assert_called_once()
         xem.assert_called_once()
+        stamp.assert_not_called()
         finish.assert_called()
 
     def test_queue_item_add_continues_when_write_metadata_has_connectivity_error(self):

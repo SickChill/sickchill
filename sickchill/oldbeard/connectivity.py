@@ -47,8 +47,12 @@ def _proxy_endpoint(proxy: str) -> tuple[str, int] | None:
     host = parsed.hostname
     if not host:
         return None
-    if parsed.port:
-        return host, parsed.port
+    try:
+        port = parsed.port
+    except ValueError:
+        return None
+    if port:
+        return host, port
     scheme = (parsed.scheme or "http").lower()
     if scheme == "https":
         return host, 443

@@ -79,6 +79,14 @@ class TestProbeConnectivity(unittest.TestCase):
             self.assertTrue(connectivity.probe_connectivity([("1.1.1.1", 53)], timeout=1))
             connect.assert_not_called()
 
+    def test_probe_treats_invalid_proxy_port_as_success(self):
+        with (
+            patch("sickchill.oldbeard.connectivity.settings.PROXY_SETTING", "http://127.0.0.1:abc"),
+            patch("sickchill.oldbeard.connectivity.socket.create_connection") as connect,
+        ):
+            self.assertTrue(connectivity.probe_connectivity([("1.1.1.1", 53)], timeout=1))
+            connect.assert_not_called()
+
     def test_delay_after_failure_progression(self):
         self.assertEqual(connectivity.delay_after_failure(1), 15)
         self.assertEqual(connectivity.delay_after_failure(2), 30)
@@ -220,9 +228,9 @@ class TestSearchQueueStuckInjection(unittest.TestCase):
             self.assertFalse(any(isinstance(item, ConnectivityCheckQueueItem) for item in q.queue))
             self.assertTrue(q._off_queue_probe_running())
             self.assertTrue(q._has_connectivity_check())
-            release.set()
             thread = q._off_queue_probe_thread
             self.assertIsNotNone(thread)
+            release.set()
             thread.join(timeout=2)
             self.assertFalse(thread.is_alive())
             probe.assert_called_once()
@@ -252,9 +260,9 @@ class TestSearchQueueStuckInjection(unittest.TestCase):
         ):
             q._maybe_inject_connectivity_check()
             self.assertTrue(started2.wait(timeout=2))
-            release2.set()
             thread2 = q._off_queue_probe_thread
             self.assertIsNotNone(thread2)
+            release2.set()
             thread2.join(timeout=2)
             self.assertFalse(thread2.is_alive())
             probe2.assert_called_once()
@@ -322,9 +330,9 @@ class TestSearchQueueStuckInjection(unittest.TestCase):
             self.assertTrue(started.wait(timeout=2))
             self.assertTrue(q._off_queue_probe_running())
             self.assertFalse(any(isinstance(item, ConnectivityCheckQueueItem) for item in q.queue))
-            release.set()
             thread = q._off_queue_probe_thread
             self.assertIsNotNone(thread)
+            release.set()
             thread.join(timeout=2)
             self.assertFalse(thread.is_alive())
 
