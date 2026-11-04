@@ -1,0 +1,105 @@
+"""%RG must follow the new release when replacing an existing episode file."""
+
+from __future__ import annotations
+
+import tempfile
+from pathlib import Path
+from unittest.mock import patch
+
+from sickchill.tv import TVEpisode, TVShow
+from tests import conftest
+
+
+class TestReplaceReleaseGroupNaming(conftest.SickChillTestDBCase):
+    """pretty_name/naming_pattern must not pin %RG from the file being replaced."""
+
+    def setUp(self):
+        super().setUp()
+        self.show = TVShow(1, 1, "en")
+        self.show.name = "Show Name"
+        self.show.save_to_db()
+
+        self.episode = TVEpisode(self.show, 1, 1)
+        self.episode.name = "Pilot"
+        self.episode.release_name = ""
+        self.episode.release_group = ""
+        self.episode._release_group = ""
+        self.episode.location = "/library/Show.Name.S01E01.1080p.WEB.DL.x265-MeGusta.mkv"
+
+    def test_pretty_name_does_not_cache_location_release_group(self):
+        """Logging pretty_name must not store the old file's group for later %RG."""
+        _ = self.episode.pretty_name
+
+        self.assertEqual(self.episode._release_group, "")
+        self.assertEqual(self.episode.release_group, "")
+        self.assertEqual(self.episode.replace_map()["%RG"], "MeGusta")
+
+    def test_new_release_group_wins_after_pretty_name(self):
+        """
+        Post-process order: "Processing as" (pretty_name) runs before release_group is set.
+        proper_path / %RG must use the incoming group, not the file being replaced.
+        """
+        _ = self.episode.pretty_name
+
+        self.episode.release_name = "Show.Name.S01E01.1080p.WEB.DL.x265-cakes"
+        self.episode.release_group = "cakes"
+
+        self.assertEqual(self.episode.replace_map()["%RG"], "cakes")
+        named = self.episode.naming_pattern("Season %0S/%SN - S%0SE%0E - %SQN-%RG")
+        self.assertIn("-cakes", named)
+        self.assertNotIn("MeGusta", named)
+        self.assertEqual(self.episode.release_group, "cakes")
+
+    def test_rename_persists_filename_group_when_pattern_omits_rg(self):
+        """After a successful rename, keep the group parsed from the old name for later %RG."""
+        with tempfile.TemporaryDirectory() as tmp:
+            show_dir = Path(tmp) / "Show Name"
+            show_dir.mkdir()
+            src = show_dir / "Show.Name.S01E01.1080p.WEB.DL.x265-MeGusta.mkv"
+            src.write_bytes(b"video")
+
+            self.show.location = str(show_dir)
+            self.show.season_folders = 0
+            self.episode.location = str(src)
+
+            with (
+                patch("sickchill.tv.settings.NAMING_PATTERN", "%SN - S%0SE%0E - %EN"),
+                patch("sickchill.tv.settings.NAMING_FORCE_FOLDERS", False),
+                patch("sickchill.tv.postProcessor.PostProcessor") as mock_pp,
+                patch("sickchill.tv.helpers.rename_ep_file", return_value=True),
+            ):
+                mock_pp.return_value.list_associated_files.return_value = []
+                self.episode.rename()
+
+            self.assertEqual(self.episode.release_group, "MeGusta")
+            self.assertNotIn("MeGusta", self.episode.location)
+            self.assertEqual(self.episode.replace_map()["%RG"], "MeGusta")
+
+    def test_rename_does_not_persist_group_when_move_fails(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            show_dir = Path(tmp) / "Show Name"
+            show_dir.mkdir()
+            src = show_dir / "Show.Name.S01E01.1080p.WEB.DL.x265-MeGusta.mkv"
+            src.write_bytes(b"video")
+
+            self.show.location = str(show_dir)
+            self.show.season_folders = 0
+            self.episode.location = str(src)
+
+            with (
+                patch("sickchill.tv.settings.NAMING_PATTERN", "%SN - S%0SE%0E - %EN"),
+                patch("sickchill.tv.settings.NAMING_FORCE_FOLDERS", False),
+                patch("sickchill.tv.postProcessor.PostProcessor") as mock_pp,
+                patch("sickchill.tv.helpers.rename_ep_file", return_value=False),
+            ):
+                mock_pp.return_value.list_associated_files.return_value = []
+                self.episode.rename()
+
+            self.assertEqual(self.episode.release_group, "")
+            self.assertEqual(self.episode.location, str(src))
+
+    def test_pretty_name_still_does_not_persist_after_naming_pattern(self):
+        named = self.episode.naming_pattern("%SN - S%0SE%0E - %EN")
+        self.assertTrue(named)
+        self.assertEqual(self.episode.release_group, "")
+        self.assertEqual(self.episode._release_group, "")

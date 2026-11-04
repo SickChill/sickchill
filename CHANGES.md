@@ -1,5 +1,7 @@
 ### Unreleased
 
+* fix: use the new release group in `%RG` when replacing an existing episode file
+* fix: persist a filename-derived release group after a successful rename when none is stored
 * ci: test Python 3.14 on Ubuntu, Windows, and macOS while keeping 3.11–3.13
 * ci: Docker images, Test-Docker smoke, and Deploy on Python 3.14
 * fix: stop the web server on the Tornado IOLoop thread before spawning a restart so Linux menu restart can bind the port

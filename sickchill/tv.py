@@ -2685,11 +2685,10 @@ class TVEpisode(object):
             release_grp["location"] = release_group(self.show, self.location)
             if not release_grp["location"]:
                 del release_grp["location"]
-        if hasattr(self, "_release_group"):  # from the release group field in db
-            release_grp["database"] = self._release_group.strip(".- []{}")
-            if not release_grp["database"]:
-                del release_grp["database"]
-        if hasattr(self, "release_name"):  # from the release name field in db
+        stored_release_group = (self.release_group or "").strip(".- []{}")
+        if stored_release_group:
+            release_grp["database"] = stored_release_group
+        if hasattr(self, "release_name"):
             release_grp["release_name"] = release_group(self.show, self.release_name)
             if not release_grp["release_name"]:
                 del release_grp["release_name"]
@@ -2795,10 +2794,9 @@ class TVEpisode(object):
 
         result_name = pattern
 
-        # if there's no release group in the db, let the user know we replaced it
-        if replace_map["%RG"] and replace_map["%RG"] != "SICKCHILL" and not self._release_group:
+        # Fallback for %RG only; pretty_name() must not persist a group parsed from location.
+        if replace_map["%RG"] and replace_map["%RG"] != "SICKCHILL" and not (self.release_group or "").strip():
             logger.debug(f"Episode has no release group, replacing it with '{replace_map['%RG']}'")
-            self._release_group = replace_map["%RG"]  # if release_group is not in the db, put it there
 
         # if there's no release name then replace it with a reasonable facsimile
         if not replace_map["%RN"]:
@@ -3039,6 +3037,12 @@ class TVEpisode(object):
         # move the ep file
         result = helpers.rename_ep_file(self.location, absolute_proper_path, absolute_current_path_no_ext_length)
 
+        derived_release_group = ""
+        if result and not (self.release_group or "").strip() and not (self.release_name or "").strip():
+            candidate = (self.replace_map().get("%RG") or "").strip(".- []{}")
+            if candidate and candidate != "SICKCHILL":
+                derived_release_group = candidate
+
         # move related files
         for cur_related_file in related_files:
             # We need to fix something here because related files can be in subfolders and the original code doesn't handle this (at all)
@@ -3063,8 +3067,12 @@ class TVEpisode(object):
         with self.lock:
             if result:
                 self.location = absolute_proper_path + file_ext
+                if derived_release_group:
+                    self.release_group = derived_release_group
                 for relEp in self.related_episodes:
                     relEp.location = absolute_proper_path + file_ext
+                    if derived_release_group and not (relEp.release_group or "").strip() and not (relEp.release_name or "").strip():
+                        relEp.release_group = derived_release_group
 
         # in case something changed with the metadata just do a quick check
         for curEp in [self] + self.related_episodes:
