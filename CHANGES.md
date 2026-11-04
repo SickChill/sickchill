@@ -1,6 +1,7 @@
 ### Unreleased
 
 * ci: test Python 3.14 on Ubuntu, Windows, and macOS while keeping 3.11–3.13
+* ci: Docker images, Test-Docker smoke, and Deploy on Python 3.14
 
 ### 2026.10.8
 

@@ -173,13 +173,6 @@ jobs:
   Test-Docker:
     needs: [Environment, Test]
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        python-version: ["3.13", "3.14"]
-    env:
-      DOCKER_TEST_TAG: sickchill/sickchill:test-${{ matrix.python-version }}
-      DOCKER_CONTAINER_NAME: sickchill_test_${{ matrix.python-version }}
     steps:
       - uses: actions/checkout@v7
         with:
@@ -204,13 +197,13 @@ jobs:
           labels: ${{ needs.Environment.outputs.docker_labels }}
           target: sickchill-final
           cache-from: |
-            type=gha,scope=sickchill-docker-amd64${{ matrix.python-version == '3.14' && '-314' || '' }}
+            type=gha,scope=sickchill-docker-amd64
             type=gha,scope=sickchill-docker
-          cache-to: type=gha,mode=max,scope=sickchill-docker-amd64${{ matrix.python-version == '3.14' && '-314' || '' }}
+          cache-to: type=gha,mode=max,scope=sickchill-docker-amd64
           # GIT_BRANCH: PR head_ref, or branch ref_name; empty on tag pushes (sha-only bake)
           build-args: |
             SOURCE=1
-            PYTHON_VERSION=${{ matrix.python-version }}
+            PYTHON_VERSION=3.14
             GIT_SHA=${{ github.sha }}
             GIT_BRANCH=${{ github.head_ref || (startsWith(github.ref, 'refs/heads/') && github.ref_name) || '' }}
             PIP_EXTRA_INDEX_URL=https://www.piwheels.org/simple
@@ -312,6 +305,7 @@ jobs:
           # GIT_BRANCH: PR head_ref, or branch ref_name; empty on tag pushes (sha-only bake)
           build-args: |
             SOURCE=1
+            PYTHON_VERSION=3.14
             GIT_SHA=${{ github.sha }}
             GIT_BRANCH=${{ github.head_ref || (startsWith(github.ref, 'refs/heads/') && github.ref_name) || '' }}
             PIP_EXTRA_INDEX_URL=https://www.piwheels.org/simple
@@ -334,6 +328,7 @@ jobs:
             type=gha,scope=sickchill-docker-amd64
           build-args: |
             SOURCE=1
+            PYTHON_VERSION=3.14
             GIT_SHA=${{ github.sha }}
             GIT_BRANCH=${{ github.head_ref || (startsWith(github.ref, 'refs/heads/') && github.ref_name) || '' }}
             PIP_EXTRA_INDEX_URL=https://www.piwheels.org/simple

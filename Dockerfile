@@ -6,7 +6,7 @@
 # -v /etc/localtime:/etc/localtime:ro
 # -p 8080:8081 sickchill/sickchill
 
-ARG PYTHON_VERSION=3.13
+ARG PYTHON_VERSION=3.14
 FROM --platform=$TARGETPLATFORM python:${PYTHON_VERSION}-slim-bookworm AS base
 
 LABEL org.opencontainers.image.source="https://github.com/sickchill/sickchill"
