@@ -141,10 +141,11 @@ def get_current_version() -> str:
     fallback_version = "0.0.0"
     matcher = re.compile(r'\s*version\s*=\s*["\']([.0-9a-z-+]+)["\']\s*$')
     if pyproject_file.is_file():
-        for line in pyproject_file.open():
-            match = matcher.match(line)
-            if match:
-                return match.group(1)
+        with pyproject_file.open() as handle:
+            for line in handle:
+                match = matcher.match(line)
+                if match:
+                    return match.group(1)
         return fallback_version
 
     try:
