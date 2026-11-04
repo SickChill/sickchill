@@ -175,8 +175,11 @@ class GenericQueue(object):
             return not stop.is_set()
         return not stop.wait(delay)
 
+    def _connectivity_probe_in_flight(self):
+        return self._is_connectivity_item(self.currentItem) or self._off_queue_probe_running()
+
     def _has_connectivity_check(self):
-        return self._is_connectivity_item(self.currentItem) or self._queued_connectivity_check() or self._off_queue_probe_running()
+        return self._connectivity_probe_in_flight() or self._queued_connectivity_check()
 
     def pause_for_connectivity(self):
         if not self._connectivity_paused:
@@ -279,7 +282,7 @@ class GenericQueue(object):
 
     def request_connectivity_check(self, reason="network error"):
         """
-        Enqueue a connectivity probe after a DNS/connect failure.
+        Start a connectivity probe after a DNS/connect failure.
 
         Does not stop currentItem: this is often called from that thread, and join() would deadlock.
         """
@@ -287,7 +290,9 @@ class GenericQueue(object):
 
         if not getattr(settings, "CONNECTIVITY_CHECK", True):
             return
-        if self._has_connectivity_check():
+        if self._connectivity_probe_in_flight():
+            return
+        if self._queued_connectivity_check() and not self._current_item_blocks_probe():
             return
         logger.info("Injecting high-priority connectivity check due to network error: %s", reason)
         self.pause_for_connectivity()
@@ -296,10 +301,15 @@ class GenericQueue(object):
         for other in iter_network_queues():
             if other is not self:
                 other.pause_for_connectivity()
+        if self._current_item_blocks_probe():
+            self._start_off_queue_connectivity_probe()
+            return
         self._enqueue_connectivity_check()
 
     def inject_connectivity_check(self, stuck_item):
-        if self._has_connectivity_check():
+        if self._connectivity_probe_in_flight():
+            return
+        if self._queued_connectivity_check() and not self._current_item_blocks_probe():
             return
         if stuck_item is self._connectivity_probed_item:
             return
@@ -322,7 +332,9 @@ class GenericQueue(object):
             return
         if item is self._connectivity_probed_item:
             return
-        if self._has_connectivity_check():
+        if self._connectivity_probe_in_flight():
+            return
+        if self._queued_connectivity_check() and not self._current_item_blocks_probe():
             return
         started_at = getattr(item, "started_at", None)
         if started_at is None:

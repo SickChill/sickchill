@@ -458,6 +458,66 @@ class TestRequestFailedInjectsConnectivity(unittest.TestCase):
         self.assertFalse(connectivity.is_connectivity_error(requests.exceptions.SSLError("bad cert")))
         self.assertTrue(connectivity.is_connectivity_error(requests.exceptions.ReadTimeout("read timed out")))
 
+    def test_request_uses_off_queue_probe_when_current_blocks(self):
+        q = SearchQueue()
+        stuck = DailySearchQueueItem()
+        stuck.is_alive = MagicMock(return_value=True)
+        stuck.join = MagicMock()
+        q.currentItem = stuck
+        started = threading.Event()
+        release = threading.Event()
+
+        def slow_probe(*args, **kwargs):
+            started.set()
+            self.assertTrue(release.wait(timeout=2))
+            return True
+
+        with (
+            patch("sickchill.settings.CONNECTIVITY_CHECK", True),
+            patch("sickchill.oldbeard.connectivity.probe_connectivity", side_effect=slow_probe),
+        ):
+            q.request_connectivity_check("NameResolutionError")
+            stuck.join.assert_not_called()
+            self.assertTrue(started.wait(timeout=2))
+            self.assertFalse(any(isinstance(item, ConnectivityCheckQueueItem) for item in q.queue))
+            self.assertTrue(q._off_queue_probe_running())
+            thread = q._off_queue_probe_thread
+            release.set()
+            self.assertIsNotNone(thread)
+            thread.join(timeout=2)
+            self.assertFalse(thread.is_alive())
+        self.assertFalse(q._connectivity_paused)
+
+    def test_queued_check_does_not_block_stuck_inject(self):
+        q = SearchQueue()
+        stuck = DailySearchQueueItem()
+        stuck.started_at = sc_now() - datetime.timedelta(hours=2)
+        stuck.is_alive = MagicMock(return_value=True)
+        stuck.join = MagicMock()
+        q.currentItem = stuck
+        q.add_item(ConnectivityCheckQueueItem(q), front=True)
+        started = threading.Event()
+        release = threading.Event()
+
+        def slow_probe(*args, **kwargs):
+            started.set()
+            self.assertTrue(release.wait(timeout=2))
+            return True
+
+        with (
+            patch("sickchill.settings.CONNECTIVITY_CHECK", True),
+            patch("sickchill.oldbeard.connectivity.probe_connectivity", side_effect=slow_probe) as probe,
+        ):
+            q._maybe_inject_connectivity_check()
+            self.assertTrue(started.wait(timeout=2))
+            self.assertTrue(q._off_queue_probe_running())
+            thread = q._off_queue_probe_thread
+            release.set()
+            self.assertIsNotNone(thread)
+            thread.join(timeout=2)
+            self.assertFalse(thread.is_alive())
+            probe.assert_called()
+
     def test_handle_requests_exception_enqueues_check_once(self):
         import requests
 

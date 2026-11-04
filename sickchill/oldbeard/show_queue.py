@@ -606,7 +606,14 @@ class QueueItemAdd(ShowQueueItem):
             settings.backlogSearchScheduler.action.searchBacklog([self.show])
 
         # Initial artwork from indexer + metadata providers (once). Later refreshes skip TVDB art.
-        self.show.write_metadata(fetch_images=True)
+        try:
+            self.show.write_metadata(fetch_images=True)
+        except Exception as error:
+            from sickchill.oldbeard.connectivity import is_connectivity_error
+
+            if not is_connectivity_error(error):
+                raise
+            logger.warning(f"Metadata write failed during add of {self.show.name} due to a network error: {error}")
         self.show.update_metadata()
         self.show.populate_cache(from_indexer=True)
 

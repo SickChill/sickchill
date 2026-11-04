@@ -8,7 +8,7 @@ from unittest.mock import MagicMock, patch
 from sickchill.oldbeard import db
 from sickchill.oldbeard.databases.main import TARGET_DB_MAJOR, TARGET_DB_MINOR, AddShowSize, ReconcileSchemaVersion, _full_schema_present
 from sickchill.oldbeard.processTV import ProcessResult, _update_processed_show_sizes, process_media
-from sickchill.oldbeard.show_queue import QueueItemRefresh
+from sickchill.oldbeard.show_queue import QueueItemAdd, QueueItemRefresh
 from sickchill.tv import TVShow
 from tests import conftest
 
@@ -122,6 +122,109 @@ class TestRefreshRecalculatesShowSize(unittest.TestCase):
         show.populate_cache.assert_called_once()
         xem.assert_called_once()
         finish.assert_called()
+
+    def test_queue_item_add_continues_when_write_metadata_has_connectivity_error(self):
+        from sickchill.show.indexers.tvdb_v4_client import TVDBv4Error
+
+        show = MagicMock()
+        show.name = "Neagley"
+        show.indexerid = 99
+        show.indexer = 1
+        show.idxr.name = "TVDB"
+        show.write_metadata.side_effect = TVDBv4Error("Failed to resolve 'api4.thetvdb.com'")
+        series = MagicMock(seriesName="Neagley", firstAired=None)
+        item = QueueItemAdd(
+            indexer=1,
+            indexer_id=99,
+            show_dir="/tmp/neagley",
+            default_status=0,
+            quality=None,
+            season_folders=None,
+            lang="en",
+            subtitles=None,
+            subtitles_sc_metadata=None,
+            anime=False,
+            scene=False,
+            paused=False,
+            blacklist=None,
+            whitelist=None,
+            default_status_after=0,
+            root_dir=None,
+        )
+        with (
+            patch.object(item, "finish") as finish,
+            patch.object(item, "_finish_early") as early,
+            patch("sickchill.oldbeard.show_queue.sickchill.indexer.series_by_id", return_value=series),
+            patch("sickchill.oldbeard.show_queue.TVShow", return_value=show),
+            patch("sickchill.oldbeard.show_queue.Show.find", return_value=None),
+            patch("sickchill.oldbeard.show_queue.name_cache.build_name_cache"),
+            patch("sickchill.oldbeard.show_queue.scene_numbering.xem_refresh") as xem,
+            patch("sickchill.oldbeard.show_queue.scene_numbering.get_xem_numbering_for_show", return_value={}),
+            patch("sickchill.oldbeard.show_queue.settings") as st,
+        ):
+            st.show_list = []
+            st.USE_TRAKT = False
+            st.SUBTITLES_DEFAULT = False
+            st.QUALITY_DEFAULT = 1
+            st.SEASON_FOLDERS_DEFAULT = True
+            st.ANIME_DEFAULT = False
+            st.SCENE_DEFAULT = False
+            item.run()
+        early.assert_not_called()
+        show.update_metadata.assert_called_once()
+        show.populate_cache.assert_called_once()
+        xem.assert_called_once()
+        finish.assert_called()
+
+    def test_queue_item_add_reraises_non_connectivity_write_metadata_error(self):
+        show = MagicMock()
+        show.name = "Neagley"
+        show.indexerid = 99
+        show.indexer = 1
+        show.idxr.name = "TVDB"
+        show.write_metadata.side_effect = RuntimeError("disk full")
+        series = MagicMock(seriesName="Neagley", firstAired=None)
+        item = QueueItemAdd(
+            indexer=1,
+            indexer_id=99,
+            show_dir="/tmp/neagley",
+            default_status=0,
+            quality=None,
+            season_folders=None,
+            lang="en",
+            subtitles=None,
+            subtitles_sc_metadata=None,
+            anime=False,
+            scene=False,
+            paused=False,
+            blacklist=None,
+            whitelist=None,
+            default_status_after=0,
+            root_dir=None,
+        )
+        with (
+            patch.object(item, "finish"),
+            patch.object(item, "_finish_early") as early,
+            patch("sickchill.oldbeard.show_queue.sickchill.indexer.series_by_id", return_value=series),
+            patch("sickchill.oldbeard.show_queue.TVShow", return_value=show),
+            patch("sickchill.oldbeard.show_queue.Show.find", return_value=None),
+            patch("sickchill.oldbeard.show_queue.name_cache.build_name_cache"),
+            patch("sickchill.oldbeard.show_queue.scene_numbering.xem_refresh"),
+            patch("sickchill.oldbeard.show_queue.scene_numbering.get_xem_numbering_for_show", return_value={}),
+            patch("sickchill.oldbeard.show_queue.settings") as st,
+        ):
+            st.show_list = []
+            st.USE_TRAKT = False
+            st.SUBTITLES_DEFAULT = False
+            st.QUALITY_DEFAULT = 1
+            st.SEASON_FOLDERS_DEFAULT = True
+            st.ANIME_DEFAULT = False
+            st.SCENE_DEFAULT = False
+            with self.assertRaises(RuntimeError):
+                item.run()
+        early.assert_not_called()
+        show.update_metadata.assert_not_called()
+        show.populate_cache.assert_not_called()
 
 
 class TestPostProcessBatchShowSize(unittest.TestCase):
