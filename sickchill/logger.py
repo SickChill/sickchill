@@ -291,6 +291,7 @@ LOG_FILTERS = {
     "SEARCHQUEUE-MANUAL": _("Search Queue (Manual)"),
     "SEARCHQUEUE-RETRY": _("Search Queue (Retry/Failed)"),
     "SEARCHQUEUE-RSS": _("Search Queue (RSS)"),
+    "SEARCHQUEUE-CONNECTIVITY-CHECK": _("Search Queue (Connectivity)"),
     "FINDPROPERS": _("Find Propers"),
     "POSTPROCESSOR": _("Postprocessor"),
     "FINDSUBTITLES": _("Find Subtitles"),

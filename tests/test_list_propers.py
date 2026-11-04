@@ -106,6 +106,22 @@ class TestProperSearchDate(unittest.TestCase):
         expected = datetime.datetime.combine(last, datetime.time(), tzinfo=sc_timezone) - datetime.timedelta(hours=6)
         self.assertEqual(got, expected)
 
+    def test_search_window_log_uses_time_preset(self):
+        finder = ProperFinder()
+        window = datetime.datetime(2026, 11, 3, 18, 27, 1, tzinfo=sc_timezone)
+        with (
+            mock.patch.object(finder, "_proper_search_date", return_value=window),
+            mock.patch("sickchill.oldbeard.scdatetime.settings.DATE_PRESET", "%Y-%m-%d"),
+            mock.patch("sickchill.oldbeard.scdatetime.settings.TIME_PRESET_W_SECONDS", "%H:%M:%S"),
+            mock.patch("sickchill.oldbeard.scdatetime.settings.TIME_PRESET", "%H:%M"),
+            mock.patch("sickchill.oldbeard.scdatetime.settings.TIMEZONE_DISPLAY", "local"),
+            mock.patch("sickchill.oldbeard.properFinder.logger") as log,
+        ):
+            finder._get_propers(providers=[])
+        msg = log.debug.call_args[0][0]
+        self.assertIn("2026-11-03 18:27:01", msg)
+        self.assertNotRegex(msg, r"18:27:01[+-]")
+
 
 class TestProcessCachedPropers(unittest.TestCase):
     def test_downloads_selected_cache_hits(self):

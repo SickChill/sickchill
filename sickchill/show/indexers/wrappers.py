@@ -5,6 +5,7 @@ import requests
 from urllib3.exceptions import HTTPError, HTTPWarning
 
 from sickchill import logger
+from sickchill.oldbeard.connectivity import is_connectivity_error, maybe_request_connectivity_check
 
 
 class ExceptionDecorator(object):
@@ -24,6 +25,10 @@ class ExceptionDecorator(object):
             try:
                 result = target(*args, **kwargs)
             except self.catch as error:
+                if is_connectivity_error(error):
+                    maybe_request_connectivity_check(error)
+                    logger.warning(f"Indexer request failed due to a network error: {error}")
+                    raise
                 if self.image_api and not kwargs.get("lang") and args[1].lang != "en":
                     logger.debug("Could not find the image on the indexer, re-trying to find it in english")
                     kwargs["lang"] = "en"
@@ -33,6 +38,10 @@ class ExceptionDecorator(object):
                 logger.debug(traceback.format_exc())
                 result = self.default_return
             except requests.exceptions.RequestException as error:
+                if is_connectivity_error(error):
+                    maybe_request_connectivity_check(error)
+                    logger.warning(f"Indexer request failed due to a network error: {error}")
+                    raise
                 logger.debug(f"Could not find item on the indexer: (Indexer probably doesn't have this item) [{error}]")
                 logger.debug(traceback.format_exc())
                 result = self.default_return

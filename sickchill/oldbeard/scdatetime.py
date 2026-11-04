@@ -71,6 +71,21 @@ date_presets = (
 time_presets = ("%I:%M:%S %p", "%H:%M:%S")
 
 
+def format_preset_datetime(dt):
+    """Format a datetime with DATE_PRESET and config.ini time_preset for logs."""
+    if dt is None:
+        return ""
+    try:
+        if not isinstance(dt, datetime.datetime):
+            return str(dt)
+        converted = scdatetime.convert_to_setting(dt) or dt
+        date_fmt = settings.DATE_PRESET or "%Y-%m-%d"
+        time_fmt = settings.TIME_PRESET_W_SECONDS or settings.TIME_PRESET or "%H:%M:%S"
+        return converted.strftime(f"{date_fmt} {time_fmt}")
+    except (OverflowError, OSError, TypeError, ValueError):
+        return str(dt)
+
+
 # helper class
 class static_or_instance(object):
     def __init__(self, func):

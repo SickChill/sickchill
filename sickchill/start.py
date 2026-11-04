@@ -150,6 +150,14 @@ def initialize(console_logging: bool = True, debug: bool = False, dbdebug: bool 
         settings.SOCKET_TIMEOUT = check_setting_int(settings.CFG, "General", "socket_timeout", 30, min_val=0)
         socket.setdefaulttimeout(settings.SOCKET_TIMEOUT)
 
+        settings.CONNECTIVITY_CHECK = check_setting_bool(settings.CFG, "General", "connectivity_check", True)
+        settings.CONNECTIVITY_CHECK_TIMEOUT = check_setting_int(settings.CFG, "General", "connectivity_check_timeout", 3, min_val=1, max_val=30)
+        settings.CONNECTIVITY_HOSTS = check_setting_str(settings.CFG, "General", "connectivity_hosts", "1.1.1.1:53,8.8.8.8:53,1.1.1.1:443")
+        settings.CONNECTIVITY_STUCK_MANUAL = check_setting_int(settings.CFG, "General", "connectivity_stuck_manual", 600, min_val=60)
+        settings.CONNECTIVITY_STUCK_DAILY = check_setting_int(settings.CFG, "General", "connectivity_stuck_daily", 1800, min_val=60)
+        settings.CONNECTIVITY_STUCK_BACKLOG = check_setting_int(settings.CFG, "General", "connectivity_stuck_backlog", 3600, min_val=60)
+        settings.CONNECTIVITY_STUCK_DEFAULT = check_setting_int(settings.CFG, "General", "connectivity_stuck_default", 900, min_val=60)
+
         try:
             settings.WEB_PORT = check_setting_int(settings.CFG, "General", "web_port", 8081, min_val=21, max_val=65535)
         except Exception:
@@ -992,6 +1000,13 @@ def save_config():
                 "log_size": float(settings.LOG_SIZE),
                 "log_dir": settings.LOG_DIR,
                 "socket_timeout": settings.SOCKET_TIMEOUT,
+                "connectivity_check": int(settings.CONNECTIVITY_CHECK),
+                "connectivity_check_timeout": int(settings.CONNECTIVITY_CHECK_TIMEOUT),
+                "connectivity_hosts": settings.CONNECTIVITY_HOSTS,
+                "connectivity_stuck_manual": int(settings.CONNECTIVITY_STUCK_MANUAL),
+                "connectivity_stuck_daily": int(settings.CONNECTIVITY_STUCK_DAILY),
+                "connectivity_stuck_backlog": int(settings.CONNECTIVITY_STUCK_BACKLOG),
+                "connectivity_stuck_default": int(settings.CONNECTIVITY_STUCK_DEFAULT),
                 "web_port": settings.WEB_PORT,
                 "web_host": settings.WEB_HOST,
                 "web_ipv6": int(settings.WEB_IPV6),

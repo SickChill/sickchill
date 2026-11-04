@@ -11,7 +11,7 @@ from sickchill.oldbeard import db, helpers
 from sickchill.oldbeard.common import DOWNLOADED, SNATCHED, SNATCHED_PROPER, Quality, cpu_presets
 from sickchill.oldbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 from sickchill.oldbeard.network_timezones import sc_now
-from sickchill.oldbeard.scdatetime import sctimeago
+from sickchill.oldbeard.scdatetime import format_preset_datetime, sctimeago
 from sickchill.oldbeard.search import pick_best_result, snatch_episode
 from sickchill.show.History import History
 
@@ -101,7 +101,7 @@ class ProperFinder(object):
         propers = {}
 
         search_date = self._proper_search_date()
-        logger.debug(_("Proper search window starts at {when}").format(when=search_date))
+        logger.debug(_("Proper search window starts at {when}").format(when=format_preset_datetime(search_date)))
 
         # for each provider get a list of the proper releases
         original_thread_name = threading.current_thread().name
