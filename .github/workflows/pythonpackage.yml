@@ -74,14 +74,20 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        python-version: ["3.11", "3.12", "3.13"]
+        python-version: ["3.11", "3.12", "3.13", "3.14"]
         experimental: [false]
         include:
           - os: windows-latest
             python-version: "3.13"
             experimental: false
+          - os: windows-latest
+            python-version: "3.14"
+            experimental: false
           - os: macos-latest
             python-version: "3.13"
+            experimental: false
+          - os: macos-latest
+            python-version: "3.14"
             experimental: false
       fail-fast: true
     continue-on-error: ${{ matrix.experimental }}
@@ -197,6 +203,7 @@ jobs:
           # GIT_BRANCH: PR head_ref, or branch ref_name; empty on tag pushes (sha-only bake)
           build-args: |
             SOURCE=1
+            PYTHON_VERSION=3.14
             GIT_SHA=${{ github.sha }}
             GIT_BRANCH=${{ github.head_ref || (startsWith(github.ref, 'refs/heads/') && github.ref_name) || '' }}
             PIP_EXTRA_INDEX_URL=https://www.piwheels.org/simple
@@ -298,6 +305,7 @@ jobs:
           # GIT_BRANCH: PR head_ref, or branch ref_name; empty on tag pushes (sha-only bake)
           build-args: |
             SOURCE=1
+            PYTHON_VERSION=3.14
             GIT_SHA=${{ github.sha }}
             GIT_BRANCH=${{ github.head_ref || (startsWith(github.ref, 'refs/heads/') && github.ref_name) || '' }}
             PIP_EXTRA_INDEX_URL=https://www.piwheels.org/simple
@@ -320,6 +328,7 @@ jobs:
             type=gha,scope=sickchill-docker-amd64
           build-args: |
             SOURCE=1
+            PYTHON_VERSION=3.14
             GIT_SHA=${{ github.sha }}
             GIT_BRANCH=${{ github.head_ref || (startsWith(github.ref, 'refs/heads/') && github.ref_name) || '' }}
             PIP_EXTRA_INDEX_URL=https://www.piwheels.org/simple
