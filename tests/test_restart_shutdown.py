@@ -30,16 +30,25 @@ def test_web_server_shutdown_stops_the_serving_ioloop():
     assert server.server is None
 
 
-def test_web_server_shutdown_without_ioloop_is_a_noop():
+def test_web_server_shutdown_without_ioloop_is_honored_when_loop_is_assigned():
     server = SCWebServer.__new__(SCWebServer)
     server.alive = True
-    server.server = Mock()
+    http_server = Mock()
+    server.server = http_server
     server.ioloop = None
 
     server.shutdown()
 
     assert server.alive is False
-    server.server.stop.assert_not_called()
+    http_server.stop.assert_not_called()
+
+    server.ioloop = Mock()
+    if not server.alive:
+        server._stop_serving()
+
+    http_server.stop.assert_called_once_with()
+    server.ioloop.stop.assert_called_once_with()
+    assert server.server is None
 
 
 def _restore_restart_settings(started, no_restart, fullname, args):

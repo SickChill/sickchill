@@ -32,6 +32,8 @@
 #          1. enable "only shutdown when restarting SC" (no_restart) in
 #             General settings so SickChill exits without spawning, and
 #          2. set Restart=on-success (or Restart=always) on the unit.
+#        GUI Shutdown also exits 0, so Restart=on-success will start the
+#        unit again; use systemctl stop to keep it down.
 #        systemctl restart sickchill always works for either Type.
 #
 
@@ -54,12 +56,15 @@
 # Restart=on-success
 # ExecStart=/usr/bin/python3 /opt/sickchill/SickChill.py -q --nolaunch
 # Pair Restart= with General "only shutdown when restarting SC" (no_restart).
+# GUI Shutdown also exits 0, so this unit comes back; use systemctl stop
+# to leave it stopped.
 
 ### Example Using simple with EnvironmentFile where SC_DATA=/home/sickchill/.sickchill in /etc/sickchill.conf
 # Type=simple
 # Restart=on-success
 # EnvironmentFile=/etc/sickchill.conf
 # ExecStart=/usr/bin/python3 /opt/sickchill/SickChill.py -q --nolaunch --datadir=${SC_DATA}
+# Same no_restart pairing; systemctl stop to keep a GUI Shutdown down.
 
 ### Configuration
 

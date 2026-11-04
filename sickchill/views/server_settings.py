@@ -206,8 +206,13 @@ class SCWebServer(threading.Thread):
 
         try:
             self.ioloop = IOLoop.current()
-            self.ioloop.start()
-            self.ioloop.close(True)
+            if not self.alive:
+                # shutdown() ran before the loop was assigned; stop the listener now.
+                self._stop_serving()
+            else:
+                self.ioloop.start()
+            if self.ioloop is not None:
+                self.ioloop.close(True)
         except (IOError, ValueError):
             # Ignore errors like "ValueError: I/O operation on closed kqueue fd". These might be thrown during a reload.
             pass
@@ -216,6 +221,7 @@ class SCWebServer(threading.Thread):
         self.alive = False
         ioloop = self.ioloop
         if ioloop is None:
+            # run() will see alive=False after listen and stop the bound socket.
             return
         # IOLoop.stop() is not safe from the EVENT-QUEUE thread; AnyThreadEventLoopPolicy
         # would stop a different loop and leave the listening socket bound.
