@@ -67,7 +67,7 @@ dependencies = [
     "tmdbsimple>=2.9.8",
     "tornado>=6.6",
     "tus.py (>=1.3.4,<2.0.0)",
-    "virtualenv>=21.15.1",
+    "virtualenv>=21.15.2",
 ]
 
 [tool.poetry]
