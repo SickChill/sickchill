@@ -30,25 +30,32 @@ def test_web_server_shutdown_stops_the_serving_ioloop():
     assert server.server is None
 
 
-def test_web_server_shutdown_without_ioloop_is_honored_when_loop_is_assigned():
+@patch("sickchill.views.server_settings.IOLoop")
+@patch("sickchill.views.server_settings.logger")
+def test_run_honors_shutdown_requested_before_ioloop(_logger, ioloop_cls):
+    listener = Mock()
+    ioloop = Mock()
+    ioloop_cls.current.return_value = ioloop
+
     server = SCWebServer.__new__(SCWebServer)
     server.alive = True
-    http_server = Mock()
-    server.server = http_server
+    server.enable_https = False
+    server.options = {"host": "127.0.0.1", "port": 8081}
+    server.app = Mock()
+    server.app.listen.return_value = listener
+    server.server = None
     server.ioloop = None
 
     server.shutdown()
+    server.run()
 
-    assert server.alive is False
-    http_server.stop.assert_not_called()
-
-    server.ioloop = Mock()
-    if not server.alive:
-        server._stop_serving()
-
-    http_server.stop.assert_called_once_with()
-    server.ioloop.stop.assert_called_once_with()
+    server.app.listen.assert_called_once()
+    listener.stop.assert_called_once_with()
+    ioloop.start.assert_not_called()
+    ioloop.stop.assert_called_once_with()
+    ioloop.close.assert_called_once_with(True)
     assert server.server is None
+    assert server.alive is False
 
 
 def _restore_restart_settings(started, no_restart, fullname, args):
