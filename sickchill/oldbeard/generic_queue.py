@@ -34,6 +34,7 @@ class GenericQueue(object):
         self._connectivity_attempt = 0
         self._off_queue_probe_thread = None
         self._off_queue_probe_stop = None
+        self._connectivity_probed_item = None
 
     def __len__(self):
         _len = len(self.queue)
@@ -185,6 +186,8 @@ class GenericQueue(object):
             self.min_priority = QueuePriorities.CONNECTIVITY
 
     def resume_after_connectivity(self, *, propagate=True):
+        if self._current_item_blocks_probe():
+            self._connectivity_probed_item = self.currentItem
         if self._connectivity_paused:
             self.min_priority = self._min_priority_before_connectivity
             self._connectivity_paused = False
@@ -298,6 +301,8 @@ class GenericQueue(object):
     def inject_connectivity_check(self, stuck_item):
         if self._has_connectivity_check():
             return
+        if stuck_item is self._connectivity_probed_item:
+            return
         name = getattr(stuck_item, "name", "queue-item")
         logger.info("Injecting high-priority connectivity check due to stuck queue item: %s", name)
         # Signal stop without blocking the scheduler; hung search items do not read self.stop.
@@ -314,6 +319,8 @@ class GenericQueue(object):
             return
         item = self.currentItem
         if not item or not item.is_alive() or self._is_connectivity_item(item):
+            return
+        if item is self._connectivity_probed_item:
             return
         if self._has_connectivity_check():
             return

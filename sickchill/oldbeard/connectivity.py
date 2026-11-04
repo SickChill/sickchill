@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import socket
 from typing import TYPE_CHECKING
+from urllib.parse import urlparse
 
 from sickchill import logger, settings
 from sickchill.oldbeard.generic_queue import QueueItem, QueuePriorities
@@ -41,10 +42,35 @@ def parse_connectivity_hosts(value: str | None = None) -> list[tuple[str, int]]:
     return hosts or list(DEFAULT_HOSTS)
 
 
+def _proxy_endpoint(proxy: str) -> tuple[str, int] | None:
+    parsed = urlparse(proxy if "://" in proxy else f"http://{proxy}")
+    host = parsed.hostname
+    if not host:
+        return None
+    if parsed.port:
+        return host, parsed.port
+    scheme = (parsed.scheme or "http").lower()
+    if scheme == "https":
+        return host, 443
+    if scheme.startswith("socks"):
+        return host, 1080
+    return host, 80
+
+
 def probe_connectivity(hosts: list[tuple[str, int]] | None = None, timeout: float | None = None) -> bool:
     """Return True if any configured host:port accepts a TCP connect."""
     if timeout is None:
         timeout = float(getattr(settings, "CONNECTIVITY_CHECK_TIMEOUT", 3) or 3)
+    proxy = str(getattr(settings, "PROXY_SETTING", "") or "").strip()
+    if proxy:
+        endpoint = _proxy_endpoint(proxy)
+        if endpoint is None:
+            return True
+        try:
+            with socket.create_connection(endpoint, timeout=timeout):
+                return True
+        except (OSError, ValueError, OverflowError):
+            return False
     for host, port in hosts or parse_connectivity_hosts():
         try:
             with socket.create_connection((host, port), timeout=timeout):

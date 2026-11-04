@@ -335,7 +335,10 @@ class _UpdatesResult:
     def _from_time_display(self) -> str:
         try:
             dt = datetime.datetime(1970, 1, 1, tzinfo=datetime.timezone.utc) + datetime.timedelta(seconds=int(self._from_time or 0))
-            return format_preset_datetime(dt)
+            displayed = format_preset_datetime(dt)
+            if getattr(settings, "TIMEZONE_DISPLAY", "local") != "local":
+                return f"{displayed} UTC"
+            return displayed
         except (OverflowError, OSError, TypeError, ValueError):
             return str(self._from_time)
 

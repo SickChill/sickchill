@@ -636,7 +636,19 @@ class UpdatesFeedOkTests(unittest.TestCase):
             patch("sickchill.oldbeard.scdatetime.settings.TIMEZONE_DISPLAY", "local"),
         ):
             displayed = updates._from_time_display()
-        self.assertRegex(displayed, r"^\d{2}/\d{2}/\d{4} \d{1,2}:\d{2}:\d{2} [AP]M$")
+        self.assertRegex(displayed, r"(?i)^\d{2}/\d{2}/\d{4} \d{1,2}:\d{2}:\d{2} [ap]m$")
+        self.assertFalse(displayed.endswith(" UTC"))
+
+        with (
+            patch("sickchill.oldbeard.scdatetime.settings.DATE_PRESET", "%Y-%m-%d"),
+            patch("sickchill.oldbeard.scdatetime.settings.TIME_PRESET_W_SECONDS", "%H:%M:%S"),
+            patch("sickchill.oldbeard.scdatetime.settings.TIME_PRESET", "%H:%M"),
+            patch("sickchill.oldbeard.scdatetime.settings.TIMEZONE_DISPLAY", "network"),
+            patch("sickchill.show.indexers.tvdb.settings.TIMEZONE_DISPLAY", "network"),
+        ):
+            displayed = updates._from_time_display()
+        self.assertTrue(displayed.endswith(" UTC"))
+        self.assertNotIn("1793705221", displayed)
 
     def test_feed_ok_false_when_all_entity_types_fail(self):
         client = MagicMock()

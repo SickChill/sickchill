@@ -81,7 +81,9 @@ def format_preset_datetime(dt):
         converted = scdatetime.convert_to_setting(dt) or dt
         date_fmt = settings.DATE_PRESET or "%Y-%m-%d"
         time_fmt = settings.TIME_PRESET_W_SECONDS or settings.TIME_PRESET or "%H:%M:%S"
-        return converted.strftime(f"{date_fmt} {time_fmt}")
+        date_part = scdatetime.scfdate(converted, d_preset=date_fmt)
+        time_part = scdatetime.scftime(converted, t_preset=time_fmt)
+        return f"{date_part} {time_part}".strip()
     except (OverflowError, OSError, TypeError, ValueError):
         return str(dt)
 

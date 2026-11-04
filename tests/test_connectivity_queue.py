@@ -29,25 +29,55 @@ class TestProbeConnectivity(unittest.TestCase):
         self.assertEqual(connectivity.parse_connectivity_hosts("9.9.9.9:53,1.0.0.1:443"), [("9.9.9.9", 53), ("1.0.0.1", 443)])
 
     def test_probe_succeeds_on_first_host(self):
-        with patch("sickchill.oldbeard.connectivity.socket.create_connection") as connect:
+        with (
+            patch("sickchill.oldbeard.connectivity.settings.PROXY_SETTING", ""),
+            patch("sickchill.oldbeard.connectivity.socket.create_connection") as connect,
+        ):
             connect.return_value.__enter__.return_value = MagicMock()
             self.assertTrue(connectivity.probe_connectivity([("1.1.1.1", 53)], timeout=1))
             connect.assert_called_once()
 
     def test_probe_fails_when_all_hosts_raise(self):
-        with patch("sickchill.oldbeard.connectivity.socket.create_connection", side_effect=OSError("offline")):
+        with (
+            patch("sickchill.oldbeard.connectivity.settings.PROXY_SETTING", ""),
+            patch("sickchill.oldbeard.connectivity.socket.create_connection", side_effect=OSError("offline")),
+        ):
             self.assertFalse(connectivity.probe_connectivity([("1.1.1.1", 53), ("8.8.8.8", 53)], timeout=1))
 
     def test_probe_skips_overflow_and_tries_next_host(self):
         cm = MagicMock()
         cm.__enter__.return_value = MagicMock()
-        with patch("sickchill.oldbeard.connectivity.socket.create_connection", side_effect=[OverflowError("port"), cm]) as connect:
+        with (
+            patch("sickchill.oldbeard.connectivity.settings.PROXY_SETTING", ""),
+            patch("sickchill.oldbeard.connectivity.socket.create_connection", side_effect=[OverflowError("port"), cm]) as connect,
+        ):
             self.assertTrue(connectivity.probe_connectivity([("1.1.1.1", 70000), ("1.1.1.1", 443)], timeout=1))
             self.assertEqual(connect.call_count, 2)
 
     def test_probe_treats_value_error_as_miss(self):
-        with patch("sickchill.oldbeard.connectivity.socket.create_connection", side_effect=UnicodeError("bad host")):
+        with (
+            patch("sickchill.oldbeard.connectivity.settings.PROXY_SETTING", ""),
+            patch("sickchill.oldbeard.connectivity.socket.create_connection", side_effect=UnicodeError("bad host")),
+        ):
             self.assertFalse(connectivity.probe_connectivity([("a..b", 53)], timeout=1))
+
+    def test_probe_uses_proxy_when_configured(self):
+        cm = MagicMock()
+        cm.__enter__.return_value = MagicMock()
+        with (
+            patch("sickchill.oldbeard.connectivity.settings.PROXY_SETTING", "http://127.0.0.1:8888"),
+            patch("sickchill.oldbeard.connectivity.socket.create_connection", return_value=cm) as connect,
+        ):
+            self.assertTrue(connectivity.probe_connectivity([("1.1.1.1", 53)], timeout=1))
+            connect.assert_called_once_with(("127.0.0.1", 8888), timeout=1)
+
+    def test_probe_treats_unparseable_proxy_as_success(self):
+        with (
+            patch("sickchill.oldbeard.connectivity.settings.PROXY_SETTING", "://"),
+            patch("sickchill.oldbeard.connectivity.socket.create_connection") as connect,
+        ):
+            self.assertTrue(connectivity.probe_connectivity([("1.1.1.1", 53)], timeout=1))
+            connect.assert_not_called()
 
     def test_delay_after_failure_progression(self):
         self.assertEqual(connectivity.delay_after_failure(1), 15)
@@ -198,6 +228,36 @@ class TestSearchQueueStuckInjection(unittest.TestCase):
             probe.assert_called_once()
             self.assertFalse(q._connectivity_paused)
             self.assertEqual(q.min_priority, 0)
+
+            q._maybe_inject_connectivity_check()
+            self.assertFalse(q._off_queue_probe_running())
+            probe.assert_called_once()
+
+        other = DailySearchQueueItem()
+        other.started_at = sc_now() - datetime.timedelta(hours=2)
+        other.is_alive = MagicMock(return_value=True)
+        other.join = MagicMock()
+        q.currentItem = other
+        started2 = threading.Event()
+        release2 = threading.Event()
+
+        def slow_probe_other(*args, **kwargs):
+            started2.set()
+            self.assertTrue(release2.wait(timeout=2))
+            return True
+
+        with (
+            patch("sickchill.settings.CONNECTIVITY_CHECK", True),
+            patch("sickchill.oldbeard.connectivity.probe_connectivity", side_effect=slow_probe_other) as probe2,
+        ):
+            q._maybe_inject_connectivity_check()
+            self.assertTrue(started2.wait(timeout=2))
+            release2.set()
+            thread2 = q._off_queue_probe_thread
+            self.assertIsNotNone(thread2)
+            thread2.join(timeout=2)
+            self.assertFalse(thread2.is_alive())
+            probe2.assert_called_once()
 
     def test_inject_off_queue_failure_retries_until_reachable(self):
         q = SearchQueue()

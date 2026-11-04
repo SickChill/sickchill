@@ -108,6 +108,21 @@ class TestRefreshRecalculatesShowSize(unittest.TestCase):
         show.refresh_dir.assert_called_once()
         show.recalculate_show_size.assert_called_once()
 
+    def test_queue_item_refresh_continues_when_write_metadata_fails(self):
+        show = MagicMock()
+        show.name = "Neagley"
+        show.write_metadata.side_effect = RuntimeError("indexer down")
+        item = QueueItemRefresh(show, force=False, silent=True)
+        with (
+            patch.object(item, "finish") as finish,
+            patch("sickchill.oldbeard.show_queue.scene_numbering.xem_refresh") as xem,
+            patch("sickchill.oldbeard.show_dir_mtime.stamp_show_dir_mtime"),
+        ):
+            item.run()
+        show.populate_cache.assert_called_once()
+        xem.assert_called_once()
+        finish.assert_called()
+
 
 class TestPostProcessBatchShowSize(unittest.TestCase):
     def test_process_media_records_show_once_per_success(self):
