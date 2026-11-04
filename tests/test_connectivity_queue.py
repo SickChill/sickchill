@@ -206,16 +206,26 @@ class TestSearchQueueStuckInjection(unittest.TestCase):
         stuck.is_alive = MagicMock(return_value=True)
         stuck.join = MagicMock()
         q.currentItem = stuck
+        started = threading.Event()
+        release = threading.Event()
+        results = iter((False, True))
+
+        def fail_then_reach(*args, **kwargs):
+            started.set()
+            self.assertTrue(release.wait(timeout=2))
+            return next(results)
 
         with (
             patch("sickchill.settings.CONNECTIVITY_CHECK", True),
-            patch("sickchill.oldbeard.connectivity.probe_connectivity", side_effect=[False, True]) as probe,
+            patch("sickchill.oldbeard.connectivity.probe_connectivity", side_effect=fail_then_reach) as probe,
             patch("sickchill.oldbeard.connectivity.delay_after_failure", return_value=0),
         ):
             q.inject_connectivity_check(stuck)
+            self.assertTrue(started.wait(timeout=2))
             stuck.join.assert_not_called()
             thread = q._off_queue_probe_thread
             self.assertIsNotNone(thread)
+            release.set()
             thread.join(timeout=2)
             self.assertFalse(thread.is_alive())
             self.assertEqual(probe.call_count, 2)
