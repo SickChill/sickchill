@@ -3037,6 +3037,12 @@ class TVEpisode(object):
         # move the ep file
         result = helpers.rename_ep_file(self.location, absolute_proper_path, absolute_current_path_no_ext_length)
 
+        derived_release_group = ""
+        if result and not (self.release_group or "").strip() and not (self.release_name or "").strip():
+            candidate = (self.replace_map().get("%RG") or "").strip(".- []{}")
+            if candidate and candidate != "SICKCHILL":
+                derived_release_group = candidate
+
         # move related files
         for cur_related_file in related_files:
             # We need to fix something here because related files can be in subfolders and the original code doesn't handle this (at all)
@@ -3061,8 +3067,12 @@ class TVEpisode(object):
         with self.lock:
             if result:
                 self.location = absolute_proper_path + file_ext
+                if derived_release_group:
+                    self.release_group = derived_release_group
                 for relEp in self.related_episodes:
                     relEp.location = absolute_proper_path + file_ext
+                    if derived_release_group and not (relEp.release_group or "").strip() and not (relEp.release_name or "").strip():
+                        relEp.release_group = derived_release_group
 
         # in case something changed with the metadata just do a quick check
         for curEp in [self] + self.related_episodes:

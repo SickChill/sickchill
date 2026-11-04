@@ -2,6 +2,10 @@
 
 from __future__ import annotations
 
+import tempfile
+from pathlib import Path
+from unittest.mock import patch
+
 from sickchill.tv import TVEpisode, TVShow
 from tests import conftest
 
@@ -45,3 +49,57 @@ class TestReplaceReleaseGroupNaming(conftest.SickChillTestDBCase):
         self.assertIn("-cakes", named)
         self.assertNotIn("MeGusta", named)
         self.assertEqual(self.episode.release_group, "cakes")
+
+    def test_rename_persists_filename_group_when_pattern_omits_rg(self):
+        """After a successful rename, keep the group parsed from the old name for later %RG."""
+        with tempfile.TemporaryDirectory() as tmp:
+            show_dir = Path(tmp) / "Show Name"
+            show_dir.mkdir()
+            src = show_dir / "Show.Name.S01E01.1080p.WEB.DL.x265-MeGusta.mkv"
+            src.write_bytes(b"video")
+
+            self.show.location = str(show_dir)
+            self.show.season_folders = 0
+            self.episode.location = str(src)
+
+            with (
+                patch("sickchill.tv.settings.NAMING_PATTERN", "%SN - S%0SE%0E - %EN"),
+                patch("sickchill.tv.settings.NAMING_FORCE_FOLDERS", False),
+                patch("sickchill.tv.postProcessor.PostProcessor") as mock_pp,
+                patch("sickchill.tv.helpers.rename_ep_file", return_value=True),
+            ):
+                mock_pp.return_value.list_associated_files.return_value = []
+                self.episode.rename()
+
+            self.assertEqual(self.episode.release_group, "MeGusta")
+            self.assertNotIn("MeGusta", self.episode.location)
+            self.assertEqual(self.episode.replace_map()["%RG"], "MeGusta")
+
+    def test_rename_does_not_persist_group_when_move_fails(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            show_dir = Path(tmp) / "Show Name"
+            show_dir.mkdir()
+            src = show_dir / "Show.Name.S01E01.1080p.WEB.DL.x265-MeGusta.mkv"
+            src.write_bytes(b"video")
+
+            self.show.location = str(show_dir)
+            self.show.season_folders = 0
+            self.episode.location = str(src)
+
+            with (
+                patch("sickchill.tv.settings.NAMING_PATTERN", "%SN - S%0SE%0E - %EN"),
+                patch("sickchill.tv.settings.NAMING_FORCE_FOLDERS", False),
+                patch("sickchill.tv.postProcessor.PostProcessor") as mock_pp,
+                patch("sickchill.tv.helpers.rename_ep_file", return_value=False),
+            ):
+                mock_pp.return_value.list_associated_files.return_value = []
+                self.episode.rename()
+
+            self.assertEqual(self.episode.release_group, "")
+            self.assertEqual(self.episode.location, str(src))
+
+    def test_pretty_name_still_does_not_persist_after_naming_pattern(self):
+        named = self.episode.naming_pattern("%SN - S%0SE%0E - %EN")
+        self.assertTrue(named)
+        self.assertEqual(self.episode.release_group, "")
+        self.assertEqual(self.episode._release_group, "")
