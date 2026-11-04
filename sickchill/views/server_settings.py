@@ -65,6 +65,7 @@ class SCWebServer(threading.Thread):
         self.options.setdefault("port", settings.WEB_PORT or 8081)
 
         self.server = None
+        self.ioloop = None
 
         # web root
         if self.options["web_root"]:
@@ -108,7 +109,7 @@ class SCWebServer(threading.Thread):
         self.app = Application(
             [],
             debug=self.options.get("debug"),
-            autoreload=True,
+            autoreload=bool(self.options.get("debug")),
             gzip=settings.WEB_USE_GZIP,
             cookie_secret=settings.WEB_COOKIE_SECRET,
             login_url=f"{self.options['web_root']}/login/",
@@ -204,12 +205,25 @@ class SCWebServer(threading.Thread):
             os._exit(1)
 
         try:
-            IOLoop.current().start()
-            IOLoop.current().close(True)
+            self.ioloop = IOLoop.current()
+            self.ioloop.start()
+            self.ioloop.close(True)
         except (IOError, ValueError):
             # Ignore errors like "ValueError: I/O operation on closed kqueue fd". These might be thrown during a reload.
             pass
 
     def shutdown(self):
         self.alive = False
-        IOLoop.current().stop()
+        ioloop = self.ioloop
+        if ioloop is None:
+            return
+        # IOLoop.stop() is not safe from the EVENT-QUEUE thread; AnyThreadEventLoopPolicy
+        # would stop a different loop and leave the listening socket bound.
+        ioloop.add_callback(self._stop_serving)
+
+    def _stop_serving(self):
+        if self.server is not None:
+            self.server.stop()
+            self.server = None
+        if self.ioloop is not None:
+            self.ioloop.stop()

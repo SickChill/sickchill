@@ -1,3 +1,7 @@
+### Unreleased
+
+* fix: stop the web server on the Tornado IOLoop thread before spawning a restart so Linux menu restart can bind the port
+
 ### 2026.10.8
 
 [full changelog](https://github.com/SickChill/SickChill/compare/2026.9.18...2026.10.8)

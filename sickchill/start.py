@@ -4,6 +4,7 @@ import re
 import shutil
 import socket
 import sys
+import threading
 
 import rarfile
 from configobj import ConfigObj
@@ -931,8 +932,11 @@ def halt():
                     except Exception as error:
                         logger.warning(f"Error stopping {getattr(queue_scheduler, 'name', 'queue')} current item: {error}")
 
+            current = threading.current_thread()
             for t in threads:
                 logger.info(f"Waiting for the {t.name} thread to exit")
+                if t is current:
+                    continue
                 try:
                     t.join(10)
                 except Exception:
