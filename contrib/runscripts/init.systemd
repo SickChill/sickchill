@@ -20,6 +20,22 @@
 #        multi-user.target equates to runlevel 3 (multi-user text mode)
 #        graphical.target  equates to runlevel 5 (multi-user X11 graphical mode)
 #
+#    - GUI Restart (System menu) stops the process then spawns a new one.
+#        The shipped Type=forking + GuessMainPID=no unit does not track a
+#        MainPID, so that in-process restart can keep the service cgroup
+#        running. Do not add Restart= or PIDFile to this shipped layout;
+#        systemd has no process to watch, and a PIDFile would go stale
+#        after a GUI restart.
+#        Type=simple makes ExecStart the MainPID. When that PID exits,
+#        systemd tears down the cgroup (including the spawned child)
+#        unless you both:
+#          1. enable "only shutdown when restarting SC" (no_restart) in
+#             General settings so SickChill exits without spawning, and
+#          2. set Restart=on-success (or Restart=always) on the unit.
+#        GUI Shutdown also exits 0, so Restart=on-success will start the
+#        unit again; use systemctl stop to keep it down.
+#        systemctl restart sickchill always works for either Type.
+#
 
 ### Example Using SickChill as daemon with pid file
 # Type=forking
@@ -27,6 +43,8 @@
 # RuntimeDirectoryMode=0750
 # PIDFile=/var/run/sickchill/sickchill.pid
 # ExecStart=/usr/bin/python3 /opt/sickchill/SickChill.py -q --daemon --nolaunch --pidfile=/var/run/sickchill/sickchill.pid --datadir=/opt/sickchill
+# After a GUI Restart the pid file is rewritten by the new process; systemd
+# still has the old MainPID. Prefer systemctl restart, or omit PIDFile.
 
 ## Example Using SickChill as daemon without pid file
 # Type=forking
@@ -35,12 +53,18 @@
 
 ### Example Using simple
 # Type=simple
+# Restart=on-success
 # ExecStart=/usr/bin/python3 /opt/sickchill/SickChill.py -q --nolaunch
+# Pair Restart= with General "only shutdown when restarting SC" (no_restart).
+# GUI Shutdown also exits 0, so this unit comes back; use systemctl stop
+# to leave it stopped.
 
 ### Example Using simple with EnvironmentFile where SC_DATA=/home/sickchill/.sickchill in /etc/sickchill.conf
 # Type=simple
+# Restart=on-success
 # EnvironmentFile=/etc/sickchill.conf
 # ExecStart=/usr/bin/python3 /opt/sickchill/SickChill.py -q --nolaunch --datadir=${SC_DATA}
+# Same no_restart pairing; systemctl stop to keep a GUI Shutdown down.
 
 ### Configuration
 
