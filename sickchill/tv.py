@@ -1628,14 +1628,13 @@ class TVShow(object):
                 )
             )
             return True
-        elif manual_search:
-            if (down_cur_quality and quality >= cur_quality) or (not down_cur_quality and quality != cur_quality):
-                logger.debug(
-                    "Usually ignoring found result, but forced search allows the quality, getting found result for {name} {ep} with quality {quality}".format(
-                        name=self.name, ep=episode_num(season, episode), quality=Quality.qualityStrings[quality]
-                    )
+        elif manual_search and ((down_cur_quality and quality >= cur_quality) or (not down_cur_quality and quality != cur_quality)):
+            logger.debug(
+                "Usually ignoring found result, but forced search allows the quality, getting found result for {name} {ep} with quality {quality}".format(
+                    name=self.name, ep=episode_num(season, episode), quality=Quality.qualityStrings[quality]
                 )
-                return True
+            )
+            return True
 
         if (
             ep_status in Quality.DOWNLOADED + Quality.SNATCHED + Quality.SNATCHED_PROPER
