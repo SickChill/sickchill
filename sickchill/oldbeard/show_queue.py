@@ -606,7 +606,14 @@ class QueueItemAdd(ShowQueueItem):
             settings.backlogSearchScheduler.action.searchBacklog([self.show])
 
         # Initial artwork from indexer + metadata providers (once). Later refreshes skip TVDB art.
-        self.show.write_metadata(fetch_images=True)
+        try:
+            self.show.write_metadata(fetch_images=True)
+        except Exception as error:
+            from sickchill.oldbeard.connectivity import is_connectivity_error
+
+            if not is_connectivity_error(error):
+                raise
+            logger.warning(f"Metadata write failed during add of {self.show.name} due to a network error: {error}")
         self.show.update_metadata()
         self.show.populate_cache(from_indexer=True)
 
@@ -669,7 +676,12 @@ class QueueItemRefresh(ShowQueueItem):
             logger.debug(f"show_size update failed for {getattr(self.show, 'indexerid', '?')}: {error}")
         # Do not re-fetch artwork from TVDB on refresh/update — loaded once on add;
         # user changes art via edit show. Still write NFOs and sync cache from local files.
-        self.show.write_metadata(fetch_images=False)
+        metadata_written = False
+        try:
+            self.show.write_metadata(fetch_images=False)
+            metadata_written = True
+        except Exception as error:
+            logger.warning(f"Metadata write failed during refresh of {self.show.name}: {error}")
         if self.force:
             self.show.update_metadata()
         self.show.populate_cache(from_indexer=False)
@@ -677,14 +689,15 @@ class QueueItemRefresh(ShowQueueItem):
         # Load XEM data to DB for show
         scene_numbering.xem_refresh(self.show.indexerid, self.show.indexer)
 
-        # Stamp folder mtime after refresh (incl. silent post-update) so ShowUpdater
+        # Stamp folder mtime after a successful metadata write so ShowUpdater
         # does not immediately re-queue due to NFO/metadata touching the directory.
-        try:
-            from sickchill.oldbeard.show_dir_mtime import stamp_show_dir_mtime
+        if metadata_written:
+            try:
+                from sickchill.oldbeard.show_dir_mtime import stamp_show_dir_mtime
 
-            stamp_show_dir_mtime(self.show)
-        except Exception as error:
-            logger.debug(f"show_dir_mtime stamp failed for {getattr(self.show, 'indexerid', '?')}: {error}")
+                stamp_show_dir_mtime(self.show)
+            except Exception as error:
+                logger.debug(f"show_dir_mtime stamp failed for {getattr(self.show, 'indexerid', '?')}: {error}")
 
         super(QueueItemRefresh, self).finish()
         self.finish()

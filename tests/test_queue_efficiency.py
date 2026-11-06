@@ -15,6 +15,10 @@ class TestQueuePrioritiesUser(unittest.TestCase):
         self.assertGreater(QueuePriorities.USER, QueuePriorities.HIGH)
         self.assertLess(QueuePriorities.USER, QueuePriorities.HIGH**2)
 
+    def test_connectivity_priority_above_user(self):
+        self.assertGreater(QueuePriorities.CONNECTIVITY, QueuePriorities.USER)
+        self.assertLess(QueuePriorities.CONNECTIVITY, QueuePriorities.HIGH**2)
+
     def test_add_item_front_bumps_priority_and_added(self):
         q = generic_queue.GenericQueue()
         first = generic_queue.QueueItem("first")

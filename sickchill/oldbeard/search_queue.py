@@ -25,6 +25,7 @@ class SearchQueue(generic_queue.GenericQueue):
     def __init__(self):
         super().__init__()
         self.queue_name = "SEARCHQUEUE"
+        self.watch_stuck_items = True
 
     def is_in_queue(self, show, segment):
         for cur_item in self.queue:
@@ -129,7 +130,7 @@ class SearchQueue(generic_queue.GenericQueue):
         return False
 
     def queue_length(self):
-        length = {"backlog": 0, "daily": 0, "manual": 0, "failed": 0, "subtitle": 0, "proper": 0}
+        length = {"backlog": 0, "daily": 0, "manual": 0, "failed": 0, "subtitle": 0, "proper": 0, "connectivity": 0}
         for cur_item in self.queue + [self.currentItem]:
             if isinstance(cur_item, DailySearchQueueItem):
                 length["daily"] += 1
@@ -143,11 +144,24 @@ class SearchQueue(generic_queue.GenericQueue):
                 length["failed"] += 1
             elif isinstance(cur_item, SubtitleEpisodeQueueItem):
                 length["subtitle"] += 1
+            elif self._is_connectivity_item(cur_item):
+                length["connectivity"] += 1
         return length
+
+    def stuck_threshold(self, item):
+        if isinstance(item, (ManualSearchQueueItem, FailedQueueItem, SubtitleEpisodeQueueItem)):
+            return int(getattr(settings, "CONNECTIVITY_STUCK_MANUAL", 600) or 600)
+        if isinstance(item, DailySearchQueueItem):
+            return int(getattr(settings, "CONNECTIVITY_STUCK_DAILY", 1800) or 1800)
+        if isinstance(item, (BacklogQueueItem, MovieQueueItem)):
+            return int(getattr(settings, "CONNECTIVITY_STUCK_BACKLOG", 3600) or 3600)
+        return super().stuck_threshold(item)
 
     def add_item(self, item, front=False):
         should_add = False
-        if isinstance(item, DailySearchQueueItem):
+        if self._is_connectivity_item(item):
+            should_add = not self._queued_connectivity_check()
+        elif isinstance(item, DailySearchQueueItem):
             # daily searches
             should_add = True
         elif isinstance(item, ProperSearchQueueItem):

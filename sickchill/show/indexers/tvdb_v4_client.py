@@ -138,6 +138,9 @@ class TVDBv4Client:
                 timeout=self.timeout,
             )
         except requests.exceptions.RequestException as error:
+            from sickchill.oldbeard.connectivity import maybe_request_connectivity_check
+
+            maybe_request_connectivity_check(error)
             raise TVDBv4Error(str(error)) from error
 
         if response.status_code == 401 and not _auth_retried:

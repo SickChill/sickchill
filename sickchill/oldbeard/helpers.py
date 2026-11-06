@@ -1553,6 +1553,10 @@ def handle_requests_exception(
     def classname(error: Exception) -> str:
         return error.__class__.__name__
 
+    from sickchill.oldbeard.connectivity import maybe_request_connectivity_check
+
+    maybe_request_connectivity_check(requests_exception)
+
     try:
         raise requests_exception
     except requests.exceptions.SSLError as error:

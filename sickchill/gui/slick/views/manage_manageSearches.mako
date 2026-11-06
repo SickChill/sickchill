@@ -70,6 +70,11 @@
     <div class="row">
         <div class="col-md-12">
             <h3>${_('Search Queue')}:</h3>
+            % if connectivityStatus == 'paused':
+                <p class="text-warning">${_('Queue paused – no internet')}</p>
+            % elif connectivityStatus == 'checking':
+                <p>${_('Connectivity check in progress')}</p>
+            % endif
             <table>
                 <tr>
                     <td>${_('Backlog')}:</td>
@@ -87,6 +92,12 @@
                     <td>${_('Failed')}:</td>
                     <td><i>${queueLength['failed']} ${_('pending items')}</i></td>
                 </tr>
+                % if queueLength.get('connectivity'):
+                <tr>
+                    <td>${_('Connectivity')}:</td>
+                    <td><i>${queueLength['connectivity']} ${_('pending items')}</i></td>
+                </tr>
+                % endif
             </table>
         </div>
     </div>

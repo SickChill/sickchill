@@ -1,5 +1,6 @@
 ### Unreleased
 
+* feat: pause the search queue and retry connectivity on DNS/connect failures and hung searches
 * fix: use the new release group in `%RG` when replacing an existing episode file
 * fix: persist a filename-derived release group after a successful rename when none is stored
 * ci: test Python 3.14 on Ubuntu, Windows, and macOS while keeping 3.11–3.13
