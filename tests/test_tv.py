@@ -110,6 +110,34 @@ class TVTests(conftest.SickChillTestDBCase):
         super().setUp()
         settings.show_list = []
 
+    def test_network_logo_name(self):
+        """
+        Network logos are unidecode(network).lower(), with /:\\ turned into spaces
+        so the filename matches sc_network_timezones collectors and is valid on disk.
+        """
+        show = TVShow(1, 1, "en")
+        show.network = "CBS"
+        assert show.network_logo_name == "cbs"
+        assert show.network_image_url == "images/network/cbs.png"
+
+        show.network = "13ème Rue"
+        assert show.network_logo_name == "13eme rue"
+        assert show.network_image_url == "images/network/13eme rue.png"
+
+        show.network = "MTV (AU/NZ)"
+        assert show.network_logo_name == "mtv (au nz)"
+        assert show.network_image_url == "images/network/mtv (au nz).png"
+
+        show.network = "Instagram / IGTV"
+        assert show.network_logo_name == "instagram igtv"
+
+        show.network = None
+        assert show.network_logo_name == "nonetwork"
+        assert show.network_image_url == "images/network/nonetwork.png"
+
+        show.network = "Інтер"
+        assert show.network_logo_name == "inter"
+
     def test_get_episode(self):
         """
         Test get episodes
