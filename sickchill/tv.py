@@ -224,7 +224,13 @@ class TVShow(object):
 
     @property
     def network_logo_name(self):
-        return unidecode(self.network).lower()
+        # Match sc_network_timezones collectors: unidecode + replace /\: so the
+        # filename is valid on disk. Empty after folding (Cyrillic/Hebrew names)
+        # uses the same fallback as a missing network.
+        stem = unidecode(self.network or "").lower().strip()
+        stem = re.sub(r"[/\\:]+", " ", stem)
+        stem = re.sub(r"\s+", " ", stem).strip()
+        return stem or "nonetwork"
 
     @property
     def sort_name(self):
@@ -264,7 +270,7 @@ class TVShow(object):
 
     @property
     def network_image_url(self):
-        return f"images/network/{unidecode(self.network or 'nonetwork').lower()}.png"
+        return f"images/network/{self.network_logo_name}.png"
 
     def show_image_url(self, which):
         return settings.IMAGE_CACHE.image_url(self.indexerid, which)
