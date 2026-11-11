@@ -802,18 +802,22 @@ class GenericMetadata(object):
             return [] if multiple else ""
 
         # get TMDB configuration info
-        tmdbsimple.API_KEY = settings.TMDB_API_KEY
-        config = tmdbsimple.Configuration()
-        response = config.info()
-        base_url = response["images"]["base_url"]
-        sizes = response["images"]["poster_sizes"]
-
-        def size_str_to_int(x):
-            return float("inf") if x == "original" else int(x[1:])
-
-        max_size = max(sizes, key=size_str_to_int)
-
         try:
+            tmdbsimple.API_KEY = settings.TMDB_API_KEY
+            # Finite default timeout; only set if not already configured
+            if not getattr(tmdbsimple, "REQUESTS_TIMEOUT", None):
+                tmdbsimple.REQUESTS_TIMEOUT = 30
+
+            config = tmdbsimple.Configuration()
+            response = config.info()
+            base_url = response["images"]["base_url"]
+            sizes = response["images"]["poster_sizes"]
+
+            def size_str_to_int(x):
+                return float("inf") if x == "original" else int(x[1:])
+
+            max_size = max(sizes, key=size_str_to_int)
+
             results = []
             find = tmdbsimple.Find(show.indexerid)
             found = find.info(external_source="tvdb_id")
@@ -827,9 +831,10 @@ class GenericMetadata(object):
                             return results[0]
                     return results
         except Exception as error:
-            logger.debug(error)
+            logger.debug(f"TMDB image lookup failed for {show.name}: {error}")
 
         logger.info("Could not find any " + img_type + " images on TMDB for " + show.name)
+        return [] if multiple else ""
 
     @staticmethod
     def _retrieve_show_image_urls_from_fanart(show, img_type, thumb=False, season=None, multiple=False):
