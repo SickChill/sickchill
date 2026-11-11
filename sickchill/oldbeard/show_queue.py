@@ -615,7 +615,7 @@ class QueueItemAdd(ShowQueueItem):
                 raise
             logger.warning(f"Metadata write failed during add of {self.show.name} due to a network error: {error}")
         self.show.update_metadata()
-        self.show.populate_cache(from_indexer=True)
+        self.show.populate_cache()
 
         self.show.flush_episodes()
 
@@ -684,7 +684,7 @@ class QueueItemRefresh(ShowQueueItem):
             logger.warning(f"Metadata write failed during refresh of {self.show.name}: {error}")
         if self.force:
             self.show.update_metadata()
-        self.show.populate_cache(from_indexer=False)
+        self.show.populate_cache()
 
         # Load XEM data to DB for show
         scene_numbering.xem_refresh(self.show.indexerid, self.show.indexer)
