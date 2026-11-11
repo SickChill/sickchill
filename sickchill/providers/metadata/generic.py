@@ -4,6 +4,7 @@ from typing import Union
 from xml.etree import ElementTree
 
 import fanart
+import requests
 import tmdbsimple
 from fanart.core import Request as fanartRequest
 
