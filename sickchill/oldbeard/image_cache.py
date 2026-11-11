@@ -3,7 +3,6 @@ from mimetypes import guess_type
 from typing import ClassVar
 
 import imagesize
-import requests
 
 import sickchill
 from sickchill import logger, settings
