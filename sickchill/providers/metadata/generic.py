@@ -797,27 +797,26 @@ class GenericMetadata(object):
     @staticmethod
     def _retrieve_show_image_urls_from_tmdb(show, img_type, multiple=False):
         types = {"poster": "posters", "banner": None, "fanart": "backdrops", "poster_thumb": "posters", "banner_thumb": None}
-
+    
         if not types[img_type]:
             return [] if multiple else ""
-
-        # get TMDB configuration info
+    
         try:
             tmdbsimple.API_KEY = settings.TMDB_API_KEY
             # Finite default timeout; only set if not already configured
             if not getattr(tmdbsimple, "REQUESTS_TIMEOUT", None):
                 tmdbsimple.REQUESTS_TIMEOUT = 30
-
+    
             config = tmdbsimple.Configuration()
             response = config.info()
             base_url = response["images"]["base_url"]
             sizes = response["images"]["poster_sizes"]
-
+    
             def size_str_to_int(x):
                 return float("inf") if x == "original" else int(x[1:])
-
+    
             max_size = max(sizes, key=size_str_to_int)
-
+    
             results = []
             find = tmdbsimple.Find(show.indexerid)
             found = find.info(external_source="tvdb_id")
@@ -832,7 +831,7 @@ class GenericMetadata(object):
                     return results
         except Exception as error:
             logger.debug(f"TMDB image lookup failed for {show.name}: {error}")
-
+    
         logger.info("Could not find any " + img_type + " images on TMDB for " + show.name)
         return [] if multiple else ""
 
@@ -859,25 +858,34 @@ class GenericMetadata(object):
                     limit=(fanart.LIMIT.ONE, fanart.LIMIT.ALL)[season is None],
                 )
 
-                resp = request.response()
-                results = resp[types[img_type]]
-                if season is not None:
-                    results = [x for x in results if try_int(x["season"], default_value=None) == season]
+            # Library Request.response() has no timeout; do the GET ourselves.
+            resp = requests.get(str(request), timeout=30)
+            resp.raise_for_status()
+            rjson = resp.json()
+            if not isinstance(rjson, dict):
+                raise Exception(resp.text)
+            if "error message" in rjson:
+                raise Exception(rjson.get("status"), rjson["error message"])
 
-                def _to_preview_url(url):
-                    return re.sub("/fanart/", "/preview/", url)
+            results = rjson[types[img_type]]
+            if season is not None:
+                results = [x for x in results if try_int(x["season"], default_value=None) == season]
 
-                if multiple:
-                    urls = [result["url"] for result in results]
-                    if thumb:
-                        urls = [_to_preview_url(url) for url in urls]
-                    return urls
-                else:
-                    url = results[0]["url"]
-                    if thumb:
-                        url = _to_preview_url(url)
-                    return url
+            def _to_preview_url(url):
+                return re.sub("/fanart/", "/preview/", url)
+
+            if multiple:
+                urls = [result["url"] for result in results]
+                if thumb:
+                    urls = [_to_preview_url(url) for url in urls]
+                return urls
+            else:
+                url = results[0]["url"]
+                if thumb:
+                    url = _to_preview_url(url)
+                return url
         except Exception as error:
-            logger.debug(error)
+            logger.debug(f"Fanart.tv image lookup failed for {show.name}: {error}")
 
         logger.info("Could not find any " + img_type + " images on Fanart.tv for " + show.name)
+        return [] if multiple else ""
