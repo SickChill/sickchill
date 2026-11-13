@@ -1202,6 +1202,13 @@ class TVShow(object):
                     logger.info(f"{self.indexerid}: IMDb id {self.imdb_id} redirects to {new_imdb_id}")
                     self.imdb_id = new_imdb_id
 
+                # Normalize countries (imdbpie returns a tuple/list) to a pipe-separated string
+                countries_raw = getattr(title, "countries", ()) or ()
+                if isinstance(countries_raw, (list, tuple)):
+                    countries_str = "|".join(str(c) for c in countries_raw if c)
+                else:
+                    countries_str = str(countries_raw or "")
+
                 self.imdb_info.update(
                     {
                         "indexer_id": self.indexerid,
@@ -1211,7 +1218,7 @@ class TVShow(object):
                         "akas": self.imdb_info.get("akas", ""),
                         "runtimes": getattr(title, "runtime", self.runtime),
                         "genres": "|".join(getattr(title, "genres", []) or []),
-                        "countries": getattr(title, "countries", "") or self.imdb_info.get("countries", ""),
+                        "countries": countries_str or self.imdb_info.get("countries", ""),
                         "country_codes": self.imdb_info.get("country_codes", ""),
                         "certificates": getattr(title, "certification", "") or "",
                         "rating": str(getattr(title, "rating", 0.0)),
@@ -1219,6 +1226,7 @@ class TVShow(object):
                         "last_update": sc_today().toordinal(),
                     }
                 )
+
                 self.dirty = True
                 self.save_to_db()
 
@@ -1541,7 +1549,11 @@ class TVShow(object):
 
         # Save IMDb info to database
         if self.imdb_id and self.imdb_info:
-            # Ensure all expected columns exist and have values
+            # Defensive normalization for countries (handles any existing tuple/list in memory)
+            countries_val = self.imdb_info.get("countries") or ""
+            if isinstance(countries_val, (list, tuple)):
+                countries_val = "|".join(str(c) for c in countries_val if c)
+
             imdb_data = {
                 "imdb_id": self.imdb_id or "",
                 "title": self.imdb_info.get("title") or self.name or "",
@@ -1549,7 +1561,7 @@ class TVShow(object):
                 "akas": self.imdb_info.get("akas") or "",
                 "runtimes": self.imdb_info.get("runtimes") or self.runtime or "",
                 "genres": self.imdb_info.get("genres") or "",
-                "countries": self.imdb_info.get("countries") or "",
+                "countries": countries_val,
                 "country_codes": self.imdb_info.get("country_codes") or "",
                 "certificates": self.imdb_info.get("certificates") or self.imdb_info.get("certification") or "",
                 "rating": str(self.imdb_info.get("rating") or 0.0),
