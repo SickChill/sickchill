@@ -1,3 +1,4 @@
+import json
 import os
 
 from tornado.web import addslash
@@ -30,6 +31,15 @@ class Config(WebRoot):
     def log_configuration_save(page: str) -> None:
         """Emit a single debug line identifying which config page is being saved."""
         logger.debug(f"Saving configuration: {page}")
+
+    def config_save_response(self, redirect_path: str):
+        """Return JSON for AJAX config saves so the page can stay put; otherwise redirect."""
+        requested_with = self.request.headers.get("X-Requested-With", "")
+        if requested_with.lower() == "xmlhttprequest":
+            self.set_header("Content-Type", "application/json")
+            self.set_header("Cache-Control", "max-age=0,no-cache,no-store")
+            return json.dumps({"result": "success"})
+        return self.redirect(redirect_path)
 
     @addslash
     def index(self):

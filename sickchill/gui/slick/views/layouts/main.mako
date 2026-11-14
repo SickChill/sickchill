@@ -113,7 +113,7 @@
         <%block name="css" />
 
         % if settings.CUSTOM_CSS:
-            ## TODO: check if this exists first
+            ## Missing ui/custom.css is fine; the browser ignores a failed stylesheet load.
             <link rel="stylesheet" type="text/css" href="${static_url('ui/custom.css', include_version=False)}" />
         % endif
     </head>
@@ -397,22 +397,45 @@
                         </div>
                     </div>
                 </div>
-                <script type="text/javascript" src="${static_url('js/vendor.min.js')}"></script>
+                <script type="text/javascript" src="${static_url('js/vendor-core.min.js')}"></script>
+                % if controller in ('config', 'home', 'manage', 'history', 'schedule', 'addShows', 'movies'):
+                    <script type="text/javascript" src="${static_url('js/vendor-extra.min.js')}"></script>
+                % endif
                 <script type="text/javascript" src="${static_url('js/lib/jquery.form.min.js')}"></script>
                 <script type="text/javascript" src="${static_url('js/lib/jquery.selectboxes.min.js')}"></script>
                 <script type="text/javascript" src="${static_url('js/lib/formwizard.js')}"></script><!-- Can't be added to bower -->
-                <script type="text/javascript" src="${static_url('js/parsers.js')}"></script>
+                % if controller in ('config', 'home', 'manage', 'history', 'schedule', 'addShows', 'movies'):
+                    <script type="text/javascript" src="${static_url('js/parsers.js')}"></script>
+                % endif
                 <script type="text/javascript" src="${static_url('js/rootDirs.js')}"></script>
-                % if settings.DEVELOPER:
-                    <script type="text/javascript" src="${static_url('js/core.js')}"></script>
-                % else:
-                    <script type="text/javascript" src="${static_url('js/core.min.js')}"></script>
+                <script type="text/javascript" src="${static_url('js/core.js')}"></script>
+                % if controller in ('config', 'home', 'manage', 'history', 'errorlogs', 'schedule', 'addShows', 'movies'):
+                    <script type="text/javascript" src="${static_url('js/page-' + controller + '.js')}"></script>
                 % endif
                 <script type="text/javascript" src="${static_url('js/lib/jquery.scrolltopcontrol-1.1.js')}"></script>
                 <script type="text/javascript" src="${static_url('js/browser.js')}" charset="utf-8"></script>
                 <script type="text/javascript" src="${static_url('js/ajaxNotifications.js')}"></script>
             % endif
             <%block name="scripts" />
+            % if current_user:
+            <script type="text/javascript">
+                (function () {
+                    const guiLang = getMeta('settings.GUI_LANG');
+                    if (shouldSkipLocaleFetch(guiLang)) {
+                        installGettext();
+                        startSickchillUi();
+                    } else {
+                        $.getJSON(scRoot + '/ui/locale.json', {lang: guiLang}, function (data) {
+                            installGettext(data);
+                            startSickchillUi();
+                        }).fail(function () {
+                            installGettext();
+                            startSickchillUi();
+                        });
+                    }
+                })();
+            </script>
+            % endif
         </div>
     </body>
 </html>

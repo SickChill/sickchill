@@ -9,6 +9,7 @@ from sickchill.helper.common import convert_size, try_int
 from sickchill.helper.exceptions import AuthException
 from sickchill.oldbeard import tvcache
 from sickchill.oldbeard.bs4_parser import BS4Parser
+from sickchill.oldbeard.common import uses_absolute_numbering
 from sickchill.oldbeard.show_name_helpers import all_possible_show_names
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
@@ -195,7 +196,7 @@ class Provider(TorrentProvider):
 
             if episode.show.air_by_date or episode.show.sports:
                 season_string += str(episode.airdate).split("-")[0]
-            elif episode.show.anime:
+            elif uses_absolute_numbering(episode.show):
                 # use string below if you really want to search on season with number
                 # season_string += 'Season ' + '{0:d}'.format(int(episode.scene_season))
                 season_string += "Season"  # ignore season number to get all seasons in all formats

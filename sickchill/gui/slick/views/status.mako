@@ -2,9 +2,12 @@
 <%!
     from sickchill import settings
     from sickchill.oldbeard import helpers
-    from sickchill.oldbeard.scdatetime import sctimeago
+    from sickchill.oldbeard.scdatetime import scdatetime, sctimeago
     from sickchill.oldbeard.network_timezones import sc_now
     from sickchill.oldbeard.show_queue import ShowQueueActions
+
+    # Match timeago's "just now" window (~60s): only show a Start Time when next run is further out
+    _START_TIME_MIN_SECONDS = 60
 %>
 <%block name="content">
     <%
@@ -200,15 +203,29 @@
             <td class="${("false", "true")[enabled]}">${enabled}</td>
             <td class="${("false", "true")[active]}">${active}</td>
         % endif
-        % if service.start_time:
-            <td>${service.start_time}</td>
-        % else:
-            <td></td>
-        % endif
+        <%
+            # Start Time = proposed next-run clock (HH:MM) when enabled and not due "just now"
+            start_time_display = ''
+            start_time_sort = ''
+            next_run_at = None
+            if enabled:
+                try:
+                    time_left = service.timeLeft()
+                    next_run_at = sc_now() + time_left
+                    if time_left.total_seconds() > _START_TIME_MIN_SECONDS:
+                        next_local = scdatetime.convert_to_setting(next_run_at)
+                        start_time_display = scdatetime.scftime(next_local, t_preset='%H:%M')
+                        start_time_sort = next_local.strftime('%H:%M')
+                except Exception:
+                    start_time_display = ''
+                    start_time_sort = ''
+                    next_run_at = None
+        %>
+        <td data-time="${start_time_sort}">${start_time_display}</td>
         <% cycleTime = (service.cycleTime.microseconds + (service.cycleTime.seconds + service.cycleTime.days * 24 * 3600) * 10**6) / 10**6 %>
         <td data-seconds="${cycleTime}">${helpers.pretty_time_delta(cycleTime)}</td>
-        % if service.enable:
-            <td>${sctimeago(sc_now() + service.timeLeft())}</td>
+        % if enabled and next_run_at is not None:
+            <td>${sctimeago(next_run_at)}</td>
         % else:
             <td></td>
         % endif

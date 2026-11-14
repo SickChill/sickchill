@@ -62,6 +62,10 @@
                     <span class="show-option">${_('Poster Size')}:</span>
                     <span style="width: 100px; display: inline-block; margin-left: 7px;" id="posterSizeSlider"></span>
                 </label>
+                <label>
+                    <span class="show-option">${_('Zoom on hover')}:</span>
+                    <input type="checkbox" id="posterPopupToggle" checked="checked" />
+                </label>
             % endif
         </div>
     </div>

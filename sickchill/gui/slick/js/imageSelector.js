@@ -183,68 +183,70 @@
         $('.upload #upload-image-input').on('change', function () {
             imageSelectorElement.children('.error').hide();
 
-            if (this.files && this.files.length > 0) {
-                const file = this.files[0];
-                console.log('📤 File selected:', file.name);
+            if (!this.files || this.files.length === 0) {
+                return;
+            }
 
-                const reader = new FileReader();
-                reader.addEventListener('load', event_ => {
-                    const dataUrl = event_.target.result;
+            const file = this.files[0];
+            console.log('📤 File selected:', file.name);
 
-                    if (typeof dataUrl !== 'string' || !dataUrl.startsWith('data:image')) {
-                        console.error('❌ Invalid data URL');
-                        return;
-                    }
+            const reader = new FileReader();
+            reader.addEventListener('load', event_ => {
+                const dataUrl = event_.target.result;
 
-                    console.log('📸 Data URL length:', dataUrl.length);
+                if (typeof dataUrl !== 'string' || !dataUrl.startsWith('data:image')) {
+                    console.error('❌ Invalid data URL');
+                    return;
+                }
 
-                    const img = new Image();
-                    img.addEventListener('load', () => {
-                        if (imageTypeSizes[imageType].validate(img)) {
-                            console.log('✅ Image validated for', imageType);
+                console.log('📸 Data URL length:', dataUrl.length);
 
-                            // === MULTIPLE FALLBACK SELECTORS FOR HIDDEN FIELD ===
-                            let hiddenInput = null;
-                            const selectors = [
-                                'input[name="' + imageType + '"]',
-                                '#' + imageType,
-                                'input[type="hidden"][name="' + imageType + '"]',
-                            ];
+                const img = new Image();
+                img.addEventListener('load', () => {
+                    if (imageTypeSizes[imageType].validate(img)) {
+                        console.log('✅ Image validated for', imageType);
 
-                            for (const sel of selectors) {
-                                hiddenInput = $(sel);
-                                if (hiddenInput.length > 0) {
-                                    break;
-                                }
+                        // === MULTIPLE FALLBACK SELECTORS FOR HIDDEN FIELD ===
+                        let hiddenInput = null;
+                        const selectors = [
+                            'input[name="' + imageType + '"]',
+                            '#' + imageType,
+                            'input[type="hidden"][name="' + imageType + '"]',
+                        ];
+
+                        for (const sel of selectors) {
+                            hiddenInput = $(sel);
+                            if (hiddenInput.length > 0) {
+                                break;
                             }
-
-                            if (hiddenInput && hiddenInput.length > 0) {
-                                hiddenInput.val(dataUrl);
-                                console.log('SUCCESS: Hidden field updated using selector');
-                            } else {
-                                console.error('Could not find hidden input for', imageType);
-                            }
-
-                            // Keep selection in dialog; commit on OK
-                            $('.image-selector-dialog .images').empty().append($('<img alt="Selector preview">')
-                                .addClass('image-selector-item image-selector-item-selected')
-                                .attr('data-image', dataUrl)
-                                .attr('src', dataUrl)
-                                .css({
-                                    'max-width': '100%',
-                                    'max-height': '320px',
-                                    'object-fit': 'contain',
-                                }));
-                        } else {
-                            imageSelectorElement.children('.error').text(imageTypeSizes[imageType].errorMsg).show();
                         }
-                    });
 
-                    img.src = dataUrl;
+                        if (hiddenInput && hiddenInput.length > 0) {
+                            hiddenInput.val(dataUrl);
+                            console.log('SUCCESS: Hidden field updated using selector');
+                        } else {
+                            console.error('Could not find hidden input for', imageType);
+                        }
+
+                        // Keep selection in dialog; commit on OK
+                        $('.image-selector-dialog .images').empty().append($('<img alt="Selector preview">')
+                            .addClass('image-selector-item image-selector-item-selected')
+                            .attr('data-image', dataUrl)
+                            .attr('src', dataUrl)
+                            .css({
+                                'max-width': '100%',
+                                'max-height': '320px',
+                                'object-fit': 'contain',
+                            }));
+                    } else {
+                        imageSelectorElement.children('.error').text(imageTypeSizes[imageType].errorMsg).show();
+                    }
                 });
 
-                reader.readAsDataURL(file);
-            }
+                img.src = dataUrl;
+            });
+
+            reader.readAsDataURL(file);
         });
 
         element.on('click', function () {

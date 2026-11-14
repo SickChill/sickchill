@@ -5,6 +5,7 @@ from os import path
 from typing import List
 
 from sickchill.helper import video_screen_size
+from sickchill.helper.media_info import video_codec_from_file
 from sickchill.init_helpers import setup_gettext
 from sickchill.oldbeard.numdict import NumDict
 from sickchill.recompiled import tags
@@ -61,6 +62,44 @@ NAMING_DUPLICATE = 4
 NAMING_LIMITED_EXTEND = 8
 NAMING_SEPARATED_REPEAT = 16
 NAMING_LIMITED_EXTEND_E_PREFIXED = 32
+
+# tv_shows.anime: 0 standard, 1 anime absolute (Show.265), 2 anime SxxExx (still searches anime providers)
+ANIME_NONE = 0
+ANIME_ABSOLUTE = 1
+ANIME_SEASON_EPISODE = 2
+
+
+def uses_absolute_numbering(show: object) -> bool:
+    return int(getattr(show, "anime", 0) or 0) == ANIME_ABSOLUTE
+
+
+def parse_anime_mode(value: object, fallback: int = ANIME_NONE) -> int:
+    """Accept only 0/1/2; anything else keeps fallback (never coerce invalid to 0)."""
+    try:
+        fallback_int = int(fallback or 0)
+    except (TypeError, ValueError):
+        fallback_int = ANIME_NONE
+    try:
+        mode = int(value)
+    except (TypeError, ValueError):
+        return fallback_int
+    if mode in (ANIME_NONE, ANIME_ABSOLUTE, ANIME_SEASON_EPISODE):
+        return mode
+    return fallback_int
+
+
+def parse_anime_form(enabled: bool, numbering: object, fallback: int = ANIME_NONE) -> int:
+    """Checkbox off is 0. Checkbox on uses numbering 1/2; invalid numbering keeps fallback if 1/2 else absolute."""
+    if not enabled:
+        return ANIME_NONE
+    numbering_fallback = parse_anime_mode(fallback, ANIME_ABSOLUTE)
+    if numbering_fallback == ANIME_NONE:
+        numbering_fallback = ANIME_ABSOLUTE
+    mode = parse_anime_mode(numbering, numbering_fallback)
+    if mode == ANIME_NONE:
+        return numbering_fallback
+    return mode
+
 
 MULTI_EP_STRINGS = NumDict(
     {
@@ -407,14 +446,16 @@ class Quality(object):
         return status, Quality.NONE
 
     @staticmethod
-    def sceneQualityFromName(name, quality):
+    def sceneQualityFromName(name, quality, file_codec=None):
         """
         Get scene naming parameters from filename and quality
 
         :param name: Filename to check
         :param quality: int of quality to make sure we get the right rip type
+        :param file_codec: Optional encoder token from file metadata (x264, h264, x265, h265, xvid, divx)
         :return: encoder type for scene quality naming
         """
+        name = name or ""
         codec_list = ["xvid", "divx"]
         x264_list = ["x264", "x 264", "x.264"]
         h264_list = ["h264", "h 264", "h.264", "avc"]
@@ -422,16 +463,19 @@ class Quality(object):
         h265_list = ["h265", "h 265", "h.265", "hevc"]
         codec_list += x264_list + h264_list + x265_list + h265_list
 
-        found_codecs = {}
         found_codec = None
+        normalized_file_codec = (file_codec or "").lower().strip()
+        if normalized_file_codec in {"xvid", "divx", "x264", "h264", "x265", "h265"}:
+            found_codec = normalized_file_codec
+        else:
+            found_codecs = {}
+            name_lower = name.lower()
+            for codec_token in codec_list:
+                if codec_token in name_lower:
+                    found_codecs[name_lower.rfind(codec_token)] = codec_token
 
-        for codec in codec_list:
-            if codec in name.lower():
-                found_codecs[name.lower().rfind(codec)] = codec
-
-        if found_codecs:
-            sorted_codecs = sorted(found_codecs, reverse=True)
-            found_codec = found_codecs[list(sorted_codecs)[0]]
+            if found_codecs:
+                found_codec = found_codecs[max(found_codecs)]
 
         # 2 corresponds to SDDVD quality
         if quality == 2:
@@ -464,6 +508,16 @@ class Quality(object):
             return rip_type
         else:
             return ""
+
+    @staticmethod
+    def sceneQualityFromFile(filename, quality, name=""):
+        """
+        Scene-quality encoder string, preferring libmediainfo codec from the media file.
+
+        Falls back to parsing ``name`` (release/file name) when the file has no codec.
+        """
+        file_codec = video_codec_from_file(filename) if filename else ""
+        return Quality.sceneQualityFromName(name, quality, file_codec=file_codec)
 
     @staticmethod
     def statusFromName(name, anime=False):

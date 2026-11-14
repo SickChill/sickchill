@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2026-08-21 15:06+0700\n"
+"POT-Creation-Date: 2026-09-04 15:13+0700\n"
 "PO-Revision-Date: 2021-06-16 19:01+0000\n"
 "Last-Translator: \n"
 "Language: bg_BG\n"
@@ -18,7 +18,7 @@ msgstr ""
 msgid " Web-scraping plugin"
 msgstr ""
 
-#: sickchill/gui/slick/js/core.js:4237
+#: sickchill/gui/slick/js/core.js:4373
 msgid " on  in "
 msgstr ""
 
@@ -30,11 +30,11 @@ msgstr ""
 msgid " to create a Pushover API key"
 msgstr ""
 
-#: sickchill/views/home.py:371
+#: sickchill/views/home.py:369
 msgid " with password"
 msgstr " с парола"
 
-#: sickchill/logger.py:229
+#: sickchill/logger.py:282
 msgid "&lt;No Filter&gt;"
 msgstr "&lt;без филтър&gt;"
 
@@ -66,11 +66,11 @@ msgstr ""
 msgid "(This field may be blank except when testing.)"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:760
+#: sickchill/gui/slick/views/config_general.mako:786
 msgid "(X-Forwarded-For, X-Forwarded-Host, and X-Forwarded-Proto)"
 msgstr ""
 
-#: sickchill/gui/slick/js/core.js:1945
+#: sickchill/gui/slick/js/core.js:1938
 #: sickchill/gui/slick/views/config_search.mako:462
 #: sickchill/gui/slick/views/config_search.mako:483
 #: sickchill/gui/slick/views/config_search.mako:858
@@ -99,7 +99,7 @@ msgstr ""
 msgid "(leave blank for the default SickChill subject)"
 msgstr ""
 
-#: sickchill/views/home.py:1543
+#: sickchill/views/home.py:1539
 msgid "(media untouched)"
 msgstr "(файловете ще са непроменени)"
 
@@ -119,7 +119,7 @@ msgstr ""
 msgid "(this field may be blank except when testing.)"
 msgstr ""
 
-#: sickchill/views/home.py:1543
+#: sickchill/views/home.py:1539
 msgid "(with all related media)"
 msgstr "(с всички свързани файлове)"
 
@@ -138,10 +138,6 @@ msgid "100"
 msgstr ""
 
 #: sickchill/gui/slick/views/config_search.mako:63
-msgid "15 mins"
-msgstr ""
-
-#: sickchill/gui/slick/views/config_search.mako:63
 msgid "24 hours"
 msgstr ""
 
@@ -150,15 +146,19 @@ msgid "250"
 msgstr ""
 
 #: sickchill/gui/slick/views/config_search.mako:63
-msgid "4 hours"
+msgid "30 mins"
 msgstr ""
 
 #: sickchill/gui/slick/views/config_search.mako:63
-msgid "45 mins"
+msgid "4 hours"
 msgstr ""
 
 #: sickchill/gui/slick/views/manage_failedDownloads.mako:15
 msgid "500"
+msgstr ""
+
+#: sickchill/gui/slick/views/config_search.mako:63
+msgid "8 hours"
 msgstr ""
 
 #: sickchill/gui/slick/views/config_search.mako:63
@@ -183,7 +183,7 @@ msgid ""
 " links</b> are,<br>and can <b>verify that you have none</b>."
 msgstr ""
 
-#: sickchill/gui/slick/js/core.js:696
+#: sickchill/gui/slick/js/core.js:692
 msgid "<b>Step 1:</b> Confirm Authorization"
 msgstr ""
 
@@ -242,14 +242,14 @@ msgid ""
 "error if there were significant ui changes."
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:1495
+#: sickchill/oldbeard/helpers.py:1560
 #, python-brace-format
 msgid ""
 "A path is required for the destination. Check that the root dir and show "
 "locations are correct for {old_file_name} (I got '{dest}')"
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:1490
+#: sickchill/oldbeard/helpers.py:1555
 #, python-brace-format
 msgid "A path to a file is required for the source. {src} is not a file."
 msgstr ""
@@ -260,12 +260,12 @@ msgid ""
 " and read other users' messages called tweets."
 msgstr ""
 
-#: sickchill/gui/slick/views/layouts/main.mako:242 sickchill/views/index.py:311
-#: sickchill/views/index.py:312
+#: sickchill/gui/slick/views/layouts/main.mako:243 sickchill/views/index.py:315
+#: sickchill/views/index.py:316
 msgid "API Builder"
 msgstr "API Builder"
 
-#: sickchill/views/index.py:307
+#: sickchill/views/index.py:311
 msgid "API Key not generated"
 msgstr "Не е генериран API ключ"
 
@@ -273,8 +273,8 @@ msgstr "Не е генериран API ключ"
 msgid "API Timeout"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:605
-#: sickchill/gui/slick/views/config_general.mako:1228
+#: sickchill/gui/slick/views/config_general.mako:631
+#: sickchill/gui/slick/views/config_general.mako:1259
 #: sickchill/gui/slick/views/config_notifications.mako:2264
 #: sickchill/gui/slick/views/config_providers.mako:150
 #: sickchill/gui/slick/views/config_providers.mako:248
@@ -304,7 +304,7 @@ msgstr "API: sb.backup пропадна!"
 msgid "API: sc.backup successful!"
 msgstr "API: sb.backup успешно!"
 
-#: sickchill/gui/slick/views/config_general.mako:991
+#: sickchill/gui/slick/views/config_general.mako:1022
 msgid "ASCII characters"
 msgstr ""
 
@@ -321,8 +321,8 @@ msgid "Action"
 msgstr "Действие"
 
 #: sickchill/gui/slick/views/inc_home_show_list.mako:30
-#: sickchill/gui/slick/views/layouts/main.mako:371
-#: sickchill/gui/slick/views/status.mako:46
+#: sickchill/gui/slick/views/layouts/main.mako:372
+#: sickchill/gui/slick/views/status.mako:49
 msgid "Active"
 msgstr ""
 
@@ -330,7 +330,7 @@ msgstr ""
 #: sickchill/gui/slick/views/config_providers.mako:856
 #: sickchill/gui/slick/views/editShow.mako:409
 #: sickchill/gui/slick/views/inc_home_show_list.mako:36
-#: sickchill/oldbeard/show_queue.py:212
+#: sickchill/oldbeard/show_queue.py:301
 msgid "Add"
 msgstr "Добави"
 
@@ -359,7 +359,7 @@ msgid "Add From TMDB Lists"
 msgstr ""
 
 # | msgid "Movies"
-#: sickchill/gui/slick/views/layouts/main.mako:177
+#: sickchill/gui/slick/views/layouts/main.mako:178
 #, fuzzy
 msgid "Add Movies"
 msgstr "Филми"
@@ -373,9 +373,9 @@ msgstr "Ново предаване"
 
 # | msgid "Add Shows"
 #: sickchill/gui/slick/views/addShows_newShow.mako:182
-#: sickchill/gui/slick/views/addShows_popularShows.mako:80
-#: sickchill/gui/slick/views/trendingShows.mako:91
+#: sickchill/gui/slick/views/addShows_popularShows.mako:73
 #: sickchill/gui/slick/views/trendingShows.mako:94
+#: sickchill/gui/slick/views/trendingShows.mako:97
 #, fuzzy
 msgid "Add Show"
 msgstr "Добави предаване"
@@ -417,8 +417,8 @@ msgid "Add to Whitelist"
 msgstr ""
 
 # | msgid "Show added"
-#: sickchill/gui/slick/views/status.mako:76
-#: sickchill/gui/slick/views/status.mako:102
+#: sickchill/gui/slick/views/status.mako:79
+#: sickchill/gui/slick/views/status.mako:105
 #, fuzzy
 msgid "Added"
 msgstr "Сериалът е добавен"
@@ -453,7 +453,7 @@ msgstr ""
 msgid "Advanced"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:901
+#: sickchill/gui/slick/views/config_general.mako:932
 #: sickchill/gui/slick/views/editShow.mako:305
 msgid "Advanced Settings"
 msgstr ""
@@ -481,7 +481,7 @@ msgstr ""
 #: sickchill/gui/slick/views/displayShow.mako:461
 #: sickchill/gui/slick/views/manage_backlogOverview.mako:80
 #: sickchill/gui/slick/views/schedule.mako:106
-#: sickchill/gui/slick/views/trendingShows.mako:75
+#: sickchill/gui/slick/views/trendingShows.mako:78
 #, fuzzy
 msgid "Airdate"
 msgstr "Актуализация"
@@ -494,10 +494,12 @@ msgstr ""
 msgid "Alien Alarm (long)"
 msgstr ""
 
-#: sickchill/gui/slick/views/status.mako:44
+#: sickchill/gui/slick/views/status.mako:47
 msgid "Alive"
 msgstr ""
 
+#: sickchill/gui/slick/views/addShows_trendingShows.mako:48
+#: sickchill/gui/slick/views/addShows_trendingShows.mako:59
 #: sickchill/gui/slick/views/history.mako:26
 #: sickchill/gui/slick/views/inc_home_menu.mako:17
 #: sickchill/gui/slick/views/manage.mako:41
@@ -518,7 +520,7 @@ msgid "All"
 msgstr ""
 
 #: sickchill/gui/slick/views/addShows_newShow.mako:95
-#: sickchill/gui/slick/views/config_general.mako:1174
+#: sickchill/gui/slick/views/config_general.mako:1205
 msgid "All Indexers"
 msgstr ""
 
@@ -611,10 +613,10 @@ msgstr "Анимация"
 #: sickchill/gui/slick/views/home.mako:35
 #: sickchill/gui/slick/views/inc_addShowOptions.mako:79
 #: sickchill/gui/slick/views/inc_home_show_list.mako:36
-#: sickchill/gui/slick/views/layouts/main.mako:240
+#: sickchill/gui/slick/views/layouts/main.mako:241
 #: sickchill/gui/slick/views/manage.mako:45
 #: sickchill/gui/slick/views/manage_massEdit.mako:192
-#: sickchill/views/config/anime.py:22 sickchill/views/config/index.py:23
+#: sickchill/views/config/anime.py:22 sickchill/views/config/index.py:24
 msgid "Anime"
 msgstr "Аниме"
 
@@ -622,7 +624,7 @@ msgstr "Аниме"
 msgid "AnimeDB Settings"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:932
+#: sickchill/gui/slick/views/config_general.mako:963
 msgid "Anonymous redirect"
 msgstr ""
 
@@ -634,16 +636,16 @@ msgstr ""
 msgid "Archived"
 msgstr "Архивиран"
 
-#: sickchill/gui/slick/views/config_general.mako:1114
+#: sickchill/gui/slick/views/config_general.mako:1145
 msgid "Archived option will keep previous downloaded quality"
 msgstr ""
 
-#: sickchill/gui/slick/views/config.mako:172
+#: sickchill/gui/slick/views/config.mako:189
 msgid "Arguments"
 msgstr ""
 
 #: sickchill/gui/slick/views/addShows_popularShows.mako:29
-#: sickchill/gui/slick/views/addShows_trendingShows.mako:34
+#: sickchill/gui/slick/views/addShows_trendingShows.mako:28
 msgid "Asc"
 msgstr ""
 
@@ -665,9 +667,9 @@ msgstr ""
 msgid "At least one provider is required but two are recommended."
 msgstr ""
 
+# | msgid "Error: {error}"
 #: sickchill/oldbeard/properFinder.py:65
 #, fuzzy, python-brace-format
-#| msgid "Error: {error}"
 msgid "Authentication error: {error}"
 msgstr "Грешка: {error}"
 
@@ -676,7 +678,7 @@ msgstr "Грешка: {error}"
 msgid "Authentication failed during api key request: {traceback}"
 msgstr ""
 
-#: sickchill/views/home.py:311
+#: sickchill/views/home.py:309
 msgid "Authentication failed. SABnzbd expects"
 msgstr "Неуспешно удостоверяване. SABnzbd очаква"
 
@@ -684,7 +686,7 @@ msgstr "Неуспешно удостоверяване. SABnzbd очаква"
 msgid "Authorization token of your Gotify account"
 msgstr ""
 
-#: sickchill/gui/slick/views/manage_manageSearches.mako:86
+#: sickchill/gui/slick/views/manage_manageSearches.mako:99
 msgid "Auto"
 msgstr ""
 
@@ -698,7 +700,21 @@ msgstr "Последваща обработка"
 msgid "Auto Post Processor disabled"
 msgstr ""
 
+# | msgid "Postprocessor"
+# | msgid "Auto Post Processor"
+#: sickchill/views/manage/searches.py:91
+#, fuzzy
+msgid "Auto Post Processor is already running"
+msgstr "Последваща обработка"
+
+# | msgid "Postprocessor"
+# | msgid "Auto Post Processor"
 #: sickchill/views/manage/searches.py:84
+#, fuzzy
+msgid "Auto Post Processor is disabled"
+msgstr "Последваща обработка"
+
+#: sickchill/views/manage/searches.py:89
 msgid "Auto Post Processor started"
 msgstr ""
 
@@ -707,7 +723,7 @@ msgid "Auto Post-Processing Frequency"
 msgstr ""
 
 # | msgid "Automatic update failed: {0}"
-#: sickchill/show_updater.py:106
+#: sickchill/show_updater.py:124
 #, fuzzy, python-brace-format
 msgid "Automatic update failed: {error}"
 msgstr "Автоматичното обновяване пропадна: {0}"
@@ -718,7 +734,7 @@ msgid "Automatically added {num_shows} from their existing metadata files"
 msgstr "Автоматично бяха добавени {num_shows} от налични файлове с мета-информация"
 
 # | msgid "Automatic update failed: {0}"
-#: sickchill/gui/slick/views/config_general.mako:220
+#: sickchill/gui/slick/views/config_general.mako:246
 #, fuzzy
 msgid "Automatically update"
 msgstr "Автоматичното обновяване пропадна: {0}"
@@ -731,22 +747,22 @@ msgstr ""
 msgid "Background"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:342
+#: sickchill/gui/slick/views/config_general.mako:368
 msgid "Background Path"
 msgstr ""
 
-#: sickchill/gui/slick/views/manage_manageSearches.mako:62
-#: sickchill/gui/slick/views/status.mako:13 sickchill/logger.py:231
+#: sickchill/gui/slick/views/manage_manageSearches.mako:75
+#: sickchill/gui/slick/views/status.mako:16 sickchill/logger.py:284
 msgid "Backlog"
 msgstr "Backlog"
 
-#: sickchill/gui/slick/views/layouts/main.mako:196
-#: sickchill/views/manage/index.py:436 sickchill/views/manage/index.py:437
+#: sickchill/gui/slick/views/layouts/main.mako:197
+#: sickchill/views/manage/index.py:438 sickchill/views/manage/index.py:439
 msgid "Backlog Overview"
 msgstr "Преглед на Backlog"
 
 # | msgid "backlog searches"
-#: sickchill/gui/slick/views/layouts/main.mako:385
+#: sickchill/gui/slick/views/layouts/main.mako:386
 #: sickchill/gui/slick/views/manage_manageSearches.mako:16
 #, fuzzy
 msgid "Backlog Search"
@@ -776,15 +792,15 @@ msgstr "backlog търсене"
 msgid "Backlog search is currently not working on this provider"
 msgstr ""
 
-#: sickchill/views/manage/searches.py:48
+#: sickchill/views/manage/searches.py:50
 msgid "Backlog search started"
 msgstr "Започна Backlog търсене"
 
-#: sickchill/views/home.py:1828
+#: sickchill/views/home.py:1816
 msgid "Backlog started"
 msgstr "Backlog е стартиран"
 
-#: sickchill/views/home.py:1815
+#: sickchill/views/home.py:1803
 #, python-brace-format
 msgid ""
 "Backlog was automatically started for the following seasons of "
@@ -806,7 +822,7 @@ msgid "Backup"
 msgstr "Архивиране"
 
 # | msgid "Backup/Restore"
-#: sickchill/gui/slick/views/layouts/main.mako:234
+#: sickchill/gui/slick/views/layouts/main.mako:235
 #, fuzzy
 msgid "Backup &amp; Restore"
 msgstr "Архивиране/Възстановяване"
@@ -819,7 +835,7 @@ msgstr "Завършено резервно копие"
 msgid "Backup your main database file and config."
 msgstr ""
 
-#: sickchill/views/config/backup.py:22 sickchill/views/config/index.py:17
+#: sickchill/views/config/backup.py:22 sickchill/views/config/index.py:18
 msgid "Backup/Restore"
 msgstr "Архивиране/Възстановяване"
 
@@ -882,7 +898,7 @@ msgstr ""
 msgid "Boxcar2 access token"
 msgstr ""
 
-#: sickchill/views/home.py:390
+#: sickchill/views/home.py:388
 msgid ""
 "Boxcar2 notification succeeded. Check your Boxcar2 clients to make sure "
 "it worked"
@@ -894,15 +910,15 @@ msgstr ""
 msgid "Bugle"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:1233
+#: sickchill/gui/slick/views/config_general.mako:1264
 msgid "Built-in project key"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:910
+#: sickchill/gui/slick/views/config_general.mako:941
 msgid "CPU throttling"
 msgstr ""
 
-#: sickchill/gui/slick/views/config.mako:135
+#: sickchill/gui/slick/views/config.mako:152
 msgid "Cache Folder"
 msgstr ""
 
@@ -926,7 +942,7 @@ msgstr ""
 msgid "Can't load the metadata file from {0}, it doesn't exist"
 msgstr ""
 
-#: sickchill/views/home.py:1864 sickchill/views/home.py:1892
+#: sickchill/views/home.py:1852 sickchill/views/home.py:1880
 msgid "Can't rename episodes when the show dir is missing."
 msgstr "Не може да преименува епизоди, когато липсва папка за предаването."
 
@@ -987,12 +1003,12 @@ msgid ""
 " numbering"
 msgstr ""
 
-#: sickchill/oldbeard/config.py:548
+#: sickchill/oldbeard/config.py:551
 #, python-brace-format
 msgid "Changed logs folder to {directory} and restarting logging"
 msgstr ""
 
-#: sickchill/gui/slick/views/layouts/main.mako:267
+#: sickchill/gui/slick/views/layouts/main.mako:268
 #: sickchill/views/changelog.py:25 sickchill/views/changelog.py:26
 msgid "Changelog"
 msgstr "Списък с промени"
@@ -1015,19 +1031,19 @@ msgid ""
 " {ep} at {location} (File {result})"
 msgstr ""
 
-#: sickchill/gui/slick/views/layouts/main.mako:283
+#: sickchill/gui/slick/views/layouts/main.mako:284
 msgid "Check For Updates"
 msgstr ""
 
-#: sickchill/logger.py:233
+#: sickchill/logger.py:286
 msgid "Check Version"
 msgstr "Проверка на версията"
 
-#: sickchill/gui/slick/js/core.js:1023
+#: sickchill/gui/slick/js/core.js:1019
 msgid "Check blacklist name; the value needs to be a trakt slug"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:210
+#: sickchill/gui/slick/views/config_general.mako:236
 msgid "Check for software updates"
 msgstr ""
 
@@ -1051,7 +1067,7 @@ msgstr ""
 msgid "Check the box for exact string search"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:230
+#: sickchill/gui/slick/views/config_general.mako:256
 msgid "Check the server every*"
 msgstr ""
 
@@ -1063,7 +1079,7 @@ msgstr ""
 msgid "Check your network connection and try again."
 msgstr ""
 
-#: sickchill/views/home.py:651
+#: sickchill/views/home.py:649
 #, python-brace-format
 msgid "Checking flaresolverr uri: {uri}"
 msgstr ""
@@ -1146,7 +1162,7 @@ msgid ""
 "notifications to work."
 msgstr ""
 
-#: sickchill/gui/slick/js/core.js:1959
+#: sickchill/gui/slick/js/core.js:1952
 #: sickchill/gui/slick/views/config_search.mako:913
 #: sickchill/gui/slick/views/config_search.mako:914
 #: sickchill/gui/slick/views/config_search.mako:1271
@@ -1200,34 +1216,34 @@ msgid ""
 msgstr ""
 
 # | msgid " with password"
-#: sickchill/gui/slick/views/config_general.mako:1279
+# | msgid "Client password"
+#: sickchill/gui/slick/views/config_general.mako:1310
 #, fuzzy
-#| msgid "Client password"
 msgid "Client ID"
 msgstr " с парола"
 
-#: sickchill/gui/slick/views/config_general.mako:1271
+#: sickchill/gui/slick/views/config_general.mako:1302
 msgid ""
 "Client ID / Secret and account for Trakt notifications and sync. Create "
 "an app with Redirect URI urn:ietf:wg:oauth:2.0:oob."
 msgstr ""
 
 # | msgid " with password"
-#: sickchill/gui/slick/views/config_general.mako:1297
+# | msgid "Client password"
+#: sickchill/gui/slick/views/config_general.mako:1328
 #, fuzzy
-#| msgid "Client password"
 msgid "Client Secret"
 msgstr " с парола"
 
 # | msgid " with password"
-#: sickchill/gui/slick/js/core.js:1943
+#: sickchill/gui/slick/js/core.js:1936
 #: sickchill/gui/slick/views/config_search.mako:866
 #: sickchill/gui/slick/views/config_search.mako:1099
 #, fuzzy
 msgid "Client password"
 msgstr " с парола"
 
-#: sickchill/gui/slick/js/core.js:1940
+#: sickchill/gui/slick/js/core.js:1933
 #: sickchill/gui/slick/views/config_search.mako:845
 #: sickchill/gui/slick/views/config_search.mako:1079
 msgid "Client username"
@@ -1287,7 +1303,7 @@ msgid "Config - Subtitles"
 msgstr "Настройки - субтитри"
 
 # | msgid "Config - Anime"
-#: sickchill/gui/slick/views/config.mako:111
+#: sickchill/gui/slick/views/config.mako:128
 #, fuzzy
 msgid "Config File"
 msgstr "Настройки - аниме"
@@ -1304,17 +1320,17 @@ msgstr "Архивиране на настройките..."
 msgid "Config backup successful, updating..."
 msgstr "Успешно архивиране на настройките, актуализиране..."
 
+# | msgid "Config - General"
 #: sickchill/gui/slick/views/config_notifications.mako:2734
 #, fuzzy
-#| msgid "Config - General"
 msgid "Config → General → Indexer / Data"
 msgstr "Настройки - Общи"
 
-#: sickchill/views/config/anime.py:37 sickchill/views/config/general.py:220
-#: sickchill/views/config/notifications.py:274
-#: sickchill/views/config/post_processing.py:134
-#: sickchill/views/config/providers.py:269 sickchill/views/config/search.py:146
-#: sickchill/views/config/subtitles.py:77
+#: sickchill/views/config/anime.py:38 sickchill/views/config/general.py:233
+#: sickchill/views/config/notifications.py:275
+#: sickchill/views/config/post_processing.py:135
+#: sickchill/views/config/providers.py:271 sickchill/views/config/search.py:147
+#: sickchill/views/config/subtitles.py:78
 msgid "Configuration Saved"
 msgstr "Настройките са запаметени"
 
@@ -1410,7 +1426,7 @@ msgstr ""
 msgid "Could not append the show year folder for the show: {0}"
 msgstr ""
 
-#: sickchill/oldbeard/show_queue.py:371
+#: sickchill/oldbeard/show_queue.py:461
 #, python-brace-format
 msgid "Could not append the show year folder for the show: {show_dir}"
 msgstr ""
@@ -1433,14 +1449,20 @@ msgstr "Не успя да конвертира във валидна дата �
 msgid "Could not convert to a valid airdate: {airdate_value}"
 msgstr "Не успя да конвертира във валидна дата на излъчване: {0}"
 
-#: sickchill/oldbeard/postProcessor.py:1191
+#: sickchill/oldbeard/postProcessor.py:1171
+msgid ""
+"Could not create show metadata after creating show directory. "
+"Continuing..."
+msgstr ""
+
+#: sickchill/oldbeard/postProcessor.py:1190
 msgid "Could not create/update meta files. Continuing with postProcessing..."
 msgstr ""
 
 # | msgid "Started Download"
+# | msgid "Confirmed download"
 #: sickchill/oldbeard/providers/newpct.py:142
 #, fuzzy, python-brace-format
-#| msgid "Confirmed download"
 msgid "Could not download {0}"
 msgstr "Започнато изтегляне"
 
@@ -1463,13 +1485,13 @@ msgstr ""
 msgid "Could not find results in returned data"
 msgstr ""
 
+# | msgid "Show not in show list"
 #: sickchill/oldbeard/providers/horriblesubs.py:123
 #, fuzzy
-#| msgid "Show not in show list"
 msgid "Could not find show ID"
 msgstr "Сериалът не е в списъка със сериали"
 
-#: sickchill/oldbeard/show_queue.py:346
+#: sickchill/oldbeard/show_queue.py:436
 #, python-brace-format
 msgid "Could not find show with id:{indexer_id} on {indexer}, skipping"
 msgstr ""
@@ -1516,12 +1538,12 @@ msgstr ""
 msgid "Could not parse data from provider"
 msgstr ""
 
-#: sickchill/views/home.py:1987
+#: sickchill/views/home.py:1975
 #, python-brace-format
 msgid "Could not snatch manually selected result: {result}"
 msgstr ""
 
-#: sickchill/gui/slick/js/core.js:2031
+#: sickchill/gui/slick/js/core.js:2024
 msgid "Create a new OAuth app for put.io"
 msgstr ""
 
@@ -1561,15 +1583,22 @@ msgid "Current"
 msgstr ""
 
 # | msgid "Rename"
+# | msgid "Username"
 #: sickchill/gui/slick/views/config_notifications.mako:2737
 #, fuzzy
-#| msgid "Username"
 msgid "Current username"
 msgstr "Преименувай"
 
-#: sickchill/views/home.py:921
+#: sickchill/views/home.py:922
 msgid "Currently downloading subtitles for this show"
 msgstr "В момента се изтеглят субтитри за това предаване"
+
+# | msgid "Unable to update this show."
+# | msgid "Failed to update TBA episode names for {show}"
+#: sickchill/views/home.py:919
+#, fuzzy
+msgid "Currently updating TBA episode names for this show"
+msgstr "Не може да актуализира този сериал."
 
 #: sickchill/gui/slick/views/manage_massEdit.mako:98
 msgid "Custom"
@@ -1613,31 +1642,31 @@ msgstr "Настройки на субтитри"
 msgid "Customize options"
 msgstr ""
 
-#: sickchill/gui/slick/views/status.mako:48
+#: sickchill/gui/slick/views/status.mako:51
 msgid "Cycle Time"
 msgstr ""
 
 # | msgid "deleted"
-#: sickchill/gui/slick/js/core.js:3539
+#: sickchill/gui/slick/js/core.js:3534
 #, fuzzy
 msgid "DELETED"
 msgstr "изтрит"
 
 # | msgid "Family"
-#: sickchill/gui/slick/views/manage_manageSearches.mako:66
+#: sickchill/gui/slick/views/manage_manageSearches.mako:79
 #, fuzzy
 msgid "Daily"
 msgstr "Семеен"
 
 # | msgid "daily searches"
-#: sickchill/gui/slick/views/layouts/main.mako:384
+#: sickchill/gui/slick/views/layouts/main.mako:385
 #: sickchill/gui/slick/views/manage_manageSearches.mako:25
-#: sickchill/gui/slick/views/status.mako:12
+#: sickchill/gui/slick/views/status.mako:15
 #, fuzzy
 msgid "Daily Search"
 msgstr "дневно търсене"
 
-#: sickchill/logger.py:230
+#: sickchill/logger.py:283
 msgid "Daily Searcher"
 msgstr "Дневно търсене"
 
@@ -1653,7 +1682,7 @@ msgstr "дневно търсене"
 msgid "Daily search is currently not working on this provider"
 msgstr ""
 
-#: sickchill/views/manage/searches.py:57
+#: sickchill/views/manage/searches.py:59
 msgid "Daily search started"
 msgstr "Започна ежедневно търсене"
 
@@ -1665,7 +1694,7 @@ msgstr ""
 msgid "Daily/RSS only"
 msgstr "Дневни/само RSS"
 
-#: sickchill/gui/slick/views/config_general.mako:316
+#: sickchill/gui/slick/views/config_general.mako:342
 msgid "Dark"
 msgstr ""
 
@@ -1714,7 +1743,7 @@ msgid "Data returned from {0} does not contain any torrents"
 msgstr ""
 
 # | msgid "database is locked"
-#: sickchill/gui/slick/views/config.mako:120
+#: sickchill/gui/slick/views/config.mako:137
 #, fuzzy
 msgid "Database Files"
 msgstr "базата с данни е заключена"
@@ -1731,6 +1760,11 @@ msgstr "базата с данни е заключена"
 msgid "Database location"
 msgstr "базата с данни е заключена"
 
+#: sickchill/oldbeard/postProcessor.py:1162
+#, python-brace-format
+msgid "Database update failed after media IO; files left in place: {error}"
+msgstr ""
+
 # | msgid "Update"
 #: sickchill/gui/slick/views/schedule.mako:56
 #, fuzzy
@@ -1738,7 +1772,7 @@ msgid "Date"
 msgstr "Актуализация"
 
 # | msgid "Update Failed"
-#: sickchill/gui/slick/views/config_general.mako:491
+#: sickchill/gui/slick/views/config_general.mako:517
 #, fuzzy
 msgid "Date style"
 msgstr "Неуспешно актуализиране"
@@ -1749,11 +1783,19 @@ msgid "Day"
 msgstr ""
 
 #: sickchill/gui/slick/views/config_general.mako:118
+msgid "Days between disk refreshes for shows not in the TVDB update feed"
+msgstr ""
+
+#: sickchill/gui/slick/views/config_general.mako:144
 msgid "Days to wait before updating paused and ended shows"
 msgstr ""
 
+#: sickchill/gui/slick/views/config_general.mako:162
+msgid "Default 14, daily 0, never -1"
+msgstr ""
+
 #: sickchill/gui/slick/views/config_general.mako:136
-msgid "Default 7, daily 0, never -1"
+msgid "Default 7, mtime-only 0, never auto disk-refresh -1"
 msgstr ""
 
 #: sickchill/gui/slick/views/displayShow.mako:215
@@ -1767,18 +1809,18 @@ msgstr ""
 msgid "Default Episode Status"
 msgstr "Невалиден статус"
 
-#: sickchill/gui/slick/views/config_general.mako:1149
+#: sickchill/gui/slick/views/config_general.mako:1180
 msgid "Default Indexer Language"
 msgstr ""
 
 # | msgid "Invalid status"
+# | msgid "Default Episode Status"
 #: sickchill/gui/slick/views/manage.mako:49
 #, fuzzy
-#| msgid "Default Episode Status"
 msgid "Default Status"
 msgstr "Невалиден статус"
 
-#: sickchill/gui/slick/views/config_general.mako:1086
+#: sickchill/gui/slick/views/config_general.mako:1117
 msgid "Default deleted episode status"
 msgstr ""
 
@@ -1786,7 +1828,7 @@ msgstr ""
 msgid "Default indexer"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:1142
+#: sickchill/gui/slick/views/config_general.mako:1173
 msgid "Default language, indexer, and timeouts for show metadata."
 msgstr ""
 
@@ -1800,7 +1842,7 @@ msgid ""
 "browse dialog"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:442
+#: sickchill/gui/slick/views/config_general.mako:468
 msgid "Definite/Indefinite articles to remove for sorting"
 msgstr ""
 
@@ -1811,15 +1853,15 @@ msgstr ""
 #: sickchill/gui/slick/views/manage.mako:71
 #: sickchill/gui/slick/views/manage.mako:146
 #: sickchill/gui/slick/views/manage_massEdit.mako:65
-#: sickchill/gui/slick/views/status.mako:108
+#: sickchill/gui/slick/views/status.mako:111
 #, fuzzy
 msgid "Delete"
 msgstr "изтрит"
 
 # | msgid "Update failed!"
+# | msgid "Delete Failed"
 #: sickchill/gui/slick/views/manage.mako:72
 #, fuzzy
-#| msgid "Delete Failed"
 msgid "Delete All"
 msgstr "Неуспешно актуализиране!"
 
@@ -1879,7 +1921,7 @@ msgstr "Изтрива празна папка: "
 msgid "Deleting file {cur_file}"
 msgstr "Изтриване на файл {0}"
 
-#: sickchill/tv.py:2304
+#: sickchill/tv.py:2324
 msgid "Deleting myself from the database"
 msgstr "Изтривам себе си от базата данни"
 
@@ -1896,7 +1938,7 @@ msgstr "Изтрива непозволените свързани файлов�
 msgid "Deleting orphan episode with episode_id: {current_episode_id}"
 msgstr ""
 
-#: sickchill/tv.py:2296
+#: sickchill/tv.py:2316
 #, python-brace-format
 msgid "Deleting {show} {ep} from the DB"
 msgstr "Изтрива {show} {ep} от база данни"
@@ -1908,7 +1950,7 @@ msgid ""
 msgstr ""
 
 #: sickchill/gui/slick/views/addShows_popularShows.mako:30
-#: sickchill/gui/slick/views/addShows_trendingShows.mako:35
+#: sickchill/gui/slick/views/addShows_trendingShows.mako:29
 msgid "Desc"
 msgstr ""
 
@@ -1920,7 +1962,7 @@ msgstr ""
 msgid "Description"
 msgstr ""
 
-#: sickchill/oldbeard/postProcessor.py:1118
+#: sickchill/oldbeard/postProcessor.py:1072
 msgid "Destination folder for this episode: "
 msgstr "Папка цел за този епизод: "
 
@@ -2007,9 +2049,9 @@ msgid ""
 "leechers: {0} (S:{1} L:{2})"
 msgstr ""
 
-#: sickchill/gui/slick/views/config.mako:228
+#: sickchill/gui/slick/views/config.mako:245
 #: sickchill/gui/slick/views/config_notifications.mako:3716
-#: sickchill/gui/slick/views/layouts/main.mako:266
+#: sickchill/gui/slick/views/layouts/main.mako:267
 msgid "Discord"
 msgstr ""
 
@@ -2025,23 +2067,27 @@ msgstr ""
 msgid "Discord Incoming Webhook"
 msgstr ""
 
-#: sickchill/views/home.py:511
+#: sickchill/views/home.py:509
 msgid "Discord message failed"
 msgstr "Неуспешно съобщение към Discord"
 
-#: sickchill/views/home.py:509
+#: sickchill/views/home.py:507
 msgid "Discord message successful"
 msgstr "Успешно съобщение към Discord"
 
-#: sickchill/gui/slick/views/status.mako:130
+#: sickchill/gui/slick/views/addShows_trendingShows.mako:34
+msgid "Discovery List Selection"
+msgstr ""
+
+#: sickchill/gui/slick/views/status.mako:133
 msgid "Disk Space"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:471
+#: sickchill/gui/slick/views/config_general.mako:497
 msgid "Display fuzzy dates"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:310
+#: sickchill/gui/slick/views/config_general.mako:336
 msgid "Display theme"
 msgstr ""
 
@@ -2073,7 +2119,7 @@ msgstr "Документален филм"
 msgid "Don't delete empty folders"
 msgstr "Изтрива празна папка: "
 
-#: sickchill/gui/slick/js/core.js:1196 sickchill/gui/slick/js/core.js:1227
+#: sickchill/gui/slick/js/core.js:1192 sickchill/gui/slick/js/core.js:1223
 msgid "Don't forget to save your new pushbullet settings."
 msgstr ""
 
@@ -2099,7 +2145,7 @@ msgstr "Изтеглен(и)"
 msgid "Download Pilot Only"
 msgstr ""
 
-#: sickchill/views/home.py:1012
+#: sickchill/views/home.py:1016
 msgid "Download Subtitles"
 msgstr "Изтегляне на субтитри"
 
@@ -2128,7 +2174,7 @@ msgid "Download subtitles for this show?"
 msgstr "В момента се изтеглят субтитри за това предаване"
 
 # | msgid "Download Subtitles"
-#: sickchill/gui/slick/views/config_general.mako:562
+#: sickchill/gui/slick/views/config_general.mako:588
 #, fuzzy
 msgid "Download url"
 msgstr "Изтегляне на субтитри"
@@ -2205,12 +2251,20 @@ msgstr ""
 msgid "ERROR logs"
 msgstr ""
 
+#: sickchill/oldbeard/postProcessor.py:1156
+#, python-brace-format
+msgid ""
+"ERROR: Database update failed after media was already processed. Files "
+"were left as-is (source={source}, destination={destination}). Fix the "
+"database problem, then reconcile paths manually. Error: {error}"
+msgstr ""
+
 #: sickchill/oldbeard/dailysearcher.py:57
 #, python-brace-format
 msgid "ERROR: expected to find a single show matching {show_id}"
 msgstr ""
 
-#: sickchill/views/home.py:734
+#: sickchill/views/home.py:732
 #, python-brace-format
 msgid "ERROR: {last_error}"
 msgstr "ГРЕШКА: {last_error}"
@@ -2219,19 +2273,19 @@ msgstr "ГРЕШКА: {last_error}"
 #: sickchill/gui/slick/views/manage.mako:36
 #: sickchill/gui/slick/views/manage.mako:89
 #: sickchill/gui/slick/views/manage_massEdit.mako:64
-#: sickchill/views/home.py:902 sickchill/views/home.py:1868
-#: sickchill/views/home.py:1954
+#: sickchill/views/home.py:900 sickchill/views/home.py:1856
+#: sickchill/views/home.py:1942
 msgid "Edit"
 msgstr "Редактирай"
 
+# | msgid "Edit"
 #: sickchill/gui/slick/views/manage.mako:37
 #, fuzzy
-#| msgid "Edit"
 msgid "Edit All"
 msgstr "Редактирай"
 
-#: sickchill/views/home.py:1253 sickchill/views/home.py:1254
-#: sickchill/views/home.py:1264 sickchill/views/home.py:1265
+#: sickchill/views/home.py:1257 sickchill/views/home.py:1258
+#: sickchill/views/home.py:1268 sickchill/views/home.py:1269
 msgid "Edit Show"
 msgstr "Редактиране на шоуто"
 
@@ -2305,16 +2359,16 @@ msgstr ""
 #: sickchill/gui/slick/views/config_notifications.mako:3605
 #: sickchill/gui/slick/views/config_notifications.mako:3726
 #: sickchill/gui/slick/views/config_postProcessing.mako:35
-#: sickchill/gui/slick/views/status.mako:45
+#: sickchill/gui/slick/views/status.mako:48
 #, fuzzy
 msgid "Enable"
 msgstr "Преименувай"
 
-#: sickchill/gui/slick/views/config_general.mako:715
+#: sickchill/gui/slick/views/config_general.mako:741
 msgid "Enable HTTPS"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:1272
+#: sickchill/gui/slick/views/config_general.mako:1303
 msgid "Enable Trakt notifications and sync options under Config → Notifications."
 msgstr ""
 
@@ -2334,13 +2388,13 @@ msgstr "backlog търсене"
 msgid "Enable daily searches"
 msgstr "дневно търсене"
 
-#: sickchill/gui/slick/views/config_general.mako:840
+# | msgid "unable to open database file"
+#: sickchill/gui/slick/views/config_general.mako:871
 #, fuzzy
-#| msgid "unable to open database file"
 msgid "Enable database debug"
 msgstr "не може да се отвори файл с база данни"
 
-#: sickchill/gui/slick/views/config_general.mako:830
+#: sickchill/gui/slick/views/config_general.mako:856
 msgid "Enable debug"
 msgstr ""
 
@@ -2351,7 +2405,7 @@ msgid "Enable fallback"
 msgstr ""
 
 # | msgid " with password"
-#: sickchill/gui/slick/views/config_general.mako:979
+#: sickchill/gui/slick/views/config_general.mako:1010
 #, fuzzy
 msgid "Encrypt passwords"
 msgstr " с парола"
@@ -2365,6 +2419,10 @@ msgstr ""
 #, fuzzy
 msgid "Ends"
 msgstr "Extend"
+
+#: sickchill/gui/slick/views/addShows_trendingShows.mako:58
+msgid "English"
+msgstr ""
 
 #: sickchill/gui/slick/views/config_providers.mako:515
 msgid "English torrents"
@@ -2435,11 +2493,11 @@ msgstr "епизод"
 msgid "Episode Skipped if older than"
 msgstr ""
 
-#: sickchill/gui/slick/views/layouts/main.mako:198
+#: sickchill/gui/slick/views/layouts/main.mako:199
 msgid "Episode Status Management"
 msgstr ""
 
-#: sickchill/views/home.py:95 sickchill/views/home.py:1751
+#: sickchill/views/home.py:93 sickchill/views/home.py:1739
 msgid "Episode couldn't be retrieved"
 msgstr "Епизодът не може да бъде открит"
 
@@ -2457,6 +2515,13 @@ msgstr ""
 #, python-brace-format
 msgid "Episode quality: {0}"
 msgstr ""
+
+# | msgid "episode"
+# | msgid "Episode Search"
+#: sickchill/views/home.py:1996 sickchill/views/home.py:2286
+#, fuzzy
+msgid "Episode search already queued"
+msgstr "епизод"
 
 # | msgid "episode"
 #: sickchill/gui/slick/views/config_postProcessing.mako:613
@@ -2477,12 +2542,12 @@ msgid "Episode_Name"
 msgstr "епизод"
 
 # | msgid "No subtitles downloaded"
-#: sickchill/gui/slick/views/layouts/main.mako:382
+#: sickchill/gui/slick/views/layouts/main.mako:383
 #, fuzzy
 msgid "Episodes Downloaded"
 msgstr "Няма свалени субтитри"
 
-#: sickchill/views/home.py:1514
+#: sickchill/views/home.py:1510
 #, python-brace-format
 msgid "Episodes reloaded using {order}."
 msgstr ""
@@ -2497,67 +2562,70 @@ msgstr ""
 msgid "Episodes without {subtitleLanguage} (undefined) subtitles."
 msgstr ""
 
-#: sickchill/logger.py:246 sickchill/views/home.py:885
-#: sickchill/views/home.py:888 sickchill/views/home.py:1200
-#: sickchill/views/home.py:1207 sickchill/views/home.py:1523
-#: sickchill/views/home.py:1537 sickchill/views/home.py:1563
-#: sickchill/views/home.py:1582 sickchill/views/home.py:1598
-#: sickchill/views/home.py:1605 sickchill/views/home.py:1629
-#: sickchill/views/home.py:1716 sickchill/views/home.py:1719
-#: sickchill/views/home.py:1726 sickchill/views/home.py:1729
-#: sickchill/views/home.py:1751 sickchill/views/home.py:1859
-#: sickchill/views/home.py:1864 sickchill/views/home.py:1883
-#: sickchill/views/home.py:1887 sickchill/views/home.py:1892
-#: sickchill/views/imageSelector.py:22 sickchill/views/imageSelector.py:26
-#: sickchill/views/imageSelector.py:58 sickchill/views/movies.py:68
+#: sickchill/logger.py:299 sickchill/oldbeard/show_queue.py:766
+#: sickchill/views/home.py:883 sickchill/views/home.py:886
+#: sickchill/views/home.py:1204 sickchill/views/home.py:1211
+#: sickchill/views/home.py:1519 sickchill/views/home.py:1533
+#: sickchill/views/home.py:1557 sickchill/views/home.py:1574
+#: sickchill/views/home.py:1587 sickchill/views/home.py:1608
+#: sickchill/views/home.py:1619 sickchill/views/home.py:1704
+#: sickchill/views/home.py:1707 sickchill/views/home.py:1714
+#: sickchill/views/home.py:1717 sickchill/views/home.py:1739
+#: sickchill/views/home.py:1847 sickchill/views/home.py:1852
+#: sickchill/views/home.py:1871 sickchill/views/home.py:1875
+#: sickchill/views/home.py:1880 sickchill/views/imageSelector.py:22
+#: sickchill/views/imageSelector.py:26 sickchill/views/imageSelector.py:58
+#: sickchill/views/manage/searches.py:84 sickchill/views/manage/searches.py:91
+#: sickchill/views/manage/searches.py:106
+#: sickchill/views/manage/searches.py:114 sickchill/views/movies.py:68
 #: sickchill/views/movies.py:85
 msgid "Error"
 msgstr "Грешка"
 
+# | msgid "Error: {error}"
 #: sickchill/oldbeard/properFinder.py:94
 #, fuzzy, python-brace-format
-#| msgid "Error: {error}"
 msgid "Error parsing {name}: {error}"
 msgstr "Грешка: {error}"
 
-#: sickchill/views/home.py:392
+#: sickchill/views/home.py:390
 msgid "Error sending Boxcar2 notification"
 msgstr "Грешка при изпращане на уведомление на Boxcar2"
 
-#: sickchill/views/home.py:413
+# | msgid "Error sending join notification: {message}"
+#: sickchill/views/home.py:411
 #, fuzzy, python-brace-format
-#| msgid "Error sending join notification: {message}"
 msgid "Error sending Gotify notification. {message}"
 msgstr "Грешка при изпращането на join уведомяване: {message}"
 
-#: sickchill/views/home.py:742
+#: sickchill/views/home.py:740
 msgid "Error sending Pushalot notification"
 msgstr "Грешка при изпращане на Pushalot уведомяване"
 
-#: sickchill/views/home.py:750 sickchill/views/home.py:760
-#: sickchill/views/home.py:768
+#: sickchill/views/home.py:748 sickchill/views/home.py:758
+#: sickchill/views/home.py:766
 msgid "Error sending Pushbullet notification"
 msgstr "Грешка при изпращане на Pushover уведомяване"
 
-#: sickchill/views/home.py:402
+#: sickchill/views/home.py:400
 msgid "Error sending Pushover notification"
 msgstr "Грешка при изпращане на Pushover уведомяване"
 
-#: sickchill/views/home.py:351
+#: sickchill/views/home.py:349
 #, python-brace-format
 msgid "Error sending Telegram notification: {message}"
 msgstr "Грешка при изпращането на Telegram уведомяване: {message}"
 
-#: sickchill/views/home.py:361
+#: sickchill/views/home.py:359
 #, python-brace-format
 msgid "Error sending join notification: {message}"
 msgstr "Грешка при изпращането на join уведомяване: {message}"
 
-#: sickchill/views/home.py:456
+#: sickchill/views/home.py:454
 msgid "Error sending sms"
 msgstr "Грешка при изпращане на sms"
 
-#: sickchill/views/home.py:436
+#: sickchill/views/home.py:434
 msgid "Error sending tweet"
 msgstr "Грешка при изпращане на tweet"
 
@@ -2567,10 +2635,10 @@ msgstr "Грешка при изпращане на tweet"
 msgid "Error while sending torrent: {error}"
 msgstr ""
 
-#: sickchill/views/config/general.py:218
-#: sickchill/views/config/notifications.py:272
-#: sickchill/views/config/post_processing.py:132
-#: sickchill/views/config/search.py:144
+#: sickchill/views/config/general.py:231
+#: sickchill/views/config/notifications.py:273
+#: sickchill/views/config/post_processing.py:133
+#: sickchill/views/config/search.py:145
 msgid "Error(s) Saving Configuration"
 msgstr "Грешка(и) при запаметяване на настройките"
 
@@ -2590,16 +2658,16 @@ msgstr ""
 msgid "Error: Unable to get {self.name} Authentication, check your config!"
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:1514 sickchill/oldbeard/helpers.py:1551
+#: sickchill/oldbeard/helpers.py:1579 sickchill/oldbeard/helpers.py:1616
 #, python-brace-format
 msgid "Error: {error}"
 msgstr "Грешка: {error}"
 
-#: sickchill/views/manage/index.py:784
+#: sickchill/views/manage/index.py:786
 msgid "Errors encountered"
 msgstr "Срещнати грешки"
 
-#: sickchill/logger.py:245
+#: sickchill/logger.py:298
 msgid "Event"
 msgstr "Събитие"
 
@@ -2612,7 +2680,7 @@ msgstr ""
 msgid "Exception while searching propers in {name}, skipping: {error}"
 msgstr ""
 
-#: sickchill/gui/slick/views/config.mako:153
+#: sickchill/gui/slick/views/config.mako:170
 msgid "Executable"
 msgstr ""
 
@@ -2649,14 +2717,14 @@ msgstr "Extend (Limited, E-prefixed)"
 msgid "Extra Scripts"
 msgstr ""
 
-#: sickchill/gui/slick/js/ajaxEpSearch.js:181
-#: sickchill/gui/slick/views/manage_manageSearches.mako:74
+#: sickchill/gui/slick/js/ajaxEpSearch.js:186
+#: sickchill/gui/slick/views/manage_manageSearches.mako:87
 #: sickchill/oldbeard/common.py:184
 msgid "Failed"
 msgstr "Неуспешно"
 
-#: sickchill/gui/slick/views/layouts/main.mako:215
-#: sickchill/views/manage/index.py:841 sickchill/views/manage/index.py:842
+#: sickchill/gui/slick/views/layouts/main.mako:216
+#: sickchill/views/manage/index.py:844 sickchill/views/manage/index.py:845
 msgid "Failed Downloads"
 msgstr "Неуспешни изтегляния"
 
@@ -2664,9 +2732,9 @@ msgstr "Неуспешни изтегляния"
 msgid "Failed authentication while getting api key"
 msgstr ""
 
+# | msgid "Failed download detected:"
 #: sickchill/oldbeard/failedProcessor.py:30
 #, fuzzy, python-brace-format
-#| msgid "Failed download detected:"
 msgid "Failed download detected: ({release_name}, {directory})"
 msgstr "Засечено пропаднало изтегляне:"
 
@@ -2675,24 +2743,24 @@ msgstr "Засечено пропаднало изтегляне:"
 msgid "Failed parsing provider {}."
 msgstr ""
 
+# | msgid "Search Providers"
 #: sickchill/oldbeard/providers/bjshare.py:229
 #, fuzzy
-#| msgid "Search Providers"
 msgid "Failed parsing provider."
 msgstr "Доставчици на търсене"
 
-#: sickchill/oldbeard/providers/limetorrents.py:106
+#: sickchill/oldbeard/providers/limetorrents.py:110
 #: sickchill/oldbeard/providers/torrentz.py:96
 #, python-brace-format
 msgid "Failed parsing provider. Traceback: {0!r}"
 msgstr ""
 
-#: sickchill/oldbeard/providers/elitetorrent.py:133
-#: sickchill/oldbeard/providers/gimmepeers.py:145
-#: sickchill/oldbeard/providers/hounddawgs.py:151
-#: sickchill/oldbeard/providers/nebulance.py:155
-#: sickchill/oldbeard/providers/pretome.py:141
-#: sickchill/oldbeard/providers/tntvillage.py:364
+#: sickchill/oldbeard/providers/elitetorrent.py:137
+#: sickchill/oldbeard/providers/gimmepeers.py:149
+#: sickchill/oldbeard/providers/hounddawgs.py:155
+#: sickchill/oldbeard/providers/nebulance.py:159
+#: sickchill/oldbeard/providers/pretome.py:145
+#: sickchill/oldbeard/providers/tntvillage.py:368
 #, python-brace-format
 msgid "Failed parsing provider. Traceback: {0}"
 msgstr ""
@@ -2703,14 +2771,14 @@ msgid "Failed parsing quality. Traceback: {0}"
 msgstr ""
 
 # | msgid "Unable to connect to host"
-#: sickchill/views/home.py:656
+#: sickchill/views/home.py:654
 #, fuzzy
 msgid "Failed to connect to flaresolverr"
 msgstr "Не може да се свърже със сървъра"
 
+# | msgid "Failed Downloads"
 #: sickchill/oldbeard/providers/newpct.py:146
 #, fuzzy
-#| msgid "Failed Downloads"
 msgid "Failed to download any results"
 msgstr "Неуспешни изтегляния"
 
@@ -2719,9 +2787,16 @@ msgstr "Неуспешни изтегляния"
 msgid "Failed to login, check your cookies"
 msgstr ""
 
-#: sickchill/views/home.py:1606
+# | msgid "Unable to update this show."
+# | msgid "Failed to update TBA episode names for {show}"
+#: sickchill/views/home.py:1609
 #, fuzzy, python-brace-format
-#| msgid "Unable to update this show."
+msgid "Failed to queue TBA episode name update for {show}"
+msgstr "Не може да актуализира този сериал."
+
+# | msgid "Unable to update this show."
+#: sickchill/oldbeard/show_queue.py:767
+#, fuzzy, python-brace-format
 msgid "Failed to update TBA episode names for {show}"
 msgstr "Не може да актуализира този сериал."
 
@@ -2737,7 +2812,7 @@ msgstr "Семеен"
 msgid "Fanart for"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:372
+#: sickchill/gui/slick/views/config_general.mako:398
 msgid "Fanart transparency"
 msgstr ""
 
@@ -2745,7 +2820,7 @@ msgstr ""
 msgid "Fantasy"
 msgstr "Фентъзи"
 
-#: sickchill/gui/slick/views/addShows_popularShows.mako:45
+#: sickchill/gui/slick/views/addShows_popularShows.mako:40
 msgid "Fetching of IMDB Data failed. Are you online?"
 msgstr ""
 
@@ -2769,12 +2844,12 @@ msgid ""
 "file again. The file may be incorrectly labeled or fake, aborting."
 msgstr ""
 
-#: sickchill/oldbeard/postProcessor.py:1142
+#: sickchill/oldbeard/postProcessor.py:1111
 msgid "File is locked for reading"
 msgstr "Файлът е заключен за четене"
 
-#: sickchill/oldbeard/postProcessor.py:1146
-#: sickchill/oldbeard/postProcessor.py:1154
+#: sickchill/oldbeard/postProcessor.py:1115
+#: sickchill/oldbeard/postProcessor.py:1123
 msgid "File is locked for reading/writing"
 msgstr "Файлът е заключен за четене/записване"
 
@@ -2840,7 +2915,7 @@ msgstr ""
 msgid "Find Database"
 msgstr ""
 
-#: sickchill/logger.py:241
+#: sickchill/logger.py:294
 msgid "Find Propers"
 msgstr "Намери Propers"
 
@@ -2850,7 +2925,7 @@ msgstr "Намери Propers"
 msgid "Find Propers Search"
 msgstr "Започна търсене на propers"
 
-#: sickchill/logger.py:243
+#: sickchill/logger.py:296
 msgid "Find Subtitles"
 msgstr "Намери субтитри"
 
@@ -2858,7 +2933,7 @@ msgstr "Намери субтитри"
 msgid "Find database"
 msgstr ""
 
-#: sickchill/views/manage/searches.py:66
+#: sickchill/views/manage/searches.py:68
 msgid "Find propers search started"
 msgstr "Започна търсене на propers"
 
@@ -2884,7 +2959,7 @@ msgstr ""
 msgid "FlareSolverr URI"
 msgstr ""
 
-#: sickchill/views/home.py:658
+#: sickchill/views/home.py:656
 #, python-brace-format
 msgid "Flaresolverr result: {result}"
 msgstr ""
@@ -2951,9 +3026,17 @@ msgstr ""
 #: sickchill/gui/slick/views/manage_manageSearches.mako:34
 #: sickchill/gui/slick/views/manage_manageSearches.mako:42
 #: sickchill/gui/slick/views/manage_manageSearches.mako:51
-#: sickchill/gui/slick/views/status.mako:110
+#: sickchill/gui/slick/views/manage_manageSearches.mako:62
+#: sickchill/gui/slick/views/status.mako:113
 msgid "Force"
 msgstr ""
+
+# | msgid "Post Processing"
+# | msgid "Manual Post-Processing"
+#: sickchill/gui/slick/views/layouts/main.mako:161
+#, fuzzy
+msgid "Force Auto Post-Processing"
+msgstr "Обработка"
 
 # | msgid "Backlog"
 #: sickchill/gui/slick/views/manage_backlogOverview.mako:65
@@ -2961,11 +3044,15 @@ msgstr ""
 msgid "Force Backlog"
 msgstr "Backlog"
 
-#: sickchill/views/home.py:950
+#: sickchill/views/home.py:954
 msgid "Force Full Update"
 msgstr "Изпълни пълно актуализиране"
 
-#: sickchill/oldbeard/show_queue.py:214
+#: sickchill/views/manage/searches.py:106
+msgid "Force Show Updater is only available when developer mode is enabled"
+msgstr ""
+
+#: sickchill/oldbeard/show_queue.py:303
 msgid "Force Update"
 msgstr "Изпълни актуализиране"
 
@@ -2973,9 +3060,9 @@ msgstr "Изпълни актуализиране"
 msgid "Force already Post Processed Dir/Files"
 msgstr ""
 
+# | msgid "Find Subtitles"
 #: sickchill/gui/slick/views/config_subtitles.mako:234
 #, fuzzy
-#| msgid "Find Subtitles"
 msgid "Forced/Foreign Subtitles"
 msgstr "Намери субтитри"
 
@@ -2989,29 +3076,29 @@ msgstr ""
 msgid "Format Settings"
 msgstr "Настройки на търсенето"
 
+# | msgid "Found release name "
 #: sickchill/oldbeard/providers/tntvillage.py:226
 #, fuzzy
-#| msgid "Found release name "
 msgid "Found English release:  "
 msgstr "Намерено име на издание "
 
+# | msgid "Found release name "
 #: sickchill/oldbeard/providers/ilcorsaronero.py:151
 #, fuzzy, python-brace-format
-#| msgid "Found release name "
 msgid "Found English release: {name}"
 msgstr "Намерено име на издание "
 
+# | msgid "Found release name "
 #: sickchill/oldbeard/providers/tntvillage.py:208
 #: sickchill/oldbeard/providers/tntvillage.py:213
 #, fuzzy
-#| msgid "Found release name "
 msgid "Found Italian release:  "
 msgstr "Намерено име на издание "
 
+# | msgid "Found release name "
 #: sickchill/oldbeard/providers/ilcorsaronero.py:134
 #: sickchill/oldbeard/providers/ilcorsaronero.py:139
 #, fuzzy, python-brace-format
-#| msgid "Found release name "
 msgid "Found Italian release: {name}"
 msgstr "Намерено име на издание "
 
@@ -3036,13 +3123,13 @@ msgstr ""
 msgid "Found new anime v{version} to replace existing v{old_version}"
 msgstr ""
 
+# | msgid "Found release name "
 #: sickchill/oldbeard/properFinder.py:80
 #, fuzzy, python-brace-format
-#| msgid "Found release name "
 msgid "Found new proper: {name}"
 msgstr "Намерено име на издание "
 
-#: sickchill/oldbeard/postProcessor.py:1074
+#: sickchill/oldbeard/postProcessor.py:1041
 msgid "Found release name "
 msgstr "Намерено име на издание "
 
@@ -3060,7 +3147,7 @@ msgid "Found result {title} at {url}."
 msgstr "Намерен резултат: {title}"
 
 #: sickchill/oldbeard/providers/kat.py:117
-#: sickchill/oldbeard/providers/thepiratebay.py:157
+#: sickchill/oldbeard/providers/thepiratebay.py:156
 #, python-brace-format
 msgid ""
 "Found result {title} but that doesn't seem like a verified result so I'm "
@@ -3080,43 +3167,43 @@ msgid "Found result: {title}"
 msgstr "Намерен резултат: {title}"
 
 #: sickchill/oldbeard/providers/abnormal.py:132
-#: sickchill/oldbeard/providers/alpharatio.py:143
+#: sickchill/oldbeard/providers/alpharatio.py:144
 #: sickchill/oldbeard/providers/archetorrent.py:145
-#: sickchill/oldbeard/providers/bitcannon.py:83
+#: sickchill/oldbeard/providers/bitcannon.py:84
 #: sickchill/oldbeard/providers/bjshare.py:222
-#: sickchill/oldbeard/providers/danishbits.py:86
-#: sickchill/oldbeard/providers/demonoid.py:113
-#: sickchill/oldbeard/providers/elitetorrent.py:128
-#: sickchill/oldbeard/providers/eztv.py:78
-#: sickchill/oldbeard/providers/filelist.py:138
-#: sickchill/oldbeard/providers/gimmepeers.py:140
-#: sickchill/oldbeard/providers/hd4free.py:98
-#: sickchill/oldbeard/providers/hdspace.py:140
-#: sickchill/oldbeard/providers/hdtorrents.py:148
-#: sickchill/oldbeard/providers/hdtorrents_it.py:158
-#: sickchill/oldbeard/providers/hounddawgs.py:146
+#: sickchill/oldbeard/providers/danishbits.py:87
+#: sickchill/oldbeard/providers/demonoid.py:114
+#: sickchill/oldbeard/providers/elitetorrent.py:129
+#: sickchill/oldbeard/providers/eztv.py:79
+#: sickchill/oldbeard/providers/filelist.py:139
+#: sickchill/oldbeard/providers/gimmepeers.py:141
+#: sickchill/oldbeard/providers/hd4free.py:99
+#: sickchill/oldbeard/providers/hdspace.py:141
+#: sickchill/oldbeard/providers/hdtorrents.py:149
+#: sickchill/oldbeard/providers/hdtorrents_it.py:159
+#: sickchill/oldbeard/providers/hounddawgs.py:147
 #: sickchill/oldbeard/providers/ilcorsaronero.py:286
-#: sickchill/oldbeard/providers/immortalseed.py:146
-#: sickchill/oldbeard/providers/iptorrents.py:162
-#: sickchill/oldbeard/providers/kat.py:121
-#: sickchill/oldbeard/providers/limetorrents.py:101
-#: sickchill/oldbeard/providers/magnetdl.py:92
-#: sickchill/oldbeard/providers/morethantv.py:174
-#: sickchill/oldbeard/providers/nebulance.py:151
+#: sickchill/oldbeard/providers/immortalseed.py:147
+#: sickchill/oldbeard/providers/iptorrents.py:163
+#: sickchill/oldbeard/providers/kat.py:122
+#: sickchill/oldbeard/providers/limetorrents.py:102
+#: sickchill/oldbeard/providers/magnetdl.py:93
+#: sickchill/oldbeard/providers/morethantv.py:175
+#: sickchill/oldbeard/providers/nebulance.py:152
 #: sickchill/oldbeard/providers/norbits.py:99
-#: sickchill/oldbeard/providers/pretome.py:136
-#: sickchill/oldbeard/providers/rarbg.py:146
-#: sickchill/oldbeard/providers/scc.py:132
-#: sickchill/oldbeard/providers/scenetime.py:130
-#: sickchill/oldbeard/providers/skytorrents.py:80
-#: sickchill/oldbeard/providers/speedcd.py:170
-#: sickchill/oldbeard/providers/thepiratebay.py:172
-#: sickchill/oldbeard/providers/tntvillage.py:359
-#: sickchill/oldbeard/providers/tokyotoshokan.py:88
-#: sickchill/oldbeard/providers/torrentbytes.py:121
+#: sickchill/oldbeard/providers/pretome.py:137
+#: sickchill/oldbeard/providers/rarbg.py:147
+#: sickchill/oldbeard/providers/scc.py:133
+#: sickchill/oldbeard/providers/scenetime.py:131
+#: sickchill/oldbeard/providers/skytorrents.py:81
+#: sickchill/oldbeard/providers/speedcd.py:171
+#: sickchill/oldbeard/providers/thepiratebay.py:171
+#: sickchill/oldbeard/providers/tntvillage.py:360
+#: sickchill/oldbeard/providers/tokyotoshokan.py:89
+#: sickchill/oldbeard/providers/torrentbytes.py:122
 #: sickchill/oldbeard/providers/torrentday.py:143
-#: sickchill/oldbeard/providers/torrentleech.py:120
-#: sickchill/oldbeard/providers/torrentproject.py:83
+#: sickchill/oldbeard/providers/torrentleech.py:121
+#: sickchill/oldbeard/providers/torrentproject.py:84
 #: sickchill/oldbeard/providers/tvchaosuk.py:128
 #: sickchill/oldbeard/providers/xthor.py:93
 #: sickchill/oldbeard/providers/yggtorrent.py:159
@@ -3124,10 +3211,11 @@ msgstr "Намерен резултат: {title}"
 msgid "Found result: {title} with {seeders} seeders and {leechers} leechers"
 msgstr "Намерен резултат: {title} със {seeders} споделящи и {leechers} теглещи"
 
+# | msgid "Found result: {title} with {seeders} seeders and {leechers}
+# leechers"
 #: sickchill/oldbeard/providers/ncore.py:109
 #: sickchill/oldbeard/providers/torrent_paradise.py:64
 #, fuzzy, python-brace-format
-#| msgid "Found result: {title} with {seeders} seeders and {leechers} leechers"
 msgid ""
 "Found result: {title} with {seeders} seeders and {leechers} leechers with"
 " a file size {size}"
@@ -3139,9 +3227,9 @@ msgstr "Намерен резултат: {title} със {seeders} споделя
 msgid "Found the following associated files for {file_path}: {allow_and_delete}"
 msgstr "Намери следните свързани файлове за {0}: {1}"
 
+# | msgid "Found result: {title}"
 #: sickchill/oldbeard/providers/horriblesubs.py:115
 #, fuzzy, python-brace-format
-#| msgid "Found result: {title}"
 msgid "Found title {0}"
 msgstr "Намерен резултат: {title}"
 
@@ -3158,9 +3246,9 @@ msgid ""
 "conversion..."
 msgstr ""
 
+# | msgid "Found result: "
 #: sickchill/oldbeard/providers/kat.py:87
 #, fuzzy, python-brace-format
-#| msgid "Found result: "
 msgid "Found {} results"
 msgstr "Намерен резултат: "
 
@@ -3182,7 +3270,7 @@ msgid ""
 " to their customer a free SMS API."
 msgstr ""
 
-#: sickchill/gui/slick/views/status.mako:137
+#: sickchill/gui/slick/views/status.mako:140
 msgid "Free space"
 msgstr ""
 
@@ -3202,8 +3290,8 @@ msgstr "Геймърски"
 msgid "Gamelan"
 msgstr ""
 
-#: sickchill/gui/slick/views/layouts/main.mako:233
-#: sickchill/views/config/index.py:16
+#: sickchill/gui/slick/views/layouts/main.mako:234
+#: sickchill/views/config/index.py:17
 msgid "General"
 msgstr "Общи"
 
@@ -3215,7 +3303,7 @@ msgstr "Основни настройки"
 msgid "Generated from Emby > Settings > Advanced > API keys"
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:1428
+#: sickchill/oldbeard/helpers.py:1493
 msgid "Generating New API key"
 msgstr "Генерира нов API ключ"
 
@@ -3225,7 +3313,7 @@ msgstr "Генерира нов API ключ"
 msgid "Get Settings"
 msgstr "Настройки на търсенето"
 
-#: sickchill/gui/slick/views/config_general.mako:1334
+#: sickchill/gui/slick/views/config_general.mako:1365
 msgid "Get Trakt PIN"
 msgstr ""
 
@@ -3251,7 +3339,7 @@ msgstr ""
 msgid "Go"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:1018
+#: sickchill/gui/slick/views/config_general.mako:1049
 msgid "Google Calendar Icons"
 msgstr ""
 
@@ -3263,16 +3351,17 @@ msgstr ""
 msgid "Gotify Host:Port"
 msgstr ""
 
+# | msgid "This is a test notification from SickChill"
 #: sickchill/gui/slick/views/config_notifications.mako:2306
 #, fuzzy
-#| msgid "This is a test notification from SickChill"
 msgid "Gotify is a self-hosted push notification service."
 msgstr "Това е тестово съобщение от SickChill"
 
-#: sickchill/views/home.py:411
+# | msgid "" "join notification succeeded. Check your join clients to make
+# sure
+# | it " "worked"
+#: sickchill/views/home.py:409
 #, fuzzy
-#| msgid "" "join notification succeeded. Check your join clients to make sure
-#| it " "worked"
 msgid ""
 "Gotify notification succeeded. Check your Gotify clients to make sure it "
 "worked."
@@ -3302,26 +3391,26 @@ msgstr ""
 msgid "Growl IP:Port"
 msgstr ""
 
-#: sickchill/gui/slick/views/status.mako:246
-#: sickchill/gui/slick/views/status.mako:267
+#: sickchill/gui/slick/views/status.mako:263
+#: sickchill/gui/slick/views/status.mako:288
 msgid "HIGH"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:629
+#: sickchill/gui/slick/views/config_general.mako:655
 msgid "HTTP logs"
 msgstr ""
 
 # | msgid " with password"
-#: sickchill/gui/slick/views/config_general.mako:657
+#: sickchill/gui/slick/views/config_general.mako:683
 #, fuzzy
 msgid "HTTP password"
 msgstr " с парола"
 
-#: sickchill/gui/slick/views/config_general.mako:677
+#: sickchill/gui/slick/views/config_general.mako:703
 msgid "HTTP port"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:639
+#: sickchill/gui/slick/views/config_general.mako:665
 msgid "HTTP username"
 msgstr ""
 
@@ -3329,11 +3418,11 @@ msgstr ""
 msgid "HTTPS"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:727
+#: sickchill/gui/slick/views/config_general.mako:753
 msgid "HTTPS certificate"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:737
+#: sickchill/gui/slick/views/config_general.mako:763
 msgid "HTTPS key"
 msgstr ""
 
@@ -3346,6 +3435,13 @@ msgstr ""
 msgid "Hard linking file from {cur_file_path} to {new_file_path}"
 msgstr ""
 
+# | msgid "Missing Subtitles"
+# | msgid "Missing TMDB id"
+#: sickchill/gui/slick/views/addShows_trendingShows.mako:52
+#, fuzzy
+msgid "Has TVDB id"
+msgstr "Липсващи субтитри"
+
 #: sickchill/gui/slick/views/config_providers.mako:370
 msgid "Hash"
 msgstr ""
@@ -3356,7 +3452,7 @@ msgstr ""
 msgid "Hearing Impaired Subtitles"
 msgstr "Намери субтитри"
 
-#: sickchill/gui/slick/views/layouts/main.mako:232
+#: sickchill/gui/slick/views/layouts/main.mako:233
 msgid "Help &amp; Info"
 msgstr ""
 
@@ -3373,13 +3469,13 @@ msgid "Hidden"
 msgstr ""
 
 # | msgid "episode"
-#: sickchill/gui/slick/js/core.js:3128
+#: sickchill/gui/slick/js/core.js:3123
 #: sickchill/gui/slick/views/displayShow.mako:436
 #, fuzzy
 msgid "Hide Episodes"
 msgstr "епизод"
 
-#: sickchill/views/home.py:983
+#: sickchill/views/home.py:987
 msgid "Hide specials"
 msgstr "Скрий специалните епизоди"
 
@@ -3390,7 +3486,7 @@ msgid "High"
 msgstr ""
 
 #: sickchill/gui/slick/views/config_general.mako:65
-#: sickchill/gui/slick/views/layouts/main.mako:187 sickchill/settings.py:36
+#: sickchill/gui/slick/views/layouts/main.mako:188 sickchill/settings.py:36
 #: sickchill/views/history.py:73 sickchill/views/history.py:74
 msgid "History"
 msgstr "История"
@@ -3399,9 +3495,9 @@ msgstr "История"
 msgid "History cleared"
 msgstr "Историята е изчистена"
 
-#: sickchill/gui/slick/views/404.mako:9 sickchill/views/home.py:124
-#: sickchill/views/home.py:202 sickchill/views/home.py:812
-#: sickchill/views/home.py:841
+#: sickchill/gui/slick/views/404.mako:9 sickchill/views/home.py:122
+#: sickchill/views/home.py:200 sickchill/views/home.py:810
+#: sickchill/views/home.py:839
 msgid "Home"
 msgstr "Начало"
 
@@ -3423,9 +3519,9 @@ msgstr ""
 msgid "Hostname or IP"
 msgstr ""
 
+# | msgid "Unable to update this show."
 #: sickchill/gui/slick/views/config_general.mako:95
 #, fuzzy
-#| msgid "Unable to update this show."
 msgid "Hour to update shows"
 msgstr "Не може да актуализира този сериал."
 
@@ -3463,11 +3559,11 @@ msgstr ""
 msgid "IP address of Popcorn 300/400-series (eg. 192.168.1.100)"
 msgstr ""
 
-#: sickchill/gui/slick/js/core.js:1984
+#: sickchill/gui/slick/js/core.js:1977
 msgid "IP or Hostname of your Deluge Daemon (e.g. http://localhost:58846)"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:1078
+#: sickchill/gui/slick/views/config_general.mako:1109
 msgid ""
 "If checked, broken symbolic links warnings generated when calculating "
 "show size will be logged as debug"
@@ -3488,11 +3584,11 @@ msgstr ""
 "Ако това се случи в cache.db, можете безопасно да спрете SickChill и и да"
 " изтриете файла cache.db без загуба на данни"
 
-#: sickchill/settings.py:607
+#: sickchill/settings.py:603
 msgid "Ignore (do not process contents)"
 msgstr "Игнорирай (не обработвай съдържанието)"
 
-#: sickchill/gui/slick/views/config_general.mako:1072
+#: sickchill/gui/slick/views/config_general.mako:1103
 msgid "Ignore Broken Symbolic Links"
 msgstr ""
 
@@ -3532,7 +3628,8 @@ msgstr ""
 msgid "Ignoring {name} because {show} is paused"
 msgstr ""
 
-#: sickchill/gui/slick/views/trendingShows.mako:88
+#: sickchill/gui/slick/views/addShows_popularShows.mako:69
+#: sickchill/gui/slick/views/trendingShows.mako:91
 msgid "In Library"
 msgstr ""
 
@@ -3542,8 +3639,9 @@ msgstr ""
 #: sickchill/gui/slick/views/manage_manageSearches.mako:35
 #: sickchill/gui/slick/views/manage_manageSearches.mako:43
 #: sickchill/gui/slick/views/manage_manageSearches.mako:53
-#: sickchill/gui/slick/views/status.mako:74
-#: sickchill/gui/slick/views/status.mako:111
+#: sickchill/gui/slick/views/manage_manageSearches.mako:64
+#: sickchill/gui/slick/views/status.mako:77
+#: sickchill/gui/slick/views/status.mako:114
 #, fuzzy
 msgid "In Progress"
 msgstr "Намери Propers"
@@ -3586,9 +3684,9 @@ msgid "Indexer"
 msgstr ""
 
 # | msgid "Find Propers"
+# | msgid "Indexers"
 #: sickchill/gui/slick/views/config_general.mako:20
 #, fuzzy
-#| msgid "Indexers"
 msgid "Indexer / Data"
 msgstr "Намери Propers"
 
@@ -3597,9 +3695,9 @@ msgid "Indexer and Trakt account settings are under the Indexer / Data tab."
 msgstr ""
 
 # | msgid "Find Propers"
-#: sickchill/gui/slick/views/config_general.mako:1141
+# | msgid "Indexers"
+#: sickchill/gui/slick/views/config_general.mako:1172
 #, fuzzy
-#| msgid "Indexers"
 msgid "Indexer options"
 msgstr "Намери Propers"
 
@@ -3619,7 +3717,7 @@ msgstr ""
 msgid "Initial page"
 msgstr ""
 
-#: sickchill/gui/slick/views/config.mako:29
+#: sickchill/gui/slick/views/config.mako:31
 msgid "Install"
 msgstr ""
 
@@ -3627,7 +3725,7 @@ msgstr ""
 msgid "Interface"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:282
+#: sickchill/gui/slick/views/config_general.mako:308
 msgid "Interface Language"
 msgstr ""
 
@@ -3647,11 +3745,11 @@ msgid ""
 "info"
 msgstr ""
 
-#: sickchill/views/home.py:505
+#: sickchill/views/home.py:503
 msgid "Invalid URL for webhook"
 msgstr ""
 
-#: sickchill/oldbeard/providers/bitcannon.py:98
+#: sickchill/oldbeard/providers/bitcannon.py:102
 #: sickchill/oldbeard/providers/btn.py:42
 #: sickchill/oldbeard/providers/newznab.py:192
 #: sickchill/oldbeard/providers/omgwtfnzbs.py:23
@@ -3665,6 +3763,7 @@ msgstr ""
 msgid "Invalid custom url set, please check your settings"
 msgstr ""
 
+# | msgid "Invalid show ID: {show}"
 #: sickchill/oldbeard/providers/iptorrents.py:52
 #: sickchill/oldbeard/providers/iptorrents.py:109
 #: sickchill/oldbeard/providers/kat.py:69
@@ -3675,7 +3774,6 @@ msgstr ""
 #: sickchill/oldbeard/providers/torrentday.py:87
 #: sickchill/oldbeard/providers/yggtorrent.py:41
 #, fuzzy, python-brace-format
-#| msgid "Invalid show ID: {show}"
 msgid "Invalid custom url: {0}"
 msgstr "Невалиден ID на сериал: {show}"
 
@@ -3694,7 +3792,7 @@ msgstr ""
 msgid "Invalid info in tvshow.nfo (missing name or id): {0} {1} {2}"
 msgstr ""
 
-#: sickchill/views/home.py:92
+#: sickchill/views/home.py:90
 msgid "Invalid parameters"
 msgstr "Невалидни параметри"
 
@@ -3706,22 +3804,22 @@ msgstr ""
 msgid "Invalid show ID"
 msgstr "Невалиден ID за предаване"
 
-#: sickchill/views/home.py:885
+#: sickchill/views/home.py:883
 #, python-brace-format
 msgid "Invalid show ID: {show}"
 msgstr "Невалиден ID на сериал: {show}"
 
-#: sickchill/views/home.py:80 sickchill/views/home.py:85
+#: sickchill/views/home.py:78 sickchill/views/home.py:83
 msgid "Invalid show parameters"
 msgstr "Невалидни параметри за предаване"
 
-#: sickchill/views/home.py:1714
+#: sickchill/views/home.py:1702
 msgid "Invalid status"
 msgstr "Невалиден статус"
 
+# | msgid "anidb username and/or password are not set. Aborting anidb lookup."
 #: sickchill/oldbeard/providers/pretome.py:42
 #, fuzzy
-#| msgid "anidb username and/or password are not set. Aborting anidb lookup."
 msgid "Invalid username or password or pin. Check your settings"
 msgstr "anidb не са зададени потр.име и/или парола. Прекратява търсенето в anidb."
 
@@ -3771,7 +3869,7 @@ msgstr ""
 msgid "Is this show scene numbered?"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:596
+#: sickchill/gui/slick/views/config_general.mako:622
 msgid ""
 "It is recommended that you enable a username and password to secure "
 "SickChill from being tampered with remotely."
@@ -3866,20 +3964,28 @@ msgstr ""
 msgid "Key"
 msgstr ""
 
-#: sickchill/views/home.py:426
+#: sickchill/views/home.py:424
 msgid "Key verification successful"
 msgstr "Успешна проверка на ключ"
 
-#: sickchill/gui/slick/views/status.mako:242
-#: sickchill/gui/slick/views/status.mako:263
+#: sickchill/gui/slick/views/status.mako:259
+#: sickchill/gui/slick/views/status.mako:284
 msgid "LOW"
 msgstr ""
+
+# | msgid "Romance"
+# | msgid "Manage"
+#: sickchill/gui/slick/views/addShows_trendingShows.mako:55
+#: sickchill/gui/slick/views/addShows_trendingShows.mako:57
+#, fuzzy
+msgid "Language"
+msgstr "Романтичен"
 
 #: sickchill/gui/slick/views/config_general.mako:80
 msgid "Large Screen Margins"
 msgstr ""
 
-#: sickchill/gui/slick/views/status.mako:50
+#: sickchill/gui/slick/views/status.mako:53
 msgid "Last Run"
 msgstr ""
 
@@ -3910,36 +4016,36 @@ msgstr ""
 msgid "Libnotify"
 msgstr ""
 
-#: sickchill/views/home.py:1676
+#: sickchill/views/home.py:1664
 #, python-brace-format
 msgid "Library update command sent to Emby host: {emby_host}"
 msgstr ""
 "Изпратена е команда за обновяване на библиотеката в Emby на адрес: "
 "{emby_host}"
 
-#: sickchill/views/home.py:1692
+# | msgid "Library update command sent to Emby host: {emby_host}"
+#: sickchill/views/home.py:1680
 #, fuzzy, python-brace-format
-#| msgid "Library update command sent to Emby host: {emby_host}"
 msgid "Library update command sent to Jellyfin host: {jellyfin_host}"
 msgstr ""
 "Изпратена е команда за обновяване на библиотеката в Emby на адрес: "
 "{emby_host}"
 
-#: sickchill/views/home.py:1653
+#: sickchill/views/home.py:1641
 #, python-brace-format
 msgid "Library update command sent to KODI host(s)): {kodi_hosts}"
 msgstr ""
 "Изпратена е команда за обновяване на библиотеката в KODI на адрес(и): "
 "{kodi_hosts}"
 
-#: sickchill/views/home.py:1664
+#: sickchill/views/home.py:1652
 #, python-brace-format
 msgid "Library update command sent to Plex Media Server host: {plex_server}"
 msgstr ""
 "Изпратена е команда за обновяване на библиотеката в Plex Media Server на "
 "адрес(и): {plex_server}"
 
-#: sickchill/gui/slick/views/config_general.mako:317
+#: sickchill/gui/slick/views/config_general.mako:343
 msgid "Light"
 msgstr ""
 
@@ -3952,21 +4058,21 @@ msgstr ""
 msgid "List"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:446
+#: sickchill/gui/slick/views/config_general.mako:472
 msgid ""
 "List of words to treat as articles, separated by the pipe character. "
 "Default: \"the|a|an\""
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:705
+#: sickchill/gui/slick/views/config_general.mako:731
 msgid "Listen on IPv6"
 msgstr ""
 
-#: sickchill/gui/slick/views/layouts/main.mako:392
+#: sickchill/gui/slick/views/layouts/main.mako:393
 msgid "Load time"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:1238
+#: sickchill/gui/slick/views/config_general.mako:1269
 msgid ""
 "Loaded from config.ini on startup when set; otherwise the built-in key is"
 " used. Enter a personal key to override. Clear the field and Save to "
@@ -3974,10 +4080,10 @@ msgid ""
 "still wins on restart if set."
 msgstr ""
 
-#: sickchill/gui/slick/js/ajaxEpSearch.js:163
-#: sickchill/gui/slick/js/ajaxEpSearch.js:164
+#: sickchill/gui/slick/js/ajaxEpSearch.js:168
+#: sickchill/gui/slick/js/ajaxEpSearch.js:169
 #: sickchill/gui/slick/views/inc_home_show_list_poster.mako:25
-#: sickchill/oldbeard/show_queue.py:300 sickchill/oldbeard/show_queue.py:328
+#: sickchill/oldbeard/show_queue.py:390 sickchill/oldbeard/show_queue.py:418
 msgid "Loading"
 msgstr "Зареждане"
 
@@ -4001,11 +4107,11 @@ msgstr ""
 msgid "Loading..."
 msgstr "Зареждане"
 
-#: sickchill/gui/slick/views/config_general.mako:538
+#: sickchill/gui/slick/views/config_general.mako:564
 msgid "Local"
 msgstr ""
 
-#: sickchill/gui/slick/views/config.mako:82
+#: sickchill/gui/slick/views/config.mako:99
 msgid "Locale"
 msgstr ""
 
@@ -4013,12 +4119,12 @@ msgstr ""
 #: sickchill/gui/slick/views/displayShow.mako:220
 #: sickchill/gui/slick/views/displayShow.mako:225
 #: sickchill/gui/slick/views/movies/details.mako:83
-#: sickchill/gui/slick/views/status.mako:136
+#: sickchill/gui/slick/views/status.mako:139
 #, fuzzy
 msgid "Location"
 msgstr "Действие"
 
-#: sickchill/gui/slick/views/config_general.mako:794
+#: sickchill/gui/slick/views/config_general.mako:820
 msgid "Log Dir"
 msgstr ""
 
@@ -4026,20 +4132,20 @@ msgstr ""
 msgid "Log File"
 msgstr "Log File"
 
-#: sickchill/gui/slick/views/config.mako:144
+#: sickchill/gui/slick/views/config.mako:161
 msgid "Log Folder"
 msgstr ""
 
+# | msgid "Login"
 #: sickchill/gui/slick/views/config_general.mako:22
 #, fuzzy
-#| msgid "Login"
 msgid "Logging"
 msgstr "Вход"
 
 # | msgid "Subtitles Settings"
-#: sickchill/gui/slick/views/config_general.mako:784
+# | msgid "Plugin Settings"
+#: sickchill/gui/slick/views/config_general.mako:810
 #, fuzzy
-#| msgid "Plugin Settings"
 msgid "Logging Settings"
 msgstr "Настройки на субтитри"
 
@@ -4053,7 +4159,7 @@ msgid ""
 "search again."
 msgstr ""
 
-#: sickchill/gui/slick/views/layouts/main.mako:290
+#: sickchill/gui/slick/views/layouts/main.mako:291
 msgid "Logout"
 msgstr ""
 
@@ -4089,11 +4195,11 @@ msgid "Magic"
 msgstr ""
 
 #: sickchill/gui/slick/views/editShow.mako:62
-#: sickchill/gui/slick/views/manage_massEdit.mako:7 sickchill/logger.py:249
+#: sickchill/gui/slick/views/manage_massEdit.mako:7 sickchill/logger.py:302
 msgid "Main"
 msgstr "Основни"
 
-#: sickchill/gui/slick/views/config.mako:162
+#: sickchill/gui/slick/views/config.mako:179
 msgid "Main Script"
 msgstr ""
 
@@ -4109,7 +4215,7 @@ msgid "Mako Error"
 msgstr "Грешка в Mako"
 
 # | msgid "Romance"
-#: sickchill/gui/slick/views/layouts/main.mako:191
+#: sickchill/gui/slick/views/layouts/main.mako:192
 #: sickchill/gui/slick/views/manage_episodeStatuses.mako:31
 #: sickchill/gui/slick/views/manage_subtitleMissed.mako:43
 #, fuzzy
@@ -4122,12 +4228,12 @@ msgstr "Романтичен"
 msgid "Manage Directories"
 msgstr "Управление на търсенията"
 
-#: sickchill/gui/slick/views/layouts/main.mako:197
-#: sickchill/views/manage/searches.py:36 sickchill/views/manage/searches.py:37
+#: sickchill/gui/slick/views/layouts/main.mako:198
+#: sickchill/views/manage/searches.py:38 sickchill/views/manage/searches.py:39
 msgid "Manage Searches"
 msgstr "Управление на търсенията"
 
-#: sickchill/gui/slick/views/layouts/main.mako:212
+#: sickchill/gui/slick/views/layouts/main.mako:213
 msgid "Manage Torrents"
 msgstr ""
 
@@ -4140,8 +4246,8 @@ msgstr ""
 msgid "Manage episodes without"
 msgstr ""
 
-#: sickchill/gui/slick/views/manage_manageSearches.mako:70
-#: sickchill/gui/slick/views/manage_manageSearches.mako:90
+#: sickchill/gui/slick/views/manage_manageSearches.mako:83
+#: sickchill/gui/slick/views/manage_manageSearches.mako:103
 msgid "Manual"
 msgstr ""
 
@@ -4158,7 +4264,7 @@ msgstr "Обработка"
 msgid "Manual Search"
 msgstr "Ръчно сваляне"
 
-#: sickchill/views/home.py:1957 sickchill/views/home.py:1958
+#: sickchill/views/home.py:1945 sickchill/views/home.py:1946
 msgid "Manual Snatch"
 msgstr "Ръчно сваляне"
 
@@ -4168,7 +4274,7 @@ msgstr "Ръчно сваляне"
 msgid "Mark Dir/Files as priority download"
 msgstr "Дали епизода е свален с предимство: "
 
-#: sickchill/gui/slick/views/status.mako:109
+#: sickchill/gui/slick/views/status.mako:112
 msgid "Mark Failures"
 msgstr ""
 
@@ -4176,11 +4282,11 @@ msgstr ""
 msgid "Mark download as failed"
 msgstr ""
 
-#: sickchill/views/manage/index.py:592 sickchill/views/manage/index.py:593
+#: sickchill/views/manage/index.py:594 sickchill/views/manage/index.py:595
 msgid "Mass Edit"
 msgstr "Масово редактиране"
 
-#: sickchill/gui/slick/views/layouts/main.mako:195
+#: sickchill/gui/slick/views/layouts/main.mako:196
 #: sickchill/views/manage/index.py:41 sickchill/views/manage/index.py:42
 msgid "Mass Update"
 msgstr "Цялостна актуализация"
@@ -4193,11 +4299,11 @@ msgstr ""
 msgid "Matrix is an open fabric for communication that anyone can participate in."
 msgstr ""
 
-#: sickchill/views/home.py:496
+#: sickchill/views/home.py:494
 msgid "Matrix message failed"
 msgstr ""
 
-#: sickchill/views/home.py:494
+#: sickchill/views/home.py:492
 msgid "Matrix message successful"
 msgstr ""
 
@@ -4225,15 +4331,15 @@ msgstr ""
 msgid "Mattermost Bot Token"
 msgstr ""
 
-#: sickchill/views/home.py:480
+# | msgid "Discord message failed"
+#: sickchill/views/home.py:478
 #, fuzzy
-#| msgid "Discord message failed"
 msgid "Mattermost Bot message failed"
 msgstr "Неуспешно съобщение към Discord"
 
-#: sickchill/views/home.py:478
+# | msgid "Discord message successful"
+#: sickchill/views/home.py:476
 #, fuzzy
-#| msgid "Discord message successful"
 msgid "Mattermost Bot message successful"
 msgstr "Успешно съобщение към Discord"
 
@@ -4249,15 +4355,15 @@ msgstr ""
 msgid "Mattermost Username"
 msgstr ""
 
-#: sickchill/views/home.py:472
+# | msgid "Slack message failed"
+#: sickchill/views/home.py:470
 #, fuzzy
-#| msgid "Slack message failed"
 msgid "Mattermost message failed"
 msgstr "Неуспешно съобщение към Slack"
 
-#: sickchill/views/home.py:470
+# | msgid "Slack message successful"
+#: sickchill/views/home.py:468
 #, fuzzy
-#| msgid "Slack message successful"
 msgid "Mattermost message successful"
 msgstr "Успешно съобщение към Slack"
 
@@ -4276,11 +4382,11 @@ msgstr ""
 msgid "Mechanical"
 msgstr ""
 
-#: sickchill/gui/slick/views/status.mako:153
+#: sickchill/gui/slick/views/status.mako:156
 msgid "Media Root Directories"
 msgstr ""
 
-#: sickchill/gui/slick/views/layouts/main.mako:390
+#: sickchill/gui/slick/views/layouts/main.mako:391
 msgid "Memory used"
 msgstr ""
 
@@ -4297,7 +4403,7 @@ msgstr ""
 msgid "Metadata language"
 msgstr ""
 
-#: sickchill/gui/slick/views/status.mako:106
+#: sickchill/gui/slick/views/status.mako:109
 msgid "Method"
 msgstr ""
 
@@ -4313,7 +4419,7 @@ msgstr ""
 msgid "Minimum seeding time"
 msgstr ""
 
-#: sickchill/gui/slick/js/core.js:1964
+#: sickchill/gui/slick/js/core.js:1957
 msgid "Minimum seeding time is"
 msgstr ""
 
@@ -4327,17 +4433,17 @@ msgstr ""
 msgid "Missed"
 msgstr ""
 
-#: sickchill/gui/slick/views/layouts/main.mako:218
+#: sickchill/gui/slick/views/layouts/main.mako:219
 msgid "Missed Subtitle Management"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:452
+#: sickchill/gui/slick/views/config_general.mako:478
 msgid "Missed episodes range"
 msgstr ""
 
 #: sickchill/gui/slick/views/displayShow.mako:226
-#: sickchill/gui/slick/views/status.mako:148
-#: sickchill/gui/slick/views/status.mako:159
+#: sickchill/gui/slick/views/status.mako:151
+#: sickchill/gui/slick/views/status.mako:162
 msgid "Missing"
 msgstr ""
 
@@ -4349,9 +4455,9 @@ msgstr ""
 msgid "Missing Subtitles"
 msgstr "Липсващи субтитри"
 
+# | msgid "Missing Subtitles"
 #: sickchill/views/manage/add_shows.py:405
 #, fuzzy
-#| msgid "Missing Subtitles"
 msgid "Missing TMDB id"
 msgstr "Липсващи субтитри"
 
@@ -4391,7 +4497,7 @@ msgstr ""
 "{root_dir}/{show_path}"
 
 # | msgid "Remove"
-#: sickchill/gui/slick/views/status.mako:103
+#: sickchill/gui/slick/views/status.mako:106
 #, fuzzy
 msgid "Mode"
 msgstr "Премахни"
@@ -4423,7 +4529,7 @@ msgstr "Премахни"
 msgid "Move associated files"
 msgstr "Позволява свързани файлове за {0}: {1}"
 
-#: sickchill/gui/slick/views/layouts/main.mako:176 sickchill/views/movies.py:20
+#: sickchill/gui/slick/views/layouts/main.mako:177 sickchill/views/movies.py:20
 msgid "Movie List"
 msgstr "Списък с филми"
 
@@ -4445,7 +4551,7 @@ msgstr "Невалиден статус"
 msgid "Movie not found"
 msgstr "Филмът не е намерен"
 
-#: sickchill/gui/slick/views/layouts/main.mako:172 sickchill/views/movies.py:19
+#: sickchill/gui/slick/views/layouts/main.mako:173 sickchill/views/movies.py:19
 #: sickchill/views/movies.py:37 sickchill/views/movies.py:74
 #: sickchill/views/movies.py:89
 msgid "Movies"
@@ -4525,8 +4631,8 @@ msgid "NMJv2 database"
 msgstr ""
 
 # | msgid "General"
-#: sickchill/gui/slick/views/status.mako:244
-#: sickchill/gui/slick/views/status.mako:265
+#: sickchill/gui/slick/views/status.mako:261
+#: sickchill/gui/slick/views/status.mako:286
 #, fuzzy
 msgid "NORMAL"
 msgstr "Общи"
@@ -4566,8 +4672,8 @@ msgid "NZBget username"
 msgstr ""
 
 # | msgid "Rename"
-#: sickchill/gui/slick/views/addShows_popularShows.mako:20
-#: sickchill/gui/slick/views/addShows_trendingShows.mako:23
+#: sickchill/gui/slick/views/addShows_popularShows.mako:21
+#: sickchill/gui/slick/views/addShows_trendingShows.mako:18
 #: sickchill/gui/slick/views/apiBuilder.mako:82
 #: sickchill/gui/slick/views/displayShow.mako:458
 #: sickchill/gui/slick/views/editShow.mako:474
@@ -4585,7 +4691,7 @@ msgstr "Преименувай"
 msgid "Name Pattern"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:544
+#: sickchill/gui/slick/views/config_general.mako:570
 #: sickchill/gui/slick/views/inc_home_menu.mako:48
 #: sickchill/gui/slick/views/inc_home_show_list.mako:26
 #: sickchill/gui/slick/views/manage.mako:41
@@ -4628,7 +4734,7 @@ msgstr ""
 msgid "New file is a proper/repack, marking it safe to replace"
 msgstr ""
 
-#: sickchill/views/home.py:1452
+#: sickchill/views/home.py:1450
 #, python-brace-format
 msgid "New location <tt>{location}</tt> does not exist"
 msgstr "Ново местоположение <tt>{location}</tt> не съществува"
@@ -4638,7 +4744,7 @@ msgstr "Ново местоположение <tt>{location}</tt> не съще�
 msgid "New login from IP: {0}. http://geomaplookup.net/?ip={0}"
 msgstr "Нов вход от IP адрес: {0}. http://geomaplookup.net/?IP={0}"
 
-#: sickchill/views/home.py:2141 sickchill/views/home.py:2178
+#: sickchill/oldbeard/search_queue.py:398
 #, python-brace-format
 msgid "New subtitles downloaded: {new_subtitle_languages}"
 msgstr "Изтеглени са нови субтитри: {new_subtitle_languages}"
@@ -4648,13 +4754,21 @@ msgid "New update found for SickChill, starting auto-updater"
 msgstr "Открит е нова актуализация за SickChill, стартира автоматично обновяване"
 
 #: sickchill/gui/slick/views/config_general.mako:66
-#: sickchill/gui/slick/views/layouts/main.mako:265 sickchill/settings.py:39
+#: sickchill/gui/slick/views/layouts/main.mako:266 sickchill/settings.py:39
 #: sickchill/views/news.py:28 sickchill/views/news.py:29
 msgid "News"
 msgstr "Новини"
 
 #: sickchill/gui/slick/views/config_providers.mako:734
 msgid "Newznab search categories"
+msgstr ""
+
+#: sickchill/gui/slick/views/addShows_trendingShows.mako:46
+msgid "Next 14 days"
+msgstr ""
+
+#: sickchill/gui/slick/views/addShows_trendingShows.mako:47
+msgid "Next 30 days"
 msgstr ""
 
 #: sickchill/gui/slick/views/inc_home_show_list.mako:23
@@ -4673,7 +4787,7 @@ msgstr ""
 msgid "Next Episode"
 msgstr "епизод"
 
-#: sickchill/gui/slick/views/status.mako:49
+#: sickchill/gui/slick/views/status.mako:52
 msgid "Next Run"
 msgstr ""
 
@@ -4726,11 +4840,11 @@ msgstr "Не е зададено име за доставчик"
 msgid "No Provider Url specified"
 msgstr "Не е зададен Url адрес за доставчик"
 
-#: sickchill/gui/slick/views/config_general.mako:960
+#: sickchill/gui/slick/views/config_general.mako:991
 msgid "No Restart"
 msgstr ""
 
-#: sickchill/views/home.py:1618
+#: sickchill/oldbeard/show_queue.py:761
 #, python-brace-format
 msgid "No TBA episode names were updated for {show}"
 msgstr ""
@@ -4744,7 +4858,7 @@ msgstr ""
 msgid "No brackets on the TV show's year when renaming the file?"
 msgstr ""
 
-#: sickchill/oldbeard/providers/demonoid.py:132
+#: sickchill/oldbeard/providers/demonoid.py:136
 msgid "No data returned from details page for result"
 msgstr ""
 
@@ -4801,13 +4915,13 @@ msgstr "Няма избрани папки."
 msgid "No html data parsed from provider"
 msgstr ""
 
-#: sickchill/show_updater.py:62
+#: sickchill/show_updater.py:68
 msgid "No last update time from the cache, so we do a full update for all shows"
 msgstr ""
 "В кеша липсва време на последно обновяване, затова ще направим пълно "
 "обновяване на всички предавания"
 
-#: sickchill/oldbeard/search_queue.py:245
+#: sickchill/oldbeard/search_queue.py:297
 #, python-brace-format
 msgid "No needed movie results found during backlog search for: [{name}]"
 msgstr ""
@@ -4829,7 +4943,7 @@ msgid ""
 "newznab first to enable providers."
 msgstr ""
 
-#: sickchill/views/home.py:1117
+#: sickchill/views/home.py:1121
 msgid "No scene exceptions"
 msgstr "Няма алтернативни имена"
 
@@ -4846,7 +4960,7 @@ msgstr ""
 msgid "No side margins on large screens"
 msgstr ""
 
-#: sickchill/views/home.py:2143 sickchill/views/home.py:2180
+#: sickchill/oldbeard/search_queue.py:401
 msgid "No subtitles downloaded"
 msgstr "Няма свалени субтитри"
 
@@ -4854,13 +4968,13 @@ msgstr "Няма свалени субтитри"
 msgid "No update needed"
 msgstr "Не е необходима актуализация"
 
-#: sickchill/views/home.py:1617
+# | msgid "Updates"
+#: sickchill/oldbeard/show_queue.py:760
 #, fuzzy
-#| msgid "Updates"
 msgid "No updates"
 msgstr "Актуализации"
 
-#: sickchill/gui/slick/js/core.js:3194
+#: sickchill/gui/slick/js/core.js:3189
 #: sickchill/gui/slick/views/editShow.mako:429
 msgid "None"
 msgstr ""
@@ -4881,7 +4995,7 @@ msgstr ""
 msgid "Normal"
 msgstr "Общи"
 
-#: sickchill/gui/slick/views/config_general.mako:924
+#: sickchill/gui/slick/views/config_general.mako:955
 msgid "Normal (default). High is lower and Low is higher CPU use"
 msgstr ""
 
@@ -4895,7 +5009,7 @@ msgstr "Не създава резервно копие, {0} не съществ
 msgid "Not enough disk space to continue processing, exiting"
 msgstr "Няма достатъчно място за да продължи обработката, прекратява"
 
-#: sickchill/oldbeard/helpers.py:1534
+#: sickchill/oldbeard/helpers.py:1599
 #, python-brace-format
 msgid ""
 "Not enough free space: Needed: {needed_space} bytes ( "
@@ -4915,6 +5029,7 @@ msgstr ""
 #: sickchill/gui/slick/views/manage_manageSearches.mako:35
 #: sickchill/gui/slick/views/manage_manageSearches.mako:43
 #: sickchill/gui/slick/views/manage_manageSearches.mako:53
+#: sickchill/gui/slick/views/manage_manageSearches.mako:64
 #, fuzzy
 msgid "Not in progress"
 msgstr "Архивиране на настройките..."
@@ -4941,13 +5056,13 @@ msgid ""
 "403 error."
 msgstr ""
 
-#: sickchill/gui/slick/views/layouts/main.mako:239
-#: sickchill/views/config/index.py:22
+#: sickchill/gui/slick/views/layouts/main.mako:240
+#: sickchill/views/config/index.py:23
 #: sickchill/views/config/notifications.py:23
 msgid "Notifications"
 msgstr "Известия"
 
-#: sickchill/gui/slick/views/config_general.mako:819
+#: sickchill/gui/slick/views/config_general.mako:845
 msgid "Notify on Logged Errors"
 msgstr ""
 
@@ -4976,7 +5091,7 @@ msgstr ""
 msgid "Notify on download"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:695
+#: sickchill/gui/slick/views/config_general.mako:721
 msgid "Notify on login"
 msgstr ""
 
@@ -5009,7 +5124,7 @@ msgstr ""
 msgid "Notify on snatch"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:248
+#: sickchill/gui/slick/views/config_general.mako:274
 msgid "Notify on software update"
 msgstr ""
 
@@ -5039,11 +5154,11 @@ msgstr ""
 msgid "Notify on subtitle download"
 msgstr "Няма свалени субтитри"
 
-#: sickchill/gui/slick/views/layouts/main.mako:395
+#: sickchill/gui/slick/views/layouts/main.mako:396
 msgid "Now"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:849
+#: sickchill/gui/slick/views/config_general.mako:880
 msgid "Number of Log files saved"
 msgstr ""
 
@@ -5063,7 +5178,7 @@ msgid ""
 msgstr ""
 
 # | msgid "Logs"
-#: sickchill/gui/slick/views/config.mako:73
+#: sickchill/gui/slick/views/config.mako:90
 #, fuzzy
 msgid "OS"
 msgstr "Logs"
@@ -5089,36 +5204,36 @@ msgid "Oops: 404 Not Found"
 msgstr ""
 
 # | msgid "Search Settings"
+# | msgid "Get settings"
 #: sickchill/helper/list_status.py:16 sickchill/helper/list_status.py:24
 #, fuzzy
-#| msgid "Get settings"
 msgid "Open General settings"
 msgstr "Настройки на търсенето"
 
-#: sickchill/gui/slick/views/config_general.mako:1216
+#: sickchill/gui/slick/views/config_general.mako:1247
 msgid ""
 "Optional personal v4 API key and subscriber PIN. Leave the API key blank "
 "to use SickChill's built-in project key."
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:1256
+#: sickchill/gui/slick/views/config_general.mako:1287
 msgid "Optional. Required only if your TheTVDB key type needs a subscriber PIN."
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:785
+#: sickchill/gui/slick/views/config_general.mako:811
 msgid "Options for Logging."
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:202
+#: sickchill/gui/slick/views/config_general.mako:228
 msgid "Options for software updates."
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:273
+#: sickchill/gui/slick/views/config_general.mako:299
 msgid "Options for visual appearance."
 msgstr ""
 
 # | msgid "Login"
-#: sickchill/gui/slick/views/addShows_trendingShows.mako:24
+#: sickchill/gui/slick/views/addShows_trendingShows.mako:19
 #, fuzzy
 msgid "Original"
 msgstr "Вход"
@@ -5136,13 +5251,13 @@ msgid ""
 "{current_show_id}"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:1344
+#: sickchill/gui/slick/views/config_general.mako:1375
 msgid "PIN code to authorize SickChill to access Trakt on your behalf."
 msgstr ""
 
+# | msgid "Manage Searches"
 #: sickchill/oldbeard/providers/bjshare.py:101
 #, fuzzy, python-brace-format
-#| msgid "Manage Searches"
 msgid "Page Search: {0}"
 msgstr "Управление на търсенията"
 
@@ -5173,16 +5288,16 @@ msgid "Password"
 msgstr " с парола"
 
 # | msgid "Update"
-#: sickchill/gui/slick/views/status.mako:104
+#: sickchill/gui/slick/views/status.mako:107
 #, fuzzy
 msgid "Path"
 msgstr "Актуализация"
 
-#: sickchill/gui/slick/views/config_general.mako:353
+#: sickchill/gui/slick/views/config_general.mako:379
 msgid "Path to the background image"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:413
+#: sickchill/gui/slick/views/config_general.mako:439
 msgid "Path to the stylesheet (.css) file"
 msgstr ""
 
@@ -5194,8 +5309,8 @@ msgstr ""
 msgid "Pattern"
 msgstr "Актуализация"
 
-#: sickchill/gui/slick/js/core.js:3837
-#: sickchill/gui/slick/views/viewlogs.mako:12 sickchill/views/home.py:936
+#: sickchill/gui/slick/js/core.js:3832
+#: sickchill/gui/slick/views/viewlogs.mako:12 sickchill/views/home.py:940
 msgid "Pause"
 msgstr "Пауза"
 
@@ -5203,7 +5318,7 @@ msgstr "Пауза"
 msgid "Pause these shows (SickChill will not download episodes)."
 msgstr ""
 
-#: sickchill/gui/slick/js/core.js:3838
+#: sickchill/gui/slick/js/core.js:3833
 #: sickchill/gui/slick/views/viewlogs.mako:10
 msgid "Pause updating the log on this page."
 msgstr ""
@@ -5216,12 +5331,12 @@ msgstr ""
 #: sickchill/gui/slick/views/manage_manageSearches.mako:19
 #: sickchill/gui/slick/views/manage_massEdit.mako:149
 #: sickchill/gui/slick/views/movies/details.mako:117
-#: sickchill/gui/slick/views/status.mako:190
+#: sickchill/gui/slick/views/status.mako:193
 #, fuzzy
 msgid "Paused"
 msgstr "в пауза"
 
-#: sickchill/gui/slick/views/config_general.mako:130
+#: sickchill/gui/slick/views/config_general.mako:156
 msgid ""
 "Paused and Ended shows will only be updated after this many days have "
 "passed, if there is an update for the show"
@@ -5274,16 +5389,16 @@ msgstr "Моля проверете правата owner/permissions на баз
 msgid "Please fill out the following fields:\n"
 msgstr ""
 
-#: sickchill/gui/slick/js/core.js:450 sickchill/gui/slick/js/core.js:472
-#: sickchill/gui/slick/js/core.js:495 sickchill/gui/slick/js/core.js:520
-#: sickchill/gui/slick/js/core.js:546 sickchill/gui/slick/js/core.js:570
-#: sickchill/gui/slick/js/core.js:603 sickchill/gui/slick/js/core.js:635
-#: sickchill/gui/slick/js/core.js:656 sickchill/gui/slick/js/core.js:704
-#: sickchill/gui/slick/js/core.js:827 sickchill/gui/slick/js/core.js:890
-#: sickchill/gui/slick/js/core.js:911 sickchill/gui/slick/js/core.js:944
-#: sickchill/gui/slick/js/core.js:977 sickchill/gui/slick/js/core.js:1012
-#: sickchill/gui/slick/js/core.js:1089 sickchill/gui/slick/js/core.js:1110
-#: sickchill/gui/slick/js/core.js:1142 sickchill/gui/slick/js/core.js:2128
+#: sickchill/gui/slick/js/core.js:446 sickchill/gui/slick/js/core.js:468
+#: sickchill/gui/slick/js/core.js:491 sickchill/gui/slick/js/core.js:516
+#: sickchill/gui/slick/js/core.js:542 sickchill/gui/slick/js/core.js:566
+#: sickchill/gui/slick/js/core.js:599 sickchill/gui/slick/js/core.js:631
+#: sickchill/gui/slick/js/core.js:652 sickchill/gui/slick/js/core.js:700
+#: sickchill/gui/slick/js/core.js:823 sickchill/gui/slick/js/core.js:886
+#: sickchill/gui/slick/js/core.js:907 sickchill/gui/slick/js/core.js:940
+#: sickchill/gui/slick/js/core.js:973 sickchill/gui/slick/js/core.js:1008
+#: sickchill/gui/slick/js/core.js:1085 sickchill/gui/slick/js/core.js:1106
+#: sickchill/gui/slick/js/core.js:1138 sickchill/gui/slick/js/core.js:2121
 msgid "Please fill out the necessary fields above."
 msgstr ""
 
@@ -5327,9 +5442,9 @@ msgid "Popcorn IP address"
 msgstr ""
 
 # | msgid "Popular Shows"
+# | msgid "Popular"
 #: sickchill/views/manage/add_shows.py:45
 #, fuzzy
-#| msgid "Popular"
 msgid "Popular (TMDB)"
 msgstr "Популярни сериали"
 
@@ -5347,19 +5462,19 @@ msgid "Popular on iMDB"
 msgstr ""
 
 # | msgid "Postprocessor"
-#: sickchill/gui/slick/views/status.mako:20
+#: sickchill/gui/slick/views/status.mako:23
 #, fuzzy
 msgid "Post Process"
 msgstr "Последваща обработка"
 
 # | msgid "Postprocessor"
-#: sickchill/gui/slick/views/status.mako:19
+#: sickchill/gui/slick/views/status.mako:22
 #, fuzzy
 msgid "Post Process - Auto"
 msgstr "Последваща обработка"
 
-#: sickchill/gui/slick/views/layouts/main.mako:238
-#: sickchill/views/config/index.py:21
+#: sickchill/gui/slick/views/layouts/main.mako:239
+#: sickchill/views/config/index.py:22
 #: sickchill/views/config/post_processing.py:24
 #: sickchill/views/manage/post_processing.py:16
 #: sickchill/views/manage/post_processing.py:17
@@ -5373,8 +5488,8 @@ msgid "Post Processing Dir"
 msgstr "Обработка"
 
 # | msgid "Post Processing"
-#: sickchill/gui/slick/views/manage_manageSearches.mako:83
-#: sickchill/gui/slick/views/status.mako:97
+#: sickchill/gui/slick/views/manage_manageSearches.mako:96
+#: sickchill/gui/slick/views/status.mako:100
 #, fuzzy
 msgid "Post Processing Queue"
 msgstr "Обработка"
@@ -5419,7 +5534,7 @@ msgstr ""
 msgid "Postpone post processing"
 msgstr "Обработка"
 
-#: sickchill/logger.py:242
+#: sickchill/logger.py:295
 msgid "Postprocessor"
 msgstr "Последваща обработка"
 
@@ -5458,6 +5573,11 @@ msgstr ""
 msgid "Preferred Words"
 msgstr ""
 
+#: sickchill/gui/slick/views/addShows_trendingShows.mako:43
+#: sickchill/gui/slick/views/addShows_trendingShows.mako:45
+msgid "Premiere window"
+msgstr ""
+
 #: sickchill/gui/slick/views/inc_home_show_list.mako:24
 msgid "Prev Ep"
 msgstr ""
@@ -5468,8 +5588,8 @@ msgstr ""
 msgid "Prev Show"
 msgstr "Премахни предаването"
 
-#: sickchill/views/home.py:1008 sickchill/views/home.py:1873
-#: sickchill/views/home.py:1874
+#: sickchill/views/home.py:1012 sickchill/views/home.py:1861
+#: sickchill/views/home.py:1862
 msgid "Preview Rename"
 msgstr "Преглед на преименуването"
 
@@ -5478,13 +5598,13 @@ msgid "Preview of the proposed name changes"
 msgstr ""
 
 # | msgid "Sport"
-#: sickchill/gui/slick/views/status.mako:75
-#: sickchill/gui/slick/views/status.mako:107
+#: sickchill/gui/slick/views/status.mako:78
+#: sickchill/gui/slick/views/status.mako:110
 #, fuzzy
 msgid "Priority"
 msgstr "Спортен"
 
-#: sickchill/views/home.py:342
+#: sickchill/views/home.py:340
 #, python-brace-format
 msgid "Problem sending SMS: {message}"
 msgstr "Проблем с изпращането на SMS: {message}"
@@ -5501,7 +5621,7 @@ msgstr "Последваща обработка"
 msgid "Process Method to be used"
 msgstr "Непознат метод на обработка: "
 
-#: sickchill/oldbeard/helpers.py:1507
+#: sickchill/oldbeard/helpers.py:1572
 msgid ""
 "Process method is 'move' and src and destination are on the same device, "
 "skipping free space check"
@@ -5518,9 +5638,9 @@ msgid "Processing Method"
 msgstr "Обработката пропадна"
 
 # | msgid "Found release name "
+# | msgid "Processing {release_name}"
 #: sickchill/oldbeard/postProcessor.py:951
 #, fuzzy, python-brace-format
-#| msgid "Processing {release_name}"
 msgid "Processing as - {pretty_name}"
 msgstr "Намерено име на издание "
 
@@ -5550,7 +5670,7 @@ msgstr "Намерено име на издание "
 msgid "Profile"
 msgstr ""
 
-#: sickchill/gui/slick/views/config.mako:102
+#: sickchill/gui/slick/views/config.mako:119
 msgid "Program Folder"
 msgstr ""
 
@@ -5558,11 +5678,20 @@ msgstr ""
 msgid "Progress"
 msgstr ""
 
+#: sickchill/views/home.py:1595
+msgid "Promoted"
+msgstr ""
+
+#: sickchill/views/home.py:1596
+#, python-brace-format
+msgid "Promoted queued update for {show} (covers TBA episode names)"
+msgstr ""
+
 #: sickchill/gui/slick/views/addShows_addExistingShow.mako:49
 msgid "Prompt me to set settings for each show"
 msgstr ""
 
-#: sickchill/gui/slick/views/status.mako:18
+#: sickchill/gui/slick/views/status.mako:21
 msgid "Proper Finder"
 msgstr ""
 
@@ -5644,7 +5773,7 @@ msgstr "Неуспешно съобщение към Slack"
 msgid "Prowl priority"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:1028
+#: sickchill/gui/slick/views/config_general.mako:1059
 msgid "Proxy host"
 msgstr ""
 
@@ -5662,7 +5791,7 @@ msgid ""
 "connected devices running Windows Phone or Windows 8."
 msgstr ""
 
-#: sickchill/views/home.py:740
+#: sickchill/views/home.py:738
 msgid ""
 "Pushalot notification succeeded. Check your Pushalot clients to make sure"
 " it worked"
@@ -5693,7 +5822,7 @@ msgid ""
 "Chrome, Firefox or Opera."
 msgstr ""
 
-#: sickchill/views/home.py:748
+#: sickchill/views/home.py:746
 msgid ""
 "Pushbullet notification succeeded. Check your device to make sure it "
 "worked"
@@ -5734,7 +5863,7 @@ msgstr ""
 msgid "Pushover notification sound"
 msgstr "Грешка при изпращане на Pushover уведомяване"
 
-#: sickchill/views/home.py:400
+#: sickchill/views/home.py:398
 msgid ""
 "Pushover notification succeeded. Check your Pushover clients to make sure"
 " it worked"
@@ -5746,15 +5875,15 @@ msgstr ""
 msgid "Pushover priority"
 msgstr ""
 
-#: sickchill/gui/slick/js/core.js:2033
+#: sickchill/gui/slick/js/core.js:2026
 msgid "Put.io OAuth Token"
 msgstr ""
 
-#: sickchill/gui/slick/js/core.js:2032
+#: sickchill/gui/slick/js/core.js:2025
 msgid "Put.io Parent Folder"
 msgstr ""
 
-#: sickchill/gui/slick/views/config.mako:55
+#: sickchill/gui/slick/views/config.mako:72
 msgid "Python Version"
 msgstr ""
 
@@ -5784,11 +5913,30 @@ msgstr ""
 msgid "Query"
 msgstr ""
 
-#: sickchill/gui/slick/views/status.mako:77
+#: sickchill/gui/slick/views/status.mako:80
 msgid "Queue type"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:786
+# | msgid "Show Queue"
+#: sickchill/gui/slick/js/ajaxEpSearch.js:191
+#: sickchill/gui/slick/js/core.js:2759 sickchill/gui/slick/js/core.js:2799
+#: sickchill/views/home.py:1600
+#, fuzzy
+msgid "Queued"
+msgstr "Опашка на предавания"
+
+#: sickchill/views/home.py:1601
+#, python-brace-format
+msgid "Queued TBA name update for {show}"
+msgstr ""
+
+# | msgid "Remove"
+#: sickchill/gui/slick/views/status.mako:267
+#, fuzzy
+msgid "REMOVE"
+msgstr "Премахни"
+
+#: sickchill/gui/slick/views/config_general.mako:812
 msgid "RESTART REQUIRED after saving changes."
 msgstr ""
 
@@ -5800,7 +5948,7 @@ msgstr ""
 msgid "Randomize Providers"
 msgstr ""
 
-#: sickchill/gui/slick/views/addShows_popularShows.mako:21
+#: sickchill/gui/slick/views/addShows_popularShows.mako:22
 msgid "Rank"
 msgstr ""
 
@@ -5809,16 +5957,16 @@ msgid "Ranked torrents"
 msgstr ""
 
 # | msgid "Loading"
-#: sickchill/gui/slick/views/addShows_trendingShows.mako:26
+#: sickchill/gui/slick/views/addShows_trendingShows.mako:21
 #, fuzzy
 msgid "Rating"
 msgstr "Зареждане"
 
-#: sickchill/gui/slick/views/addShows_trendingShows.mako:27
+#: sickchill/gui/slick/views/addShows_trendingShows.mako:22
 msgid "Rating > Votes"
 msgstr ""
 
-#: sickchill/views/home.py:948
+#: sickchill/views/home.py:952
 msgid "Re-scan files"
 msgstr "Ново сканиране за файлове"
 
@@ -5836,17 +5984,17 @@ msgid "Reality-TV"
 msgstr "Реалити"
 
 #: sickchill/gui/slick/views/manage.mako:120
-#: sickchill/oldbeard/show_queue.py:211
+#: sickchill/oldbeard/show_queue.py:300
 msgid "Refresh"
 msgstr "Опресни"
 
-#: sickchill/views/manage/index.py:794
+#: sickchill/views/manage/index.py:796
 msgid "Refreshes"
 msgstr "Опреснявания"
 
+# | msgid "Refreshes"
 #: sickchill/oldbeard/providers/yggtorrent.py:114
 #, fuzzy
-#| msgid "Refreshes"
 msgid "Refreshing cookies"
 msgstr "Опреснявания"
 
@@ -5854,12 +6002,12 @@ msgstr "Опреснявания"
 msgid "Register Growl"
 msgstr ""
 
-#: sickchill/views/home.py:373
+#: sickchill/views/home.py:371
 #, python-brace-format
 msgid "Registered and Tested growl successfully {growl_host}"
 msgstr "Регистриран и тестван успешно growl {growl_host}"
 
-#: sickchill/views/home.py:375
+#: sickchill/views/home.py:373
 #, python-brace-format
 msgid "Registration and Testing of growl failed {growl_host}"
 msgstr "Регистрацията и тестването на growl е неуспешно {growl_host}"
@@ -5890,7 +6038,7 @@ msgstr ""
 #: sickchill/gui/slick/views/config_postProcessing.mako:935
 #: sickchill/gui/slick/views/config_postProcessing.mako:1135
 #: sickchill/gui/slick/views/config_postProcessing.mako:1331
-#: sickchill/gui/slick/views/status.mako:105
+#: sickchill/gui/slick/views/status.mako:108
 #, fuzzy
 msgid "Release Name"
 msgstr "Намерено име на издание "
@@ -5912,13 +6060,13 @@ msgstr ""
 #: sickchill/gui/slick/views/manage.mako:75
 #: sickchill/gui/slick/views/manage.mako:158
 #: sickchill/gui/slick/views/manage_failedDownloads.mako:43
-#: sickchill/views/home.py:941
+#: sickchill/views/home.py:945
 msgid "Remove"
 msgstr "Премахни"
 
+# | msgid "Remove"
 #: sickchill/gui/slick/views/manage.mako:76
 #, fuzzy
-#| msgid "Remove"
 msgid "Remove All"
 msgstr "Премахни"
 
@@ -5930,7 +6078,7 @@ msgstr ""
 msgid "Remove Selected"
 msgstr "Премахни избраното"
 
-#: sickchill/oldbeard/show_queue.py:217
+#: sickchill/oldbeard/show_queue.py:306
 msgid "Remove Show"
 msgstr "Премахни предаването"
 
@@ -5954,13 +6102,13 @@ msgstr "Най-много гледани предавания"
 msgid "Removed history entries older than 30 days"
 msgstr "Премахни записи в историята, които са по-стари от 30 дни"
 
-#: sickchill/tv.py:2300
+#: sickchill/tv.py:2320
 msgid "Removing myself from my show's list"
 msgstr "Премахвам себе си от списъка с мои предавания"
 
 #: sickchill/gui/slick/views/manage.mako:61
 #: sickchill/gui/slick/views/manage.mako:126
-#: sickchill/oldbeard/show_queue.py:215
+#: sickchill/oldbeard/show_queue.py:304
 msgid "Rename"
 msgstr "Преименувай"
 
@@ -5968,9 +6116,9 @@ msgstr "Преименувай"
 msgid "Rename .nfo file"
 msgstr ""
 
+# | msgid "Rename"
 #: sickchill/gui/slick/views/manage.mako:62
 #, fuzzy
-#| msgid "Rename"
 msgid "Rename All"
 msgstr "Преименувай"
 
@@ -5987,7 +6135,7 @@ msgstr "епизод"
 msgid "Rename Selected"
 msgstr "Премахни избраното"
 
-#: sickchill/views/manage/index.py:799
+#: sickchill/views/manage/index.py:801
 msgid "Renames"
 msgstr "Преименувания"
 
@@ -6009,12 +6157,12 @@ msgstr "Repeat (Separated)"
 msgid "Request Authorization"
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:1345
+#: sickchill/oldbeard/helpers.py:1410
 #, python-brace-format
 msgid "Request failed: {0} ({1})"
 msgstr "Заявката пропадна: {0} ({1})"
 
-#: sickchill/oldbeard/helpers.py:1222
+#: sickchill/oldbeard/helpers.py:1287
 #, python-brace-format
 msgid "Requested a json response but response was not json, check the url: {url}"
 msgstr ""
@@ -6024,9 +6172,9 @@ msgid "Require words"
 msgstr ""
 
 # | msgid "resumed"
+# | msgid "Required"
 #: sickchill/gui/slick/views/manage_massEdit.mako:311
 #, fuzzy
-#| msgid "Required"
 msgid "Require words."
 msgstr "възобновен"
 
@@ -6046,9 +6194,9 @@ msgstr ""
 msgid "Rescan"
 msgstr ""
 
+# | msgid "Re-scan files"
 #: sickchill/gui/slick/views/manage.mako:58
 #, fuzzy
-#| msgid "Re-scan files"
 msgid "Rescan All"
 msgstr "Ново сканиране за файлове"
 
@@ -6057,11 +6205,11 @@ msgstr "Ново сканиране за файлове"
 msgid "Respecting the set-group-ID bit on the parent directory of {childPath}"
 msgstr ""
 
-#: sickchill/gui/slick/views/layouts/main.mako:286
+#: sickchill/gui/slick/views/layouts/main.mako:287
 msgid "Restart"
 msgstr ""
 
-#: sickchill/views/home.py:813 sickchill/views/home.py:842
+#: sickchill/views/home.py:811 sickchill/views/home.py:840
 msgid "Restarting SickChill"
 msgstr "Рестартиране на SickChill"
 
@@ -6086,11 +6234,11 @@ msgstr ""
 msgid "Result"
 msgstr "възобновен"
 
-#: sickchill/views/home.py:1984
+#: sickchill/views/home.py:1972
 msgid "Result not found in the cache"
 msgstr ""
 
-#: sickchill/views/home.py:1982
+#: sickchill/views/home.py:1970
 msgid "Result provider not found, cannot determine type"
 msgstr ""
 
@@ -6102,15 +6250,15 @@ msgstr ""
 msgid "Resulting JSON from provider isn't correct, not parsing it"
 msgstr ""
 
-#: sickchill/gui/slick/js/core.js:3837 sickchill/views/home.py:934
+#: sickchill/gui/slick/js/core.js:3832 sickchill/views/home.py:938
 msgid "Resume"
 msgstr "Възобнови"
 
-#: sickchill/gui/slick/js/core.js:3838
+#: sickchill/gui/slick/js/core.js:3833
 msgid "Resume updating the log on this page."
 msgstr ""
 
-#: sickchill/views/home.py:1846
+#: sickchill/views/home.py:1834
 msgid "Retry Search started"
 msgstr "Започна повторно търсене"
 
@@ -6123,9 +6271,16 @@ msgstr ""
 msgid "Returned xml contained no results"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:749
+#: sickchill/gui/slick/views/config_general.mako:775
 msgid "Reverse proxy headers"
 msgstr ""
+
+# | msgid "Season"
+# | msgid "Version"
+#: sickchill/gui/slick/views/config.mako:50
+#, fuzzy
+msgid "Revision"
+msgstr "Сезон"
 
 #: sickchill/gui/slick/views/config_notifications.mako:3508
 msgid "Rocket.Chat"
@@ -6143,11 +6298,11 @@ msgstr ""
 msgid "Rocket.Chat is free, unlimited and open source chat software solution."
 msgstr ""
 
-#: sickchill/views/home.py:488
+#: sickchill/views/home.py:486
 msgid "Rocket.Chat message failed"
 msgstr ""
 
-#: sickchill/views/home.py:486
+#: sickchill/views/home.py:484
 msgid "Rocket.Chat message successful"
 msgstr ""
 
@@ -6174,9 +6329,9 @@ msgid "Run time"
 msgstr "Крими"
 
 # | msgid "Season Premieres"
+# | msgid "Season folders"
 #: sickchill/gui/slick/views/manage.mako:46
 #, fuzzy
-#| msgid "Season folders"
 msgid "S. folders"
 msgstr "Премиери на сезони"
 
@@ -6204,7 +6359,7 @@ msgid ""
 " I'm marking it as priority"
 msgstr ""
 
-#: sickchill/views/home.py:340
+#: sickchill/views/home.py:338
 msgid "SMS sent successfully"
 msgstr "SMS е изпратен успешно"
 
@@ -6233,7 +6388,7 @@ msgstr ""
 # | msgid "" "SSL Error requesting url: '{0}' Try disabling Cert Verification
 # on
 # | the " "advanced tab of /config/general"
-#: sickchill/oldbeard/helpers.py:1362
+#: sickchill/oldbeard/helpers.py:1427
 #, fuzzy, python-brace-format
 msgid ""
 "SSL Error requesting url: '{error.request.url}' Try disabling Cert "
@@ -6242,14 +6397,14 @@ msgstr ""
 "SSL Грешка при заявката на url адрес: '{0}' Пробвайте да забраните "
 "проверката на сертификати в Разширени настройки на /config/general"
 
-#: sickchill/oldbeard/helpers.py:1355
+#: sickchill/oldbeard/helpers.py:1420
 #, python-brace-format
 msgid ""
 "SSL Error requesting url: '{error.request.url}' You have "
 "{ssl.OPENSSL_VERSION}, try upgrading OpenSSL to 1.0.1e+. Error: {error}"
 msgstr ""
 
-#: sickchill/gui/slick/views/config.mako:64
+#: sickchill/gui/slick/views/config.mako:81
 msgid "SSL Version"
 msgstr ""
 
@@ -6259,12 +6414,12 @@ msgid "Sanitized string: {0}"
 msgstr ""
 
 # | msgid "Saved Shares"
-#: sickchill/gui/slick/views/config_general.mako:187
-#: sickchill/gui/slick/views/config_general.mako:258
-#: sickchill/gui/slick/views/config_general.mako:580
-#: sickchill/gui/slick/views/config_general.mako:768
-#: sickchill/gui/slick/views/config_general.mako:1127
-#: sickchill/gui/slick/views/config_general.mako:1357
+#: sickchill/gui/slick/views/config_general.mako:213
+#: sickchill/gui/slick/views/config_general.mako:284
+#: sickchill/gui/slick/views/config_general.mako:606
+#: sickchill/gui/slick/views/config_general.mako:794
+#: sickchill/gui/slick/views/config_general.mako:1158
+#: sickchill/gui/slick/views/config_general.mako:1388
 #: sickchill/gui/slick/views/config_notifications.mako:186
 #: sickchill/gui/slick/views/config_notifications.mako:335
 #: sickchill/gui/slick/views/config_notifications.mako:466
@@ -6304,6 +6459,10 @@ msgstr ""
 msgid "Save Changes"
 msgstr "Запазени споделяния"
 
+#: sickchill/gui/slick/views/config_general.mako:863
+msgid "Save and refresh logger required when changed"
+msgstr ""
+
 # | msgid "Saved Defaults"
 #: sickchill/gui/slick/views/inc_addShowOptions.mako:111
 #, fuzzy
@@ -6317,7 +6476,7 @@ msgstr "Записани по подразбиране"
 msgid "Save for this show"
 msgstr "Не може да се обнови този сериал."
 
-#: sickchill/views/config/general.py:52
+#: sickchill/views/config/general.py:53
 msgid "Saved Defaults"
 msgstr "Записани по подразбиране"
 
@@ -6325,9 +6484,9 @@ msgstr "Записани по подразбиране"
 msgid "Saved Shares"
 msgstr "Запазени споделяния"
 
+# | msgid "Script result: {0}"
 #: sickchill/oldbeard/providers/newpct.py:139
 #, fuzzy, python-brace-format
-#| msgid "Script result: {0}"
 msgid "Saved result to {0}"
 msgstr "Резултат от скрипт: {0}"
 
@@ -6364,14 +6523,14 @@ msgid "Scene Quality"
 msgstr ""
 
 #: sickchill/gui/slick/views/config_general.mako:64
-#: sickchill/gui/slick/views/layouts/main.mako:183 sickchill/views/index.py:405
-#: sickchill/views/index.py:406
+#: sickchill/gui/slick/views/layouts/main.mako:184 sickchill/views/index.py:409
+#: sickchill/views/index.py:410
 msgid "Schedule"
 msgstr "График"
 
 # | msgid "Schedule"
-#: sickchill/gui/slick/views/status.mako:38
-#: sickchill/gui/slick/views/status.mako:43
+#: sickchill/gui/slick/views/status.mako:41
+#: sickchill/gui/slick/views/status.mako:46
 #, fuzzy
 msgid "Scheduler"
 msgstr "График"
@@ -6414,9 +6573,9 @@ msgid "Search"
 msgstr "дневно търсене"
 
 # | msgid "daily searches"
-#: sickchill/gui/slick/views/trendingShows.mako:97
+# | msgid "Search"
+#: sickchill/gui/slick/views/trendingShows.mako:100
 #, fuzzy
-#| msgid "Search"
 msgid "Search / Add"
 msgstr "дневно търсене"
 
@@ -6481,44 +6640,44 @@ msgstr "Метод на търсене: {mode}"
 msgid "Search NZBs"
 msgstr "Настройки на търсенето"
 
-#: sickchill/gui/slick/views/layouts/main.mako:236
-#: sickchill/views/config/index.py:19 sickchill/views/config/providers.py:28
+#: sickchill/gui/slick/views/layouts/main.mako:237
+#: sickchill/views/config/index.py:20 sickchill/views/config/providers.py:28
 msgid "Search Providers"
 msgstr "Доставчици на търсене"
 
 # | msgid "Search Queue (RSS)"
-#: sickchill/gui/slick/views/manage_manageSearches.mako:59
-#: sickchill/gui/slick/views/status.mako:17
+#: sickchill/gui/slick/views/manage_manageSearches.mako:72
+#: sickchill/gui/slick/views/status.mako:20
 #, fuzzy
 msgid "Search Queue"
 msgstr "Опашка за търсене (RSS)"
 
-#: sickchill/logger.py:235
+#: sickchill/logger.py:288
 msgid "Search Queue (All)"
 msgstr "Опашка за търсене (всички)"
 
-#: sickchill/logger.py:237
+#: sickchill/logger.py:290
 msgid "Search Queue (Backlog)"
 msgstr "Опашка за търсене (Backlog)"
 
-#: sickchill/logger.py:236
+#: sickchill/logger.py:289
 msgid "Search Queue (Daily Searcher)"
 msgstr "Опашка за търсене (дневно търсене)"
 
-#: sickchill/logger.py:238
+#: sickchill/logger.py:291
 msgid "Search Queue (Manual)"
 msgstr "Опашка за търсене (ръчно)"
 
-#: sickchill/logger.py:240
+#: sickchill/logger.py:293
 msgid "Search Queue (RSS)"
 msgstr "Опашка за търсене (RSS)"
 
-#: sickchill/logger.py:239
+#: sickchill/logger.py:292
 msgid "Search Queue (Retry/Failed)"
 msgstr "Опашка за търсене (повторен опит/неуспешни)"
 
-#: sickchill/gui/slick/views/layouts/main.mako:235
-#: sickchill/views/config/index.py:18 sickchill/views/config/search.py:23
+#: sickchill/gui/slick/views/layouts/main.mako:236
+#: sickchill/views/config/index.py:19 sickchill/views/config/search.py:23
 msgid "Search Settings"
 msgstr "Настройки на търсенето"
 
@@ -6592,9 +6751,9 @@ msgstr "Започна ежедневно търсене"
 msgid "Search Subtitles"
 msgstr "Субтитри"
 
+# | msgid "Search Mode: {mode}"
 #: sickchill/oldbeard/providers/hdtorrents_it.py:79
 #, fuzzy, python-brace-format
-#| msgid "Search Mode: {mode}"
 msgid "Search URL: {}"
 msgstr "Метод на търсене: {mode}"
 
@@ -6620,6 +6779,13 @@ msgstr ""
 msgid "Search torrents"
 msgstr "Настройки на търсенето"
 
+# | msgid "daily searches"
+# | msgid "Search"
+#: sickchill/gui/slick/js/ajaxEpSearch.js:194
+#, fuzzy
+msgid "Searching"
+msgstr "дневно търсене"
+
 #: sickchill/views/manage/add_shows.py:97
 #, python-brace-format
 msgid ""
@@ -6627,9 +6793,9 @@ msgid ""
 "{indexer_name} (exact: {exact})"
 msgstr ""
 
+# | msgid "Searching for new released episodes ..."
 #: sickchill/oldbeard/properFinder.py:60
 #, fuzzy, python-brace-format
-#| msgid "Searching for new released episodes ..."
 msgid "Searching for any new PROPER releases from {name}"
 msgstr "Търсене за нови издадени епизоди ..."
 
@@ -6637,8 +6803,8 @@ msgstr "Търсене за нови издадени епизоди ..."
 msgid "Searching for new released episodes ..."
 msgstr "Търсене за нови издадени епизоди ..."
 
-#: sickchill/gui/slick/views/displayShow.mako:80 sickchill/views/home.py:1822
-#: sickchill/views/home.py:1840
+#: sickchill/gui/slick/views/displayShow.mako:80 sickchill/views/home.py:1810
+#: sickchill/views/home.py:1828
 msgid "Season"
 msgstr "Сезон"
 
@@ -6664,10 +6830,10 @@ msgid "Season Number"
 msgstr "Премиери на сезони"
 
 # | msgid "Season Premieres"
+# | msgid "Season folders"
 #: sickchill/gui/slick/views/displayShow.mako:310
 #: sickchill/gui/slick/views/editShow.mako:268
 #, fuzzy
-#| msgid "Season folders"
 msgid "Season Order"
 msgstr "Премиери на сезони"
 
@@ -6678,9 +6844,9 @@ msgid "Season folders"
 msgstr "Премиери на сезони"
 
 # | msgid "Season Premieres"
-#: sickchill/views/home.py:1513
+# | msgid "Season folders"
+#: sickchill/views/home.py:1509
 #, fuzzy
-#| msgid "Season folders"
 msgid "Season order updated"
 msgstr "Премиери на сезони"
 
@@ -6693,10 +6859,10 @@ msgid "Season search mode"
 msgstr "пакет с цял сезон"
 
 # | msgid "Season Premieres"
+# | msgid "Season Number"
 #: sickchill/gui/slick/views/displayShow.mako:75
 #: sickchill/gui/slick/views/displayShow.mako:433
 #, fuzzy, python-brace-format
-#| msgid "Season Number"
 msgid "Season {num}"
 msgstr "Премиери на сезони"
 
@@ -6720,15 +6886,15 @@ msgstr ""
 msgid "Seeders"
 msgstr ""
 
-#: sickchill/gui/slick/js/core.js:1871
+#: sickchill/gui/slick/js/core.js:1864
 msgid "Select .nzb black hole/watch location"
 msgstr ""
 
-#: sickchill/gui/slick/js/core.js:414 sickchill/gui/slick/js/core.min.js:1
+#: sickchill/gui/slick/js/core.js:410 sickchill/gui/slick/js/core.min.js:1
 msgid "Select Background Image"
 msgstr ""
 
-#: sickchill/gui/slick/js/core.js:417 sickchill/gui/slick/js/core.min.js:1
+#: sickchill/gui/slick/js/core.js:413 sickchill/gui/slick/js/core.min.js:1
 msgid "Select CSS file"
 msgstr ""
 
@@ -6748,9 +6914,9 @@ msgid "Select Kodi Player"
 msgstr ""
 
 # | msgid "Most Collected Shows"
-#: sickchill/gui/slick/views/addShows_trendingShows.mako:38
+# | msgid "Selected Shows"
+#: sickchill/gui/slick/views/addShows_trendingShows.mako:32
 #, fuzzy
-#| msgid "Selected Shows"
 msgid "Select List"
 msgstr "Най-много събирани предавания"
 
@@ -6758,21 +6924,21 @@ msgstr "Най-много събирани предавания"
 msgid "Select Metadata"
 msgstr ""
 
-#: sickchill/gui/slick/js/core.js:3133
+#: sickchill/gui/slick/js/core.js:3128
 msgid "Select Show Location"
 msgstr ""
 
 # | msgid "Failed download detected:"
-#: sickchill/gui/slick/js/core.js:1338
+#: sickchill/gui/slick/js/core.js:1334
 #, fuzzy
 msgid "Select TV Download Directory"
 msgstr "Засечено пропаднало изтегляне:"
 
-#: sickchill/gui/slick/js/core.js:1339
+#: sickchill/gui/slick/js/core.js:1335
 msgid "Select Unpack Directory"
 msgstr ""
 
-#: sickchill/gui/slick/js/core.js:3228
+#: sickchill/gui/slick/js/core.js:3223
 msgid "Select Unprocessed Episode Folder"
 msgstr ""
 
@@ -6781,15 +6947,15 @@ msgstr ""
 msgid "Select all"
 msgstr ""
 
-#: sickchill/gui/slick/js/core.js:440 sickchill/gui/slick/js/core.min.js:1
+#: sickchill/gui/slick/js/core.js:436 sickchill/gui/slick/js/core.min.js:1
 msgid "Select backup files to restore"
 msgstr ""
 
-#: sickchill/gui/slick/js/core.js:438 sickchill/gui/slick/js/core.min.js:1
+#: sickchill/gui/slick/js/core.js:434 sickchill/gui/slick/js/core.min.js:1
 msgid "Select backup folder to save to"
 msgstr ""
 
-#: sickchill/gui/slick/js/core.js:412 sickchill/gui/slick/js/core.min.js:1
+#: sickchill/gui/slick/js/core.js:408 sickchill/gui/slick/js/core.min.js:1
 msgid "Select log file folder location"
 msgstr ""
 
@@ -6808,15 +6974,15 @@ msgstr ""
 msgid "Select the folder you wish to save your backup file to"
 msgstr ""
 
-#: sickchill/gui/slick/js/core.js:1872
+#: sickchill/gui/slick/js/core.js:1865
 msgid "Select torrent black hole/watch location"
 msgstr ""
 
-#: sickchill/gui/slick/js/core.js:1873
+#: sickchill/gui/slick/js/core.js:1866
 msgid "Select torrent download location"
 msgstr ""
 
-#: sickchill/gui/slick/js/core.js:1874
+#: sickchill/gui/slick/js/core.js:1867
 msgid "Select torrent incomplete download location"
 msgstr ""
 
@@ -6838,7 +7004,7 @@ msgstr ""
 msgid "Send full notification message using text-to-speech else Bot Name only"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:144
+#: sickchill/gui/slick/views/config_general.mako:170
 msgid "Send to trash for actions"
 msgstr ""
 
@@ -6846,7 +7012,7 @@ msgstr ""
 msgid "Send torrents to"
 msgstr ""
 
-#: sickchill/gui/slick/views/layouts/main.mako:293
+#: sickchill/gui/slick/views/layouts/main.mako:294
 msgid "Server Status"
 msgstr ""
 
@@ -6886,12 +7052,12 @@ msgstr ""
 msgid "Set user and password for each provider"
 msgstr ""
 
-#: sickchill/oldbeard/show_queue.py:446
+#: sickchill/oldbeard/show_queue.py:536
 #, python-brace-format
 msgid "Setting all episodes to the specified default status: {default_status}"
 msgstr ""
 
-#: sickchill/oldbeard/providers/kat.py:151
+#: sickchill/oldbeard/providers/kat.py:155
 #, python-brace-format
 msgid "Setting mirror to use to {url}"
 msgstr ""
@@ -6936,14 +7102,14 @@ msgid "Show"
 msgstr ""
 
 # | msgid "episode"
-#: sickchill/gui/slick/js/core.js:3123
+#: sickchill/gui/slick/js/core.js:3118
 #: sickchill/gui/slick/views/displayShow.mako:438
 #, fuzzy
 msgid "Show Episodes"
 msgstr "епизод"
 
-#: sickchill/gui/slick/views/layouts/main.mako:158 sickchill/views/home.py:125
-#: sickchill/views/home.py:203
+#: sickchill/gui/slick/views/layouts/main.mako:158 sickchill/views/home.py:123
+#: sickchill/views/home.py:201
 msgid "Show List"
 msgstr "Списък с предавания"
 
@@ -6976,10 +7142,25 @@ msgstr ""
 msgid "Show Name ShowYear - Overrides Strip Show Year selector"
 msgstr ""
 
-#: sickchill/gui/slick/views/status.mako:16
-#: sickchill/gui/slick/views/status.mako:67 sickchill/logger.py:234
+#: sickchill/gui/slick/views/status.mako:19
+#: sickchill/gui/slick/views/status.mako:70 sickchill/logger.py:287
 msgid "Show Queue"
 msgstr "Опашка на предавания"
+
+# | msgid "Show List"
+#: sickchill/gui/slick/views/addShows_popularShows.mako:20
+#: sickchill/gui/slick/views/addShows_trendingShows.mako:17
+#, fuzzy
+msgid "Show Sort"
+msgstr "Списък с предавания"
+
+# | msgid "Action"
+# | msgid "Direction"
+#: sickchill/gui/slick/views/addShows_popularShows.mako:28
+#: sickchill/gui/slick/views/addShows_trendingShows.mako:27
+#, fuzzy
+msgid "Show Sort Direction"
+msgstr "Действие"
 
 # | msgid "Show List"
 #: sickchill/gui/slick/views/displayShow.mako:211
@@ -6988,12 +7169,13 @@ msgid "Show Status"
 msgstr "Списък с предавания"
 
 # | msgid "Show Updater"
-#: sickchill/gui/slick/views/status.mako:14
+#: sickchill/gui/slick/views/status.mako:17
 #, fuzzy
 msgid "Show Update"
 msgstr "Актуализатор на предавания"
 
-#: sickchill/logger.py:232
+#: sickchill/gui/slick/views/manage_manageSearches.mako:60
+#: sickchill/logger.py:285
 msgid "Show Updater"
 msgstr "Актуализатор на предавания"
 
@@ -7001,32 +7183,32 @@ msgstr "Актуализатор на предавания"
 msgid "Show added"
 msgstr "Сериалът е добавен"
 
-#: sickchill/gui/slick/views/config_general.mako:422
+#: sickchill/gui/slick/views/config_general.mako:448
 msgid "Show all seasons"
 msgstr ""
 
-#: sickchill/oldbeard/postProcessor.py:1055
+#: sickchill/oldbeard/postProcessor.py:1094
 msgid "Show directory doesn't exist, creating it"
 msgstr "Папката на предаването не съществува, създава я"
 
-#: sickchill/gui/slick/views/config_general.mako:362
+#: sickchill/gui/slick/views/config_general.mako:388
 msgid "Show fanart in the background"
 msgstr ""
 
 # | msgid "Notifications"
+# | msgid "Show notification list"
 #: sickchill/gui/slick/views/config_general.mako:37
 #, fuzzy
-#| msgid "Show notification list"
 msgid "Show file locations."
 msgstr "Известия"
 
 # | msgid "Show skipped"
-#: sickchill/gui/slick/views/status.mako:72
+#: sickchill/gui/slick/views/status.mako:75
 #, fuzzy
 msgid "Show id"
 msgstr "Предаването е пропуснато"
 
-#: sickchill/oldbeard/show_queue.py:389
+#: sickchill/oldbeard/show_queue.py:479
 #, python-brace-format
 msgid ""
 "Show in {show_dir} has no name on {indexer}, probably searched with the "
@@ -7041,13 +7223,13 @@ msgstr ""
 # | msgid "Show added"
 #: sickchill/gui/slick/views/addShows_newShow.mako:42
 #: sickchill/gui/slick/views/addShows_newShow.mako:147
-#: sickchill/gui/slick/views/status.mako:73
+#: sickchill/gui/slick/views/status.mako:76
 #, fuzzy
 msgid "Show name"
 msgstr "Сериалът е добавен"
 
-#: sickchill/views/home.py:888 sickchill/views/home.py:1724
-#: sickchill/views/home.py:1859 sickchill/views/home.py:1887
+#: sickchill/views/home.py:886 sickchill/views/home.py:1712
+#: sickchill/views/home.py:1847 sickchill/views/home.py:1875
 #: sickchill/views/imageSelector.py:26
 msgid "Show not in show list"
 msgstr "Сериалът не е в списъка със сериали"
@@ -7063,17 +7245,27 @@ msgstr "Известия"
 msgid "Show retrieved from existing metadata"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:169
+#: sickchill/gui/slick/views/config_general.mako:195
 msgid "Show root directories"
 msgstr ""
 
-#: sickchill/oldbeard/show_queue.py:467
+#: sickchill/oldbeard/show_queue.py:557
 msgid "Show skipped"
 msgstr "Предаването е пропуснато"
 
-#: sickchill/views/home.py:993
+#: sickchill/views/home.py:997
 msgid "Show specials"
 msgstr "Покажи специалните епизоди"
+
+#: sickchill/views/manage/searches.py:114
+msgid "Show updater is already running"
+msgstr ""
+
+# | msgid "Show Updater"
+#: sickchill/views/manage/searches.py:112
+#, fuzzy
+msgid "Show updater started"
+msgstr "Актуализатор на предавания"
 
 #: sickchill/gui/slick/views/config_postProcessing.mako:543
 #: sickchill/gui/slick/views/config_postProcessing.mako:683
@@ -7119,7 +7311,7 @@ msgstr ""
 #: sickchill/gui/slick/views/config_general.mako:63
 #: sickchill/gui/slick/views/home.mako:35
 #: sickchill/gui/slick/views/layouts/main.mako:154
-#: sickchill/gui/slick/views/layouts/main.mako:371
+#: sickchill/gui/slick/views/layouts/main.mako:372
 msgid "Shows"
 msgstr ""
 
@@ -7131,11 +7323,18 @@ msgstr "Довабени сериали"
 msgid "Shows containing"
 msgstr ""
 
-#: sickchill/gui/slick/views/layouts/main.mako:288
+#: sickchill/gui/slick/views/config_general.mako:130
+msgid ""
+"Shows not listed in the daily TVDB update feed are disk-refreshed only if"
+" the show folder changed, or after this many days. Full TVDB updates "
+"still run for shows in the feed."
+msgstr ""
+
+#: sickchill/gui/slick/views/layouts/main.mako:289
 msgid "Shutdown"
 msgstr ""
 
-#: sickchill/views/config/index.py:54 sickchill/views/config/index.py:55
+#: sickchill/views/config/index.py:61 sickchill/views/config/index.py:62
 msgid "SickChill Configuration"
 msgstr "SickChill настройки"
 
@@ -7166,7 +7365,7 @@ msgstr ""
 msgid "SickChill new login"
 msgstr "Нов вход в SickChill"
 
-#: sickchill/views/index.py:469
+#: sickchill/views/index.py:473
 msgid ""
 "SickChill no longer is supported unless installed with pip or poetry. "
 "Source and git installs are for experienced users only"
@@ -7181,7 +7380,7 @@ msgid ""
 "detected"
 msgstr ""
 
-#: sickchill/gui/slick/views/status.mako:51
+#: sickchill/gui/slick/views/status.mako:54
 msgid "Silent"
 msgstr ""
 
@@ -7218,7 +7417,7 @@ msgstr ""
 msgid "Size"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:870
+#: sickchill/gui/slick/views/config_general.mako:901
 msgid "Size of Log files saved"
 msgstr ""
 
@@ -7226,7 +7425,7 @@ msgstr ""
 msgid "Skip All"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:1053
+#: sickchill/gui/slick/views/config_general.mako:1084
 msgid "Skip Remove Detection"
 msgstr ""
 
@@ -7250,12 +7449,12 @@ msgstr ""
 msgid "Skipping RSS Torrent provider string: {0}, incorrect format"
 msgstr ""
 
-#: sickchill/oldbeard/show_queue.py:376
+#: sickchill/oldbeard/show_queue.py:466
 #, python-brace-format
 msgid "Skipping initial creation of {show_dir} due to config.ini setting"
 msgstr ""
 
-#: sickchill/gui/slick/views/config.mako:239
+#: sickchill/gui/slick/views/config.mako:256
 #: sickchill/gui/slick/views/config_notifications.mako:3184
 msgid "Slack"
 msgstr ""
@@ -7274,11 +7473,11 @@ msgid ""
 " messaging, archiving and search for modern teams."
 msgstr ""
 
-#: sickchill/views/home.py:464
+#: sickchill/views/home.py:462
 msgid "Slack message failed"
 msgstr "Неуспешно съобщение към Slack"
 
-#: sickchill/views/home.py:462
+#: sickchill/views/home.py:460
 msgid "Slack message successful"
 msgstr "Успешно съобщение към Slack"
 
@@ -7298,7 +7497,7 @@ msgstr ""
 #: sickchill/gui/slick/views/history.mako:123
 #: sickchill/gui/slick/views/inc_home_show_list.mako:129
 #: sickchill/gui/slick/views/inc_home_show_list_poster.mako:82
-#: sickchill/gui/slick/views/layouts/main.mako:380
+#: sickchill/gui/slick/views/layouts/main.mako:381
 #: sickchill/gui/slick/views/schedule.mako:28
 #: sickchill/gui/slick/views/schedule.mako:316 sickchill/oldbeard/common.py:182
 msgid "Snatched"
@@ -7329,16 +7528,16 @@ msgstr "Мюзикъл"
 msgid "Some items were not processed."
 msgstr "Някои елементи не бяха обработени."
 
-#: sickchill/oldbeard/show_queue.py:763
+#: sickchill/oldbeard/show_queue.py:911
 #, python-brace-format
 msgid "Some notifications could not be sent. Continuing removal of {}..."
 msgstr ""
 
-#: sickchill/oldbeard/postProcessor.py:1225
+#: sickchill/oldbeard/postProcessor.py:1205
 msgid "Some notifications could not be sent. Continuing with postProcessing..."
 msgstr ""
 
-#: sickchill/oldbeard/postProcessor.py:1234
+#: sickchill/oldbeard/postProcessor.py:1213
 msgid "Some notifications could not be sent. Finishing postProcessing..."
 msgstr ""
 
@@ -7357,17 +7556,18 @@ msgid "Sorry, your account is not allowed to download, check your ratio"
 msgstr ""
 
 #: sickchill/gui/slick/views/addShows_popularShows.mako:18
+#: sickchill/gui/slick/views/addShows_trendingShows.mako:15
 #: sickchill/gui/slick/views/inc_home_menu.mako:44
 #: sickchill/gui/slick/views/schedule.mako:54
 msgid "Sort By"
 msgstr ""
 
-#: sickchill/gui/slick/views/addShows_popularShows.mako:27
-#: sickchill/gui/slick/views/addShows_trendingShows.mako:30
+#: sickchill/gui/slick/views/addShows_popularShows.mako:26
+#: sickchill/gui/slick/views/addShows_trendingShows.mako:25
 msgid "Sort Order"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:432
+#: sickchill/gui/slick/views/config_general.mako:458
 msgid "Sort with \"The\", \"A\", \"An\""
 msgstr ""
 
@@ -7377,7 +7577,7 @@ msgstr ""
 msgid "Sorting results by"
 msgstr "Игнориране на резултат "
 
-#: sickchill/gui/slick/views/config.mako:217
+#: sickchill/gui/slick/views/config.mako:234
 msgid "Source"
 msgstr ""
 
@@ -7423,7 +7623,7 @@ msgstr ""
 msgid "Stars"
 msgstr ""
 
-#: sickchill/gui/slick/views/status.mako:47
+#: sickchill/gui/slick/views/status.mako:50
 msgid "Start Time"
 msgstr ""
 
@@ -7441,7 +7641,7 @@ msgstr ""
 msgid "Started Download"
 msgstr "Започнато изтегляне"
 
-#: sickchill/oldbeard/show_queue.py:338
+#: sickchill/oldbeard/show_queue.py:428
 #, python-brace-format
 msgid "Starting to add show {0}"
 msgstr "Започва да добавя предаване {0}"
@@ -7453,8 +7653,8 @@ msgstr ""
 #: sickchill/gui/slick/views/displayShow.mako:465
 #: sickchill/gui/slick/views/inc_home_menu.mako:50
 #: sickchill/gui/slick/views/inc_home_show_list.mako:31
-#: sickchill/gui/slick/views/manage.mako:50 sickchill/views/home.py:785
-#: sickchill/views/home.py:786
+#: sickchill/gui/slick/views/manage.mako:50 sickchill/views/home.py:783
+#: sickchill/views/home.py:784
 msgid "Status"
 msgstr "Статус"
 
@@ -7466,11 +7666,11 @@ msgstr ""
 msgid "Status for previously aired episodes"
 msgstr ""
 
+# | msgid "Status"
 #: sickchill/oldbeard/providers/iptorrents.py:46
 #: sickchill/oldbeard/providers/scenetime.py:43
 #: sickchill/oldbeard/providers/torrentday.py:50
 #, fuzzy, python-brace-format
-#| msgid "Status"
 msgid "Status: {}"
 msgstr "Статус"
 
@@ -7484,11 +7684,11 @@ msgstr "Възстановяването завършено"
 msgid "Step Two"
 msgstr ""
 
-#: sickchill/gui/slick/js/core.js:2011
+#: sickchill/gui/slick/js/core.js:2004
 msgid "Stop seeding after"
 msgstr ""
 
-#: sickchill/gui/slick/js/core.js:1969
+#: sickchill/gui/slick/js/core.js:1962
 msgid "Stop seeding when inactive for"
 msgstr ""
 
@@ -7500,7 +7700,7 @@ msgstr ""
 msgid "Stupid captcha"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:402
+#: sickchill/gui/slick/views/config_general.mako:428
 msgid "Stylesheet File Path"
 msgstr ""
 
@@ -7516,21 +7716,21 @@ msgid "Subscribe"
 msgstr ""
 
 # | msgid "Subtitles Settings"
-#: sickchill/gui/slick/views/config_general.mako:1246
+# | msgid "Subtitles Plugin"
+#: sickchill/gui/slick/views/config_general.mako:1277
 #, fuzzy
-#| msgid "Subtitles Plugin"
 msgid "Subscriber PIN"
 msgstr "Настройки на субтитри"
 
 #: sickchill/gui/slick/views/manage.mako:48
 #: sickchill/gui/slick/views/manage.mako:133
-#: sickchill/oldbeard/show_queue.py:216
+#: sickchill/oldbeard/show_queue.py:305
 msgid "Subtitle"
 msgstr "Субтитри"
 
+# | msgid "Subtitle"
 #: sickchill/gui/slick/views/manage.mako:67
 #, fuzzy
-#| msgid "Subtitle"
 msgid "Subtitle All"
 msgstr "Субтитри"
 
@@ -7562,13 +7762,40 @@ msgstr ""
 msgid "Subtitle Search"
 msgstr "Започна търсене за субтитри"
 
+# | msgid "Subtitle Download Finished"
+#: sickchill/oldbeard/search_queue.py:409
+#, fuzzy
+msgid "Subtitle download failed"
+msgstr "Изтеглени са субтитри"
+
+# | msgid "Subtitle search started"
+# | msgid "Subtitle search disabled"
+#: sickchill/views/home.py:2141 sickchill/views/home.py:2184
+#, fuzzy
+msgid "Subtitle search already in progress"
+msgstr "Започна търсене за субтитри"
+
+# | msgid "Subtitle search started"
+#: sickchill/views/home.py:2135 sickchill/views/home.py:2179
+#, fuzzy
+msgid "Subtitle search already queued"
+msgstr "Започна търсене за субтитри"
+
 # | msgid "Subtitle search started"
 #: sickchill/gui/slick/views/manage_manageSearches.mako:43
 #, fuzzy
 msgid "Subtitle search disabled"
 msgstr "Започна търсене за субтитри"
 
-#: sickchill/views/manage/searches.py:75
+# | msgid "Subtitle search started"
+# | msgid "Subtitle Search"
+#: sickchill/gui/slick/js/core.js:2757 sickchill/gui/slick/js/core.js:2797
+#: sickchill/views/home.py:2141 sickchill/views/home.py:2184
+#, fuzzy
+msgid "Subtitle search queued"
+msgstr "Започна търсене за субтитри"
+
+#: sickchill/views/manage/searches.py:77
 msgid "Subtitle search started"
 msgstr "Започна търсене за субтитри"
 
@@ -7585,12 +7812,12 @@ msgstr "Субтитри"
 #: sickchill/gui/slick/views/inc_addShowOptions.mako:20
 #: sickchill/gui/slick/views/manage_massEdit.mako:252
 #: sickchill/gui/slick/views/movies/details.mako:112
-#: sickchill/views/config/subtitles.py:22 sickchill/views/manage/index.py:804
+#: sickchill/views/config/subtitles.py:22 sickchill/views/manage/index.py:806
 msgid "Subtitles"
 msgstr "Субтитри"
 
 # | msgid "No subtitles downloaded"
-#: sickchill/gui/slick/views/status.mako:21
+#: sickchill/gui/slick/views/status.mako:24
 #, fuzzy
 msgid "Subtitles Finder"
 msgstr "Няма свалени субтитри"
@@ -7614,9 +7841,9 @@ msgid "Subtitles Plugin"
 msgstr "Настройки на субтитри"
 
 # | msgid "Subtitles Settings"
+# | msgid "Subtitles SR Metadata"
 #: sickchill/gui/slick/views/displayShow.mako:286
 #, fuzzy
-#| msgid "Subtitles SR Metadata"
 msgid "Subtitles SC Metadata"
 msgstr "Настройки на субтитри"
 
@@ -7627,16 +7854,12 @@ msgstr "Настройки на субтитри"
 msgid "Subtitles Search"
 msgstr "Започна търсене за субтитри"
 
-#: sickchill/gui/slick/views/layouts/main.mako:237
-#: sickchill/views/config/index.py:20
+#: sickchill/gui/slick/views/layouts/main.mako:238
+#: sickchill/views/config/index.py:21
 msgid "Subtitles Settings"
 msgstr "Настройки на субтитри"
 
-#: sickchill/gui/slick/js/ajaxEpSearch.js:184
-msgid "Success"
-msgstr ""
-
-#: sickchill/views/home.py:309
+#: sickchill/views/home.py:307
 msgid "Success. Connected and authenticated"
 msgstr "Успешно свързан и удостоверен"
 
@@ -7649,17 +7872,17 @@ msgstr ""
 msgid "Successful match! Result {name} matched to show {show_name}"
 msgstr ""
 
-#: sickchill/views/home.py:537
+#: sickchill/views/home.py:535
 #, python-brace-format
 msgid "Successful test notice sent to Plex Home Theater ... {plex_clients}"
 msgstr "Успешно тестово уведомление на Plex Home Theater ... {plex_clients}"
 
-#: sickchill/views/home.py:558
+#: sickchill/views/home.py:556
 #, python-brace-format
 msgid "Successful test of Plex Media Server(s) ... {plex_servers}"
 msgstr "Успешен тест на Plex Media Server(s) ... {plex_servers}"
 
-#: sickchill/views/home.py:654
+#: sickchill/views/home.py:652
 msgid "Successfully connected to flaresolverr, this is experimental!"
 msgstr ""
 
@@ -7667,7 +7890,7 @@ msgstr ""
 msgid "Successfully processed"
 msgstr "Успешна обработка"
 
-#: sickchill/views/home.py:600
+#: sickchill/views/home.py:598
 msgid "Successfully started the scan update"
 msgstr "Успешно започна сканиране за актуализация"
 
@@ -7675,7 +7898,7 @@ msgstr "Успешно започна сканиране за актуализа
 msgid "Summary"
 msgstr ""
 
-#: sickchill/gui/slick/views/layouts/main.mako:268
+#: sickchill/gui/slick/views/layouts/main.mako:269
 msgid "Support SickChill"
 msgstr ""
 
@@ -7717,17 +7940,24 @@ msgstr ""
 msgid "Synology Notifier is the notification system of Synology DSM"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:288
+#: sickchill/gui/slick/views/config_general.mako:314
 msgid "System Language"
 msgstr ""
+
+# | msgid "Update Failed"
+# | msgid "Update TBA Names"
+#: sickchill/oldbeard/show_queue.py:307
+#, fuzzy
+msgid "TBA Names"
+msgstr "Неуспешно актуализиране"
 
 #: sickchill/gui/slick/views/displayShow.mako:453
 msgid "TBN"
 msgstr ""
 
+# | msgid "API Key not generated"
 #: sickchill/views/manage/add_shows.py:411
 #, fuzzy
-#| msgid "API Key not generated"
 msgid "TMDB API key is not configured"
 msgstr "Не е генериран API ключ"
 
@@ -7744,10 +7974,14 @@ msgid "TTS"
 msgstr ""
 
 # | msgid "Failed download detected:"
-#: sickchill/gui/slick/views/status.mako:143
+#: sickchill/gui/slick/views/status.mako:146
 #, fuzzy
 msgid "TV Download Directory"
 msgstr "Засечено пропаднало изтегляне:"
+
+#: sickchill/gui/slick/views/addShows_trendingShows.mako:62
+msgid "TVMaze does not provide ratings for most upcoming premieres yet."
+msgstr ""
 
 #: sickchill/gui/slick/views/addShows.mako:36
 msgid ""
@@ -7755,9 +7989,9 @@ msgid ""
 " known."
 msgstr ""
 
+# | msgid "Movie not found"
 #: sickchill/oldbeard/providers/zamunda.py:104
 #, fuzzy
-#| msgid "Movie not found"
 msgid "Table not found"
 msgstr "Филмът не е намерен"
 
@@ -7765,7 +7999,7 @@ msgstr "Филмът не е намерен"
 msgid "Talk-Show"
 msgstr "Токшоу"
 
-#: sickchill/gui/slick/views/config.mako:253
+#: sickchill/gui/slick/views/config.mako:270
 #: sickchill/gui/slick/views/config_notifications.mako:2077
 #: sickchill/gui/slick/views/config_notifications.mako:2078
 msgid "Telegram"
@@ -7775,7 +8009,7 @@ msgstr ""
 msgid "Telegram is a cloud-based instant messaging service."
 msgstr ""
 
-#: sickchill/views/home.py:349
+#: sickchill/views/home.py:347
 msgid ""
 "Telegram notification succeeded. Check your Telegram clients to make sure"
 " it worked"
@@ -7783,11 +8017,11 @@ msgstr ""
 "Успешно испращане на уведомление към Telegram. Проверете вашите Telegram "
 "клиенти, за да се уверите, че е получено успешно"
 
-#: sickchill/views/index.py:440
+#: sickchill/views/index.py:444
 msgid "Test 1"
 msgstr "Тест 1"
 
-#: sickchill/views/index.py:441
+#: sickchill/views/index.py:445
 msgid "Test 2"
 msgstr "Тест 2"
 
@@ -7795,7 +8029,7 @@ msgstr "Тест 2"
 msgid "Test Connection"
 msgstr ""
 
-#: sickchill/views/home.py:520
+#: sickchill/views/home.py:518
 #, python-brace-format
 msgid "Test KODI notice {result} to {kodi_host}"
 msgstr "Тествай KODI известие {result} към {kodi_host}"
@@ -7812,73 +8046,73 @@ msgstr "Тествани Plex Home Theater(s)"
 msgid "Test Plex Media Server"
 msgstr "Тествани адреси на Plex Media Server(s)"
 
-#: sickchill/views/home.py:732
+#: sickchill/views/home.py:730
 msgid "Test email sent successfully! Check inbox."
 msgstr "Успешно изпратен тестов имейл! Проверете пощенската кутия."
 
-#: sickchill/views/home.py:539
+#: sickchill/views/home.py:537
 #, python-brace-format
 msgid "Test failed for Plex Home Theater ... {plex_clients}"
 msgstr "Неуспешно тестово уведомление на Plex Home Theater ... {plex_clients}"
 
-#: sickchill/views/home.py:562
+#: sickchill/views/home.py:560
 #, python-brace-format
 msgid "Test failed for Plex Media Server(s) ... {plex_servers}"
 msgstr "Неуспешен тест на Plex Media Server(s) ... {plex_servers}"
 
-#: sickchill/views/home.py:602
+#: sickchill/views/home.py:600
 msgid "Test failed to start the scan update"
 msgstr "Тестът не успя да стартира сканиране за актуализация"
 
-#: sickchill/views/home.py:560
+#: sickchill/views/home.py:558
 msgid "Test failed, No Plex Media Server host specified"
 msgstr "Неуспешен тест. Не е посочен адрес на Plex Media Server"
 
-#: sickchill/views/home.py:582
+#: sickchill/views/home.py:580
 #, python-brace-format
 msgid "Test notice failed to {emby_host}"
 msgstr "Неуспешно тестово уведомление на {emby_host}"
 
-#: sickchill/views/home.py:591
+# | msgid "Test notice failed to {emby_host}"
+#: sickchill/views/home.py:589
 #, fuzzy, python-brace-format
-#| msgid "Test notice failed to {emby_host}"
 msgid "Test notice failed to {jellyfin_host}"
 msgstr "Неуспешно тестово уведомление на {emby_host}"
 
-#: sickchill/views/home.py:621
+#: sickchill/views/home.py:619
 #, python-brace-format
 msgid "Test notice failed to {nmj2_host}"
 msgstr "Неуспешно тестово уведомление на {nmj2_host}"
 
-#: sickchill/views/home.py:580
+#: sickchill/views/home.py:578
 #, python-brace-format
 msgid "Test notice sent successfully to {emby_host}"
 msgstr "Тестото уведомление беше изпратено успешно към {emby_host}"
 
-#: sickchill/views/home.py:589
+# | msgid "Test notice sent successfully to {emby_host}"
+#: sickchill/views/home.py:587
 #, fuzzy, python-brace-format
-#| msgid "Test notice sent successfully to {emby_host}"
 msgid "Test notice sent successfully to {jellyfin_host}"
 msgstr "Тестото уведомление беше изпратено успешно към {emby_host}"
 
-#: sickchill/views/home.py:619
+#: sickchill/views/home.py:617
 #, python-brace-format
 msgid "Test notice sent successfully to {nmj2_host}"
 msgstr "Тест уведомление изпратено успешно към {nmj2_host}"
 
-#: sickchill/views/home.py:384
+#: sickchill/views/home.py:382
 msgid "Test prowl notice failed"
 msgstr "Тестът на уведомлението на prowl е неуспешно"
 
-#: sickchill/views/home.py:382
+#: sickchill/views/home.py:380
 msgid "Test prowl notice sent successfully"
 msgstr "Пробното уведомление на prowl е изпратено успешно"
 
-#: sickchill/views/home.py:542
+#: sickchill/views/home.py:540
 msgid "Tested Plex Home Theater(s)"
 msgstr "Тествани Plex Home Theater(s)"
 
-#: sickchill/views/home.py:565
+#: sickchill/views/home.py:563
 msgid "Tested Plex Media Server host(s)"
 msgstr "Тествани адреси на Plex Media Server(s)"
 
@@ -7887,6 +8121,13 @@ msgid ""
 "The API key you provided was rejected because it is invalid. Check your "
 "provider configuration."
 msgstr ""
+
+# | msgid "Show List"
+#: sickchill/views/manage/add_shows.py:344
+#: sickchill/views/manage/add_shows.py:345
+#, fuzzy
+msgid "The Lists"
+msgstr "Списък с предавания"
 
 #: sickchill/gui/slick/views/config_notifications.mako:629
 msgid ""
@@ -7941,19 +8182,19 @@ msgid ""
 "it to be downloaded again."
 msgstr ""
 
-#: sickchill/views/home.py:918
+#: sickchill/views/home.py:916
 msgid "The episodes below are currently being refreshed from disk"
 msgstr "Епизодите по-долу в момента се обновяват от диска"
 
-#: sickchill/gui/slick/views/config_general.mako:805
+#: sickchill/gui/slick/views/config_general.mako:831
 msgid "The folder where sickchill log/s go."
 msgstr ""
 
-#: sickchill/views/manage/index.py:809
+#: sickchill/views/manage/index.py:811
 msgid "The following actions were queued"
 msgstr "Следните действия бяха добавени на опашката"
 
-#: sickchill/views/home.py:915
+#: sickchill/views/home.py:913
 msgid "The information on this page is in the process of being updated."
 msgstr "Информацията на тази страница е в процес на обновяване."
 
@@ -7967,14 +8208,14 @@ msgid ""
 "a custom url, or a different one"
 msgstr ""
 
-#: sickchill/oldbeard/show_queue.py:465
+#: sickchill/oldbeard/show_queue.py:555
 #, python-brace-format
 msgid "The show in {show_dir} is already in your show list, skipping"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:902
+# | msgid "Hide specials"
+#: sickchill/gui/slick/views/config_general.mako:933
 #, fuzzy
-#| msgid "Hide specials"
 msgid "The special options."
 msgstr "Скрий специалните епизоди"
 
@@ -8006,12 +8247,12 @@ msgstr ""
 msgid "There is no existing file so there's no worries about replacing it"
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:982
+#: sickchill/oldbeard/helpers.py:1047
 #, python-brace-format
 msgid "There was a problem attempting to authenticate with anidb. Error: {error}"
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:973
+#: sickchill/oldbeard/helpers.py:1038
 #, python-brace-format
 msgid "There was a problem attempting to connect to anidb. Error: {error}"
 msgstr ""
@@ -8036,7 +8277,7 @@ msgstr ""
 msgid "There was a problem creating the SSL key and certificate. Error: {error}"
 msgstr "Грешка при създаването на SSL ключ и сертификат {error}"
 
-#: sickchill/oldbeard/helpers.py:1004 sickchill/oldbeard/helpers.py:1060
+#: sickchill/oldbeard/helpers.py:1069 sickchill/oldbeard/helpers.py:1125
 #, python-brace-format
 msgid "There was a problem creating the zip file. Error: {error}"
 msgstr ""
@@ -8051,19 +8292,19 @@ msgstr ""
 msgid "There was a problem creating {sofar}. Error: {error}"
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:1263
+#: sickchill/oldbeard/helpers.py:1328
 #, python-brace-format
 msgid ""
 "There was a problem downloading, setting permissions, or writing to "
 "{filename}. Error: {error}"
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:1037
+#: sickchill/oldbeard/helpers.py:1102
 #, python-brace-format
 msgid "There was a problem extracting the zip file {archive}. Error: {error}"
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:1097
+#: sickchill/oldbeard/helpers.py:1162
 #, python-brace-format
 msgid "There was a problem extracting zip file {archive}. Error: {error}"
 msgstr ""
@@ -8100,7 +8341,7 @@ msgid "There was a problem trying to delete {check_empty_dir}. Error: {error}"
 msgstr ""
 
 # | msgid "Error when attempting to find show: {0} in SickChill. Error: {1} "
-#: sickchill/oldbeard/helpers.py:924
+#: sickchill/oldbeard/helpers.py:989
 #, fuzzy, python-brace-format
 msgid ""
 "There was a problem when attempting to find {name} in SickChill. Error: "
@@ -8139,7 +8380,7 @@ msgstr ""
 msgid "There were no files associated with {file_path}, not moving anything"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:597
+#: sickchill/gui/slick/views/config_general.mako:623
 msgid "These options require a manual restart to take effect."
 msgstr ""
 
@@ -8170,26 +8411,26 @@ msgstr ""
 msgid "This is a test notification from SickChill"
 msgstr "Това е тестово съобщение от SickChill"
 
-#: sickchill/views/index.py:440
+#: sickchill/views/index.py:444
 msgid "This is test number 1"
 msgstr "Това е тест номер 1"
 
-#: sickchill/views/index.py:441
+#: sickchill/views/index.py:445
 msgid "This is test number 2"
 msgstr "Това е тест номер 2"
 
-#: sickchill/gui/slick/js/core.js:1399 sickchill/gui/slick/js/core.js:1449
-#: sickchill/gui/slick/js/core.js:1499 sickchill/gui/slick/js/core.js:1567
+#: sickchill/gui/slick/js/core.js:1395 sickchill/gui/slick/js/core.js:1445
+#: sickchill/gui/slick/js/core.js:1495 sickchill/gui/slick/js/core.js:1563
 msgid "This pattern is invalid."
 msgstr ""
 
-#: sickchill/gui/slick/js/core.js:1415 sickchill/gui/slick/js/core.js:1465
-#: sickchill/gui/slick/js/core.js:1515 sickchill/gui/slick/js/core.js:1583
+#: sickchill/gui/slick/js/core.js:1411 sickchill/gui/slick/js/core.js:1461
+#: sickchill/gui/slick/js/core.js:1511 sickchill/gui/slick/js/core.js:1579
 msgid "This pattern is valid."
 msgstr ""
 
-#: sickchill/gui/slick/js/core.js:1407 sickchill/gui/slick/js/core.js:1457
-#: sickchill/gui/slick/js/core.js:1507 sickchill/gui/slick/js/core.js:1575
+#: sickchill/gui/slick/js/core.js:1403 sickchill/gui/slick/js/core.js:1453
+#: sickchill/gui/slick/js/core.js:1503 sickchill/gui/slick/js/core.js:1571
 msgid ""
 "This pattern would be invalid without the folders, using it will force "
 "\"Season Folders\" on for all shows."
@@ -8199,21 +8440,27 @@ msgstr ""
 msgid "This proper is already in history, skipping it"
 msgstr ""
 
-#: sickchill/views/home.py:912
+#: sickchill/views/home.py:910
 msgid ""
 "This show is in the process of being downloaded - the info below is "
 "incomplete."
 msgstr "Това предаване е в процес на изтегляне - информацията по-долу е непълна."
 
-#: sickchill/views/home.py:927
+# | msgid "This show is queued and awaiting an update."
+#: sickchill/views/home.py:931
+#, fuzzy
+msgid "This show is queued and awaiting a TBA episode name update."
+msgstr "Това предаване е в опашка и изчаква обновяване."
+
+#: sickchill/views/home.py:928
 msgid "This show is queued and awaiting an update."
 msgstr "Това предаване е в опашка и изчаква обновяване."
 
-#: sickchill/views/home.py:930
+#: sickchill/views/home.py:934
 msgid "This show is queued and awaiting subtitles download."
 msgstr "Това предаване е в опашка и изчаква изтегляне на субтитри."
 
-#: sickchill/views/home.py:924
+#: sickchill/views/home.py:925
 msgid "This show is queued to be refreshed."
 msgstr "Това предаване е в опашката за обновяване."
 
@@ -8245,7 +8492,7 @@ msgstr ""
 msgid "This will set the status for future episodes."
 msgstr ""
 
-#: sickchill/logger.py:248
+#: sickchill/logger.py:301
 msgid "Thread"
 msgstr "Thread"
 
@@ -8260,7 +8507,7 @@ msgstr "Трилър"
 msgid "Time"
 msgstr "Крими"
 
-#: sickchill/gui/slick/views/config_general.mako:510
+#: sickchill/gui/slick/views/config_general.mako:536
 msgid "Time style"
 msgstr ""
 
@@ -8270,7 +8517,7 @@ msgid ""
 "settings"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:1191
+#: sickchill/gui/slick/views/config_general.mako:1222
 msgid "Timeout show indexer at"
 msgstr ""
 
@@ -8278,7 +8525,7 @@ msgstr ""
 msgid "Timeout while accessing provider"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:532
+#: sickchill/gui/slick/views/config_general.mako:558
 msgid "Timezone"
 msgstr ""
 
@@ -8315,7 +8562,7 @@ msgstr ""
 msgid "Too many login access attempts"
 msgstr ""
 
-#: sickchill/gui/slick/views/layouts/main.mako:260
+#: sickchill/gui/slick/views/layouts/main.mako:261
 msgid "Tools"
 msgstr ""
 
@@ -8323,7 +8570,7 @@ msgstr ""
 msgid "Top Rated (TMDB)"
 msgstr ""
 
-#: sickchill/logger.py:247
+#: sickchill/logger.py:300
 msgid "Tornado"
 msgstr "Tornado"
 
@@ -8391,23 +8638,23 @@ msgid ""
 "Secret under Config → General → Indexer / Data."
 msgstr ""
 
-#: sickchill/views/home.py:641
+#: sickchill/views/home.py:639
 msgid "Trakt Authorized"
 msgstr "Оторизиран в Trakt"
 
-#: sickchill/gui/slick/views/status.mako:22 sickchill/logger.py:244
+#: sickchill/gui/slick/views/status.mako:25 sickchill/logger.py:297
 msgid "Trakt Checker"
 msgstr "Проверка на Trakt"
 
-#: sickchill/views/home.py:642
+#: sickchill/views/home.py:640
 msgid "Trakt Not Authorized!"
 msgstr "Не е оторизиран в Trakt!"
 
-#: sickchill/gui/slick/views/config_general.mako:1328
+#: sickchill/gui/slick/views/config_general.mako:1359
 msgid "Trakt PIN"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:1289
+#: sickchill/gui/slick/views/config_general.mako:1320
 msgid ""
 "Trakt application Client ID. Leave default until you create your own app "
 "at trakt.tv/oauth/applications."
@@ -8438,18 +8685,18 @@ msgstr ""
 msgid "Transaction with {count:d} of queries executed successfully"
 msgstr ""
 
-#: sickchill/settings.py:609
+#: sickchill/settings.py:605
 msgid "Treat as video (process archive as-is)"
 msgstr "Третирай като видео (обработи архива както е)"
 
 # | msgid "Trending Shows"
+# | msgid "Trending"
 #: sickchill/views/manage/add_shows.py:44
 #, fuzzy
-#| msgid "Trending"
 msgid "Trending (TMDB)"
 msgstr "Налагащи се сериали"
 
-#: sickchill/views/home.py:572
+#: sickchill/views/home.py:570
 msgid "Tried sending desktop notification via libnotify"
 msgstr "Опитва да изпрати съобшение до десктоп чрез libnotify"
 
@@ -8457,11 +8704,11 @@ msgstr "Опитва да изпрати съобшение до десктоп 
 msgid "Trim History"
 msgstr "Съкрати историята"
 
-#: sickchill/gui/slick/views/config_general.mako:481
+#: sickchill/gui/slick/views/config_general.mako:507
 msgid "Trim zero padding"
 msgstr ""
 
-#: sickchill/gui/slick/views/status.mako:195
+#: sickchill/gui/slick/views/status.mako:198
 msgid "True"
 msgstr ""
 
@@ -8485,7 +8732,7 @@ msgstr "Опитва да създаде резервно копие на {0} в
 msgid "Trying to clean any empty folders under {check_empty_dir}"
 msgstr "Опит да се почисти всяка празна папка в "
 
-#: sickchill/oldbeard/helpers.py:1487
+#: sickchill/oldbeard/helpers.py:1552
 msgid "Trying to determine free space on the destination drive"
 msgstr ""
 
@@ -8493,7 +8740,7 @@ msgstr ""
 msgid "Tug Boat"
 msgstr ""
 
-#: sickchill/views/home.py:434
+#: sickchill/views/home.py:432
 msgid "Tweet successful, check your twitter to make sure it worked"
 msgstr "Успешен Tweet. Проверете вашия twitter, за да се уверите че е проработило"
 
@@ -8506,7 +8753,7 @@ msgid "Twitter account to send Direct Messages to (must follow you)"
 msgstr ""
 
 #: sickchill/gui/slick/views/apiBuilder.mako:85
-#: sickchill/gui/slick/views/status.mako:135
+#: sickchill/gui/slick/views/status.mako:138
 msgid "Type"
 msgstr ""
 
@@ -8526,11 +8773,11 @@ msgid ""
 " a custom url, or a different one"
 msgstr ""
 
-#: sickchill/gui/slick/js/core.js:1989
+#: sickchill/gui/slick/js/core.js:1982
 msgid "URL to your Deluge client (e.g. http://localhost:8112)"
 msgstr ""
 
-#: sickchill/gui/slick/js/core.js:2022
+#: sickchill/gui/slick/js/core.js:2015
 msgid "URL to your MLDonkey (e.g. http://localhost:4080)"
 msgstr ""
 
@@ -8538,7 +8785,7 @@ msgstr ""
 msgid "URL to your SABnzbd server (e.g. http://localhost:8080/)"
 msgstr ""
 
-#: sickchill/gui/slick/js/core.js:1998
+#: sickchill/gui/slick/js/core.js:1991
 msgid "URL to your Synology DS client (e.g. http://localhost:5000)"
 msgstr ""
 
@@ -8546,19 +8793,19 @@ msgstr ""
 msgid "URL to your Synology DSM (e.g. http://localhost:5000/)"
 msgstr ""
 
-#: sickchill/gui/slick/js/core.js:1975
+#: sickchill/gui/slick/js/core.js:1968
 msgid "URL to your Transmission client (e.g. http://localhost:9091)"
 msgstr ""
 
-#: sickchill/gui/slick/js/core.js:2029
+#: sickchill/gui/slick/js/core.js:2022
 msgid "URL to your putio client (e.g. http://localhost:8080)"
 msgstr ""
 
-#: sickchill/gui/slick/js/core.js:2016
+#: sickchill/gui/slick/js/core.js:2009
 msgid "URL to your qBittorrent client (e.g. http://localhost:8080)"
 msgstr ""
 
-#: sickchill/gui/slick/js/core.js:2002
+#: sickchill/gui/slick/js/core.js:1995
 msgid ""
 "URL to your rTorrent client (e.g. scgi://localhost:5000 <br> or "
 "https://localhost/rutorrent/plugins/httprpc/action.php)"
@@ -8568,16 +8815,23 @@ msgstr ""
 msgid "URL to your torrent client (e.g. http://localhost:8000/)"
 msgstr ""
 
-#: sickchill/gui/slick/js/core.js:1966
+#: sickchill/gui/slick/js/core.js:1959
 msgid "URL to your uTorrent client (e.g. http://localhost:8000)"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:572
+#: sickchill/gui/slick/views/config_general.mako:598
 msgid "URL where the shows can be downloaded."
 msgstr ""
 
-#: sickchill/oldbeard/show_queue.py:351 sickchill/oldbeard/show_queue.py:394
-#: sickchill/oldbeard/show_queue.py:405 sickchill/oldbeard/show_queue.py:476
+# | msgid "Pause"
+# | msgid "User"
+#: sickchill/gui/slick/views/status.mako:265
+#, fuzzy
+msgid "USER"
+msgstr "Пауза"
+
+#: sickchill/oldbeard/show_queue.py:441 sickchill/oldbeard/show_queue.py:484
+#: sickchill/oldbeard/show_queue.py:495 sickchill/oldbeard/show_queue.py:566
 #: sickchill/views/manage/add_shows.py:405
 #: sickchill/views/manage/add_shows.py:411
 #: sickchill/views/manage/add_shows.py:636
@@ -8591,10 +8845,11 @@ msgstr "Сериалът не може да бъде добавен"
 msgid "Unable to back up {old_file} to {new_file} please do it manually."
 msgstr "Невъзможно резервно копие от {0} в {1} моля извършете го ръчно."
 
-#: sickchill/views/home.py:313
+#: sickchill/views/home.py:311
 msgid "Unable to connect to host"
 msgstr "Не може да се свърже със сървъра"
 
+# | msgid "Unable to connect to host"
 #: sickchill/oldbeard/providers/abnormal.py:52
 #: sickchill/oldbeard/providers/alpharatio.py:52
 #: sickchill/oldbeard/providers/archetorrent.py:51
@@ -8626,27 +8881,26 @@ msgstr "Не може да се свърже със сървъра"
 #: sickchill/oldbeard/providers/zamunda.py:55
 #: sickchill/oldbeard/providers/zamunda.py:62
 #, fuzzy
-#| msgid "Unable to connect to host"
 msgid "Unable to connect to provider"
 msgstr "Не може да се свърже със сървъра"
 
-#: sickchill/views/home.py:1678
+#: sickchill/views/home.py:1666
 #, python-brace-format
 msgid "Unable to contact Emby host: {emby_host}"
 msgstr "не може да се свърже с Emby на адрес: {emby_host}"
 
-#: sickchill/views/home.py:1694
+# | msgid "Unable to contact Emby host: {emby_host}"
+#: sickchill/views/home.py:1682
 #, fuzzy, python-brace-format
-#| msgid "Unable to contact Emby host: {emby_host}"
 msgid "Unable to contact Jellyfin host: {jellyfin_host}"
 msgstr "не може да се свърже с Emby на адрес: {emby_host}"
 
-#: sickchill/views/home.py:1666
+#: sickchill/views/home.py:1654
 #, python-brace-format
 msgid "Unable to contact Plex Media Server host: {plex_server}"
 msgstr "Неуспешно свързване с адрес на Plex Media Server: {plex_server}"
 
-#: sickchill/views/home.py:1655
+#: sickchill/views/home.py:1643
 #, python-brace-format
 msgid "Unable to contact one or more KODI host(s)): {kodi_hosts}"
 msgstr "Неуспешно свързване с един или повече адреси на KODI: {kodi_hosts}"
@@ -8657,14 +8911,14 @@ msgstr "Неуспешно свързване с един или повече а
 msgid "Unable to copy file from {cur_file_path} to {new_file_path}: {error}"
 msgstr "Не възможно копирането на файл от {0} в {1}"
 
-#: sickchill/views/config/general.py:194
+#: sickchill/views/config/general.py:195
 #, python-brace-format
 msgid "Unable to create directory {directory}, https cert directory not changed."
 msgstr ""
 "Не може да се създаде директория {directory}, директорията с https "
 "сертификат не беше променена."
 
-#: sickchill/views/config/general.py:197
+#: sickchill/views/config/general.py:198
 #, python-brace-format
 msgid "Unable to create directory {directory}, https key directory not changed."
 msgstr ""
@@ -8673,7 +8927,7 @@ msgstr ""
 
 # | msgid "Unable to create directory {directory}, https key directory not
 # | changed."
-#: sickchill/views/config/general.py:87
+#: sickchill/views/config/general.py:88
 #, fuzzy, python-brace-format
 msgid ""
 "Unable to create directory {log_dir} or it is not writable, log directory"
@@ -8695,39 +8949,39 @@ msgid "Unable to create subtitles folder {subs_new_path}"
 msgstr "Не успя да създаде папка за надписи {0}"
 
 # | msgid "Unable to create the folder {show_dir}, can't add the show"
-#: sickchill/oldbeard/show_queue.py:380 sickchill/views/manage/add_shows.py:646
+#: sickchill/oldbeard/show_queue.py:470 sickchill/views/manage/add_shows.py:646
 #, fuzzy, python-brace-format
 msgid "Unable to create the folder {show_dir}, can't add the show"
 msgstr ""
 "Не може да бъде създадена папката {show_dir}, сериалът не може да бъде "
 "добавен"
 
-#: sickchill/oldbeard/postProcessor.py:1063
+#: sickchill/oldbeard/postProcessor.py:1101
 msgid "Unable to create the show directory: "
 msgstr "Не може да създаде папка за предаването: "
 
 # | msgid "Unable to delete {0}. Error: {1}"
-#: sickchill/oldbeard/show_queue.py:733
+#: sickchill/oldbeard/show_queue.py:881
 #, fuzzy, python-brace-format
 msgid "Unable to delete show from Trakt: {show_name}. Error: {error}"
 msgstr "Невъзможно да изтрие {0}. Грешка: {1}"
 
 # | msgid "Unable to delete {0}. Error: {1}"
-#: sickchill/views/manage/index.py:749
+# | msgid "Unable to delete show from Trakt: {show_name}. Error: {error}"
+#: sickchill/views/manage/index.py:751
 #, fuzzy, python-brace-format
-#| msgid "Unable to delete show from Trakt: {show_name}. Error: {error}"
 msgid "Unable to delete show {show_name}: {error}"
 msgstr "Невъзможно да изтрие {0}. Грешка: {1}"
 
-#: sickchill/oldbeard/postProcessor.py:1047
+#: sickchill/oldbeard/postProcessor.py:1091
 msgid "Unable to delete the existing files"
 msgstr "Не успя да изтрие съществуващия файл"
 
-#: sickchill/oldbeard/helpers.py:1550
+#: sickchill/oldbeard/helpers.py:1615
 msgid "Unable to determine free space"
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:1513
+#: sickchill/oldbeard/helpers.py:1578
 msgid "Unable to determine free space, so I will assume there is enough."
 msgstr ""
 
@@ -8744,23 +8998,19 @@ msgid ""
 "downloading it."
 msgstr ""
 
-#: sickchill/views/home.py:1203 sickchill/views/home.py:1598
-#: sickchill/views/home.py:1629
+#: sickchill/views/home.py:1207 sickchill/views/home.py:1587
+#: sickchill/views/home.py:1619
 msgid "Unable to find the specified show"
 msgstr "Не е намерено търсеното предаване"
 
-#: sickchill/views/home.py:1490
+#: sickchill/views/home.py:1493
 msgid "Unable to force an update on scene exceptions of the show."
 msgstr ""
 "Неуспешна принудителна актуализация на предаване чрез аналогичните имена "
 "(scene exceptions)."
 
-#: sickchill/views/home.py:1497
-msgid "Unable to force an update on scene numbering of the show."
-msgstr "Неуспешна принудителна актуализация на номерирането по сцена за предаване."
-
 # | msgid "Unable to create the folder {show_dir}, can't add the show"
-#: sickchill/oldbeard/show_queue.py:360
+#: sickchill/oldbeard/show_queue.py:450
 #, fuzzy, python-brace-format
 msgid "Unable to get a show {show_dir}, can't add the show"
 msgstr ""
@@ -8769,13 +9019,13 @@ msgstr ""
 
 # | msgid "Unable to get size for file {0} because the link to the file is not
 # | valid"
-#: sickchill/oldbeard/helpers.py:1416
+#: sickchill/oldbeard/helpers.py:1481
 #, fuzzy, python-brace-format
 msgid "Unable to get size for file {fp} because the link to the file is not valid"
 msgstr "Не може да прихване размер на файл {0} понеже пътя към файла не е валиден"
 
 # | msgid "Unable to get size for file {0} Error: {1}"
-#: sickchill/oldbeard/helpers.py:1421
+#: sickchill/oldbeard/helpers.py:1486
 #, fuzzy, python-brace-format
 msgid "Unable to get size for file {fp}. Error: {error}"
 msgstr "Не може да прихване размер на файл {0} Грешка: {1}"
@@ -8801,8 +9051,8 @@ msgstr ""
 msgid "Unable to move file from {cur_file_path} to {new_file_path}: {error}"
 msgstr "Не възможно преместването на файл от {0} в {1}"
 
-#: sickchill/oldbeard/postProcessor.py:1164
-#: sickchill/oldbeard/postProcessor.py:1166
+#: sickchill/oldbeard/postProcessor.py:1133
+#: sickchill/oldbeard/postProcessor.py:1135
 msgid "Unable to move the files to their new home"
 msgstr "Не успя да премести файловете в новата им папка"
 
@@ -8811,68 +9061,72 @@ msgstr "Не успя да премести файловете в новата �
 msgid "Unable to open {path}: trying parent directory"
 msgstr ""
 
+# | msgid "Unable to update show: {error}"
 #: sickchill/oldbeard/browser.py:193
 #, fuzzy, python-brace-format
-#| msgid "Unable to update show: {error}"
 msgid "Unable to open {path}: {error}"
 msgstr "Неуспешна актуализация на сериал: {error}"
 
-#: sickchill/oldbeard/postProcessor.py:1116
+#: sickchill/oldbeard/postProcessor.py:1070
 msgid "Unable to post-process an episode if the show dir doesn't exist, quitting"
 msgstr ""
 "Не може да обработи епизод ако папката за предаването не съществува, "
 "прекратява"
 
 # | msgid "Unable to create episode: "
-#: sickchill/oldbeard/providers/thepiratebay.py:176
+# | msgid "Unable to create episode: {error}"
+#: sickchill/oldbeard/providers/thepiratebay.py:178
 #, fuzzy, python-brace-format
-#| msgid "Unable to create episode: {error}"
 msgid "Unable to process torrent on {name}: {error}"
 msgstr "Невъзможно създаването на епизод: "
 
-#: sickchill/views/manage/index.py:771
+#: sickchill/views/home.py:1604
+msgid "Unable to queue TBA name update."
+msgstr ""
+
+#: sickchill/views/manage/index.py:773
 #, python-brace-format
 msgid "Unable to refresh show {show_name}: {exception_format}"
 msgstr ""
 
-#: sickchill/views/home.py:1567
+#: sickchill/views/home.py:1561
 msgid "Unable to refresh this show."
 msgstr "Не може да се обнови този сериал."
 
-#: sickchill/views/home.py:1424 sickchill/views/home.py:1459
+#: sickchill/views/home.py:1422 sickchill/views/home.py:1457
 #, python-brace-format
 msgid "Unable to refresh this show: {error}"
 msgstr "Не може да се обнови информацията за тоза предаване: {error}"
 
 # | msgid "Unable to delete {0}. Error: {1}"
-#: sickchill/views/manage/index.py:756
+# | msgid "Unable to delete show from Trakt: {show_name}. Error: {error}"
+#: sickchill/views/manage/index.py:758
 #, fuzzy, python-brace-format
-#| msgid "Unable to delete show from Trakt: {show_name}. Error: {error}"
 msgid "Unable to remove show {show_name}: {error}"
 msgstr "Невъзможно да изтрие {0}. Грешка: {1}"
 
-#: sickchill/views/home.py:1229
+# | msgid "Unable to retreive Fansub Groups from AniDB."
+#: sickchill/views/home.py:1233
 #, fuzzy
-#| msgid "Unable to retreive Fansub Groups from AniDB."
 msgid "Unable to retrieve Fansub Groups from AniDB."
 msgstr "Не може да изтеглите Fansub групи от AniDB."
 
-#: sickchill/views/manage/index.py:763
+# | msgid "Unable to update show: {error}"
+#: sickchill/views/manage/index.py:765
 #, fuzzy, python-brace-format
-#| msgid "Unable to update show: {error}"
 msgid "Unable to update show {show_name}: {error}"
 msgstr "Неуспешна актуализация на сериал: {error}"
 
-#: sickchill/views/home.py:1480
+#: sickchill/views/home.py:1480 sickchill/views/home.py:1486
 #, python-brace-format
 msgid "Unable to update show: {error}"
 msgstr "Неуспешна актуализация на сериал: {error}"
 
-#: sickchill/views/home.py:1585
+#: sickchill/views/home.py:1577
 msgid "Unable to update this show."
 msgstr "Не може да актуализира този сериал."
 
-#: sickchill/views/home.py:428
+#: sickchill/views/home.py:426
 msgid "Unable to verify key"
 msgstr "Невъзможна проверка на ключ"
 
@@ -8911,7 +9165,7 @@ msgstr ""
 msgid "Unknown error: {0}"
 msgstr ""
 
-#: sickchill/oldbeard/postProcessor.py:1163
+#: sickchill/oldbeard/postProcessor.py:1132
 msgid "Unknown process method: "
 msgstr "Непознат метод на обработка: "
 
@@ -8919,7 +9173,7 @@ msgstr "Непознат метод на обработка: "
 msgid "Unpack"
 msgstr ""
 
-#: sickchill/settings.py:608
+#: sickchill/settings.py:604
 msgid "Unpack (process contents)"
 msgstr "Разопаковай (обработи съдържанието)"
 
@@ -8931,7 +9185,7 @@ msgstr ""
 msgid "Unpacking Not Supported, disabling unpack setting"
 msgstr "Разархивирането не се поддържа, деактивирани са съответните настройките"
 
-#: sickchill/gui/slick/views/config_general.mako:999
+#: sickchill/gui/slick/views/config_general.mako:1030
 msgid "Unprotected calendar"
 msgstr ""
 
@@ -8949,13 +9203,13 @@ msgstr ""
 
 #: sickchill/gui/slick/views/manage.mako:53
 #: sickchill/gui/slick/views/manage.mako:114
-#: sickchill/oldbeard/show_queue.py:213
+#: sickchill/oldbeard/show_queue.py:302
 msgid "Update"
 msgstr "Актуализация"
 
+# | msgid "Update Failed"
 #: sickchill/gui/slick/views/manage.mako:54
 #, fuzzy
-#| msgid "Update Failed"
 msgid "Update All"
 msgstr "Неуспешно актуализиране"
 
@@ -8966,23 +9220,23 @@ msgid "Update Categories"
 msgstr "Неуспешно актуализиране"
 
 # | msgid "Update show in Emby"
-#: sickchill/gui/slick/views/layouts/main.mako:206
+#: sickchill/gui/slick/views/layouts/main.mako:207
 #, fuzzy
 msgid "Update Emby"
 msgstr "Актуализирай в Emby"
 
-#: sickchill/views/home.py:848
+#: sickchill/views/home.py:846
 msgid "Update Failed"
 msgstr "Неуспешно актуализиране"
 
 # | msgid "Update show in Emby"
-#: sickchill/gui/slick/views/layouts/main.mako:209
+# | msgid "Update Emby"
+#: sickchill/gui/slick/views/layouts/main.mako:210
 #, fuzzy
-#| msgid "Update Emby"
 msgid "Update Jellyfin"
 msgstr "Актуализирай в Emby"
 
-#: sickchill/gui/slick/views/layouts/main.mako:203
+#: sickchill/gui/slick/views/layouts/main.mako:204
 msgid "Update KODI"
 msgstr ""
 
@@ -8991,14 +9245,14 @@ msgid "Update Library"
 msgstr ""
 
 # | msgid "Update Failed"
-#: sickchill/gui/slick/views/layouts/main.mako:200
+#: sickchill/gui/slick/views/layouts/main.mako:201
 #, fuzzy
 msgid "Update PLEX"
 msgstr "Неуспешно актуализиране"
 
-#: sickchill/views/home.py:1002
+# | msgid "Update Failed"
+#: sickchill/views/home.py:1006
 #, fuzzy
-#| msgid "Update Failed"
 msgid "Update TBA Names"
 msgstr "Неуспешно актуализиране"
 
@@ -9014,17 +9268,17 @@ msgstr "Неуспешно актуализиране!"
 msgid "Update library"
 msgstr ""
 
-#: sickchill/views/home.py:963
+#: sickchill/views/home.py:967
 msgid "Update show in Emby"
 msgstr "Актуализирай в Emby"
 
-#: sickchill/views/home.py:972
+# | msgid "Update show in Emby"
+#: sickchill/views/home.py:976
 #, fuzzy
-#| msgid "Update show in Emby"
 msgid "Update show in Jellyfin"
 msgstr "Актуализирай в Emby"
 
-#: sickchill/views/home.py:954
+#: sickchill/views/home.py:958
 msgid "Update show in KODI"
 msgstr "Актуализирай в KODI"
 
@@ -9032,7 +9286,7 @@ msgstr "Актуализирай в KODI"
 msgid "Update was successful"
 msgstr "Актуализирането е успешно"
 
-#: sickchill/views/home.py:848
+#: sickchill/views/home.py:846
 msgid ""
 "Update wasn't successful, not restarting. Check your log for more "
 "information."
@@ -9040,19 +9294,19 @@ msgstr ""
 "Актуализацията не беше успешна, няма да рестартира. Разгледайте "
 "регистрационния log файл за повече информация."
 
-#: sickchill/views/home.py:1612
+# | msgid "Update"
+#: sickchill/oldbeard/show_queue.py:755
 #, fuzzy
-#| msgid "Update"
 msgid "Updated"
 msgstr "Актуализация"
 
-#: sickchill/views/home.py:1613
+#: sickchill/oldbeard/show_queue.py:756
 #, python-brace-format
 msgid "Updated {count} TBA episode name(s) for {show}"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:201
-#: sickchill/views/manage/index.py:789
+#: sickchill/gui/slick/views/config_general.mako:227
+#: sickchill/views/manage/index.py:791
 msgid "Updates"
 msgstr "Актуализации"
 
@@ -9060,7 +9314,7 @@ msgstr "Актуализации"
 msgid "Url changing has failed!"
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:958
+#: sickchill/oldbeard/helpers.py:1023
 msgid "Usage of anidb disabled. Skiping"
 msgstr "Изключено използването на anidb. Пропуска"
 
@@ -9103,14 +9357,14 @@ msgid "Use SABnzbd category for anime (backlog episodes)"
 msgstr ""
 
 # | msgid "Subtitles Settings"
+# | msgid "Subtitles SR Metadata"
 #: sickchill/gui/slick/views/editShow.mako:155
 #: sickchill/gui/slick/views/inc_addShowOptions.mako:27
 #, fuzzy
-#| msgid "Subtitles SR Metadata"
 msgid "Use SC Metadata"
 msgstr "Настройки на субтитри"
 
-#: sickchill/gui/slick/views/config_general.mako:500
+#: sickchill/gui/slick/views/config_general.mako:526
 msgid "Use System Default"
 msgstr ""
 
@@ -9118,11 +9372,11 @@ msgstr ""
 msgid "Use TLS"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:331
+#: sickchill/gui/slick/views/config_general.mako:357
 msgid "Use a background image"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:391
+#: sickchill/gui/slick/views/config_general.mako:417
 msgid "Use a custom stylesheet file"
 msgstr ""
 
@@ -9140,7 +9394,7 @@ msgstr ""
 msgid "Use icacls"
 msgstr "Мюзикъл"
 
-#: sickchill/gui/slick/views/config_general.mako:1168
+#: sickchill/gui/slick/views/config_general.mako:1199
 msgid "Use initial indexer set to"
 msgstr ""
 
@@ -9166,12 +9420,12 @@ msgid "Usenet retention"
 msgstr "Няма алтернативни имена"
 
 # | msgid "Pause"
-#: sickchill/gui/slick/views/config.mako:93
+#: sickchill/gui/slick/views/config.mako:110
 #, fuzzy
 msgid "User"
 msgstr "Пауза"
 
-#: sickchill/gui/slick/views/config_general.mako:272
+#: sickchill/gui/slick/views/config_general.mako:298
 msgid "User Interface"
 msgstr ""
 
@@ -9194,7 +9448,7 @@ msgid "User/group ID"
 msgstr ""
 
 # | msgid "Rename"
-#: sickchill/gui/slick/views/config_general.mako:1310
+#: sickchill/gui/slick/views/config_general.mako:1341
 #: sickchill/gui/slick/views/config_notifications.mako:141
 #: sickchill/gui/slick/views/config_notifications.mako:249
 #: sickchill/gui/slick/views/config_notifications.mako:420
@@ -9208,20 +9462,20 @@ msgid "Username"
 msgstr "Преименувай"
 
 # | msgid "Using global proxy for indexers: {}"
-#: sickchill/oldbeard/helpers.py:1124
+# | msgid "Using global proxy for indexers: {settings.PROXY_SETTING}"
+#: sickchill/oldbeard/helpers.py:1189
 #, fuzzy, python-brace-format
-#| msgid "Using global proxy for indexers: {settings.PROXY_SETTING}"
 msgid "Using global proxy for indexers: {proxy_settings}"
 msgstr "Използва глобално прокси за индексер: {}"
 
 # | msgid "Using global proxy: {}"
-#: sickchill/oldbeard/helpers.py:1140
+# | msgid "Using global proxy: {settings.PROXY_SETTING}"
+#: sickchill/oldbeard/helpers.py:1205
 #, fuzzy, python-brace-format
-#| msgid "Using global proxy: {settings.PROXY_SETTING}"
 msgid "Using global proxy: {proxy}"
 msgstr "Използва глобално прокси: {}"
 
-#: sickchill/oldbeard/postProcessor.py:1078
+#: sickchill/oldbeard/postProcessor.py:1045
 msgid "Using original release name "
 msgstr "Използва допълнително име на издание "
 
@@ -9229,7 +9483,7 @@ msgstr "Използва допълнително име на издание "
 msgid "Using release for release name."
 msgstr "Използва издание за име на издание."
 
-#: sickchill/gui/slick/views/config_general.mako:950
+#: sickchill/gui/slick/views/config_general.mako:981
 msgid "Verify SSL Certs"
 msgstr ""
 
@@ -9242,12 +9496,12 @@ msgid "Verify certificate"
 msgstr ""
 
 # | msgid "Season"
-#: sickchill/gui/slick/views/layouts/main.mako:394
+#: sickchill/gui/slick/views/layouts/main.mako:395
 #, fuzzy
 msgid "Version"
 msgstr "Сезон"
 
-#: sickchill/gui/slick/views/status.mako:15
+#: sickchill/gui/slick/views/status.mako:18
 msgid "Version Check"
 msgstr ""
 
@@ -9265,7 +9519,7 @@ msgid "Very low"
 msgstr ""
 
 # | msgid "Clear Errors"
-#: sickchill/gui/slick/views/layouts/main.mako:271
+#: sickchill/gui/slick/views/layouts/main.mako:272
 #, fuzzy
 msgid "View Errors"
 msgstr "Изчистване на грешки"
@@ -9276,7 +9530,7 @@ msgid ""
 "MOVIEMeter algorithm to identify popular TV Series."
 msgstr ""
 
-#: sickchill/gui/slick/views/layouts/main.mako:280
+#: sickchill/gui/slick/views/layouts/main.mako:281
 msgid "View Log"
 msgstr ""
 
@@ -9293,7 +9547,7 @@ msgid "View Snatched"
 msgstr "Намерен"
 
 # | msgid "Clear Warnings"
-#: sickchill/gui/slick/views/layouts/main.mako:276
+#: sickchill/gui/slick/views/layouts/main.mako:277
 #, fuzzy
 msgid "View Warnings"
 msgstr "Изчистване на предупреждения"
@@ -9313,11 +9567,11 @@ msgstr ""
 msgid "View other popular {imdbgenre} shows on IMDB."
 msgstr ""
 
-#: sickchill/gui/slick/views/layouts/main.mako:377
+#: sickchill/gui/slick/views/layouts/main.mako:378
 msgid "View overview of snatched episodes"
 msgstr ""
 
-#: sickchill/gui/slick/views/addShows_trendingShows.mako:25
+#: sickchill/gui/slick/views/addShows_trendingShows.mako:20
 #: sickchill/gui/slick/views/displayShow.mako:131
 #: sickchill/gui/slick/views/movies/details.mako:46
 msgid "Votes"
@@ -9352,7 +9606,7 @@ msgid "War"
 msgstr "Военен"
 
 # | msgid "Couldn't find release in snatch history"
-#: sickchill/oldbeard/postProcessor.py:1107
+#: sickchill/oldbeard/postProcessor.py:1062
 #, fuzzy
 msgid "Warning: Couldn't find release in snatch history"
 msgstr "Не успя да намери изданието в историята с прихванати"
@@ -9365,15 +9619,15 @@ msgstr "Внимание: не е намерено валидно име на и
 msgid "Watchlist add method"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:595
+#: sickchill/gui/slick/views/config_general.mako:621
 msgid "Web Interface"
 msgstr ""
 
-#: sickchill/gui/slick/views/config.mako:183
+#: sickchill/gui/slick/views/config.mako:200
 msgid "Web Root"
 msgstr ""
 
-#: sickchill/gui/slick/views/config.mako:195
+#: sickchill/gui/slick/views/config.mako:212
 msgid "Website"
 msgstr ""
 
@@ -9389,7 +9643,7 @@ msgstr ""
 msgid "Whitelist"
 msgstr ""
 
-#: sickchill/gui/slick/views/config.mako:206
+#: sickchill/gui/slick/views/config.mako:223
 msgid "Wiki"
 msgstr ""
 
@@ -9426,7 +9680,7 @@ msgstr ""
 msgid "XEM Season Number"
 msgstr ""
 
-#: sickchill/gui/slick/views/addShows_popularShows.mako:22
+#: sickchill/gui/slick/views/addShows_popularShows.mako:23
 #: sickchill/gui/slick/views/config_postProcessing.mako:910
 #: sickchill/gui/slick/views/config_postProcessing.mako:1110
 msgid "Year"
@@ -9445,7 +9699,7 @@ msgstr ""
 msgid "Yes"
 msgstr ""
 
-#: sickchill/gui/slick/js/core.js:1167
+#: sickchill/gui/slick/js/core.js:1163 sickchill/gui/slick/js/core.min.js:1
 msgid "You didn't supply a Pushbullet api key"
 msgstr ""
 
@@ -9463,7 +9717,7 @@ msgstr ""
 msgid "You must get a Trakt TOKEN. Check your Trakt settings"
 msgstr ""
 
-#: sickchill/gui/slick/js/core.js:1068
+#: sickchill/gui/slick/js/core.js:1064
 msgid "You must provide a recipient email address!"
 msgstr ""
 
@@ -9471,7 +9725,7 @@ msgstr ""
 msgid "You must specify a show"
 msgstr "Трябва да зададете предаване"
 
-#: sickchill/views/home.py:1883
+#: sickchill/views/home.py:1871
 msgid "You must specify a show and at least one episode"
 msgstr "Трябва да зададете предаване и поне един епизод"
 
@@ -9504,7 +9758,7 @@ msgid ""
 "for at least 2 hours"
 msgstr ""
 
-#: sickchill/views/config/general.py:52
+#: sickchill/views/config/general.py:53
 msgid "Your \"add show\" defaults have been set to your current selections."
 msgstr ""
 "Вашият избор по подразбиране за \"Добави предаване\" са зададени на вашия"
@@ -9543,7 +9797,7 @@ msgid ""
 "SickChill first or remove database file to begin fresh."
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:755
+#: sickchill/gui/slick/views/config_general.mako:781
 msgid "accept the following reverse proxy headers (advanced)..."
 msgstr ""
 
@@ -9603,15 +9857,15 @@ msgstr ""
 msgid "age limit in days for usenet articles to be used (e.g. 500)"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:1005
+#: sickchill/gui/slick/views/config_general.mako:1036
 msgid "allow subscribing to the calendar without user and password"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:1044
+#: sickchill/gui/slick/views/config_general.mako:1075
 msgid "also use global proxy setting for indexers (tvdb, xem, anidb, etc.)"
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:962
+#: sickchill/oldbeard/helpers.py:1027
 msgid "anidb username and/or password are not set. Aborting anidb lookup."
 msgstr "anidb не са зададени потр.име и/или парола. Прекратява търсенето в anidb."
 
@@ -9619,15 +9873,15 @@ msgstr "anidb не са зададени потр.име и/или парола.
 msgid "append language codes to subtitle file names?"
 msgstr ""
 
-#: sickchill/views/home.py:311
+#: sickchill/views/home.py:309
 msgid "as authentication method"
 msgstr "като метод за удостоверяване"
 
-#: sickchill/gui/slick/views/config_general.mako:1183
+#: sickchill/gui/slick/views/config_general.mako:1214
 msgid "as the default selection when adding new shows"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:709
+#: sickchill/gui/slick/views/config_general.mako:735
 msgid "attempt binding to any available IPv6 address"
 msgstr ""
 
@@ -9648,7 +9902,7 @@ msgstr ""
 msgid "automatically filled via the 'Get Settings' button."
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:942
+#: sickchill/gui/slick/views/config_general.mako:973
 #, python-brace-format
 msgid ""
 "backlink protection via anonymizer service, must end in \"?\" (default: "
@@ -9660,7 +9914,7 @@ msgid "backlog searches"
 msgstr "backlog търсене"
 
 # | msgid "as authentication method"
-#: sickchill/gui/slick/views/config_general.mako:669
+#: sickchill/gui/slick/views/config_general.mako:695
 #: sickchill/gui/slick/views/config_notifications.mako:259
 #: sickchill/gui/slick/views/config_notifications.mako:281
 #: sickchill/gui/slick/views/config_notifications.mako:430
@@ -9669,7 +9923,7 @@ msgstr "backlog търсене"
 msgid "blank = no authentication"
 msgstr "като метод за удостоверяване"
 
-#: sickchill/gui/slick/views/config_general.mako:1038
+#: sickchill/gui/slick/views/config_general.mako:1069
 msgid "blank to disable or proxy to use when connecting to providers"
 msgstr ""
 
@@ -9677,14 +9931,14 @@ msgstr ""
 msgid "button below after each entry."
 msgstr ""
 
-#: sickchill/oldbeard/show_queue.py:339
+#: sickchill/oldbeard/show_queue.py:429
 #, python-brace-format
 msgid "by Indexer Id: {0}"
 msgstr "по Indexer Id: {0}"
 
-#: sickchill/oldbeard/show_queue.py:339
+# | msgid "by ShowDir: {0}"
+#: sickchill/oldbeard/show_queue.py:429
 #, fuzzy, python-brace-format
-#| msgid "by ShowDir: {0}"
 msgid "by show_dir: {0}"
 msgstr "по ShowDir: {0}"
 
@@ -9776,7 +10030,7 @@ msgstr "дневни и backlog търсения"
 msgid "database is locked"
 msgstr "базата с данни е заключена"
 
-#: sickchill/gui/slick/views/config_general.mako:1109
+#: sickchill/gui/slick/views/config_general.mako:1140
 msgid "define the status to be set for media file that has been deleted."
 msgstr ""
 
@@ -9792,11 +10046,15 @@ msgstr ""
 msgid "delete non associated files while post processing?"
 msgstr ""
 
-#: sickchill/views/home.py:1542
+#: sickchill/views/home.py:1538
 msgid "deleted"
 msgstr "изтрит"
 
-#: sickchill/gui/slick/js/core.js:1992
+#: sickchill/gui/slick/views/manage_manageSearches.mako:65
+msgid "developer"
+msgstr ""
+
+#: sickchill/gui/slick/js/core.js:1985
 msgid "disable if you get \"Deluge: Authentication Error\" in your log"
 msgstr ""
 
@@ -9804,13 +10062,13 @@ msgstr ""
 msgid "disabled entries come from a central file on github,"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:549
+#: sickchill/gui/slick/views/config_general.mako:575
 msgid ""
 "display dates and times in either your timezone or the shows network "
 "timezone"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:214
+#: sickchill/gui/slick/views/config_general.mako:240
 msgid ""
 "display notifications when updates are available. Checks are run on "
 "startup and at the frequency set below*"
@@ -9858,19 +10116,19 @@ msgstr "Доставчици на търсене"
 msgid "enable Secure control in NZBGet and set the correct Secure Port here"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:719
+#: sickchill/gui/slick/views/config_general.mako:745
 msgid "enable access to the web interface using a HTTPS address"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:844
+#: sickchill/gui/slick/views/config_general.mako:875
 msgid "enable database debug logging"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:834
+#: sickchill/gui/slick/views/config_general.mako:860
 msgid "enable debug logging"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:633
+#: sickchill/gui/slick/views/config_general.mako:659
 msgid "enable logs from the internal Tornado web server"
 msgstr ""
 
@@ -9892,7 +10150,7 @@ msgid ""
 " Post Processing Dir"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:699
+#: sickchill/gui/slick/views/config_general.mako:725
 msgid "enable to be notified when a new login happens in webserver"
 msgstr ""
 
@@ -9931,7 +10189,7 @@ msgstr "епизод"
 msgid "episodes only."
 msgstr "епизод"
 
-#: sickchill/gui/slick/views/config_general.mako:1119
+#: sickchill/gui/slick/views/config_general.mako:1150
 msgid "example: Downloaded (1080p WEB-DL) ==> Archived (1080p WEB-DL)"
 msgstr ""
 
@@ -9942,17 +10200,17 @@ msgid ""
 "logging in on your browser."
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:224
+#: sickchill/gui/slick/views/config_general.mako:250
 msgid ""
 "fetch and install software updates. Updates are run on startup and in the"
 " background at the frequency set below*"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:731
+#: sickchill/gui/slick/views/config_general.mako:757
 msgid "file name or path to HTTPS certificate"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:741
+#: sickchill/gui/slick/views/config_general.mako:767
 msgid "file name or path to HTTPS key"
 msgstr ""
 
@@ -9984,12 +10242,12 @@ msgstr ""
 msgid "for a script arguments description."
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:1160
+#: sickchill/gui/slick/views/config_general.mako:1191
 msgid "for adding shows and metadata providers"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:302
-#: sickchill/gui/slick/views/config_general.mako:323
+#: sickchill/gui/slick/views/config_general.mako:328
+#: sickchill/gui/slick/views/config_general.mako:349
 msgid "for appearance to take effect, save then refresh your browser"
 msgstr ""
 
@@ -10001,13 +10259,13 @@ msgstr ""
 msgid "group episodes by season folder (uncheck to store in a single folder)"
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:1387
+#: sickchill/oldbeard/helpers.py:1452
 #, python-brace-format
 msgid "headers are {requests_exception.request.headers}"
 msgstr ""
 
 # | msgid "Thread"
-#: sickchill/gui/slick/views/config_general.mako:621
+#: sickchill/gui/slick/views/config_general.mako:647
 #, fuzzy
 msgid "here"
 msgstr "Thread"
@@ -10038,11 +10296,11 @@ msgstr ""
 msgid "hostname of your SMTP email server."
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:240
+#: sickchill/gui/slick/views/config_general.mako:266
 msgid "hours for software updates (default:168 (7d))"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:1064
+#: sickchill/gui/slick/views/config_general.mako:1095
 msgid "if disabled the episode will be set to the default deleted status"
 msgstr ""
 
@@ -10082,11 +10340,11 @@ msgid ""
 " later will be ignored."
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:985
+#: sickchill/gui/slick/views/config_general.mako:1016
 msgid "in the <code>config.ini</code> file"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:436
+#: sickchill/gui/slick/views/config_general.mako:462
 msgid "include articles (\"The\", \"A\", \"An\") when sorting show lists"
 msgstr ""
 
@@ -10098,7 +10356,7 @@ msgstr ""
 msgid "it's your Free Mobile customer ID (8 digits)"
 msgstr ""
 
-#: sickchill/views/home.py:359
+#: sickchill/views/home.py:357
 msgid ""
 "join notification succeeded. Check your join clients to make sure it "
 "worked"
@@ -10129,7 +10387,7 @@ msgstr ""
 msgid "loading"
 msgstr "Зареждане"
 
-#: sickchill/gui/slick/js/core.js:4423
+#: sickchill/gui/slick/js/core.js:4569
 msgid "loading folders..."
 msgstr ""
 
@@ -10171,7 +10429,7 @@ msgstr ""
 msgid "matrix server room"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:883
+#: sickchill/gui/slick/views/config_general.mako:914
 msgid "maximum size in MB of the log file (default: 1MB, max: 100MB)"
 msgstr ""
 
@@ -10197,7 +10455,7 @@ msgstr ""
 msgid "missing provider"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:475
+#: sickchill/gui/slick/views/config_general.mako:501
 msgid ""
 "move absolute dates into tooltips and display e.g. \"Last Thu\", \"On "
 "Tue\""
@@ -10235,10 +10493,11 @@ msgstr ""
 
 #: sickchill/gui/slick/views/config_general.mako:110
 #: sickchill/gui/slick/views/config_general.mako:136
-#: sickchill/gui/slick/views/config_general.mako:524
-#: sickchill/gui/slick/views/config_general.mako:554
-#: sickchill/gui/slick/views/config_general.mako:810
-#: sickchill/gui/slick/views/config_general.mako:1114
+#: sickchill/gui/slick/views/config_general.mako:162
+#: sickchill/gui/slick/views/config_general.mako:550
+#: sickchill/gui/slick/views/config_general.mako:580
+#: sickchill/gui/slick/views/config_general.mako:836
+#: sickchill/gui/slick/views/config_general.mako:1145
 #: sickchill/gui/slick/views/config_notifications.mako:471
 #: sickchill/gui/slick/views/config_notifications.mako:909
 #: sickchill/gui/slick/views/config_notifications.mako:954
@@ -10285,18 +10544,18 @@ msgid ""
 "Days)"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:862
+#: sickchill/gui/slick/views/config_general.mako:893
 msgid "number of log files saved when rotating logs (default: 5)"
 msgstr ""
 
 # | msgid "Unable to delete the existing files"
-#: sickchill/gui/slick/views/config_general.mako:156
+#: sickchill/gui/slick/views/config_general.mako:182
 #, fuzzy
 msgid "on scheduled deletes of the oldest log files"
 msgstr "Не успя да изтрие съществуващия файл"
 
-#: sickchill/gui/slick/views/config_general.mako:366
-#: sickchill/gui/slick/views/config_general.mako:426
+#: sickchill/gui/slick/views/config_general.mako:392
+#: sickchill/gui/slick/views/config_general.mako:452
 msgid "on the show summary page"
 msgstr ""
 
@@ -10347,7 +10606,7 @@ msgstr ""
 msgid "only download torrents from trusted or verified uploaders ?"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:971
+#: sickchill/gui/slick/views/config_general.mako:1002
 msgid ""
 "only select this when you have external software restarting SC "
 "automatically when it stops (like FireDaemon)"
@@ -10357,7 +10616,7 @@ msgstr ""
 msgid "only send library updates to the first active host?"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:966
+#: sickchill/gui/slick/views/config_general.mako:997
 msgid "only shutdown when restarting SC"
 msgstr ""
 
@@ -10373,7 +10632,7 @@ msgstr ""
 msgid "otherwise Growl <b>requires</b> a password to be used."
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:1388
+#: sickchill/oldbeard/helpers.py:1453
 #, python-brace-format
 msgid "params are {requests_exception.request.params}"
 msgstr ""
@@ -10386,7 +10645,7 @@ msgstr ""
 msgid "password of your AniDB account"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:990
+#: sickchill/gui/slick/views/config_general.mako:1021
 msgid "passwords must only contain"
 msgstr ""
 
@@ -10394,17 +10653,17 @@ msgstr ""
 msgid "pause this show (SickChill will not download episodes)"
 msgstr ""
 
-#: sickchill/views/home.py:1526
+#: sickchill/views/home.py:1522
 msgid "paused"
 msgstr "в пауза"
 
 # | msgid "Error sending sms"
-#: sickchill/gui/slick/views/manage_manageSearches.mako:63
-#: sickchill/gui/slick/views/manage_manageSearches.mako:67
-#: sickchill/gui/slick/views/manage_manageSearches.mako:71
-#: sickchill/gui/slick/views/manage_manageSearches.mako:75
-#: sickchill/gui/slick/views/manage_manageSearches.mako:87
-#: sickchill/gui/slick/views/manage_manageSearches.mako:91
+#: sickchill/gui/slick/views/manage_manageSearches.mako:76
+#: sickchill/gui/slick/views/manage_manageSearches.mako:80
+#: sickchill/gui/slick/views/manage_manageSearches.mako:84
+#: sickchill/gui/slick/views/manage_manageSearches.mako:88
+#: sickchill/gui/slick/views/manage_manageSearches.mako:100
+#: sickchill/gui/slick/views/manage_manageSearches.mako:104
 #, fuzzy
 msgid "pending items"
 msgstr "Грешка при изпращане на sms"
@@ -10417,7 +10676,7 @@ msgstr ""
 msgid "perform a full library update if update per-show fails?"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:811
+#: sickchill/gui/slick/views/config_general.mako:837
 msgid ""
 "please make sure that sickchill user has the right permissions for the "
 "folder."
@@ -10435,7 +10694,7 @@ msgstr ""
 msgid "port number used to connect to your SMTP host."
 msgstr "Не може да се свърже със сървъра"
 
-#: sickchill/oldbeard/helpers.py:1389
+#: sickchill/oldbeard/helpers.py:1454
 #, python-brace-format
 msgid "post_data is {requests_exception.request.data}"
 msgstr ""
@@ -10492,7 +10751,7 @@ msgstr ""
 msgid "remove the TV show's year when renaming the file?"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:485
+#: sickchill/gui/slick/views/config_general.mako:511
 msgid "remove the leading number \"0\" shown on hour of day, and date of month"
 msgstr ""
 
@@ -10544,7 +10803,7 @@ msgstr ""
 msgid "results with one or more word from this list will be ignored"
 msgstr ""
 
-#: sickchill/views/home.py:1526
+#: sickchill/views/home.py:1522
 msgid "resumed"
 msgstr "възобновен"
 
@@ -10572,11 +10831,18 @@ msgstr ""
 msgid "search results with these words will be preferred in this order."
 msgstr ""
 
-#: sickchill/gui/slick/js/core.js:4252
+# | msgid "Search Settings"
+#: sickchill/gui/slick/js/ajaxEpSearch.js:191
+#: sickchill/gui/slick/js/core.js:2759 sickchill/gui/slick/js/core.js:2799
+#, fuzzy
+msgid "search running"
+msgstr "Настройки на търсенето"
+
+#: sickchill/gui/slick/js/core.js:4398
 msgid "search timed out, try again or try another indexer"
 msgstr ""
 
-#: sickchill/gui/slick/js/core.js:4239
+#: sickchill/gui/slick/js/core.js:4375
 #, python-brace-format
 msgid "searching {searchingFor}..."
 msgstr ""
@@ -10597,11 +10863,11 @@ msgstr "пакет с цял сезон"
 msgid "season packs only."
 msgstr "пакет с цял сезон"
 
-#: sickchill/gui/slick/views/config_general.mako:524
+#: sickchill/gui/slick/views/config_general.mako:550
 msgid "seconds are only shown on the History page"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:1201
+#: sickchill/gui/slick/views/config_general.mako:1232
 msgid "seconds of inactivity when finding new shows (default:20)"
 msgstr ""
 
@@ -10628,7 +10894,7 @@ msgid ""
 "save the form!"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:161
+#: sickchill/gui/slick/views/config_general.mako:187
 msgid ""
 "selected actions use trash (recycle bin) instead of the default permanent"
 " delete"
@@ -10645,9 +10911,9 @@ msgid "send DM to"
 msgstr ""
 
 # | msgid "Error sending Pushalot notification"
+# | msgid "send Libnotify notifications?"
 #: sickchill/gui/slick/views/config_notifications.mako:2319
 #, fuzzy
-#| msgid "send Libnotify notifications?"
 msgid "send Gotify notifications?"
 msgstr "Грешка при изпращане на Pushalot уведомяване"
 
@@ -10745,7 +11011,7 @@ msgstr ""
 msgid "send a SMS when subtitles are downloaded?"
 msgstr "Няма свалени субтитри"
 
-#: sickchill/gui/slick/views/config_general.mako:252
+#: sickchill/gui/slick/views/config_general.mako:278
 msgid "send a message to all enabled notifiers when SickChill has been updated"
 msgstr ""
 
@@ -10867,7 +11133,7 @@ msgstr ""
 msgid "send email notifications?"
 msgstr "Настройка - Известия"
 
-#: sickchill/gui/slick/views/config_general.mako:824
+#: sickchill/gui/slick/views/config_general.mako:850
 msgid "send logged errors to notifiers"
 msgstr ""
 
@@ -10924,7 +11190,7 @@ msgstr ""
 msgid "set Zero(0) to disabled, default: 30 days"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:649
+#: sickchill/gui/slick/views/config_general.mako:675
 msgid "set blank for no login"
 msgstr ""
 
@@ -10936,7 +11202,7 @@ msgstr ""
 msgid "set last modified file date to the date that the episode aired?"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:463
+#: sickchill/gui/slick/views/config_general.mako:489
 msgid "set the range in days of the missed episodes in the Schedule page"
 msgstr ""
 
@@ -10972,13 +11238,13 @@ msgstr ""
 msgid "should SickChill use data from AniDB?"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:1022
+#: sickchill/gui/slick/views/config_general.mako:1053
 msgid "show an icon next to exported calendar events in Google Calendar"
 msgstr ""
 
+# | msgid "by ShowDir: {0}"
 #: sickchill/oldbeard/providers/horriblesubs.py:141
 #, fuzzy, python-brace-format
-#| msgid "by ShowDir: {0}"
 msgid "show id: {0}"
 msgstr "по ShowDir: {0}"
 
@@ -10986,7 +11252,7 @@ msgstr "по ShowDir: {0}"
 msgid "shows grabbed from your trakt watchlist start paused."
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:1059
+#: sickchill/gui/slick/views/config_general.mako:1090
 msgid "skip detection of removed files"
 msgstr ""
 
@@ -10996,7 +11262,7 @@ msgid ""
 "notifications e.g. Plexapp for Samsung TVs"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:1010
+#: sickchill/gui/slick/views/config_general.mako:1041
 msgid "some services like Google Calendar only work this way"
 msgstr ""
 
@@ -11129,11 +11395,11 @@ msgstr ""
 msgid "trackers that will be added to magnets without trackers"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:382
+#: sickchill/gui/slick/views/config_general.mako:408
 msgid "transparency of the fanart in the background"
 msgstr ""
 
-#: sickchill/views/home.py:1542
+#: sickchill/views/home.py:1538
 msgid "trashed"
 msgstr "изхвърлен"
 
@@ -11149,7 +11415,7 @@ msgstr ""
 msgid "update Plex Media Server library when a download finishes"
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:1386
+#: sickchill/oldbeard/helpers.py:1451
 #, python-brace-format
 msgid "url is {requests_exception.request.url}"
 msgstr ""
@@ -11170,11 +11436,11 @@ msgid ""
 "the autodiscovered metadata"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:396
+#: sickchill/gui/slick/views/config_general.mako:422
 msgid "use a custom .css file to style SickChill (for advanced users)"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:336
+#: sickchill/gui/slick/views/config_general.mako:362
 msgid "use a custom image as background for SickChill"
 msgstr ""
 
@@ -11190,7 +11456,7 @@ msgstr ""
 msgid "use https for plex media server requests?"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:554
+#: sickchill/gui/slick/views/config_general.mako:580
 msgid ""
 "use local timezone to start searching for episodes minutes after show "
 "ends (depends on your dailysearch frequency)"
@@ -11200,7 +11466,7 @@ msgstr ""
 msgid "use tabs for when splitting show lists"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:616
+#: sickchill/gui/slick/views/config_general.mako:642
 msgid "used to give 3rd party programs limited access to SickChill"
 msgstr ""
 
@@ -11216,7 +11482,7 @@ msgstr ""
 msgid "username of your AniDB account"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:1320
+#: sickchill/gui/slick/views/config_general.mako:1351
 msgid "username of your Trakt account."
 msgstr ""
 
@@ -11224,15 +11490,15 @@ msgstr ""
 msgid "value used in pyTivo Web Configuration to name the share."
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:954
+#: sickchill/gui/slick/views/config_general.mako:985
 msgid "verify SSL Certificates (Disable this for broken SSL installs (Like QNAP))"
 msgstr ""
 
-#: sickchill/gui/slick/js/core.js:1938
+#: sickchill/gui/slick/js/core.js:1931
 msgid "verify SSL certificates for HTTPS requests"
 msgstr ""
 
-#: sickchill/gui/slick/views/trendingShows.mako:84
+#: sickchill/gui/slick/views/trendingShows.mako:87
 msgid "votes"
 msgstr ""
 
@@ -11240,13 +11506,13 @@ msgstr ""
 msgid "wait to process a folder if sync files are present."
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:990
+#: sickchill/gui/slick/views/config_general.mako:1021
 #: sickchill/gui/slick/views/config_postProcessing.mako:414
 #: sickchill/gui/slick/views/config_subtitles.mako:215
 msgid "warning"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:687
+#: sickchill/gui/slick/views/config_general.mako:713
 msgid "web port to browse and access SickChill (default:8081)"
 msgstr ""
 
@@ -11280,7 +11546,7 @@ msgid ""
 " single episodes."
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:150
+#: sickchill/gui/slick/views/config_general.mako:176
 msgid "when using show \"Remove\" and delete files"
 msgstr ""
 
@@ -11302,7 +11568,7 @@ msgid ""
 "for client default)"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:174
+#: sickchill/gui/slick/views/config_general.mako:200
 msgid "where the files of shows are located"
 msgstr ""
 
@@ -11321,7 +11587,7 @@ msgstr ""
 msgid "words starting with a plus sign must all be present."
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:621
+#: sickchill/gui/slick/views/config_general.mako:647
 msgid "you can try all the features of the API"
 msgstr ""
 
@@ -11334,10 +11600,10 @@ msgstr ""
 msgid "{0}"
 msgstr ""
 
+# | msgid "" "{exception_severity} error executing query with {method} in
+# | database " "{db_location}: "
 #: sickchill/oldbeard/db.py:74
 #, fuzzy, python-brace-format
-#| msgid "" "{exception_severity} error executing query with {method} in
-#| database " "{db_location}: "
 msgid ""
 "{exception_severity} error executing query with {method} in database "
 "{db_location}: {exception}"
@@ -11360,12 +11626,12 @@ msgstr "{filename}: {query} [{control}]"
 msgid "{filename}: {query} with args {args}"
 msgstr "{filename}: {query} с аргументи {args}"
 
-#: sickchill/oldbeard/helpers.py:968
+#: sickchill/oldbeard/helpers.py:1033
 #, python-brace-format
 msgid "{msg}"
 msgstr ""
 
-#: sickchill/views/home.py:1504 sickchill/views/manage/index.py:713
+#: sickchill/views/home.py:1500 sickchill/views/manage/index.py:715
 #, python-brace-format
 msgid "{num_errors:d} error{plural} while saving changes:"
 msgstr "{num_errors:d} error{plural} при запазването на промените:"
@@ -11387,17 +11653,17 @@ msgstr ""
 msgid "{prefix} setting to default episode status for this show: {status_string}"
 msgstr ""
 
-#: sickchill/tv.py:760
+#: sickchill/tv.py:766
 #, python-brace-format
 msgid "{show_id}: Loading all episodes from {indexer_name}..."
 msgstr "{show_id}: Зарежда всички епизоди от {indexer_name}..."
 
-#: sickchill/views/home.py:1540
+#: sickchill/views/home.py:1536
 #, python-brace-format
 msgid "{show_name} has been {deleted_trashed} {was_deleted}"
 msgstr "{show_name} беше {deleted_trashed} {was_deleted}"
 
-#: sickchill/views/home.py:1526
+#: sickchill/views/home.py:1522
 #, python-brace-format
 msgid "{show_name} has been {paused_resumed}"
 msgstr "{show_name} беше {paused_resumed}"

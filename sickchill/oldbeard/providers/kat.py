@@ -44,8 +44,8 @@ class Provider(TorrentProvider):
             if not (self.url and self.urls):
                 return results
 
-        anime = self.show and self.show.anime or False
-        search_params = OrderedDict(field="seeders", sorder="desc", category=("tv", "anime")[anime])
+        is_anime_show = bool(self.show and self.show.is_anime)
+        search_params = OrderedDict(field="seeders", sorder="desc", category=("tv", "anime")[is_anime_show])
 
         for mode in search_strings:
             items = []
@@ -55,7 +55,7 @@ class Provider(TorrentProvider):
                 search_params["field"] = ("seeders", "time_add")[mode == "RSS"]
 
                 if mode != "RSS":
-                    if anime:
+                    if is_anime_show:
                         continue
 
                     logger.debug(_("Search String: {search_string}").format(search_string=search_string))

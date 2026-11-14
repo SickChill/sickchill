@@ -1,6 +1,6 @@
 const searchStatusUrl = scRoot + '/home/getManualSearchStatus';
-let failedDownload = false;
-let qualityDownload = false;
+let isFailedDownload = false;
+let isQualityDownload = false;
 let selectedEpisode = '';
 
 $.fn.manualSearches = [];
@@ -50,11 +50,7 @@ function getPillClass(status) {
         return 'snatched';
     }
 
-    if (lower.includes('skipped') || lower.includes('ignored')) {
-        return 'archived';
-    }
-
-    if (lower.includes('archived')) {
+    if (lower.includes('skipped') || lower.includes('ignored') || lower.includes('archived')) {
         return 'archived';
     }
 
@@ -62,100 +58,143 @@ function getPillClass(status) {
         return 'wanted';
     }
 
-    if (lower.includes('failed')) {
-        return 'failed';
-    }
-
-    return 'unknown';
+    return lower.includes('failed') ? 'failed' : 'unknown';
 }
 
 function updateImages(data) {
     $.each(data.episodes, (name, ep) => {
-        // Get td element for current ep
+        // Try to get the <a> Element
+        const link = $('a[id=' + ep.show + 'x' + ep.season + 'x' + ep.episode + ']');
+        if (link.length === 0) {
+            return;
+        }
+
         const loadingClass = 'loading-spinner16';
         const queuedClass = 'displayshow-icon-clock';
         const searchClass = 'displayshow-icon-search';
+        const icon = link.children('span');
+        const parent = link.parent();
+        let htmlContent = '';
 
-        // Try to get the <a> Element
-        const link = $('a[id=' + ep.show + 'x' + ep.season + 'x' + ep.episode + ']');
-        if (link.length > 0) {
-            const icon = link.children('span');
-            const parent = link.parent();
-            let htmlContent = '';
+        if (ep.searchstatus.toLowerCase() === 'searching') {
+            icon.prop('class', loadingClass);
+            icon.prop('title', 'Searching');
+            icon.prop('alt', 'Searching');
 
-            if (ep.searchstatus.toLowerCase() === 'searching') {
-                icon.prop('class', loadingClass);
-                icon.prop('title', 'Searching');
-                icon.prop('alt', 'Searching');
+            disableLink(link);
+            htmlContent = '<span class="status pill-wanted">Searching...</span>'; // Optional nice pill
+        } else if (ep.searchstatus.toLowerCase() === 'queued') {
+            icon.prop('class', queuedClass);
+            const queuedTitle = ep.blocked_by
+                ? 'Queued (' + ep.blocked_by + ' search running)'
+                : 'Queued';
 
-                disableLink(link);
-                htmlContent = '<span class="status pill-wanted">Searching...</span>'; // Optional nice pill
-            } else if (ep.searchstatus.toLowerCase() === 'queued') {
-                icon.prop('class', queuedClass);
-                let queuedTitle = 'Queued';
-                if (ep.blocked_by) {
-                    queuedTitle = 'Queued (' + ep.blocked_by + ' search running)';
-                }
+            icon.prop('title', queuedTitle);
+            icon.prop('alt', queuedTitle);
 
-                icon.prop('title', queuedTitle);
-                icon.prop('alt', queuedTitle);
-
-                disableLink(link);
-                htmlContent = '<span class="status pill-wanted">' + queuedTitle + '</span>';
-            } else if (ep.searchstatus.toLowerCase() === 'finished') {
-                icon.prop('class', searchClass);
-                if (ep.quality !== 'N/A') {
-                    link.prop('class', 'epRetry');
-                }
-
-                icon.prop('title', 'Search');
-                icon.prop('alt', 'Search');
-                enableLink(link);
-
-                // Update status and quality
-                htmlContent = buildStatusPill(ep.status, ep.quality);
-                parent.closest('tr').prop('class', ep.overview + ' season-' + ep.season + ' seasonstyle');
+            disableLink(link);
+            htmlContent = '<span class="status pill-wanted">' + queuedTitle + '</span>';
+        } else if (ep.searchstatus.toLowerCase() === 'finished') {
+            icon.prop('class', searchClass);
+            if (ep.quality !== 'N/A') {
+                link.prop('class', 'epRetry');
             }
 
-            // Update the status column if it exists
-            parent.siblings('.col-status').html(htmlContent);
-            // And location
-            parent.siblings('.location').html(ep.location);
-            // And size
-            parent.siblings('.size').html(ep.size);
-            // And qtip location
-            if (ep.location) {
-                parent.siblings('.episode').html('<span title="' + ep.location + '" class="addQTip">' + ep.episode + '</span>');
-            }
+            icon.prop('title', 'Search');
+            icon.prop('alt', 'Search');
+            enableLink(link);
+
+            // Update status and quality
+            htmlContent = buildStatusPill(ep.status, ep.quality);
+            parent.closest('tr').prop('class', ep.overview + ' season-' + ep.season + ' seasonstyle');
+        }
+
+        // Update the status column if it exists
+        parent.siblings('.col-status').html(htmlContent);
+        // And location
+        parent.siblings('.location').html(ep.location);
+        // And size
+        parent.siblings('.size').html(ep.size);
+        // And qtip location
+        if (ep.location) {
+            parent.siblings('.episode').html('<span title="' + ep.location + '" class="addQTip">' + ep.episode + '</span>');
         }
     });
 }
 
+let manualSearchPollTimer;
+let manualSearchIdleStreak = 0;
+let manualSearchPollingStopped = false;
+const manualSearchIdleStopAfter = 3;
+
+function episodeListFromStatus(data) {
+    const episodes = (data && data.episodes) || [];
+    return Array.isArray(episodes) ? episodes : Object.values(episodes).map(value => value);
+}
+
+function hasActiveManualSearch(data) {
+    return episodeListFromStatus(data).some(episode => {
+        const status = (episode.searchstatus || '').toLowerCase();
+        return status === 'searching' || status === 'queued';
+    });
+}
+
+function scheduleManualSearchPoll(delay) {
+    clearTimeout(manualSearchPollTimer);
+    manualSearchPollingStopped = false;
+    manualSearchPollTimer = setTimeout(checkManualSearches, delay);
+}
+
+function resumeManualSearchPolling() {
+    manualSearchIdleStreak = 0;
+    scheduleManualSearchPoll(1000);
+}
+
 function checkManualSearches() {
-    let pollInterval = 5000;
+    if (document.hidden) {
+        scheduleManualSearchPoll(15_000);
+        return;
+    }
+
     const showId = $('#showID').val();
     const url = showId ? searchStatusUrl + '?show=' + showId : searchStatusUrl;
     $.ajax({
         url,
         success(data) {
-            pollInterval = data.episodes ? 5000 : 15_000;
             updateImages(data);
+            if (hasActiveManualSearch(data)) {
+                manualSearchIdleStreak = 0;
+                scheduleManualSearchPoll(5000);
+                return;
+            }
+
+            manualSearchIdleStreak += 1;
+            if (manualSearchIdleStreak >= manualSearchIdleStopAfter) {
+                manualSearchPollingStopped = true;
+                return;
+            }
+
+            scheduleManualSearchPoll(15_000);
         },
         error() {
-            pollInterval = 30_000;
+            scheduleManualSearchPoll(30_000);
         },
         type: 'GET',
         dataType: 'json',
-        complete() {
-            setTimeout(checkManualSearches, pollInterval);
-        },
         timeout: 15_000, // Timeout every 15 secs
     });
 }
 
 $(document).ready(checkManualSearches);
+document.addEventListener('visibilitychange', () => {
+    if (document.hidden || manualSearchPollingStopped) {
+        return;
+    }
 
-(function () {
+    scheduleManualSearchPoll(1000);
+});
+
+{
     let stupidOptions;
     function manualSearch() {
         const parent = selectedEpisode.parent();
@@ -171,11 +210,11 @@ $(document).ready(checkManualSearches);
 
         let url = selectedEpisode.prop('href');
 
-        if (failedDownload === false) {
+        if (isFailedDownload === false) {
             url = url.replace('retryEpisode', 'searchEpisode');
         }
 
-        url = url + '&downCurQuality=' + (qualityDownload ? '1' : '0');
+        url = url + '&downCurQuality=' + (isQualityDownload ? '1' : '0');
 
         $.getJSON(url, data => {
             let imageName = null;
@@ -197,6 +236,7 @@ $(document).ready(checkManualSearches);
                 parent.siblings('.col-status').html('<span class="status pill-wanted">' + imageResult + '</span>');
                 // Only if the queuing was successful, disable the onClick event of the loading image
                 disableLink(link);
+                resumeManualSearchPolling();
             }
 
             // Put the corresponding image as the result of queuing of the manual search
@@ -243,13 +283,13 @@ $(document).ready(checkManualSearches);
         });
 
         $('#manualSearchModalFailed .btn').on('click', function () {
-            failedDownload = ($(this).text().toLowerCase() === 'yes');
+            isFailedDownload = ($(this).text().toLowerCase() === 'yes');
             $('#manualSearchModalQuality').modal('show');
         });
 
         $('#manualSearchModalQuality .btn').on('click', function () {
-            qualityDownload = ($(this).text().toLowerCase() === 'yes');
+            isQualityDownload = ($(this).text().toLowerCase() === 'yes');
             manualSearch();
         });
     };
-})();
+}

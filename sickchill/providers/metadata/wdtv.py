@@ -214,7 +214,7 @@ class WDTVMetadata(generic.GenericMetadata):
 
             if current_episode.season != 0 and getattr(indexer_show, "runtime", None):
                 runtime_element = ElementTree.SubElement(episode_element, "runtime")
-                runtime_element.text = indexer_show.runtime
+                runtime_element.text = str(indexer_show.runtime)
 
             if getattr(indexer_show, "genre", None):
                 genre_element = ElementTree.SubElement(episode_element, "genre")

@@ -1,9 +1,11 @@
+import datetime
 import re
 import traceback
 
 import requests
 
 from sickchill import logger, settings
+from sickchill.oldbeard.scdatetime import format_preset_datetime
 from sickchill.tv import TVEpisode
 
 from .base import Indexer
@@ -23,8 +25,7 @@ REMOTE_ID_TYPE_IMDB = 2
 
 WEEKDAY_NAMES = ("monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday")
 
-# SickChill uses 2-letter codes (INDEXER_DEFAULT_LANGUAGE / show.lang); TVDB v4 translation
-# routes expect ISO 639-2/3 style codes (eng, zho, …). Try both when fetching.
+# SickChill 2-letter codes (INDEXER_DEFAULT_LANGUAGE / show.lang); TVDB translation
 _TVDB_LANG_CANDIDATES = {
     "en": ("eng", "en"),
     "zh": ("zho", "chi", "zh", "zh-cn", "zh-tw", "zh-hans", "zh-hant"),
@@ -331,6 +332,16 @@ class _UpdatesResult:
         # Do not set self.series here — it would shadow the series() method
         # (tvdbsimple only assigns the attribute after series() is called).
 
+    def _from_time_display(self) -> str:
+        try:
+            dt = datetime.datetime(1970, 1, 1, tzinfo=datetime.timezone.utc) + datetime.timedelta(seconds=int(self._from_time or 0))
+            displayed = format_preset_datetime(dt)
+            if getattr(settings, "TIMEZONE_DISPLAY", "local") != "local":
+                return f"{displayed} UTC"
+            return displayed
+        except (OverflowError, OSError, TypeError, ValueError):
+            return str(self._from_time)
+
     def series(self):
         """Collect series IDs from V4 series + episode update streams since from_time."""
         records: list = []
@@ -340,14 +351,14 @@ class _UpdatesResult:
                 records.extend(self._client.all_updates_since(self._from_time, entity_type=entity_type))
             except TVDBv4Error as error:
                 failed_types.append(entity_type)
-                logger.debug(f"TVDB v4 updates failed ({entity_type}): {error}")
+                logger.debug(f"TVDB updates failed ({entity_type}): {error}")
 
         # Both entity types must succeed; partial success is treated as feed failure
         self.feed_ok = not failed_types
         if failed_types:
             # Distinguish feed failure (partial or total) from a successful empty change list
             self.series = []
-            logger.warning(f"TVDB v4 update feed failed for entity type(s) {', '.join(failed_types)} since {self._from_time}")
+            logger.warning(f"TVDB update feed failed for entity type(s) {', '.join(failed_types)} since {self._from_time_display()}")
             return self.series
 
         ids = set()
@@ -384,7 +395,7 @@ class _UpdatesResult:
                 result.append({"id": series_id})
 
         self.series = result  # attribute used by ShowUpdater after series() returns
-        logger.debug(f"TVDB v4 updates since {self._from_time}: {len(result)} series id(s) changed")
+        logger.debug(f"TVDB updates since {self._from_time_display()}: {len(result)} series id(s) changed")
         return result
 
 
@@ -568,7 +579,7 @@ class TVDB(Indexer):
         try:
             translation = self.client.series_translation(series_id, code)
         except TVDBv4Error as error:
-            logger.debug(f"TVDB v4 translation fetch failed for {series_id}/{code}: {error}")
+            logger.debug(f"TVDB translation fetch failed for {series_id}/{code}: {error}")
             translation = None
         if translation is not None and not isinstance(translation, dict):
             translation = None
@@ -589,16 +600,16 @@ class TVDB(Indexer):
                 eps = self.client.all_episodes(show_id, season_type, language=code)
                 # Empty list is a miss (no titles in that language) — try next candidate
                 if eps:
-                    logger.debug(f"TVDB v4 episodes for {show_id} using language={code!r} ({len(eps)} ep(s))")
+                    logger.debug(f"TVDB episodes for {show_id} using language={code!r} ({len(eps)} ep(s))")
                     return eps
-                logger.debug(f"TVDB v4 translated episodes empty for {show_id}/{code}; trying next language")
+                logger.debug(f"TVDB translated episodes empty for {show_id}/{code}; trying next language")
             except TVDBv4Error as error:
                 errors.append(f"{code}:{error}")
-                logger.debug(f"TVDB v4 translated episodes failed for {show_id}/{code}: {error}")
+                logger.debug(f"TVDB translated episodes failed for {show_id}/{code}: {error}")
 
         # No language requested, or all translated paths failed/empty — primary/original names
         if candidates:
-            logger.debug(f"TVDB v4 falling back to untranslated episodes for {show_id} (tried {', '.join(candidates)}; errors: {'; '.join(errors) or 'none'})")
+            logger.debug(f"TVDB falling back to untranslated episodes for {show_id} (tried {', '.join(candidates)}; errors: {'; '.join(errors) or 'none'})")
         return self.client.all_episodes(show_id, season_type, language=None)
 
     @ExceptionDecorator()
@@ -658,7 +669,7 @@ class TVDB(Indexer):
                 translation = chosen or next((i for i in translation["translations"] if isinstance(i, dict)), None)
             applied = _apply_series_translation(raw, translation)
             if applied is not raw:
-                logger.debug(f"TVDB v4 applied translation {code!r} for series {indexerid}: {(raw.get('name') or '')!r} -> {(applied.get('name') or '')!r}")
+                logger.debug(f"TVDB applied translation {code!r} for series {indexerid}: {(raw.get('name') or '')!r} -> {(applied.get('name') or '')!r}")
                 return applied
             # Translation payload existed for this code but text matched primary — stop
             # (do not also try en after eng, etc.)
@@ -918,7 +929,7 @@ class TVDB(Indexer):
                 self._episode_index_cache[(int(show.indexerid), season_type, show_lang, int(s), int(e))] = ep
             # Bound after insert so a newly cached show cannot leave the map oversized
             self._prune_episode_cache()
-            logger.debug(f"TVDB v4 cached {len(mapped)} episode(s) for show {show.indexerid} ({season_type}, lang={show_lang or 'primary'})")
+            logger.debug(f"TVDB cached {len(mapped)} episode(s) for show {show.indexerid} ({season_type}, lang={show_lang or 'primary'})")
             result = mapped
         else:
             result = cached[1]
@@ -1018,7 +1029,7 @@ class TVDB(Indexer):
                     break
             except TVDBv4Error as error:
                 # 404 / empty is normal for no match
-                logger.debug(f"theTVDB v4 name search failed for '{attempt}': {error}")
+                logger.debug(f"theTVDB name search failed for '{attempt}': {error}")
             except Exception:
                 logger.debug(traceback.format_exc())
 
@@ -1137,8 +1148,10 @@ class TVDB(Indexer):
             return ""
         if location.startswith(("http://", "https://")):
             return location
-        # Legacy relative banner path fallback
-        return f"https://artworks.thetvdb.com/banners/{re.sub(r'^_cache/', '', location)}"
+        location = re.sub(r"^_cache/", "", location).lstrip("/")
+        while location.startswith("banners/"):
+            location = location[len("banners/") :]
+        return f"https://artworks.thetvdb.com/banners/{location}"
 
     def _urls_from_series_artworks(self, series, artwork_type, multiple=False, thumb=False):
         """Filter artworks already on a series result — no extra HTTP."""

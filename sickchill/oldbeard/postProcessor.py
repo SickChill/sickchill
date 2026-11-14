@@ -33,6 +33,7 @@ METHOD_SYMLINK = "symlink"
 METHOD_SYMLINK_REVERSED = "symlink_reversed"
 
 PROCESS_METHODS = [METHOD_COPY, METHOD_MOVE, METHOD_HARDLINK, METHOD_SYMLINK, METHOD_SYMLINK_REVERSED]
+SOURCE_PRESERVING_METHODS = frozenset({METHOD_COPY, METHOD_HARDLINK, METHOD_SYMLINK_REVERSED})
 
 
 class PostProcessor(object):
@@ -86,6 +87,10 @@ class PostProcessor(object):
         self.anidbEpisode = None
 
         self.history = History()
+        self.show = None
+
+        # Set before every soft failure (``return False``) so processTV can surface it.
+        self.failure_reason = ""
 
     def _log(self, message, level=logging.INFO):
         """
@@ -96,6 +101,12 @@ class PostProcessor(object):
         """
         logger.log(level, message)
         self.log += message + "\n"
+
+    def _fail(self, message, level=logging.WARNING):
+        """Log a post-process failure reason and return False for ``process()``."""
+        self.failure_reason = str(message)
+        self._log(message, level)
+        return False
 
     def _checkForExistingFile(self, existing_file):
         """
@@ -132,7 +143,7 @@ class PostProcessor(object):
             self._log(_("File {existing_file} doesn't exist so there's no worries about replacing it").format(existing_file=existing_file), logger.DEBUG)
             return PostProcessor.DOESNT_EXIST
 
-    def list_associated_files(self, file_path, subtitles_only=False, subfolders=False, rename=False):
+    def list_associated_files(self, file_path, subtitles_only=False, subfolders=False, rename=False, delete_unwanted=True):
         """
         For a given file path searches for files with the same name but different extension and returns their absolute paths
 
@@ -140,6 +151,7 @@ class PostProcessor(object):
         :param subfolders: check in subfolders
         :param rename: if we are looking for all files to rename
         :param file_path: The file to check for associated files
+        :param delete_unwanted: when False, skip deleting disallowed associated files (copy/hardlink/symlink_reversed)
         :return: A list containing all files which are associated to the given file
         """
 
@@ -189,9 +201,11 @@ class PostProcessor(object):
             # Define associated files (all, allowed, and non-allowed)
             if os.path.isfile(associated_file_path):
                 # check if allowed or not during post-processing
-                if settings.MOVE_ASSOCIATED_FILES and associated_file_path.endswith(tuple(settings.ALLOWED_EXTENSIONS.split(","))):
+                allowed_exts = {ext.strip().lstrip(".").lower() for ext in settings.ALLOWED_EXTENSIONS.split(",") if ext.strip()}
+                file_ext = Path(associated_file_path).suffix.lstrip(".").lower()
+                if settings.MOVE_ASSOCIATED_FILES and (not allowed_exts or file_ext in allowed_exts):
                     file_path_list_to_allow.append(associated_file_path)
-                elif settings.DELETE_NON_ASSOCIATED_FILES:
+                elif settings.DELETE_NON_ASSOCIATED_FILES and delete_unwanted:
                     file_path_list_to_delete.append(associated_file_path)
 
         if file_path_list_to_allow or file_path_list_to_delete:
@@ -285,10 +299,11 @@ class PostProcessor(object):
 
         file_list = [file_path]
         subfolders = os.path.normpath(os.path.dirname(file_path)) != os.path.normpath(settings.TV_DOWNLOAD_DIR)
+        delete_unwanted = self.process_method not in SOURCE_PRESERVING_METHODS
         if associated_files:
-            file_list += self.list_associated_files(file_path, subfolders=subfolders)
+            file_list += self.list_associated_files(file_path, subfolders=subfolders, delete_unwanted=delete_unwanted)
         elif subtitles:
-            file_list += self.list_associated_files(file_path, subtitles_only=True, subfolders=subfolders)
+            file_list += self.list_associated_files(file_path, subtitles_only=True, subfolders=subfolders, delete_unwanted=delete_unwanted)
 
         if not file_list:
             self._log(_("There were no files associated with {file_path}, not moving anything").format(file_path=file_path), logger.DEBUG)
@@ -764,8 +779,16 @@ class PostProcessor(object):
                 if not curEp:
                     raise EpisodeNotFoundException()
             except EpisodeNotFoundException as error:
-                self._log(_("Unable to create episode: {error}").format(error=error), logger.DEBUG)
-                raise EpisodePostProcessingFailedException()
+                parsed = ", ".join(episode_num(season, ep) or str(ep) for ep in episodes)
+                missing = episode_num(season, cur_episode) or f"S{season:02d}E{cur_episode:02d}"
+                detail = _("Unable to create episode: {error}").format(error=error)
+                self._log(detail, logger.DEBUG)
+                kind = _("multi-ep file") if len(episodes) > 1 else _("file")
+                raise EpisodePostProcessingFailedException(
+                    _("Unable to post-process {kind}: missing {missing} (parsed episodes: {parsed}). {detail}").format(
+                        kind=kind, missing=missing, parsed=parsed, detail=detail
+                    )
+                ) from error
 
             # associate all the episodes together under a single root episode
             if root_ep is None:
@@ -915,20 +938,18 @@ class PostProcessor(object):
         :return: True on success, False on failure
         """
 
+        self.failure_reason = ""
         self._log(_("Processing {directory} ({release_name})").format(directory=self.directory, release_name=self.release_name))
 
         if os.path.isdir(self.directory):
-            self._log(_("File {directory} seems to be a directory").format(directory=self.directory))
-            return False
+            return self._fail(_("File {directory} seems to be a directory").format(directory=self.directory))
 
         if not os.path.exists(self.directory):
-            self._log(_("File {directory} doesn't exist, did unrar fail?").format(directory=self.directory))
-            return False
+            return self._fail(_("File {directory} doesn't exist, did unrar fail?").format(directory=self.directory))
 
         for ignore_file in self.IGNORED_FILESTRINGS:
             if ignore_file in self.directory:
-                self._log(_("File {directory} is ignored type, skipping").format(directory=self.directory))
-                return False
+                return self._fail(_("File {directory} is ignored type, skipping").format(directory=self.directory))
 
         # reset per-file stuff
         self.in_history = False
@@ -939,14 +960,15 @@ class PostProcessor(object):
         # try to find the file info
         (show, season, episodes, quality, version) = self._find_info()
         if not show:
-            self._log(_("This show isn't in your list, you need to add it to SC before post-processing an episode"))
-            raise EpisodePostProcessingFailedException()
+            message = _("This show isn't in your list, you need to add it to SC before post-processing an episode")
+            self._log(message)
+            raise EpisodePostProcessingFailedException(message)
         elif season is None or not episodes:
-            self._log(_("Not enough information to determine what episode this is. Quitting post-processing"))
-            return False
+            return self._fail(_("Not enough information to determine what episode this is. Quitting post-processing"))
 
         # retrieve/create the corresponding TVEpisode objects
         episode_object = self._get_ep_obj(show, season, episodes)
+        self.show = episode_object.show
         old_ep_status_, old_ep_quality = common.Quality.splitCompositeStatus(episode_object.status)
         self._log(_("Processing as - {pretty_name}").format(pretty_name=episode_object.pretty_name))
 
@@ -985,8 +1007,7 @@ class PostProcessor(object):
                 else:
                     allowed_qualities_, preferred_qualities = common.Quality.splitQuality(int(show.quality))
                     if new_ep_quality not in preferred_qualities:
-                        self._log(_("File exists and new file quality is not in a preferred quality list, marking it unsafe to replace"))
-                        return False
+                        return self._fail(_("File exists and new file quality is not in a preferred quality list, marking it unsafe to replace"))
 
             # Check if the processed file season is already in our indexer. If not, the file is most probably mislabled/fake and will be skipped
             # Only proceed if the file season is > 0
@@ -997,25 +1018,23 @@ class PostProcessor(object):
                 )
 
                 if not isinstance(max_season[0]["last_season"], int) or max_season[0]["last_season"] < 0:
-                    self._log(
+                    return self._fail(
                         f"File has season {episode_object.season}, while the database does not have any known seasons yet. "
                         "Try forcing a full update on the show and process this file again. "
                         "The file may be incorrectly labeled or fake, aborting."
                     )
-                    return False
 
                 # If the file season (episode_object.season) is bigger than the indexer season (max_season[0][0]), skip the file
                 newest_season = max_season[0]["last_season"]
                 episode_season = episode_object.season
                 if int(episode_season) > newest_season:
-                    self._log(
+                    return self._fail(
                         _(
                             "File has season {episode_season}, while the indexer is on season {newest_season}. "
                             "Try forcing a full update on the show and process this file again. "
                             "The file may be incorrectly labeled or fake, aborting."
                         ).format(episode_season=episode_season, newest_season=newest_season)
                     )
-                    return False
 
         # if the file is priority then we're going to replace it even if it exists
         else:
@@ -1027,13 +1046,27 @@ class PostProcessor(object):
                 if not verify_freespace(
                     self.directory, episode_object.show.get_location, [episode_object] + episode_object.related_episodes, method=self.process_method
                 ):
-                    self._log(_("Not enough disk space to continue processing, exiting"), logger.WARNING)
-                    return False
+                    return self._fail(_("Not enough disk space to continue processing, exiting"), logger.WARNING)
             else:
                 self._log(_("Unable to determine needed file space as the source file is locked for access"))
 
         episodes = [episode_object] + episode_object.related_episodes
         created_show_dir = False
+        previous_download_state = [
+            {
+                "episode": cur_ep,
+                "release_name": cur_ep.release_name,
+                "release_group": cur_ep.release_group,
+                "is_proper": cur_ep.is_proper,
+                "status": cur_ep.status,
+                "subtitles": cur_ep.subtitles,
+                "subtitles_searchcount": cur_ep.subtitles_searchcount,
+                "subtitles_lastsearch": cur_ep.subtitles_lastsearch,
+                "version": cur_ep.version,
+                "location": cur_ep.location,
+            }
+            for cur_ep in episodes
+        ]
 
         for cur_ep in episodes:
             with cur_ep.lock:
@@ -1063,11 +1096,15 @@ class PostProcessor(object):
 
         # find the destination folder
         try:
+            # proper_path runs before the download is moved; point scene-quality codec at the source file.
+            episode_object._naming_media_file = self.directory
             proper_path = episode_object.proper_path()
             proper_absolute_path = os.path.join(episode_object.show.location, proper_path)
             dest_path = os.path.dirname(proper_absolute_path)
         except ShowDirectoryNotFoundException:
             raise EpisodePostProcessingFailedException(_("Unable to post-process an episode if the show dir doesn't exist, quitting"))
+        finally:
+            episode_object._naming_media_file = None
 
         self._log(_("Destination folder for this episode: ") + dest_path, logger.DEBUG)
 
@@ -1086,8 +1123,20 @@ class PostProcessor(object):
                 self._delete(cur_ep.location, associated_files=True)
                 if cur_ep.location:
                     helpers.delete_empty_folders(os.path.dirname(cur_ep.location), keep_dir=episode_object.show.get_location)
-                cur_ep.cleanup_download_properties()
             except (OSError, IOError):
+                for saved in previous_download_state:
+                    failed_ep = saved["episode"]
+                    with failed_ep.lock:
+                        failed_ep.release_name = saved["release_name"]
+                        failed_ep.release_group = saved["release_group"]
+                        failed_ep.is_proper = saved["is_proper"]
+                        failed_ep.status = saved["status"]
+                        failed_ep.subtitles = saved["subtitles"]
+                        failed_ep.subtitles_searchcount = saved["subtitles_searchcount"]
+                        failed_ep.subtitles_lastsearch = saved["subtitles_lastsearch"]
+                        failed_ep.version = saved["version"]
+                        old_location = saved["location"]
+                        failed_ep.location = old_location if old_location and os.path.isfile(old_location) else ""
                 raise EpisodePostProcessingFailedException(_("Unable to delete the existing files"))
 
         if not os.path.isdir(episode_object.show.get_location) and settings.CREATE_MISSING_SHOW_DIRS:

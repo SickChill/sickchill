@@ -1,3 +1,55 @@
+### Unreleased
+
+* docker: NAS image tracks develop on Python 3.14, with a persistent `/data/.venv` and PUID/PGID. Drop the setuptools<81 pin, distutils helper, system libmediainfo, and BuildKit `security.insecure`
+* feat: pause the search queue and retry connectivity on DNS/connect failures and hung searches
+* fix: use the new release group in `%RG` when replacing an existing episode file
+* fix: persist a filename-derived release group after a successful rename when none is stored
+* ci: test Python 3.14 on Ubuntu, Windows, and macOS while keeping 3.11–3.13
+* ci: Docker images, Test-Docker smoke, and Deploy on Python 3.14
+* fix: stop the web server on the Tornado IOLoop thread before spawning a restart so Linux menu restart can bind the port
+
+### 2026.10.8
+
+[full changelog](https://github.com/SickChill/SickChill/compare/2026.9.18...2026.10.8)
+
+* feat: plugin platform for download clients, providers, metadata generators, and notifiers, with hybrid config migration (#9188)
+* feat: anime numbering modes and Nyaa search/config updates (#9231)
+* feat: home show-list Location column and table layout (#9235, #9236)
+* feat: persist manual post-processing form settings (#9237)
+* feat: optional poster hover zoom on the home page (#9239)
+* update: block `.exe` search hits so they are not cached or snatched (#9232)
+* update: provider HTTP 429 / rate-limit handling (#9224)
+* update: Windows timezone, `fromtimestamp`, and drive-map handling (#9203, #9204, #9208, #9217)
+* update: chmod the subtitle file actually written; associated-file / sidecar paths (#9201, #9199)
+* update: metadata per-episode runtime as a string (#9205)
+* update: failed-download handling (#9207)
+* update: README TheTVDB attribution logos (dark/light) (#9240, #9241, #9242)
+* ci: Docker image size reduction; GitHub packaging/build updates (#9223, #9222)
+* chore: DSM6/Synology greenlet floor (#9234)
+* chore: drop Python 3.10; require 3.11+ and SQLAlchemy 2.1
+* chore: dependency updates (#9200, #9219, #9220, #9227, #9233)
+
+### 2026.9.18
+
+[full changelog](https://github.com/SickChill/SickChill/compare/2024.3.1...2026.9.18)
+
+* feat: TVDB v4 indexer implementation (#9089)
+* feat: built-in Jackett-SC provider, including HTTP for local/LAN/Docker hosts (#9148, #9167)
+* feat: replace Trakt discovery lists with TMDB and TVMaze lists (#9103)
+* feat: Trakt return / device auth improvements (#9145)
+* feat: status table start times (#9139)
+* feat: DB UI response-rate improvements (#9120)
+* update: multi-episode single-file post-processing (contiguous packs, history for all eps, clearer failures) (#9173)
+* update: anime/AniDB scene-exception refresh performance and name-cache lock (#9165, #9183)
+* update: IMDb redirect/legacy title ids (#9165)
+* update: provider rename when custom names collide with built-ins (#9170, #9171)
+* update: schedule secondary sort by show name; coming-episodes window (#9171)
+* update: MediaBrowser/TVDB artwork URL double `/banners/` path (#9181)
+* update: image fetch/replacer and Edit Show artwork save (#9146, #9161, #9163)
+* update: show refresh, queues, propers, logs, and related stability updates (#9118, #9119, #9134, #9142, #9046)
+* ci: Docker immutable tags `branch{run_id}-{sha:12}`; Dependabot deploy skip (#9168, #9164)
+* chore: dependency updates and TODO cleanup (#9180, #9182, and prior Dependabot bundles)
+
 ### 2024.3.1
 
 [full changelog](https://github.com/SickChill/SickChill/compare/2024.2.27...2024.3.1)

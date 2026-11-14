@@ -70,12 +70,12 @@ class BaseParser(type):
 
         @property
         def username(self):
-            # TODO: Make this read usernames from somewhere
+            # Live provider auth: wire from env/secrets when enabling remote parse tests.
             return ""
 
         @property
         def password(self):
-            # TODO: Make this read passwords from somewhere
+            # Live provider auth: wire from env/secrets when enabling remote parse tests.
             return ""
 
         def search_strings(self, mode):

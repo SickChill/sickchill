@@ -11,10 +11,9 @@
     <script type="text/javascript" src="${static_url('js/configProviders.js')}"></script>
     <script type="text/javascript">
         $(document).ready(function() {
-            $('#config-components').tabs();
+            initConfigComponentTabs();
             $('#config-components').on( "tabsactivate", function( event, ui ){
                 if(ui.newPanel.selector === '#provider-options') {
-                    //TODO: Reload provider options list
                 }
             });
             % if settings.USE_NZBS:
@@ -62,6 +61,12 @@
                             <br>
                         % endif
 
+                        % if settings.USE_TORRENTS:
+                            <p class="note"><em>${_('Jackett-SC is a torrent provider: enable it in this list, then configure URL/API key under Provider Options. Torrent Search must be on in Search Settings — NZB search is not required.')}</em></p>
+                        % else:
+                            <p class="note"><em>${_('To use the built-in Jackett-SC provider, enable Torrent Search in Search Settings. Jackett-SC does not appear here when only NZB search is enabled.')}</em></p>
+                        % endif
+
                         <div>
                             <p class="note"><span class="red-text">*</span> ${_('Provider does not support backlog or manual searches')}</p>
                             <p class="note"><span class="red-text">!</span> ${_('Provider does not support daily rss searches')}</p>
@@ -91,6 +96,7 @@
                             % endfor
                         </ul>
                         <input type="hidden" name="provider_order" id="provider_order" value="${" ".join([x.get_id(':'+str(int(x.is_enabled))) for x in providers.sorted_provider_list()])}" />
+                        <input type="hidden" name="provider_settings_loaded" id="provider_settings_loaded" value="${" ".join(x.get_id() for x in providers.sorted_provider_list() if getattr(x, 'enabled', False))}" />
                     </fieldset>
                 </div>
             </div>
@@ -333,11 +339,31 @@
                                 % if hasattr(provider, 'custom_url'):
                                     <div class="field-pair row">
                                         <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-                                            <label class="component-title">${_('Custom URL')}</label>
+                                            % if provider.get_id() == 'jackett_sc':
+                                                <label class="component-title">${_('Site URL')}</label>
+                                            % else:
+                                                <label class="component-title">${_('Custom URL')}</label>
+                                            % endif
                                         </div>
                                         <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                            <input type="text" name="${provider.get_id("_custom_url")}" id="${provider.get_id("_custom_url")}" value="${provider.custom_url}" class="form-control input-sm input350" autocapitalize="off" />
-                                            <label for="${provider.get_id("_custom_url")}">${_('the URL should include the protocol (and port if applicable).  Examples:  http://192.168.1.4/ or http://localhost:3000/')}</label>
+                                            <input type="text" name="${provider.get_id("_custom_url")}" id="${provider.get_id("_custom_url")}" value="${provider.custom_url|h}" class="form-control input-sm input350" autocapitalize="off" />
+                                            % if provider.get_id() == 'jackett_sc':
+                                                <label for="${provider.get_id("_custom_url")}">${_('Jackett site URL (protocol and port). Default: http://127.0.0.1:9117 — or paste a full Torznab feed URL.')}</label>
+                                            % else:
+                                                <label for="${provider.get_id("_custom_url")}">${_('the URL should include the protocol (and port if applicable).  Examples:  http://192.168.1.4/ or http://localhost:3000/')}</label>
+                                            % endif
+                                        </div>
+                                    </div>
+                                % endif
+
+                                % if hasattr(provider, 'indexer'):
+                                    <div class="field-pair row">
+                                        <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                            <label class="component-title">${_('Jackett indexer')}</label>
+                                        </div>
+                                        <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                            <input type="text" name="${provider.get_id("_indexer")}" id="${provider.get_id("_indexer")}" value="${provider.indexer|h}" class="form-control input-sm input150" autocapitalize="off" />
+                                            <label for="${provider.get_id("_indexer")}">${_('Use "all" to search every configured Jackett indexer, or a single Jackett indexer id.')}</label>
                                         </div>
                                     </div>
                                 % endif
@@ -348,7 +374,44 @@
                                             <label class="component-title">${_('Api key')}</label>
                                         </div>
                                         <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                            <input type="text" name="${provider.get_id("_api_key")}" id="${provider.get_id("_api_key")}" value="${provider.api_key}" class="form-control input-sm input350" autocapitalize="off" />
+                                            <input type="text" name="${provider.get_id("_api_key")}" id="${provider.get_id("_api_key")}" value="${provider.api_key|h}" class="form-control input-sm input350" autocapitalize="off" />
+                                            % if provider.get_id() == 'jackett_sc':
+                                                <label for="${provider.get_id("_api_key")}">${_('Copy the API key from the Jackett Dashboard (default: http://127.0.0.1:9117/UI/Dashboard). It is shown on that page — replace the pre-filled value if your Jackett key differs.')}</label>
+                                            % endif
+                                        </div>
+                                    </div>
+                                % endif
+
+                                % if hasattr(provider, 'categories') and provider.get_id() == 'jackett_sc':
+                                    <div class="field-pair row" id="jackettcapdiv">
+                                        <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                            <label class="component-title">${_('Jackett search categories')}</label>
+                                        </div>
+                                        <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                            <input type="hidden" name="${provider.get_id("_categories")}" id="${provider.get_id("_categories")}" value="${provider.categories|h}" />
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <select id="jackett_cap" multiple="multiple" style="min-width:12em; min-height:8em;" title="${_('Available categories')}"></select>
+                                                    <select id="jackett_cat" multiple="multiple" style="min-width:12em; min-height:8em;" title="${_('Selected categories')}"></select>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <label><b>${_('Select TV categories on the left, then click Update Categories. Don\'t forget to save the form.')}</b></label>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <input class="btn" type="button" id="jackett_cat_fetch" value="${_('Fetch Categories')}" />
+                                                    <input class="btn" type="button" id="jackett_cat_update" value="${_('Update Categories')}" />
+                                                    <span class="updating_jackett_categories"></span>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <label for="${provider.get_id("_categories")}">${_('Saved category ids')}: <code id="jackett_categories_display">${provider.categories|h}</code></label>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 % endif
@@ -560,6 +623,24 @@
                                     </div>
                                 % endif
 
+                                % if hasattr(provider, 'tv_category_choices'):
+                                    <div class="field-pair row">
+                                        <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                            <label class="component-title">${_('Search categories')}</label>
+                                        </div>
+                                        <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                            <% selected_tv_cats = provider.selected_tv_category_ids() if hasattr(provider, 'selected_tv_category_ids') else set() %>
+                                            % for cat_id, cat_label in provider.tv_category_choices:
+                                                <div>
+                                                    <input type="checkbox" name="${provider.get_id("_tv_categories")}" id="${provider.get_id("_tv_categories_")}${cat_id}" value="${cat_id}" ${checked(cat_id in selected_tv_cats)} />
+                                                    <label for="${provider.get_id("_tv_categories_")}${cat_id}">${_(cat_label)}</label>
+                                                </div>
+                                            % endfor
+                                            <p class="note">${_('These categories are used for episode search and RSS. Season packs (14) are always included for season and RSS searches.')}</p>
+                                        </div>
+                                    </div>
+                                % endif
+
                                 % if hasattr(provider, 'enable_daily'):
                                     <div class="field-pair row">
                                         <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
@@ -674,6 +755,7 @@
                         <div class="component-group-desc">
                             <h3>${_('Configure Custom<br>Newznab Providers')}</h3>
                             <p>${_('Add and setup or remove custom Newznab providers.')}</p>
+                            <p><em>${_('Do not add Jackett/Torznab here. If you already have a Custom Newznab named Jackett (from older guides), delete or disable it and use Jackett-SC instead. Then enable Torrent Search in Search Settings, check Jackett-SC under Provider Priorities, and set URL/API key under Provider Options.')}</em></p>
                         </div>
                     </div>
                     <div class="col-lg-9 col-md-8 col-sm-8 col-xs-12">
@@ -736,18 +818,25 @@
                                     <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                         <div class="row">
                                             <div class="col-md-12">
-                                                <select id="newznab_cap" multiple="multiple" style="min-width:10em;"></select>
-                                                <select id="newznab_cat" multiple="multiple" style="min-width:10em;"></select>
+                                                <select id="newznab_cap" multiple="multiple" style="min-width:12em; min-height:8em;" title="${_('Available categories')}"></select>
+                                                <select id="newznab_cat" multiple="multiple" style="min-width:12em; min-height:8em;" title="${_('Selected categories')}"></select>
                                             </div>
                                         </div>
                                         <div class="row">
                                             <div class="col-md-12">
-                                                <label><b>${_('select your Newznab categories on the left, and click the "update categories" button to use them for searching.) <b>don\'t forget to to save the form!')}</b></label>
+                                                <label><b>${_('Select TV categories on the left, then click Update Categories. Don\'t forget to save the form.')}</b></label>
                                             </div>
                                         </div>
                                         <div class="row">
                                             <div class="col-md-12">
+                                                <input class="btn" type="button" id="newznab_cat_fetch" value="${_('Fetch Categories')}" disabled />
                                                 <input class="btn newznab_cat_update" type="button" id="newznab_cat_update" value="${_('Update Categories')}" disabled />
+                                                <span class="updating_categories"></span>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <label>${_('Saved category ids')}: <code id="newznab_categories_display"></code></label>
                                             </div>
                                         </div>
                                     </div>

@@ -3,7 +3,7 @@ from operator import itemgetter
 from typing import ClassVar
 
 from sickchill import settings
-from sickchill.helper.common import dateFormat, timeFormat
+from sickchill.helper.common import dateFormat, timeFormat, try_int
 from sickchill.helper.quality import get_quality_string
 from sickchill.oldbeard.common import UNAIRED, WANTED, Quality
 from sickchill.oldbeard.db import DBConnection
@@ -24,8 +24,9 @@ class ComingEpisodes(object):
 
     categories: ClassVar[list] = ["snatched", "missed", "today", "soon", "later"]
     sorts: ClassVar[dict] = {
-        "date": itemgetter("snatchedsort", "localtime", "episode"),
-        "network": itemgetter("network", "localtime", "episode"),
+        # When air times match, order by show name then episode number.
+        "date": itemgetter("snatchedsort", "localtime", "show_name", "episode"),
+        "network": itemgetter("network", "localtime", "show_name", "episode"),
         "show": itemgetter("show_name", "localtime", "episode"),
     }
 
@@ -79,6 +80,8 @@ class ComingEpisodes(object):
         sql_l = []
         for show_obj in settings.show_list:
             next_air_date = show_obj.next_episode()
+            # Upper bound must cover at least the "soon" window (through next_week).
+            upper = max(try_int(next_air_date) or today, next_week)
             sql_l.append(
                 [
                     "SELECT DISTINCT {0} ".format(fields_to_select) + "FROM tv_episodes e, tv_shows s "
@@ -87,7 +90,7 @@ class ComingEpisodes(object):
                     "AND airdate >= ? "
                     "AND s.indexer_id = e.showid "
                     "AND e.status IN (" + ",".join(["?"] * len(status_list)) + ")",
-                    [show_obj.indexerid, next_air_date or today, recently] + status_list,
+                    [show_obj.indexerid, upper, recently] + status_list,
                 ]
             )
 

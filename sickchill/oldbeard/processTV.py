@@ -1,5 +1,6 @@
 import logging
 import os
+import re
 import shutil
 import stat
 import traceback
@@ -23,6 +24,16 @@ class ProcessResult(object):
         self.output = ""
         self.missed_files = []
         self.aggresult = True
+        self.processed_shows = set()
+
+
+def _update_processed_show_sizes(result):
+    """Recalculate stored show_size once per show that succeeded in this batch."""
+    for show in result.processed_shows:
+        try:
+            show.recalculate_show_size()
+        except Exception as error:
+            logger.debug(f"show_size update failed for {getattr(show, 'indexerid', '?')}: {error}")
 
 
 def delete_folder(folder, check_empty=True):
@@ -143,6 +154,14 @@ def process_dir(process_path, release_name=None, process_method=None, force=Fals
 
         # if we didn't find a real dir then quit
         if not Path(process_path).is_dir():
+            # A downloader can delete a failed job before anything is written (e.g. NZBGet's health check),
+            # so the folder never exists. Still record the failure and search for another release.
+            if failed:
+                release_name = release_name or re.sub(r"\.#\d+$", "", os.path.basename(os.path.normpath(process_path)))
+                result.output += log_helper(f"Folder {process_path} does not exist, processing as a failed download of {release_name}")
+                process_failed(process_path, release_name, result)
+                return result.output
+
             result.output += log_helper(
                 "Unable to figure out what folder to process. "
                 "If your downloader and SickChill aren't on the same PC "
@@ -243,6 +262,8 @@ def process_dir(process_path, release_name=None, process_method=None, force=Fals
     except Exception:
         logger.debug(traceback.format_exc())
         return result.output
+    finally:
+        _update_processed_show_sizes(result)
 
 
 def validate_dir(process_path, release_name, failed, result):
@@ -498,16 +519,21 @@ def process_media(process_path, video_files, release_name, process_method, force
         try:
             processor = postProcessor.PostProcessor(cur_video_file_path, release_name, process_method, is_priority)
             result.result = processor.process()
-            process_fail_message = ""
+            process_fail_message = getattr(processor, "failure_reason", "") or ""
         except EpisodePostProcessingFailedException as error:
             result.result = False
-            process_fail_message = error
+            process_fail_message = str(error) if str(error) else _("Episode post-processing failed")
 
         if processor:
             result.output += processor.log
+            if not result.result and not process_fail_message:
+                process_fail_message = getattr(processor, "failure_reason", "") or _("Episode post-processing failed")
 
         if result.result:
             result.output += log_helper(f"Processing succeeded for {cur_video_file_path}")
+            show = getattr(processor, "show", None)
+            if show is not None:
+                result.processed_shows.add(show)
         else:
             result.output += log_helper(f"Processing failed for {cur_video_file_path}: {process_fail_message}", logger.WARNING)
             result.missed_files.append(f"{cur_video_file_path} : Processing failed: {process_fail_message}")

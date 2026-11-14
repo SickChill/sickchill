@@ -37,6 +37,15 @@ class ReleaseWordFilterTests(unittest.TestCase):
 
         assert not filter_bad_releases("Release name that is REQUIRED but contains IGNORED", False, show=self.show)
 
+    def test_exe_release_is_blocked(self):
+        settings.REQUIRE_WORDS = ""
+        settings.IGNORE_WORDS = ""
+        self.show.rls_ignore_words = ""
+        self.show.rls_require_words = ""
+
+        assert not filter_bad_releases("Show.Name.S01E01.720p.HDTV.x264.exe", parse=False)
+        assert filter_bad_releases("Show.Name.S01E01.720p.HDTV.x264-GROUP", parse=False)
+
 
 if __name__ == "__main__":
     SUITE = unittest.TestLoader().loadTestsFromTestCase(ReleaseWordFilterTests)

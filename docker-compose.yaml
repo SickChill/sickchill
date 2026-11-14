@@ -8,6 +8,7 @@ services:
       target: sickchill-final
       args:
         SOURCE: "1"
+        PYTHON_VERSION: "3.14"
         # Pass through from host env, e.g.:
         #   GIT_SHA=$(git rev-parse HEAD) GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD) docker compose build
         GIT_SHA: ${GIT_SHA:-unknown}

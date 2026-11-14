@@ -2,7 +2,7 @@
 # shellcheck disable=SC2317
 set -euo pipefail
 
-# SickChill Docker entrypoint.sh (NAS-friendly)
+# SickChill Docker entrypoint.sh (NAS-friendly, Python 3.14 image)
 # - Persistent venv in datadir (/data/.venv) — accessible on the NAS share
 # - Minimal PUID/PGID support via gosu
 # - Auto-update when image GIT_SHA / .image_revision changes (aligned with develop bake)

@@ -45,6 +45,11 @@ class NewznabProvider(NZBProvider, tvcache.RSSTorrentMixin):
 
         self.cache = tvcache.TVCache(self, min_time=30)  # only poll newznab providers every 30 minutes max
 
+    @property
+    def uses_configurable_categories(self) -> bool:
+        """Newznab category ids (also via config_string); not torrent hardcoded categories."""
+        return True
+
     def config_string(self):
         """
         Generates a '|' delimited string of instance attributes, for saving to config.ini

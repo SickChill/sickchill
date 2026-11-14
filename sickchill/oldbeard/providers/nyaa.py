@@ -50,7 +50,6 @@ class Provider(TorrentProvider, tvcache.RSSTorrentMixin):
                 if mode != "RSS":
                     search_params["q"] = search_string
 
-                results = []
                 data = self.get_url(self.custom_url or self.url, params=search_params)
                 if not data:
                     logger.debug(_("No data was returned from the provider"))

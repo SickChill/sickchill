@@ -7,3 +7,8 @@ sickchill.egg-info
 /dist/
 .venv
 .git
+node_modules
+**/__pycache__
+coverage.xml
+cache.db
+cache/

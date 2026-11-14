@@ -617,6 +617,39 @@ class EpisodeCacheTests(unittest.TestCase):
 
 
 class UpdatesFeedOkTests(unittest.TestCase):
+    def test_from_time_display_uses_time_preset(self):
+        updates = _UpdatesResult(MagicMock(), from_time=1793705221)
+        with (
+            patch("sickchill.oldbeard.scdatetime.settings.DATE_PRESET", "%Y-%m-%d"),
+            patch("sickchill.oldbeard.scdatetime.settings.TIME_PRESET_W_SECONDS", "%H:%M:%S"),
+            patch("sickchill.oldbeard.scdatetime.settings.TIME_PRESET", "%H:%M"),
+            patch("sickchill.oldbeard.scdatetime.settings.TIMEZONE_DISPLAY", "local"),
+        ):
+            displayed = updates._from_time_display()
+        self.assertRegex(displayed, r"^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$")
+        self.assertNotIn("1793705221", displayed)
+
+        with (
+            patch("sickchill.oldbeard.scdatetime.settings.DATE_PRESET", "%m/%d/%Y"),
+            patch("sickchill.oldbeard.scdatetime.settings.TIME_PRESET_W_SECONDS", "%I:%M:%S %p"),
+            patch("sickchill.oldbeard.scdatetime.settings.TIME_PRESET", "%I:%M %p"),
+            patch("sickchill.oldbeard.scdatetime.settings.TIMEZONE_DISPLAY", "local"),
+        ):
+            displayed = updates._from_time_display()
+        self.assertRegex(displayed, r"(?i)^\d{2}/\d{2}/\d{4} \d{1,2}:\d{2}:\d{2} [ap]m$")
+        self.assertFalse(displayed.endswith(" UTC"))
+
+        with (
+            patch("sickchill.oldbeard.scdatetime.settings.DATE_PRESET", "%Y-%m-%d"),
+            patch("sickchill.oldbeard.scdatetime.settings.TIME_PRESET_W_SECONDS", "%H:%M:%S"),
+            patch("sickchill.oldbeard.scdatetime.settings.TIME_PRESET", "%H:%M"),
+            patch("sickchill.oldbeard.scdatetime.settings.TIMEZONE_DISPLAY", "network"),
+            patch("sickchill.show.indexers.tvdb.settings.TIMEZONE_DISPLAY", "network"),
+        ):
+            displayed = updates._from_time_display()
+        self.assertTrue(displayed.endswith(" UTC"))
+        self.assertNotIn("1793705221", displayed)
+
     def test_feed_ok_false_when_all_entity_types_fail(self):
         client = MagicMock()
         client.all_updates_since.side_effect = TVDBv4Error("down")
@@ -708,6 +741,46 @@ class EpisodeSkipApplyTests(unittest.TestCase):
         result = TVEpisode.load_from_indexer(e, 1, 1, force_all=False, indexer_episode=packet)
         self.assertTrue(result)
         self.assertEqual(e.name, "Old")  # not applied
+
+    def test_load_from_indexer_missing_name_sets_tba(self):
+        from sickchill.oldbeard.common import UNAIRED
+        from sickchill.tv import TVEpisode
+
+        class E:
+            pass
+
+        e = E()
+        e.last_update_indexer = 0
+        e.name = ""
+        e.description = ""
+        e.show = MagicMock()
+        e.show.indexerid = 1
+        e.show.name = "Show"
+        e.show.indexer = 1
+        e.show.get_location = "/tmp/show"
+        e.season = 1
+        e.episode = 1
+        e.absolute_number = 0
+        e.indexer_name = "theTVDB"
+        e.idxr = MagicMock()
+        e.status = UNAIRED
+        e.airdate = datetime.date.min
+        e.indexerid = 99
+        e.location = ""
+
+        packet = {"episodeName": "", "lastUpdated": 100, "id": 99, "firstAired": "2026-01-01"}
+
+        with (
+            patch("sickchill.oldbeard.scene_numbering.xem_refresh"),
+            patch("sickchill.oldbeard.scene_numbering.get_scene_absolute_numbering", return_value=0),
+            patch("sickchill.oldbeard.scene_numbering.get_scene_numbering", return_value=(1, 1)),
+            patch("os.path.isdir", return_value=False),
+            patch("sickchill.tv.settings.CREATE_MISSING_SHOW_DIRS", False),
+            patch("sickchill.tv.settings.ADD_SHOWS_WO_DIR", False),
+        ):
+            TVEpisode.load_from_indexer(e, 1, 1, force_all=True, indexer_episode=packet)
+
+        self.assertEqual(e.name, "TBA")
 
     def test_apply_tba_indexer_packet_sets_name_and_last_update(self):
         from sickchill.tv import TVEpisode
@@ -900,8 +973,20 @@ class TVDBSearchMappingTests(unittest.TestCase):
 
     def test_complete_image_url_passthrough_and_relative(self):
         self.assertEqual(TVDB.complete_image_url("https://cdn.example/a.jpg"), "https://cdn.example/a.jpg")
-        self.assertTrue(TVDB.complete_image_url("posters/foo.jpg").startswith("https://artworks.thetvdb.com/"))
+        self.assertEqual(TVDB.complete_image_url("posters/foo.jpg"), "https://artworks.thetvdb.com/banners/posters/foo.jpg")
         self.assertEqual(TVDB.complete_image_url(""), "")
+        # V4 screencaps often already include banners/ — must not double it (403).
+        screencap = "banners/v4/episode/11641378/screencap/69b9aa8badc3a.jpg"
+        self.assertEqual(
+            TVDB.complete_image_url(screencap),
+            "https://artworks.thetvdb.com/banners/v4/episode/11641378/screencap/69b9aa8badc3a.jpg",
+        )
+        self.assertEqual(
+            TVDB.complete_image_url("/banners/v4/episode/11729060/screencap/6a90e114b9c3e.jpg"),
+            "https://artworks.thetvdb.com/banners/v4/episode/11729060/screencap/6a90e114b9c3e.jpg",
+        )
+        self.assertNotIn("banners//banners", TVDB.complete_image_url(screencap))
+        self.assertNotIn("banners/banners", TVDB.complete_image_url(screencap))
 
     def test_api_key_uses_settings_only(self):
         from sickchill import settings

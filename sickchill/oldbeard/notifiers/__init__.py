@@ -1,13 +1,13 @@
-from sickchill import settings
+import threading
+
+from sickchill import logger, settings
 from sickchill.oldbeard import helpers
-from sickchill.oldbeard.notifiers import (  # twilio_notify,
-    boxcar2,
+from sickchill.oldbeard.notifiers import (
     discord,
     emailnotify,
     emby,
     freemobile,
     gotify,
-    growl,
     jellyfin,
     join,
     kodi,
@@ -19,7 +19,6 @@ from sickchill.oldbeard.notifiers import (  # twilio_notify,
     nmjv2,
     plex,
     prowl,
-    pushalot,
     pushbullet,
     pushover,
     pytivo,
@@ -31,6 +30,7 @@ from sickchill.oldbeard.notifiers import (  # twilio_notify,
     trakt,
     tweet,
 )
+from sickchill.plugins.api import PluginKind
 
 # home theater / nas
 kodi_notifier = kodi.Notifier()
@@ -44,12 +44,9 @@ synology_notifier = synologynotifier.Notifier()
 pytivo_notifier = pytivo.Notifier()
 
 # devices
-growl_notifier = growl.Notifier()
 prowl_notifier = prowl.Notifier()
 libnotify_notifier = libnotify.Notifier()
 pushover_notifier = pushover.Notifier()
-boxcar2_notifier = boxcar2.Notifier()
-pushalot_notifier = pushalot.Notifier()
 pushbullet_notifier = pushbullet.Notifier()
 freemobile_notifier = freemobile.Notifier()
 telegram_notifier = telegram.Notifier()
@@ -58,7 +55,6 @@ gotify_notifier = gotify.Notifier()
 
 # social
 twitter_notifier = tweet.Notifier()
-# twilio_notifier = twilio_notify.Notifier()
 trakt_notifier = trakt.Notifier()
 email_notifier = emailnotify.Notifier()
 slack_notifier = slack.Notifier()
@@ -66,58 +62,59 @@ mattermost_notifier = mattermost.Notifier()
 mattermostbot_notifier = mattermostbot.Notifier()
 rocketchat_notifier = rocketchat.Notifier()
 matrix_notifier = matrix.Notifier()
+# Kept for UI testDiscord shim; Discord delivery is via NotifierPlugin.
 discord_notifier = discord.Notifier()
 
-notifiers = [
-    libnotify_notifier,  # Libnotify notifier goes first because it doesn't involve blocking on network activity.
-    kodi_notifier,
-    plex_notifier,
-    nmj_notifier,
-    nmjv2_notifier,
-    synoindex_notifier,
-    synology_notifier,
-    pytivo_notifier,
-    growl_notifier,
-    freemobile_notifier,
-    telegram_notifier,
-    prowl_notifier,
-    pushover_notifier,
-    boxcar2_notifier,
-    pushalot_notifier,
-    pushbullet_notifier,
-    twitter_notifier,
-    # twilio_notifier,
-    trakt_notifier,
-    email_notifier,
-    slack_notifier,
-    mattermost_notifier,
-    mattermostbot_notifier,
-    rocketchat_notifier,
-    matrix_notifier,
-    discord_notifier,
-    join_notifier,
-    gotify_notifier,
-]
+# Broadcast list empty: all notifiers delivered via plugin_manager.enabled(NOTIFIER).
+# Module-level *_notifier instances remain for update_library / UI tests.
+notifiers = []
+_broadcast_guard = threading.local()
+
+
+def _broadcast_plugins(method_name, *args, **kwargs):
+    if getattr(_broadcast_guard, "active", False):
+        return
+    _broadcast_guard.active = True
+    try:
+        from sickchill.plugins.manager import plugin_manager
+
+        for plugin in plugin_manager.enabled(PluginKind.NOTIFIER):
+            method = getattr(plugin, method_name, None)
+            if not callable(method):
+                continue
+            try:
+                method(*args, **kwargs)
+            except Exception as error:
+                # WARNING: ERROR would re-enter notify_logged_error via the web log handler.
+                logger.warning(f"Plugin notifier {plugin.id} {method_name} failed: {error}")
+    except Exception as error:
+        logger.debug(f"Plugin notifier broadcast skipped: {error}")
+    finally:
+        _broadcast_guard.active = False
 
 
 def notify_download(ep_name):
     for n in notifiers:
         n.notify_download(ep_name)
+    _broadcast_plugins("notify_download", ep_name)
 
 
 def notify_postprocess(ep_name):
     for n in notifiers:
         n.notify_postprocess(ep_name)
+    _broadcast_plugins("notify_postprocess", ep_name)
 
 
 def notify_subtitle_download(ep_name, lang):
     for n in notifiers:
         n.notify_subtitle_download(ep_name, lang)
+    _broadcast_plugins("notify_subtitle_download", ep_name, lang)
 
 
 def notify_snatch(ep_name):
     for n in notifiers:
         n.notify_snatch(ep_name)
+    _broadcast_plugins("notify_snatch", ep_name)
 
 
 def notify_update(new_version=""):
@@ -127,6 +124,7 @@ def notify_update(new_version=""):
                 n.notify_update(new_version)
             else:
                 print(n.__module__)
+        _broadcast_plugins("notify_update", new_version)
 
 
 def notify_login(ipaddress):
@@ -136,6 +134,7 @@ def notify_login(ipaddress):
                 n.notify_login(ipaddress)
             else:
                 print(n.__module__)
+        _broadcast_plugins("notify_login", ipaddress)
 
 
 def notify_logged_error(ui_error):
@@ -143,3 +142,4 @@ def notify_logged_error(ui_error):
         for n in notifiers:
             if hasattr(n, "notify_logged_error"):
                 n.notify_logged_error(ui_error)
+        _broadcast_plugins("notify_logged_error", ui_error)

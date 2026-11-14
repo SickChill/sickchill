@@ -42,7 +42,6 @@ class Notifier(object):
         rocketchat_icon_emoji = settings.ROCKETCHAT_ICON_EMOJI
 
         logger.info("Sending rocketchat message: " + message)
-        logger.info("Sending rocketchat message to url: " + rocketchat_webhook)
 
         headers = CaseInsensitiveDict({"Content-Type": "application/json"})
         try:

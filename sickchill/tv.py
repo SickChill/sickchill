@@ -14,8 +14,7 @@ from typing import Union
 from weakref import WeakKeyDictionary
 from xml.etree import ElementTree
 
-from imdbpie import Imdb, ImdbFacade
-from unidecode import unidecode
+from text_unidecode import unidecode
 
 import sickchill
 import sickchill.oldbeard.providers
@@ -56,7 +55,9 @@ from sickchill.oldbeard.common import (
     Overview,
     Quality,
     statusStrings,
+    uses_absolute_numbering,
 )
+from sickchill.oldbeard.imdb_api import Imdb, ImdbFacade
 from sickchill.oldbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 from sickchill.oldbeard.network_timezones import sc_now, sc_timezone, sc_today
 from sickchill.show.Show import Show
@@ -121,6 +122,7 @@ class TVShow(object):
     rls_prefer_words = DirtySetter("")
     default_ep_status = DirtySetter(SKIPPED)
     custom_name = DirtySetter("")
+    show_size = DirtySetter(0)
 
     def __init__(self, indexer, indexerid: int, lang=""):
         self.dirty = True
@@ -222,7 +224,13 @@ class TVShow(object):
 
     @property
     def network_logo_name(self):
-        return unidecode(self.network).lower()
+        # Match sc_network_timezones collectors: unidecode + replace /\: so the
+        # filename is valid on disk. Empty after folding (Cyrillic/Hebrew names)
+        # uses the same fallback as a missing network.
+        stem = unidecode(self.network or "").lower().strip()
+        stem = re.sub(r"[/\\:]+", " ", stem)
+        stem = re.sub(r"\s+", " ", stem).strip()
+        return stem or "nonetwork"
 
     @property
     def sort_name(self):
@@ -262,7 +270,7 @@ class TVShow(object):
 
     @property
     def network_image_url(self):
-        return f"images/network/{unidecode(self.network or 'nonetwork').lower()}.png"
+        return f"images/network/{self.network_logo_name}.png"
 
     def show_image_url(self, which):
         return settings.IMAGE_CACHE.image_url(self.indexerid, which)
@@ -353,7 +361,7 @@ class TVShow(object):
         try:
             indexer_eps = self.idxr.episodes(self) or []
         except Exception as error:
-            logger.warning(f"TVDB v4 episode list failed during TBA refresh for {self.name}: {error}")
+            logger.warning(f"TVDB episode list failed during TBA refresh for {self.name}: {error}")
             return 0
 
         tvdb_by_ep = {}
@@ -406,10 +414,10 @@ class TVShow(object):
                     extra = [f for f in changed_fields if f != "name"]
                     if extra:
                         logger.debug(
-                            f"Updated TBA episode {self.name} {episode_num(s, e)}: name {old_name!r} -> {ep_obj.name!r}; also set {', '.join(extra)} (TVDB v4)"
+                            f"Updated TBA episode {self.name} {episode_num(s, e)}: name {old_name!r} -> {ep_obj.name!r}; also set {', '.join(extra)} (TVDB)"
                         )
                     else:
-                        logger.debug(f"Updated TBA episode {self.name} {episode_num(s, e)}: name {old_name!r} -> {ep_obj.name!r} (TVDB v4)")
+                        logger.debug(f"Updated TBA episode {self.name} {episode_num(s, e)}: name {old_name!r} -> {ep_obj.name!r} (TVDB)")
             except Exception as error:
                 logger.debug(f"Failed to update TBA data for {self.name} {episode_num(s, e)}: {error}")
 
@@ -1079,6 +1087,11 @@ class TVShow(object):
 
             self.subtitles_sc_metadata = int(sql_results[0]["sub_use_sr_metadata"] or 0)
 
+            try:
+                self.show_size = int(sql_results[0]["show_size"] or 0)
+            except (KeyError, IndexError, TypeError):
+                self.show_size = 0
+
         main_db_con = db.DBConnection()
         sql_results = main_db_con.select("SELECT * FROM imdb_info WHERE indexer_id = ?", [self.indexerid])
 
@@ -1184,7 +1197,17 @@ class TVShow(object):
 
             if title:
                 new_title = getattr(title, "title", self.name)
-                new_imdb_id = getattr(title, "imdb_id", self.imdb_id)
+                new_imdb_id = helpers.normalize_imdb_id(getattr(title, "imdb_id", None)) or self.imdb_id
+                if new_imdb_id != self.imdb_id:
+                    logger.info(f"{self.indexerid}: IMDb id {self.imdb_id} redirects to {new_imdb_id}")
+                    self.imdb_id = new_imdb_id
+
+                # country_codes from auxiliary origins (pipe-separated ISO alpha-2)
+                country_codes_raw = getattr(title, "country_codes", "") or ""
+                if isinstance(country_codes_raw, (list, tuple)):
+                    country_codes_str = "|".join(str(c) for c in country_codes_raw if c)
+                else:
+                    country_codes_str = str(country_codes_raw or "")
 
                 self.imdb_info.update(
                     {
@@ -1194,15 +1217,16 @@ class TVShow(object):
                         "year": getattr(title, "year", self.startyear),
                         "akas": self.imdb_info.get("akas", ""),
                         "runtimes": getattr(title, "runtime", self.runtime),
-                        "genres": "|".join(getattr(title, "genres", [])),
-                        "countries": getattr(title, "countries", "") or self.imdb_info.get("countries", ""),
-                        "country_codes": self.imdb_info.get("country_codes", ""),
+                        "genres": "|".join(getattr(title, "genres", []) or []),
+                        "countries": "",  # legacy column, no longer populated
+                        "country_codes": country_codes_str or self.imdb_info.get("country_codes", ""),
                         "certificates": getattr(title, "certification", "") or "",
                         "rating": str(getattr(title, "rating", 0.0)),
                         "votes": str(getattr(title, "rating_count", 0)),
                         "last_update": sc_today().toordinal(),
                     }
                 )
+
                 self.dirty = True
                 self.save_to_db()
 
@@ -1213,7 +1237,7 @@ class TVShow(object):
         except FuturesTimeoutError:
             if future is not None:
                 future.cancel()  # attempt to cancel
-            logger.warning(f"{self.indexerid}: IMDb refresh timed out after 25s (imdb_id={self.imdb_id})")
+            logger.info(f"{self.indexerid}: IMDb refresh timed out after 25s (imdb_id={self.imdb_id})")
         except Exception as e:
             logger.info(f"{self.indexerid}: IMDb refresh failed: {e}")
         finally:
@@ -1221,13 +1245,32 @@ class TVShow(object):
             executor.shutdown(wait=False, cancel_futures=True)
 
     def _fetch_imdb_title(self, imdb_id):
-        """Isolated so it can be run in a thread with a timeout"""
-        facade = ImdbFacade()
-        return facade.get_title(imdb_id)
+        """Isolated so it can be run in a thread with a timeout.
+
+        Resolves redirected/legacy IMDb ids before fetching title details.
+        """
+        client = Imdb()
+        resolved_id = helpers.resolve_imdb_title_id(imdb_id, client=client) or imdb_id
+        facade = ImdbFacade(client=client)
+        title = facade.get_title(resolved_id)
+        # Ensure callers persist the canonical id even if facade omits it.
+        if title is not None and resolved_id and getattr(title, "imdb_id", None) != resolved_id:
+            try:
+                title.imdb_id = resolved_id
+            except Exception:
+                pass
+        return title
 
     def next_episode(self):
+        """Return ordinal airdate of the next UNAIRED/WANTED episode (cached).
+
+        Refresh when the cache is empty or the cached day has been reached. Using
+        ``>=`` (not only ``>``) matters on air day: once S01Ex leaves UNAIRED/WANTED,
+        the next call must advance to S01Ex+1 instead of keeping today's ordinal and
+        hiding later episodes from the schedule query.
+        """
         current_date = sc_today().toordinal()
-        if not self.next_airdate or current_date > try_int(self.next_airdate):
+        if not self.next_airdate or current_date >= try_int(self.next_airdate):
             main_db_con = db.DBConnection()
             sql_results = main_db_con.select(
                 "SELECT airdate, season, episode FROM tv_episodes WHERE showid = ? AND airdate >= ? AND status IN (?,?) ORDER BY airdate LIMIT 1",
@@ -1356,9 +1399,9 @@ class TVShow(object):
             logger.debug(f"Removing show: indexerid {self.indexerid}, Title {self.name} from Watchlist")
             notifiers.trakt_notifier.update_watchlist(self, update="remove")
 
-    def populate_cache(self, from_indexer=True):
+    def populate_cache(self):
         logger.debug(f"Checking & filling cache for show {self.name}")
-        settings.IMAGE_CACHE.fill_cache(self, from_indexer=from_indexer)
+        settings.IMAGE_CACHE.fill_cache(self)
 
     def refresh_dir(self):
         if not os.path.isdir(self._location) and not settings.CREATE_MISSING_SHOW_DIRS:
@@ -1413,7 +1456,7 @@ class TVShow(object):
                             episode_object.status = new_status
                             episode_object.subtitles = []
                             episode_object.subtitles_searchcount = 0
-                            episode_object.subtitles_lastsearch = str(datetime.datetime.min)  # noqa: DTZ901
+                            episode_object.subtitles_lastsearch = str(datetime.datetime.min)
                         episode_object.location = ""
                         episode_object.has_nfo = False
                         episode_object.has_tbn = False
@@ -1427,6 +1470,19 @@ class TVShow(object):
         if sql_l:
             main_db_con = db.DBConnection()
             main_db_con.mass_action(sql_l)
+
+    def recalculate_show_size(self):
+        """Set show_size from unique episode locations and persist once."""
+        main_db_con = db.DBConnection()
+        sql_results = main_db_con.select(
+            "SELECT COALESCE(SUM(ep_size), 0) AS show_size FROM ("
+            "SELECT MAX(file_size) AS ep_size FROM tv_episodes "
+            "WHERE showid = ? AND IFNULL(location, '') != '' GROUP BY location"
+            ")",
+            [self.indexerid],
+        )
+        self.show_size = int((sql_results[0]["show_size"] if sql_results else 0) or 0)
+        self.save_to_db()
 
     def download_subtitles(self):
         if not os.path.isdir(self._location):
@@ -1485,6 +1541,7 @@ class TVShow(object):
             "rls_prefer_words": self.rls_prefer_words,
             "default_ep_status": self.default_ep_status,
             "sub_use_sr_metadata": self.subtitles_sc_metadata,
+            "show_size": int(self.show_size or 0),
         }
 
         main_db_con = db.DBConnection()
@@ -1492,7 +1549,11 @@ class TVShow(object):
 
         # Save IMDb info to database
         if self.imdb_id and self.imdb_info:
-            # Ensure all expected columns exist and have values
+            # Defensive normalization for countries (handles any existing tuple/list in memory)
+            countries_val = self.imdb_info.get("countries") or ""
+            if isinstance(countries_val, (list, tuple)):
+                countries_val = "|".join(str(c) for c in countries_val if c)
+
             imdb_data = {
                 "imdb_id": self.imdb_id or "",
                 "title": self.imdb_info.get("title") or self.name or "",
@@ -1500,7 +1561,7 @@ class TVShow(object):
                 "akas": self.imdb_info.get("akas") or "",
                 "runtimes": self.imdb_info.get("runtimes") or self.runtime or "",
                 "genres": self.imdb_info.get("genres") or "",
-                "countries": self.imdb_info.get("countries") or "",
+                "countries": "",  # legacy column, cleared
                 "country_codes": self.imdb_info.get("country_codes") or "",
                 "certificates": self.imdb_info.get("certificates") or self.imdb_info.get("certification") or "",
                 "rating": str(self.imdb_info.get("rating") or 0.0),
@@ -1585,14 +1646,13 @@ class TVShow(object):
                 )
             )
             return True
-        elif manual_search:
-            if (down_cur_quality and quality >= cur_quality) or (not down_cur_quality and quality != cur_quality):
-                logger.debug(
-                    "Usually ignoring found result, but forced search allows the quality, getting found result for {name} {ep} with quality {quality}".format(
-                        name=self.name, ep=episode_num(season, episode), quality=Quality.qualityStrings[quality]
-                    )
+        elif manual_search and ((down_cur_quality and quality >= cur_quality) or (not down_cur_quality and quality != cur_quality)):
+            logger.debug(
+                "Usually ignoring found result, but forced search allows the quality, getting found result for {name} {ep} with quality {quality}".format(
+                    name=self.name, ep=episode_num(season, episode), quality=Quality.qualityStrings[quality]
                 )
-                return True
+            )
+            return True
 
         if (
             ep_status in Quality.DOWNLOADED + Quality.SNATCHED + Quality.SNATCHED_PROPER
@@ -1685,7 +1745,7 @@ class TVEpisode(object):
     description = DirtySetter("")
     subtitles = DirtySetter(list())
     subtitles_searchcount = DirtySetter(0)
-    subtitles_lastsearch = DirtySetter(str(datetime.datetime.min))  # noqa: DTZ901
+    subtitles_lastsearch = DirtySetter(str(datetime.datetime.min))
     airdate = DirtySetter(datetime.date.min)
     has_nfo = DirtySetter(False)
     has_tbn = DirtySetter(False)
@@ -1899,7 +1959,7 @@ class TVEpisode(object):
             self.description = ""
             self.subtitles = []
             self.subtitles_searchcount = 0
-            self.subtitles_lastsearch = str(datetime.datetime.min)  # noqa: DTZ901
+            self.subtitles_lastsearch = str(datetime.datetime.min)
             existing_location = self._location
             self.location = ""
             self.file_size = 0
@@ -2073,8 +2133,9 @@ class TVEpisode(object):
                     )
                 )
             else:
+                self.name = "TBA"
                 logger.info(
-                    "This episode {show} - {ep} has no name on {indexer}. Setting to an empty string".format(
+                    "This episode {show} - {ep} has no name on {indexer}. Setting to TBA".format(
                         show=self.show.name, ep=episode_num(season, episode), indexer=self.indexer_name
                     )
                 )
@@ -2526,7 +2587,7 @@ class TVEpisode(object):
         Returns: A string representing the episode's name and season/ep numbers
         """
 
-        if self.show.anime and not self.show.scene:
+        if uses_absolute_numbering(self.show) and not self.show.scene:
             return self.naming_pattern("%SN - %AB - %EN")
         elif self.show.air_by_date:
             return self.naming_pattern("%SN - %AD - %EN")
@@ -2571,7 +2632,7 @@ class TVEpisode(object):
 
         return good_name
 
-    def replace_map(self):
+    def replace_map(self, pattern=None):
         """
         Generates a replacement map for this episode which maps all possible custom naming patterns to the correct
         value for this episode.
@@ -2641,11 +2702,10 @@ class TVEpisode(object):
             release_grp["location"] = release_group(self.show, self.location)
             if not release_grp["location"]:
                 del release_grp["location"]
-        if hasattr(self, "_release_group"):  # from the release group field in db
-            release_grp["database"] = self._release_group.strip(".- []{}")
-            if not release_grp["database"]:
-                del release_grp["database"]
-        if hasattr(self, "release_name"):  # from the release name field in db
+        stored_release_group = (self.release_group or "").strip(".- []{}")
+        if stored_release_group:
+            release_grp["database"] = stored_release_group
+        if hasattr(self, "release_name"):
             release_grp["release_name"] = release_group(self.show, self.release_name)
             if not release_grp["release_name"]:
                 del release_grp["release_name"]
@@ -2660,8 +2720,14 @@ class TVEpisode(object):
         else:
             relgrp = "SICKCHILL"
 
-        # try to get the release encoder to comply with scene naming standards
-        encoder = Quality.sceneQualityFromName(self.release_name.replace(release_grp[relgrp], ""), episode_quality)
+        # Scene Quality (%SQN) encoder: prefer libmediainfo from the real file, else the release name.
+        name_for_codec = (self.release_name or "").replace(release_grp[relgrp], "")
+        uses_scene_quality = bool(pattern and re.search(r"%SQ([._]?N)", pattern, flags=re.IGNORECASE))
+        if uses_scene_quality and not getattr(self, "is_naming_sample", False):
+            media_file = getattr(self, "_naming_media_file", None) or self.location
+            encoder = Quality.sceneQualityFromFile(media_file, episode_quality, name_for_codec)
+        else:
+            encoder = Quality.sceneQualityFromName(name_for_codec, episode_quality)
         if encoder and not getattr(self, "is_naming_sample", False):
             logger.debug(f"Found codec for '{show_name}: {ep_name}'.")
 
@@ -2741,14 +2807,13 @@ class TVEpisode(object):
         else:
             anime_type = 3
 
-        replace_map = self.replace_map()
+        replace_map = self.replace_map(pattern)
 
         result_name = pattern
 
-        # if there's no release group in the db, let the user know we replaced it
-        if replace_map["%RG"] and replace_map["%RG"] != "SICKCHILL" and not self._release_group:
+        # Fallback for %RG only; pretty_name() must not persist a group parsed from location.
+        if replace_map["%RG"] and replace_map["%RG"] != "SICKCHILL" and not (self.release_group or "").strip():
             logger.debug(f"Episode has no release group, replacing it with '{replace_map['%RG']}'")
-            self._release_group = replace_map["%RG"]  # if release_group is not in the db, put it there
 
         # if there's no release name then replace it with a reasonable facsimile
         if not replace_map["%RN"]:
@@ -2989,6 +3054,12 @@ class TVEpisode(object):
         # move the ep file
         result = helpers.rename_ep_file(self.location, absolute_proper_path, absolute_current_path_no_ext_length)
 
+        derived_release_group = ""
+        if result and not (self.release_group or "").strip() and not (self.release_name or "").strip():
+            candidate = (self.replace_map().get("%RG") or "").strip(".- []{}")
+            if candidate and candidate != "SICKCHILL":
+                derived_release_group = candidate
+
         # move related files
         for cur_related_file in related_files:
             # We need to fix something here because related files can be in subfolders and the original code doesn't handle this (at all)
@@ -3013,8 +3084,12 @@ class TVEpisode(object):
         with self.lock:
             if result:
                 self.location = absolute_proper_path + file_ext
+                if derived_release_group:
+                    self.release_group = derived_release_group
                 for relEp in self.related_episodes:
                     relEp.location = absolute_proper_path + file_ext
+                    if derived_release_group and not (relEp.release_group or "").strip() and not (relEp.release_name or "").strip():
+                        relEp.release_group = derived_release_group
 
         # in case something changed with the metadata just do a quick check
         for curEp in [self] + self.related_episodes:

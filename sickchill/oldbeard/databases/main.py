@@ -8,6 +8,10 @@ from sickchill.oldbeard.network_timezones import sc_today
 
 MIN_DB_VERSION = 44
 MAX_DB_VERSION = 44
+# Full schema from InitialSchema CREATE + Add* migrations. Fresh DBs insert this;
+# existing DBs may skip Add* execute() when columns already exist, leaving minor behind.
+TARGET_DB_MAJOR = 44
+TARGET_DB_MINOR = 8
 
 
 class MainSanityCheck(db.DBSanityCheck):
@@ -245,7 +249,7 @@ class InitialSchema(db.SchemaUpgrade):
                 "CREATE TABLE imdb_info(indexer_id INTEGER PRIMARY KEY, imdb_id TEXT, title TEXT, year NUMERIC, akas TEXT, runtimes NUMERIC, genres TEXT, countries TEXT, country_codes TEXT, certificates TEXT, rating TEXT, votes INTEGER, last_update NUMERIC);",
                 "CREATE TABLE info(last_backlog NUMERIC, last_indexer NUMERIC, last_proper_search NUMERIC);",
                 "CREATE TABLE scene_numbering(indexer TEXT, indexer_id INTEGER, season INTEGER, episode INTEGER, scene_season INTEGER, scene_episode INTEGER, absolute_number NUMERIC, scene_absolute_number NUMERIC, PRIMARY KEY(indexer_id, season, episode));",
-                "CREATE TABLE tv_shows(show_id INTEGER PRIMARY KEY, indexer_id NUMERIC, indexer NUMERIC, show_name TEXT, location TEXT, network TEXT, genre TEXT, classification TEXT, runtime NUMERIC, quality NUMERIC, airs TEXT, status TEXT, flatten_folders NUMERIC, paused NUMERIC, startyear NUMERIC, air_by_date NUMERIC, lang TEXT, subtitles NUMERIC, notify_list TEXT, imdb_id TEXT, last_update_indexer NUMERIC, dvdorder NUMERIC, archive_firstmatch NUMERIC, rls_require_words TEXT, rls_ignore_words TEXT, sports NUMERIC, anime NUMERIC, scene NUMERIC, default_ep_status NUMERIC DEFAULT -1, sub_use_sr_metadata NUMERIC DEFAULT 0, rls_prefer_words TEXT, custom_name TEXT, seasons_order TEXT DEFAULT 'default');",
+                "CREATE TABLE tv_shows(show_id INTEGER PRIMARY KEY, indexer_id NUMERIC, indexer NUMERIC, show_name TEXT, location TEXT, network TEXT, genre TEXT, classification TEXT, runtime NUMERIC, quality NUMERIC, airs TEXT, status TEXT, flatten_folders NUMERIC, paused NUMERIC, startyear NUMERIC, air_by_date NUMERIC, lang TEXT, subtitles NUMERIC, notify_list TEXT, imdb_id TEXT, last_update_indexer NUMERIC, dvdorder NUMERIC, archive_firstmatch NUMERIC, rls_require_words TEXT, rls_ignore_words TEXT, sports NUMERIC, anime NUMERIC, scene NUMERIC, default_ep_status NUMERIC DEFAULT -1, sub_use_sr_metadata NUMERIC DEFAULT 0, rls_prefer_words TEXT, custom_name TEXT, seasons_order TEXT DEFAULT 'default', show_size NUMERIC DEFAULT 0);",
                 "CREATE TABLE tv_episodes(episode_id INTEGER PRIMARY KEY, showid NUMERIC, indexerid NUMERIC, indexer TEXT, name TEXT, season NUMERIC, episode NUMERIC, description TEXT, airdate NUMERIC, hasnfo NUMERIC, hastbn NUMERIC, status NUMERIC, location TEXT, file_size NUMERIC, release_name TEXT, subtitles TEXT, subtitles_searchcount NUMERIC, subtitles_lastsearch TIMESTAMP, is_proper NUMERIC, scene_season NUMERIC, scene_episode NUMERIC, absolute_number NUMERIC, scene_absolute_number NUMERIC, version NUMERIC DEFAULT -1, release_group TEXT, last_update_indexer NUMERIC DEFAULT 0);",
                 "CREATE TABLE blacklist (show_id INTEGER, range TEXT, keyword TEXT);",
                 "CREATE TABLE whitelist (show_id INTEGER, range TEXT, keyword TEXT);",
@@ -257,7 +261,7 @@ class InitialSchema(db.SchemaUpgrade):
                 "CREATE INDEX idx_sta_epi_sta_air ON tv_episodes(season, episode, status, airdate);",
                 "CREATE INDEX idx_status ON tv_episodes(status,season,episode,airdate);",
                 "CREATE INDEX idx_tv_episodes_showid_airdate ON tv_episodes(showid, airdate);",
-                "INSERT INTO db_version(db_version, db_minor_version) VALUES (44, 7);",
+                "INSERT INTO db_version(db_version, db_minor_version) VALUES (44, 8);",
             ]
             for query in queries:
                 self.connection.action(query)
@@ -345,3 +349,76 @@ class AddSeasonsOrder(AddEpisodeLastUpdateIndexer):
         self.connection.action("UPDATE tv_shows SET seasons_order = 'default' WHERE seasons_order IS NULL OR seasons_order = ''")
         self.inc_minor_version()
         logger.info("Updated to: {0:d}.{1:d}".format(*self.connection.version))
+
+
+class AddShowSize(AddSeasonsOrder):
+    """Stored show size (one file_size per episode location) on tv_shows."""
+
+    def test(self):
+        # Version is the completion marker so a pre-existing column does not skip backfill.
+        major, minor = self.connection.version
+        return major > TARGET_DB_MAJOR or (major == TARGET_DB_MAJOR and minor >= TARGET_DB_MINOR)
+
+    def execute(self):
+        backup_database(self.connection.full_path, self.connection.version)
+
+        if not self.has_column("tv_shows", "show_size"):
+            logger.info("Adding column show_size to tv_shows")
+            self.add_column("tv_shows", "show_size", "NUMERIC", 0)
+        self.connection.action(
+            "UPDATE tv_shows SET show_size = COALESCE(("
+            "SELECT SUM(sizes.ep_size) FROM ("
+            "SELECT showid, location, MAX(file_size) AS ep_size FROM tv_episodes "
+            "WHERE IFNULL(location, '') != '' GROUP BY showid, location"
+            ") AS sizes WHERE sizes.showid = tv_shows.indexer_id"
+            "), 0)"
+        )
+        major, minor = self.connection.version
+        if major == TARGET_DB_MAJOR and minor < TARGET_DB_MINOR:
+            self.inc_minor_version()
+        logger.info("Updated to: {0:d}.{1:d}".format(*self.connection.version))
+
+
+def _full_schema_present(connection) -> bool:
+    """True when all columns that define schema 44.8 are present."""
+    return (
+        connection.has_table("db_version")
+        and connection.has_table("tv_shows")
+        and connection.has_table("tv_episodes")
+        and connection.has_column("tv_shows", "rls_prefer_words")
+        and connection.has_column("tv_shows", "custom_name")
+        and connection.has_column("tv_shows", "seasons_order")
+        and connection.has_column("tv_shows", "show_size")
+        and connection.has_column("tv_episodes", "last_update_indexer")
+    )
+
+
+class ReconcileSchemaVersion(AddShowSize):
+    """
+    Ensure db_version reflects the full schema (44.8).
+
+    Add* migrations only call inc_minor_version() inside execute(). When a column
+    already exists, test() skips execute and the stored minor can lag behind
+    even though the schema matches InitialSchema's 44.8 CREATE.
+    """
+
+    def test(self):
+        major, minor = self.connection.version
+        if major != TARGET_DB_MAJOR:
+            return True
+        if minor >= TARGET_DB_MINOR:
+            return True
+        # Version is behind target — run execute only when schema is already complete.
+        return not _full_schema_present(self.connection)
+
+    def execute(self):
+        if not _full_schema_present(self.connection):
+            logger.warning("Database schema is incomplete; not reconciling version to {0:d}.{1:d}".format(TARGET_DB_MAJOR, TARGET_DB_MINOR))
+            return
+
+        major, minor = self.connection.version
+        self.connection.action(
+            "UPDATE db_version SET db_version = ?, db_minor_version = ?",
+            [TARGET_DB_MAJOR, TARGET_DB_MINOR],
+        )
+        logger.info("Reconciled database version from {0:d}.{1:d} to {2:d}.{3:d} (full schema present)".format(major, minor, TARGET_DB_MAJOR, TARGET_DB_MINOR))

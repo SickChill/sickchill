@@ -6,10 +6,10 @@ from fnmatch import fnmatch
 from os import PathLike
 from pathlib import Path
 from typing import Union
+from urllib.parse import parse_qs, unquote, unquote_plus, urlparse
 
 import appdirs
 import rarfile
-import validators
 
 from sickchill import settings
 from sickchill.init_helpers import get_current_version
@@ -126,6 +126,7 @@ MEDIA_EXTENSIONS = [
 ]
 
 SUBTITLE_EXTENSIONS = ["ass", "idx", "srt", "ssa", "sub"]
+BLOCKED_SEARCH_EXTENSIONS = frozenset({"exe"})
 timeFormat = "%A %I:%M %p"
 
 
@@ -153,6 +154,45 @@ def get_extension(path: Union[Path, PathLike, str] | None = None, lower: bool = 
         result = result.lower()
 
     return result
+
+
+def _search_result_filename(value: Union[Path, PathLike, str] | None = None) -> str:
+    """Return a filename-like string from a release title or download URL."""
+    if value is None or not isinstance(value, (str, PathLike)):
+        return ""
+    text = str(value).strip()
+    if not text:
+        return ""
+    if text.lower().startswith("magnet:"):
+        query = text.split("?", 1)[-1] if "?" in text else ""
+        display_names = parse_qs(query, keep_blank_values=False).get("dn", [])
+        if not display_names:
+            return ""
+        text = unquote_plus(display_names[0])
+    else:
+        try:
+            parsed = urlparse(text)
+        except ValueError:
+            text = unquote(text.split("#", 1)[0].split("?", 1)[0])
+        else:
+            if parsed.scheme in {"http", "https", "ftp"}:
+                text = unquote(parsed.path)
+            else:
+                text = unquote(text.split("#", 1)[0].split("?", 1)[0])
+    return text.rstrip("/\\").rsplit("/", 1)[-1].rsplit("\\", 1)[-1]
+
+
+def is_blocked_search_result(name: Union[Path, PathLike, str] | None = None, url: Union[Path, PathLike, str] | None = None) -> bool:
+    """
+    True when a provider hit is a blocked executable (``.exe``) rather than a video, torrent, or nzb.
+
+    Checks the release title and the download URL, including magnet ``dn=``.
+    """
+    for candidate in (name, url):
+        filename = _search_result_filename(candidate)
+        if filename and get_extension(filename, lower=True) in BLOCKED_SEARCH_EXTENSIONS:
+            return True
+    return False
 
 
 def is_sync_file(filename: Union[Path, PathLike, str] | None = None) -> bool:
@@ -381,15 +421,20 @@ def sanitize_filename(filename):
 
 
 def valid_url(url):
+    """Return True if ``url`` is an http(s) URL with a host.
+
+    Accepts Docker/LAN hostnames that have no public TLD.
+    """
+    if not url or not isinstance(url, str):
+        return False
     try:
-        valid = validators.url(url)
-    except validators.utils.ValidationError:
-        valid = False  # ValidationError isn't an exception so doesn't actually get here
-
-    if not valid:
-        valid = False  # if ValidationError in response set to False
-
-    return valid
+        parts = urlparse(url.strip())
+        _ = parts.port
+    except ValueError:
+        return False
+    if parts.scheme not in ("http", "https"):
+        return False
+    return bool(parts.netloc and parts.hostname)
 
 
 def try_int(candidate, default_value=0) -> int:

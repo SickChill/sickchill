@@ -16,6 +16,7 @@
     </style>
 </%block>
 <%block name="scripts">
+    <script type="text/javascript" src="${static_url('js/lib/bootstrap3-typeahead.min.js')}"></script>
     <script type="text/javascript">
         //noinspection JSUnusedLocalSymbols
         let episodes = ${ json.dumps(episodes) };

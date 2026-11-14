@@ -3,7 +3,7 @@
 </%block>
 <%block name="scripts">
     <script xmlns="http://www.w3.org/1999/html">
-        $('#config-components').tabs();
+        initConfigComponentTabs();
     </script>
 </%block>
 

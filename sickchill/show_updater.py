@@ -1,4 +1,5 @@
 import datetime
+import random
 import threading
 import time
 
@@ -47,19 +48,19 @@ class ShowUpdater(object):
                             updated_shows = []
                             http_calls_note = "; update feed failed (will retry same window next cycle)"
                             logger.warning(
-                                "TVDB v4 update feed failed for all entity types; not advancing lastUpdate, "
+                                "TVDB update feed failed for all entity types; not advancing lastUpdate, "
                                 "scheduling disk refreshes only when folder mtime/interval requires"
                             )
                         else:
                             updated_shows = [d["id"] for d in TvdbData.series]
                             http_calls_note = f"; update feed reported {len(updated_shows)} series id(s)"
-                            logger.info(f"TVDB v4 update feed: {len(updated_shows)} series need refresh{http_calls_note}")
+                            logger.info(f"TVDB update feed: {len(updated_shows)} series need refresh{http_calls_note}")
                     except Exception as error:
                         advance_last_update = False
                         updated_shows = []
                         http_calls_note = "; update feed error (will retry same window next cycle)"
                         logger.warning(
-                            f"TVDB v4 updates failed ({error}); not advancing lastUpdate, "
+                            f"TVDB updates failed ({error}); not advancing lastUpdate, "
                             f"scheduling disk refreshes only when folder mtime/interval requires "
                             f"(not a forced full re-pull of all shows)"
                         )
@@ -143,10 +144,26 @@ class ShowUpdater(object):
                     logger.info(f"Preserving lastUpdate for {provider.name}: show loop interrupted")
                 else:
                     logger.info(f"Preserving lastUpdate for {provider.name} after feed failure")
+
+            # After a normal daily run, nudge next start_time.minute by +0..20 (wrap if >60)
+            # and mark today's slot done (lastRun) so Scheduler.run will not fire again today.
+            if not force:
+                self._bump_next_start_minute()
         except Exception as error:
             logger.exception(error)
 
         self.amActive = False
+
+    @staticmethod
+    def _bump_next_start_minute():
+        sched = getattr(settings, "showUpdateScheduler", None)
+        if not sched or not getattr(sched, "start_time", None):
+            return
+        if not hasattr(sched, "bump_start_minute"):
+            return
+        new_start = sched.bump_start_minute(random.randint(0, 20), mark_ran_today=True)
+        if new_start:
+            logger.debug(f"ShowUpdater next start_time set to {new_start.strftime('%H:%M')}")
 
     @staticmethod
     def request_hook(response, **kwargs):

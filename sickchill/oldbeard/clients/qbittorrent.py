@@ -77,4 +77,6 @@ class Client(GenericClient):
     def _set_torrent_priority(self, result: "TorrentSearchResult"):
         if not self.api.app_preferences().get("queueing_enabled"):
             return True
-        return (self.api.torrents_decrease_priority, self.api.torrents_increase_priority)[result.priority == 1](result.hash.lower())
+        method = (self.api.torrents_decrease_priority, self.api.torrents_increase_priority)[result.priority == 1]
+        method(result.hash.lower())
+        return True

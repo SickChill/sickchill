@@ -2,7 +2,7 @@ import re
 from pathlib import Path
 
 from sickchill import logger, settings
-from sickchill.helper.common import remove_extension, valid_url
+from sickchill.helper.common import is_blocked_search_result, remove_extension, valid_url
 from sickchill.oldbeard import common
 from sickchill.oldbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 from sickchill.oldbeard.scene_exceptions import get_scene_exceptions
@@ -66,6 +66,10 @@ def filter_bad_releases(name, parse=True, show=None):
 
     Returns: True if the release name is OK, False if it's bad.
     """
+
+    if is_blocked_search_result(name):
+        logger.info(f"Release: {name} is a .exe file, ignoring it")
+        return False
 
     try:
         if parse:

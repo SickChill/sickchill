@@ -6,6 +6,7 @@ from sickchill import logger, settings
 from sickchill.helper.common import valid_url
 from sickchill.oldbeard import tvcache
 from sickchill.oldbeard.bs4_parser import BS4Parser
+from sickchill.oldbeard.common import uses_absolute_numbering
 from sickchill.oldbeard.show_name_helpers import all_possible_show_names
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
@@ -96,7 +97,7 @@ class FrenchTorrentProvider(TorrentProvider):
             if episode.show.air_by_date or episode.show.sports:
                 year = str(episode.airdate).split("-")[0]
                 season_string = f"{show_name} {year}"
-            elif episode.show.anime:
+            elif uses_absolute_numbering(episode.show):
                 season_string = f"{show_name} Saison"  # ignore season number to get all seasons in all formats
             else:
                 season_string = f"{show_name} Saison {season:0d}"

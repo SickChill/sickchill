@@ -58,7 +58,7 @@ class TVDBv4Client:
 
     def _login(self) -> None:
         if not self.apikey:
-            raise TVDBv4Error("TVDB v4 API key is not configured")
+            raise TVDBv4Error("TVDB API key is not configured")
 
         payload: dict[str, str] = {"apikey": self.apikey}
         if self.pin:
@@ -138,6 +138,9 @@ class TVDBv4Client:
                 timeout=self.timeout,
             )
         except requests.exceptions.RequestException as error:
+            from sickchill.oldbeard.connectivity import maybe_request_connectivity_check
+
+            maybe_request_connectivity_check(error)
             raise TVDBv4Error(str(error)) from error
 
         if response.status_code == 401 and not _auth_retried:
@@ -163,7 +166,7 @@ class TVDBv4Client:
         if response.status_code == 429 or 500 <= response.status_code < 600:
             if _transient_attempt < max_transient_retries:
                 delay = self._retry_delay_seconds(response, _transient_attempt)
-                logger.debug(f"TVDB v4 {response.status_code} for {path}; retry {_transient_attempt + 1}/{max_transient_retries} after {delay:.1f}s")
+                logger.debug(f"TVDB {response.status_code} for {path}; retry {_transient_attempt + 1}/{max_transient_retries} after {delay:.1f}s")
                 if delay > 0:
                     time.sleep(delay)
                 return self._request_envelope(
@@ -240,7 +243,7 @@ class TVDBv4Client:
             if result is not None:
                 return result if isinstance(result, list) else [result]
         except TVDBv4Error as error:
-            logger.debug(f"TVDB v4 remoteid path failed for {remote_id}: {error}")
+            logger.debug(f"TVDB remote id path failed for {remote_id}: {error}")
 
         # Some deployments accept remote_id only with an accompanying query=
         result = self._get("/search", params={"remote_id": remote_id, "query": remote_id})

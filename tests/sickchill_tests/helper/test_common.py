@@ -14,6 +14,7 @@ from sickchill.helper.common import (
     convert_size,
     episode_num,
     http_code_description,
+    is_blocked_search_result,
     is_media_file,
     is_rar_file,
     is_sync_file,
@@ -64,6 +65,23 @@ class CommonTests(unittest.TestCase):
         for test in test_cases, unicode_test_cases:
             for http_code, result in test.items():
                 assert http_code_description(http_code) == result
+
+    def test_is_blocked_search_result(self):
+        """Titles and download URLs ending in .exe are blocked; torrents/videos are not."""
+        assert is_blocked_search_result("Show.Name.S01E01.720p.HDTV.x264.exe")
+        assert is_blocked_search_result("Show.Name.S01E01.EXE")
+        assert is_blocked_search_result(name="Show.Name.S01E01.720p.HDTV.x264-GROUP", url="https://example.com/dl/Show.S01E01.exe")
+        assert is_blocked_search_result(name="Show.Name.S01E01.720p.HDTV.x264-GROUP", url="https://example.com/dl/Show.S01E01.exe?token=abc")
+        assert is_blocked_search_result(url="magnet:?xt=urn:btih:abc&dn=Show.Name.S01E01.exe")
+        assert not is_blocked_search_result("Show.Name.S01E01.720p.HDTV.x264-GROUP")
+        assert not is_blocked_search_result("Show.Name.S01E01.720p.HDTV.x264.mkv")
+        assert not is_blocked_search_result("Show.Name.S01E01.720p.HDTV.x264.exe.torrent")
+        assert not is_blocked_search_result(name="Show.Name.S01E01.720p.HDTV.x264-GROUP", url="https://example.com/dl/Show.S01E01.torrent")
+        assert not is_blocked_search_result(None, None)
+        assert not is_blocked_search_result("", "")
+        # urlparse raises ValueError on invalid IPv6; still inspect the path for .exe
+        assert is_blocked_search_result(url="http://[::1/Show.S01E01.exe")
+        assert not is_blocked_search_result(url="http://[::1/Show.S01E01.torrent")
 
     def test_is_sync_file(self):
         """
@@ -169,13 +187,8 @@ class CommonTests(unittest.TestCase):
         """
         Test is_media_file
         """
-        # TODO: Add unicode tests
-        # TODO: Add MAC OS resource fork tests
-        # TODO: Add RARBG release tests
-        # RARBG release intros should be ignored
-        # MAC OS's "resource fork" files should be ignored
-        # Extras should be ignored
-        # and the file extension should be in the list of media extensions
+        # Still useful to add: unicode filenames and macOS resource-fork (._*) cases.
+        # RARBG intros and sample/extras handling are covered below.
 
         # Test all valid media extensions
         temp_name = "Show.Name.S01E01.HDTV.x264-SICKCHILL"

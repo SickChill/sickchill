@@ -606,9 +606,19 @@ class QueueItemAdd(ShowQueueItem):
             settings.backlogSearchScheduler.action.searchBacklog([self.show])
 
         # Initial artwork from indexer + metadata providers (once). Later refreshes skip TVDB art.
-        self.show.write_metadata(fetch_images=True)
+        try:
+            self.show.write_metadata(fetch_images=True)
+        except Exception as error:
+            from sickchill.oldbeard.connectivity import is_connectivity_error
+
+            if not is_connectivity_error(error):
+                raise
+            logger.warning(f"Metadata write failed during add of {self.show.name} due to a network error: {error}")
         self.show.update_metadata()
-        self.show.populate_cache(from_indexer=True)
+        try:
+            self.show.populate_cache()
+        except Exception as error:
+            logger.debug(f"Image cache fill failed during add of {self.show.name}: {error}")
 
         self.show.flush_episodes()
 
@@ -663,24 +673,37 @@ class QueueItemRefresh(ShowQueueItem):
             logger.info(f"Performing refresh on {self.show.name}")
 
         self.show.refresh_dir()
+        try:
+            self.show.recalculate_show_size()
+        except Exception as error:
+            logger.debug(f"show_size update failed for {getattr(self.show, 'indexerid', '?')}: {error}")
         # Do not re-fetch artwork from TVDB on refresh/update — loaded once on add;
         # user changes art via edit show. Still write NFOs and sync cache from local files.
-        self.show.write_metadata(fetch_images=False)
+        metadata_written = False
+        try:
+            self.show.write_metadata(fetch_images=False)
+            metadata_written = True
+        except Exception as error:
+            logger.warning(f"Metadata write failed during refresh of {self.show.name}: {error}")
         if self.force:
             self.show.update_metadata()
-        self.show.populate_cache(from_indexer=False)
+        try:
+            self.show.populate_cache()
+        except Exception as error:
+            logger.debug(f"Image cache fill failed during refresh of {self.show.name}: {error}")
 
         # Load XEM data to DB for show
         scene_numbering.xem_refresh(self.show.indexerid, self.show.indexer)
 
-        # Stamp folder mtime after refresh (incl. silent post-update) so ShowUpdater
+        # Stamp folder mtime after a successful metadata write so ShowUpdater
         # does not immediately re-queue due to NFO/metadata touching the directory.
-        try:
-            from sickchill.oldbeard.show_dir_mtime import stamp_show_dir_mtime
+        if metadata_written:
+            try:
+                from sickchill.oldbeard.show_dir_mtime import stamp_show_dir_mtime
 
-            stamp_show_dir_mtime(self.show)
-        except Exception as error:
-            logger.debug(f"show_dir_mtime stamp failed for {getattr(self.show, 'indexerid', '?')}: {error}")
+                stamp_show_dir_mtime(self.show)
+            except Exception as error:
+                logger.debug(f"show_dir_mtime stamp failed for {getattr(self.show, 'indexerid', '?')}: {error}")
 
         super(QueueItemRefresh, self).finish()
         self.finish()
@@ -883,29 +906,11 @@ class QueueItemRemove(ShowQueueItem):
         # If any notification fails, don't stop removal
         # noinspection PyBroadException
         try:
-            # TODO: episode_object is undefined here, so all of these will fail.
-            # send notifications
-            # notifiers.notify_download(episode_object.format_pattern('%SN - %Sx%0E - %EN - %QN'))
-
-            # do the library update for KODI
             notifiers.kodi_notifier.update_library(self.show.name)
-
-            # do the library update for Plex
             notifiers.plex_notifier.update_library(self.show)
-
-            # do the library update for EMBY
             notifiers.emby_notifier.update_library(self.show)
-
-            # do the library update for JELLYFIN
             notifiers.jellyfin_notifier.update_library(self.show)
-
-            # do the library update for NMJ
-            # nmj_notifier kicks off its library update when the notify_download is issued (inside notifiers)
-
-            # do the library update for Synology Indexer
             notifiers.synoindex_notifier.addFolder(self.show.get_location)
-
-            # do the library update for tivo
             notifiers.pytivo_notifier.update_library(self.show)
         except Exception:
             logger.info(_("Some notifications could not be sent. Continuing removal of {}...").format(self.show.name))

@@ -1,4 +1,5 @@
 import binascii
+import os
 import warnings
 
 with warnings.catch_warnings():
@@ -76,6 +77,56 @@ def _mediainfo_screen_size(filename):
         pass
 
     return None, None
+
+
+def video_codec_from_file(filename):
+    """
+    Return a scene-style video encoder token from container metadata.
+
+    Uses libmediainfo via pymediainfo (headers only). Tokens match
+    Quality.sceneQualityFromName: x264, h264, x265, h265, xvid, divx.
+    """
+    if not filename or not mediainfo or not os.path.isfile(filename):
+        return ""
+
+    try:
+        parsed = mediainfo.parse(filename, parse_speed=0.0)
+    except (OSError, TypeError, RuntimeError, ValueError):
+        return ""
+
+    for track in parsed.tracks:
+        if getattr(track, "track_type", None) != "Video":
+            continue
+
+        blob = " ".join(
+            str(part)
+            for part in (
+                track.encoded_library_name,
+                track.encoded_library,
+                track.writing_library,
+                track.format,
+                track.codec_id,
+                track.codec,
+                track.commercial_name,
+            )
+            if part
+        ).lower()
+        if not blob:
+            continue
+        if "x265" in blob or "libx265" in blob:
+            return "x265"
+        if "x264" in blob or "libx264" in blob:
+            return "x264"
+        if any(token in blob for token in ("hevc", "h265", "h.265", "hvc1", "hev1")):
+            return "h265"
+        if any(token in blob for token in ("avc", "h264", "h.264", "avc1")):
+            return "h264"
+        if "xvid" in blob:
+            return "xvid"
+        if "divx" in blob or "dx50" in blob:
+            return "divx"
+
+    return ""
 
 
 # Only try to parse processable files once. Resets on restart ofc

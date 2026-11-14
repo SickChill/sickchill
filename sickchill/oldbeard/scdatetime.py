@@ -2,8 +2,6 @@ import datetime
 import functools
 import locale
 
-import timeago
-
 from sickchill import settings
 from sickchill.oldbeard.network_timezones import sc_now, sc_timezone
 
@@ -71,6 +69,23 @@ date_presets = (
 )
 
 time_presets = ("%I:%M:%S %p", "%H:%M:%S")
+
+
+def format_preset_datetime(dt):
+    """Format a datetime with DATE_PRESET and config.ini time_preset for logs."""
+    if dt is None:
+        return ""
+    try:
+        if not isinstance(dt, datetime.datetime):
+            return str(dt)
+        converted = scdatetime.convert_to_setting(dt) or dt
+        date_fmt = settings.DATE_PRESET or "%Y-%m-%d"
+        time_fmt = settings.TIME_PRESET_W_SECONDS or settings.TIME_PRESET or "%H:%M:%S"
+        date_part = scdatetime.scfdate(converted, d_preset=date_fmt)
+        time_part = scdatetime.scftime(converted, t_preset=time_fmt)
+        return f"{date_part} {time_part}".strip()
+    except (OverflowError, OSError, TypeError, ValueError):
+        return str(dt)
 
 
 # helper class
@@ -262,6 +277,45 @@ class scdatetime(datetime.datetime):
         return strd
 
 
+_TIMEAGO_STEPS = (60.0, 60.0, 24.0, 7.0, 365.0 / 7.0 / 12.0, 12.0)
+_TIMEAGO_TEMPLATES = (
+    ("just now", "a while"),
+    ("%s seconds ago", "in %s seconds"),
+    ("1 minute ago", "in 1 minute"),
+    ("%s minutes ago", "in %s minutes"),
+    ("1 hour ago", "in 1 hour"),
+    ("%s hours ago", "in %s hours"),
+    ("1 day ago", "in 1 day"),
+    ("%s days ago", "in %s days"),
+    ("1 week ago", "in 1 week"),
+    ("%s weeks ago", "in %s weeks"),
+    ("1 month ago", "in 1 month"),
+    ("%s months ago", "in %s months"),
+    ("1 year ago", "in 1 year"),
+    ("%s years ago", "in %s years"),
+)
+
+
+def _format_timeago(delta: datetime.timedelta) -> str:
+    """English relative time matching the previous timeago package strings."""
+    seconds = int(delta.total_seconds())
+    ago_in = 0
+    if seconds < 0:
+        ago_in = 1
+        seconds *= -1
+    value = float(seconds)
+    index = 0
+    while index < len(_TIMEAGO_STEPS) and value >= _TIMEAGO_STEPS[index]:
+        value /= _TIMEAGO_STEPS[index]
+        index += 1
+    count = int(value)
+    index *= 2
+    if count > (9 if index == 0 else 1):
+        index += 1
+    template = _TIMEAGO_TEMPLATES[index][ago_in]
+    return template % count if "%s" in template else template
+
+
 def sctimeago(date) -> str:
     """Return a timeago string using SickChill timezone data."""
     if date is None:
@@ -271,8 +325,7 @@ def sctimeago(date) -> str:
     if isinstance(date, datetime.timedelta):
         date = now + date
 
-    # Make sure the incoming date is timezone-aware
     if date.tzinfo is None:
         date = date.replace(tzinfo=sc_timezone)
 
-    return timeago.format(date, now, sc_timezone)
+    return _format_timeago(now - date)

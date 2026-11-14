@@ -15,6 +15,15 @@ from sickchill.views.routes import Route
 class ConfigNotifications(Config):
     @addslash
     def index(self):
+        # Mako still reads settings.*; keep notifier settings synced without touching clients/providers.
+        try:
+            from sickchill.plugins.legacy_maps import NOTIFIER_LEGACY_MAPS
+            from sickchill.plugins.settings import sync_legacy_maps_to_settings
+
+            sync_legacy_maps_to_settings(settings.CFG, NOTIFIER_LEGACY_MAPS)
+        except Exception:
+            logger.warning("Could not synchronize notifier settings for the notifications page", exc_info=True)
+
         t = PageTemplate(rh=self, filename="config_notifications.mako")
 
         return t.render(
@@ -65,13 +74,6 @@ class ConfigNotifications(Config):
         settings.JELLYFIN_HOST = config.clean_url(self.get_body_argument("jellyfin_host", default=None))
         settings.JELLYFIN_APIKEY = filters.unhide(settings.JELLYFIN_APIKEY, self.get_body_argument("jellyfin_apikey", default=None))
 
-        settings.USE_GROWL = config.checkbox_to_value(self.get_body_argument("use_growl", default=None))
-        settings.GROWL_NOTIFY_ONSNATCH = config.checkbox_to_value(self.get_body_argument("growl_notify_onsnatch", default=None))
-        settings.GROWL_NOTIFY_ONDOWNLOAD = config.checkbox_to_value(self.get_body_argument("growl_notify_ondownload", default=None))
-        settings.GROWL_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(self.get_body_argument("growl_notify_onsubtitledownload", default=None))
-        settings.GROWL_HOST = config.clean_host(self.get_body_argument("growl_host", default=None), default_port=23053)
-        settings.GROWL_PASSWORD = filters.unhide(settings.GROWL_PASSWORD, self.get_body_argument("growl_password", default=None))
-
         settings.USE_FREEMOBILE = config.checkbox_to_value(self.get_body_argument("use_freemobile", default=None))
         settings.FREEMOBILE_NOTIFY_ONSNATCH = config.checkbox_to_value(self.get_body_argument("freemobile_notify_onsnatch", default=None))
         settings.FREEMOBILE_NOTIFY_ONDOWNLOAD = config.checkbox_to_value(self.get_body_argument("freemobile_notify_ondownload", default=None))
@@ -107,15 +109,6 @@ class ConfigNotifications(Config):
         settings.TWITTER_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(self.get_body_argument("twitter_notify_onsubtitledownload", default=None))
         settings.TWITTER_USEDM = config.checkbox_to_value(self.get_body_argument("twitter_usedm", default=None))
         settings.TWITTER_DMTO = self.get_body_argument("twitter_dmto", default=None)
-
-        settings.USE_TWILIO = config.checkbox_to_value(self.get_body_argument("use_twilio", default=None))
-        settings.TWILIO_NOTIFY_ONSNATCH = config.checkbox_to_value(self.get_body_argument("twilio_notify_onsnatch", default=None))
-        settings.TWILIO_NOTIFY_ONDOWNLOAD = config.checkbox_to_value(self.get_body_argument("twilio_notify_ondownload", default=None))
-        settings.TWILIO_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(self.get_body_argument("twilio_notify_onsubtitledownload", default=None))
-        settings.TWILIO_PHONE_SID = self.get_body_argument("twilio_phone_sid", default=None)
-        settings.TWILIO_ACCOUNT_SID = self.get_body_argument("twilio_account_sid", default=None)
-        settings.TWILIO_AUTH_TOKEN = self.get_body_argument("twilio_auth_token", default=None)
-        settings.TWILIO_TO_NUMBER = self.get_body_argument("twilio_to_number", default=None)
 
         settings.USE_SLACK = config.checkbox_to_value(self.get_body_argument("use_slack", default="False"))
         settings.SLACK_NOTIFY_SNATCH = config.checkbox_to_value(self.get_body_argument("slack_notify_snatch", default=None))
@@ -164,12 +157,6 @@ class ConfigNotifications(Config):
         settings.DISCORD_NAME = self.get_body_argument("discord_name", default=None)
         settings.DISCORD_AVATAR_URL = self.get_body_argument("discord_avatar_url", default=None)
         settings.DISCORD_TTS = config.checkbox_to_value(self.get_body_argument("discord_tts", default=None))
-
-        settings.USE_BOXCAR2 = config.checkbox_to_value(self.get_body_argument("use_boxcar2", default=None))
-        settings.BOXCAR2_NOTIFY_ONSNATCH = config.checkbox_to_value(self.get_body_argument("boxcar2_notify_onsnatch", default=None))
-        settings.BOXCAR2_NOTIFY_ONDOWNLOAD = config.checkbox_to_value(self.get_body_argument("boxcar2_notify_ondownload", default=None))
-        settings.BOXCAR2_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(self.get_body_argument("boxcar2_notify_onsubtitledownload", default=None))
-        settings.BOXCAR2_ACCESSTOKEN = self.get_body_argument("boxcar2_accesstoken", default=None)
 
         settings.USE_PUSHOVER = config.checkbox_to_value(self.get_body_argument("use_pushover", default=None))
         settings.PUSHOVER_NOTIFY_ONSNATCH = config.checkbox_to_value(self.get_body_argument("pushover_notify_onsnatch", default=None))
@@ -243,12 +230,6 @@ class ConfigNotifications(Config):
         settings.PYTIVO_SHARE_NAME = self.get_body_argument("pytivo_share_name", default=None)
         settings.PYTIVO_TIVO_NAME = self.get_body_argument("pytivo_tivo_name", default=None)
 
-        settings.USE_PUSHALOT = config.checkbox_to_value(self.get_body_argument("use_pushalot", default=None))
-        settings.PUSHALOT_NOTIFY_ONSNATCH = config.checkbox_to_value(self.get_body_argument("pushalot_notify_onsnatch", default=None))
-        settings.PUSHALOT_NOTIFY_ONDOWNLOAD = config.checkbox_to_value(self.get_body_argument("pushalot_notify_ondownload", default=None))
-        settings.PUSHALOT_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(self.get_body_argument("pushalot_notify_onsubtitledownload", default=None))
-        settings.PUSHALOT_AUTHORIZATIONTOKEN = self.get_body_argument("pushalot_authorizationtoken", default=None)
-
         settings.USE_PUSHBULLET = config.checkbox_to_value(self.get_body_argument("use_pushbullet", default=None))
         settings.PUSHBULLET_NOTIFY_ONSNATCH = config.checkbox_to_value(self.get_body_argument("pushbullet_notify_onsnatch", default=None))
         settings.PUSHBULLET_NOTIFY_ONDOWNLOAD = config.checkbox_to_value(self.get_body_argument("pushbullet_notify_ondownload", default=None))
@@ -274,4 +255,4 @@ class ConfigNotifications(Config):
         else:
             ui.notifications.message(_("Configuration Saved"), os.path.join(settings.CONFIG_FILE))
 
-        return self.redirect("/config/notifications/")
+        return self.config_save_response("/config/notifications/")

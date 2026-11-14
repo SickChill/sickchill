@@ -391,6 +391,21 @@ config_postProcessing.mako
 config_notifications.mako
 ========================================================================== */
 
+#notifier_enable_list li,
+.notifier_enable_list li {
+    background: #333333 !important;
+    color: #FFFFFF;
+}
+
+.notifier-settings-box {
+    border-color: #555555;
+    background: #2A2A2A;
+}
+
+.notifier-settings-desc {
+    color: #CCCCCC;
+}
+
 div.metadata_options {
     border: 1px solid #111111;
     background: #333333;

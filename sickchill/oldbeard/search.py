@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING
 
 import sickchill.oldbeard.providers
 from sickchill import logger, settings
+from sickchill.helper.common import is_blocked_search_result
 from sickchill.helper.exceptions import AuthException
 from sickchill.oldbeard.network_timezones import sc_today
 from sickchill.providers.GenericProvider import GenericProvider
@@ -74,6 +75,10 @@ def snatch_episode(result: "SearchResult", end_status=SNATCHED):
     if result is None:
         return False
 
+    if is_blocked_search_result(result.name, result.url):
+        logger.info(f"Refusing to snatch {result.name}: blocked .exe file")
+        return False
+
     if settings.ALLOW_HIGH_PRIORITY:
         # if it aired recently make it high priority
         for episode in result.episodes:
@@ -86,7 +91,14 @@ def snatch_episode(result: "SearchResult", end_status=SNATCHED):
     if result.is_torrent:
         # torrents are saved to disk when blackhole mode
         if settings.TORRENT_METHOD == "blackhole":
-            snatched_result = _download_result(result)
+            try:
+                from sickchill.plugins.api import PluginKind
+                from sickchill.plugins.manager import plugin_manager
+
+                plugin = plugin_manager.get(PluginKind.CLIENT, "blackhole")
+            except Exception:
+                plugin = None
+            snatched_result = plugin.send(result) if plugin is not None else _download_result(result)
         else:
             if not result.content and not result.url.startswith("magnet") and result.provider.login():
                 result.content = result.provider.get_url(result.url, returns="content")
@@ -96,19 +108,38 @@ def snatch_episode(result: "SearchResult", end_status=SNATCHED):
                 snatched_result = client.sendTORRENT(result)
             else:
                 logger.warning("Torrent file content is empty")
-                # TODO: This is broken!!
-                # History().log_failed(result.episodes, result.name, result.provider)
-                History().log_failed(result.episodes[0], result.name, result.provider.name)  # This one seems to work
+                History().log_failed(result.episodes[0], result.name, result.provider.name)
                 snatched_result = False
     # NZBs can be sent straight to SAB or saved to disk
     elif result.is_nzb or result.is_nzbdata:
         if settings.NZB_METHOD == "blackhole":
-            snatched_result = _download_result(result)
+            try:
+                from sickchill.plugins.api import PluginKind
+                from sickchill.plugins.manager import plugin_manager
+
+                plugin = plugin_manager.get(PluginKind.CLIENT, "blackhole")
+            except Exception:
+                plugin = None
+            snatched_result = plugin.send(result) if plugin is not None else _download_result(result)
         elif settings.NZB_METHOD == "sabnzbd":
-            snatched_result = sab.send_nzb(result)
+            try:
+                from sickchill.plugins.api import PluginKind
+                from sickchill.plugins.manager import plugin_manager
+
+                plugin = plugin_manager.get(PluginKind.CLIENT, "sabnzbd")
+            except Exception:
+                plugin = None
+            snatched_result = plugin.send(result) if plugin is not None else sab.send_nzb(result)
         elif settings.NZB_METHOD == "nzbget":
             is_proper = end_status == SNATCHED_PROPER
-            snatched_result = nzbget.send_nzb(result, is_proper)
+            try:
+                from sickchill.plugins.api import PluginKind
+                from sickchill.plugins.manager import plugin_manager
+
+                plugin = plugin_manager.get(PluginKind.CLIENT, "nzbget")
+            except Exception:
+                plugin = None
+            snatched_result = plugin.send(result, proper=is_proper) if plugin is not None else nzbget.send_nzb(result, is_proper)
         elif settings.NZB_METHOD == "download_station":
             client = clients.getClientInstance(settings.NZB_METHOD)(settings.SYNOLOGY_DSM_HOST, settings.SYNOLOGY_DSM_USERNAME, settings.SYNOLOGY_DSM_PASSWORD)
             snatched_result = client.send_nzb(result)
@@ -188,7 +219,7 @@ def pick_best_result(results, show):
         if show.is_anime and not show.release_groups.is_valid(result):
             continue
 
-        logger.info(f"Quality of {result.name} is {Quality.qualityStrings[result.quality]}")
+        logger.debug(f"Quality of {result.name} is {Quality.qualityStrings[result.quality]}")
 
         allowed_qualities, preferred_qualities = Quality.splitQuality(show.quality)
 
@@ -199,7 +230,7 @@ def pick_best_result(results, show):
         if not show_name_helpers.filter_bad_releases(result.name, parse=False, show=show):
             continue
 
-        if hasattr(result, "size") and settings.USE_FAILED_DOWNLOADS and History().has_failed(result.name, result.size, result.provider.name):
+        if settings.USE_FAILED_DOWNLOADS and History().has_failed(result.name):
             logger.info(f"{result.name} has previously failed, rejecting it")
             continue
 
@@ -337,66 +368,92 @@ def search_for_needed_episodes():
     show_list = settings.show_list
     from_date = datetime.date.min
     episodes = []
-    logger.debug(f"Seeing if we need anything for: {', '.join(ashow.name for ashow in show_list)}")
 
     for curShow in show_list:
         if not curShow.paused:
             episodes.extend(wanted_episodes(curShow, from_date))
 
-    if not episodes:
-        # nothing wanted so early out, ie: avoid whatever arbitrarily
-        # complex thing a provider cache update entails, for example,
-        # reading rss feeds
-        logger.info("No episodes needed.")
-        return list(found_results.values())
-
-    # noinspection DuplicatedCode
-    original_thread_name = threading.current_thread().name
-
     providers = [x for x in sickchill.oldbeard.providers.sorted_provider_list(settings.RANDOMIZE_PROVIDERS) if x.is_active and x.enable_daily and x.can_daily]
-    for curProvider in providers:
-        threading.current_thread().name = f"{original_thread_name} :: [{curProvider.name}]"
-        curProvider.cache.update_cache()
 
-    for curProvider in providers:
-        threading.current_thread().name = f"{original_thread_name} :: [{curProvider.name}]"
+    if not episodes:
+        # Skip RSS refresh when nothing is wanted; cached propers still run below.
+        logger.info("No episodes needed.")
+    else:
+        original_thread_name = threading.current_thread().name
+
+        for curProvider in providers:
+            threading.current_thread().name = f"{original_thread_name} :: [{curProvider.name}]"
+            curProvider.cache.update_cache()
+
+        for curProvider in providers:
+            threading.current_thread().name = f"{original_thread_name} :: [{curProvider.name}]"
+            try:
+                found_rss_results = curProvider.search_rss(episodes)
+            except AuthException as error:
+                logger.warning(f"Authentication error: {error}")
+                continue
+            except Exception as error:
+                logger.exception(f"Error while searching {curProvider.name}, skipping: {error}")
+                logger.debug(traceback.format_exc())
+                continue
+
+            did_search = True
+
+            # pick a single result for each episode, respecting existing results
+            for current_episode in found_rss_results:
+                if not current_episode.show or current_episode.show.paused:
+                    logger.debug(f"Skipping {current_episode.pretty_name} because the show is paused ")
+                    continue
+
+                best_result = pick_best_result(found_rss_results[current_episode], current_episode.show)
+
+                # if all results were rejected move on to the next episode
+                if not best_result:
+                    logger.debug(f"All found results for {current_episode.pretty_name} were rejected.")
+                    continue
+
+                # if it's already in the list (from another provider) and the newly found quality is no better, then skip it
+                if current_episode in found_results and best_result.quality <= found_results[current_episode].quality:
+                    continue
+
+                found_results[current_episode] = best_result
+
+        threading.current_thread().name = original_thread_name
+
+        if not did_search:
+            logger.info("No NZB/Torrent providers found or enabled in the sickchill config for daily searches. Please check your settings.")
+
+    if settings.DOWNLOAD_PROPERS:
         try:
-            found_rss_results = curProvider.search_rss(episodes)
-        except AuthException as error:
-            logger.warning(f"Authentication error: {error}")
-            continue
+            from sickchill.oldbeard.properFinder import ProperFinder
+
+            ProperFinder().process_cached_propers(providers)
         except Exception as error:
-            logger.exception(f"Error while searching {curProvider.name}, skipping: {error}")
-            logger.debug(traceback.format_exc())
-            continue
-
-        did_search = True
-
-        # pick a single result for each episode, respecting existing results
-        for current_episode in found_rss_results:
-            if not current_episode.show or current_episode.show.paused:
-                logger.debug(f"Skipping {current_episode.pretty_name} because the show is paused ")
-                continue
-
-            best_result = pick_best_result(found_rss_results[current_episode], current_episode.show)
-
-            # if all results were rejected move on to the next episode
-            if not best_result:
-                logger.debug(f"All found results for {current_episode.pretty_name} were rejected.")
-                continue
-
-            # if it's already in the list (from another provider) and the newly found quality is no better, then skip it
-            if current_episode in found_results and best_result.quality <= found_results[current_episode].quality:
-                continue
-
-            found_results[current_episode] = best_result
-
-    threading.current_thread().name = original_thread_name
-
-    if not did_search:
-        logger.info("No NZB/Torrent providers found or enabled in the sickchill config for daily searches. Please check your settings.")
+            logger.debug(f"Daily proper processing failed: {error}")
 
     return list(found_results.values())
+
+
+def _search_results_cover_requested(search_results, episodes, search_mode, show):
+    """True when this pass found a selectable season pack, or every requested episode."""
+    season_results = search_results.get(SEASON_RESULT) or []
+    has_selectable_pack = bool(season_results) and pick_best_result(season_results, show) is not None
+
+    if search_mode == "season":
+        return has_selectable_pack
+
+    if has_selectable_pack:
+        return True
+
+    covered_episodes = set()
+    for result_key, result_list in search_results.items():
+        if result_key == MULTI_EP_RESULT:
+            for result in result_list:
+                covered_episodes.update(episode.episode for episode in result.episodes)
+        elif result_key >= 0 and result_list:
+            covered_episodes.add(result_key)
+
+    return {episode.episode for episode in episodes} <= covered_episodes
 
 
 # noinspection PyPep8Naming
@@ -415,18 +472,16 @@ def search_providers(show, episodes, manual=False, downCurQuality=False):
 
     did_search = False
 
-    # Name cache is process-global (built at startup / exception refresh / show add).
-    # Daily and backlog search use dict lookups only — do not rebuild from SQLite here.
-
     # noinspection DuplicatedCode
     original_thread_name = threading.current_thread().name
 
     providers = [
         x for x in sickchill.oldbeard.providers.sorted_provider_list(settings.RANDOMIZE_PROVIDERS) if x.is_active and x.can_backlog and x.enable_backlog
     ]
-    for curProvider in providers:
-        threading.current_thread().name = f"{original_thread_name} :: [{curProvider.name}]"
-        curProvider.cache.update_cache()
+    if not manual:
+        for curProvider in providers:
+            threading.current_thread().name = f"{original_thread_name} :: [{curProvider.name}]"
+            curProvider.cache.update_cache()
 
     threading.current_thread().name = original_thread_name
 
@@ -442,8 +497,7 @@ def search_providers(show, episodes, manual=False, downCurQuality=False):
         search_count = 0
         search_mode = curProvider.search_mode
 
-        # Always search for episode when manually searching when in season
-        if search_mode == "season" and manual is True:
+        if manual:
             search_mode = "episode"
 
         while True:
@@ -475,15 +529,21 @@ def search_providers(show, episodes, manual=False, downCurQuality=False):
                     else:
                         found_results[curProvider.name][current_episode] = search_results[current_episode]
 
-                break
-            elif search_count == 2 or not curProvider.search_fallback:
+            # Season-pack search succeeds only when a selectable pack was found.
+            # Episode search succeeds when every requested episode is covered.
+            found_wanted_results = _search_results_cover_requested(search_results, episodes, search_mode, show)
+
+            # Fallback (episode ↔ season pack) is backlog-only.
+            allow_fallback = bool(curProvider.search_fallback) and search_count == 1 and not manual
+
+            if found_wanted_results or not allow_fallback:
                 break
 
             if search_mode == "season":
                 logger.debug("Fallback episode search initiated")
                 search_mode = "episode"
             else:
-                logger.debug("Fallback season pack search initiate")
+                logger.debug("Fallback season pack search initiated")
                 search_mode = "season"
 
         # skip to next provider if we have no results to process

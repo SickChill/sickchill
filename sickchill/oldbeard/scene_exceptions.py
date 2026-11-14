@@ -1,10 +1,9 @@
-import datetime
 import time
 from pathlib import Path
 from typing import Generator
 
 import sickchill
-from sickchill import adba, logger, settings
+from sickchill import logger, settings
 from sickchill.oldbeard import db, helpers
 from sickchill.oldbeard.network_timezones import sc_now
 from sickchill.show.Show import Show
@@ -254,16 +253,18 @@ def update_custom_scene_exceptions(indexer_id, scene_exceptions: dict) -> None:
         name_cache.build_name_cache(show)
 
 
-def retrieve_exceptions() -> None:
+def retrieve_exceptions() -> set[int]:
     """
     Looks up the exceptions on GitHub, parses them into a dict, and inserts them into the
     scene_exceptions table in cache.db. Removes stale official (custom=0) exceptions
     while preserving user custom=1 entries.
+
+    :return: indexer ids whose official exceptions changed (for name-cache rebuild)
     """
     cache_db_con = db.DBConnection("cache.db")
 
     seen = set()  # (indexerid, name, season)
-    updated_shows = set()
+    updated_shows: set[int] = set()
 
     generators = (
         _sickchill_exceptions_generator(),
@@ -280,7 +281,7 @@ def retrieve_exceptions() -> None:
             if key in seen:
                 continue
             seen.add(key)
-            updated_shows.add(indexerid)
+            updated_shows.add(int(indexerid))
 
             # Remove any old official version of this exact exception
             queries.append(["DELETE FROM scene_exceptions WHERE indexer_id = ? AND show_name = ? AND season = ? AND custom = 0;", [indexerid, name, season]])
@@ -291,11 +292,13 @@ def retrieve_exceptions() -> None:
         cache_db_con.mass_action(queries)
 
         # Rebuild in-memory cache for affected shows
-        for show in list(updated_shows):
-            exceptions_cache.pop(show, None)
-            rebuild_exception_cache(show)
+        for show_id in list(updated_shows):
+            exceptions_cache.pop(show_id, None)
+            rebuild_exception_cache(show_id)
 
         logger.debug("Updated scene exceptions")
+
+    return updated_shows
 
 
 def _sickchill_exceptions_generator() -> Generator[tuple[int, str, int], None, None]:
@@ -330,26 +333,157 @@ def _sickchill_exceptions_generator() -> Generator[tuple[int, str, int], None, N
     set_last_refresh("sickchill")
 
 
+def _parse_defaulttvdbseason(raw) -> int:
+    """ScudLee defaulttvdbseason → scene-exception season.
+
+    ``a`` means absolute / whole-series numbering → generic season -1.
+    Missing or non-numeric values default to 1 (ScudLee one-off convention).
+    """
+    if raw is None:
+        return 1
+    value = str(raw).strip().lower()
+    if not value:
+        return 1
+    if value == "a":
+        return -1
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return 1
+
+
+def _show_applicable_tvdb_seasons(show) -> set[int] | None:
+    """Seasons that should select among multiple AniDB mappings.
+
+    Optional ``show.default_tvdb_season`` (tests / callers) wins; otherwise
+    regular seasons already on the show. ``None`` means “accept all mappings”.
+    """
+    explicit = getattr(show, "default_tvdb_season", None)
+    if explicit is not None:
+        try:
+            return {int(explicit)}
+        except (TypeError, ValueError):
+            pass
+
+    episodes = getattr(show, "episodes", None)
+    if isinstance(episodes, dict) and episodes:
+        seasons = {int(season) for season in episodes if str(season).lstrip("-").isdigit()}
+        seasons.discard(0)
+        if seasons:
+            return seasons
+    return None
+
+
 def _anidb_exceptions_generator() -> Generator[tuple[int, str, int], None, None]:
+    """Yield AniDB main titles for local anime shows via ScudLee mapping XMLs.
+
+    This does **not** use the AniDB UDP API. It downloads/parses local caches of
+    ``anime-list.xml`` / ``animetitles.xml`` once per refresh, then looks up each
+    show. Multiple AniDB ids can share one TVDB id (e.g. 72025 → aid 1 season 1
+    and aid 4 season 2); those rows are kept and selected by ``defaulttvdbseason``.
+    """
     if not should_refresh("anidb"):
         return
 
     logger.info("Checking for scene exception updates for AniDB")
+
+    cache_dir = Path(settings.CACHE_DIR) / "anime"
+    try:
+        cache_dir.mkdir(parents=True, exist_ok=True)
+    except OSError as error:
+        logger.warning(f"AniDB scene exceptions skipped: cannot create cache dir {cache_dir}: {error}")
+        return
+
+    from sickchill.adba import aniDBfileInfo as anidb_files
+
+    anime_list = anidb_files.read_tvdb_map_xml(cache_dir)
+    titles_xml = anidb_files.read_anidb_xml(cache_dir)
+    if anime_list is None or titles_xml is None:
+        logger.warning("AniDB scene exceptions skipped: anime-list/animetitles XML unavailable")
+        return
+
+    # tvdb_id -> [(aid, defaulttvdbseason), ...]  — all rows, not first-wins
+    tvdb_to_mappings: dict[int, list[tuple[int, int]]] = {}
+    for anime in anime_list.findall("anime"):
+        try:
+            tvdb_id = int(anime.get("tvdbid") or 0)
+            aid = int(anime.get("anidbid") or 0)
+        except (TypeError, ValueError):
+            continue
+        if tvdb_id <= 0 or aid <= 0:
+            continue
+        mapped_season = _parse_defaulttvdbseason(anime.get("defaulttvdbseason"))
+        mappings = tvdb_to_mappings.setdefault(tvdb_id, [])
+        pair = (aid, mapped_season)
+        if pair not in mappings:
+            mappings.append(pair)
+
+    aid_to_main_name: dict[int, str] = {}
+    xml_lang = "{http://www.w3.org/XML/1998/namespace}lang"
+    for anime in titles_xml.findall("anime"):
+        try:
+            aid = int(anime.get("aid") or 0)
+        except (TypeError, ValueError):
+            continue
+        if not aid:
+            continue
+        main_name = ""
+        for title in anime.findall("title"):
+            if title.get("type") == "main" and title.text:
+                main_name = title.text
+                break
+        if not main_name:
+            for title in anime.findall("title"):
+                if title.get(xml_lang) == "en" and title.text:
+                    main_name = title.text
+                    break
+        if main_name:
+            aid_to_main_name[aid] = main_name
+
+    updated = skipped = failed = 0
     for show in settings.show_list:
         if settings.stopping or settings.restarting:
             return
 
-        if show.is_anime and show.indexer == 1:
-            # noinspection PyBroadException
-            try:
-                anime = adba.Anime(None, name=show.name, tvdbid=show.indexerid, autoCorrectName=True, cache_dir=Path(settings.CACHE_DIR))
-            except Exception:
-                logger.debug(f"Could not update anime exceptions from anidb for {show.name}")
-                continue
-            else:
-                if anime.name and anime.name != show.name:
-                    yield int(show.indexerid), anime.name, -1
+        if not (show.is_anime and show.indexer == 1):
+            continue
 
+        try:
+            mappings = tvdb_to_mappings.get(int(show.indexerid), [])
+            if not mappings:
+                skipped += 1
+                logger.debug(f"AniDB: no TVDB mapping for {show.name} (tvdb={show.indexerid})")
+                continue
+
+            applicable = _show_applicable_tvdb_seasons(show)
+            selected: list[tuple[int, int]] = []
+            if applicable is None:
+                selected = list(mappings)
+            else:
+                selected = [(aid, season) for aid, season in mappings if season in applicable or season == -1]
+                # Absolute/"a" rows already included; if nothing matched, fall back to season 1 then first row
+                if not selected:
+                    selected = [(aid, season) for aid, season in mappings if season == 1] or mappings[:1]
+
+            yielded = False
+            for aid, mapped_season in selected:
+                anidb_name = aid_to_main_name.get(aid)
+                if not anidb_name:
+                    logger.debug(f"AniDB: no title for aid={aid} ({show.name}, tvdb={show.indexerid})")
+                    continue
+                if anidb_name == show.name:
+                    continue
+                updated += 1
+                yielded = True
+                yield int(show.indexerid), anidb_name, mapped_season
+
+            if not yielded:
+                skipped += 1
+        except Exception as error:
+            failed += 1
+            logger.debug(f"Could not update anime exceptions from anidb for {show.name}: {error}")
+
+    logger.info(f"AniDB scene exceptions finished: updated={updated}, skipped={skipped}, failed={failed}")
     set_last_refresh("anidb")
 
 

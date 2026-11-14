@@ -98,7 +98,7 @@ class Provider(TorrentProvider):
                     logger.debug(_("Could not parse data from provider"))
                     continue
 
-                html = BeautifulSoup(data[index:], "html5lib")
+                html = BeautifulSoup(data[index:], "lxml")
                 if not html:
                     logger.debug(_("No html data parsed from provider"))
                     continue

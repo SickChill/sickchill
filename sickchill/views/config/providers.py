@@ -4,8 +4,7 @@ import os
 from tornado.web import addslash
 
 import sickchill.start
-from sickchill import settings
-from sickchill.helper import try_int
+from sickchill import logger, settings
 from sickchill.helper.common import try_float
 from sickchill.oldbeard import config, ui
 from sickchill.oldbeard.providers.newznab import NewznabProvider
@@ -20,6 +19,23 @@ from sickchill.views.routes import Route
 class ConfigProviders(Config):
     @addslash
     def index(self):
+        # Instantiate builtins/customs for the list; apply credentials only for enabled providers.
+        if settings.CFG is not None:
+            try:
+                from sickchill.oldbeard import providers as providers_mod
+                from sickchill.plugins.providers.config import apply_providers_from_cfg, custom_providers_from_cfg
+
+                providers_mod.ensure_all_builtin_providers_loaded()
+                # Merge any disabled customs not instantiated at startup
+                all_nn, all_tr = custom_providers_from_cfg(settings.CFG, enabled_ids=None)
+                have_nn = {p.get_id() for p in (settings.newznab_provider_list or [])}
+                have_tr = {p.get_id() for p in (settings.torrent_rss_provider_list or [])}
+                settings.newznab_provider_list = (settings.newznab_provider_list or []) + [p for p in all_nn if p.get_id() not in have_nn]
+                settings.torrent_rss_provider_list = (settings.torrent_rss_provider_list or []) + [p for p in all_tr if p.get_id() not in have_tr]
+                apply_providers_from_cfg(settings.CFG, enabled_only=True)
+            except Exception as error:
+                logger.debug("Could not fully load provider settings for Providers UI: %s", error)
+
         t = PageTemplate(rh=self, filename="config_providers.mako")
 
         return t.render(
@@ -31,17 +47,63 @@ class ConfigProviders(Config):
             action="providers",
         )
 
+    def getProviderSettings(self):
+        """Apply one provider's [PROVIDERS] section and return JSON for the config form."""
+        provider_id = self.get_query_argument("provider", default="")
+        self.set_header("Content-Type", "application/json")
+        self.set_header("Cache-Control", "max-age=0,no-cache,no-store")
+        if not provider_id:
+            return json.dumps({"error": "No provider specified"})
+
+        from sickchill.oldbeard import providers as providers_mod
+        from sickchill.plugins.providers.config import apply_one_provider_from_cfg, provider_settings_for_ui
+
+        provider = providers_mod.ensure_provider_loaded(provider_id) or providers_mod.getProviderClass(provider_id)
+        if provider is None:
+            return json.dumps({"error": "Unknown provider"})
+
+        if settings.CFG is not None:
+            try:
+                apply_one_provider_from_cfg(settings.CFG, provider)
+            except Exception as error:
+                logger.debug("Could not load settings for provider %s: %s", provider_id, error)
+                return json.dumps({"error": "Could not load provider settings"})
+
+        return json.dumps({"result": "success", "provider": provider_id, "settings": provider_settings_for_ui(provider)})
+
     @staticmethod
-    def canAddNewznabProvider(name):
+    def canAddNewznabProvider(name, exclude_id=""):
+        """Return whether ``name`` can be used for a custom Newznab provider.
+
+        ``exclude_id`` is the current provider id when renaming — that id is ignored
+        so a no-op / case-only rename that normalizes to the same id still succeeds.
+        Also rejects ids that collide with built-in or torrent-rss providers.
+        """
         if not name:
             return json.dumps({"error": "No Provider Name specified"})
 
-        provider_dict = {x.get_id(): x for x in settings.newznab_provider_list}
-
         provider_id = GenericProvider.make_id(name)
+        if not provider_id:
+            return json.dumps({"error": "No Provider Name specified"})
 
-        if provider_id in provider_dict:
-            return json.dumps({"error": "Provider Name already exists as " + name})
+        exclude_id = GenericProvider.make_id(exclude_id) if exclude_id else ""
+        if exclude_id and provider_id == exclude_id:
+            return json.dumps({"success": provider_id})
+
+        taken = {x.get_id() for x in settings.newznab_provider_list}
+        taken.update(x.get_id() for x in settings.torrent_rss_provider_list)
+        taken.update(x.get_id() for x in (settings.providerList or []))
+        if exclude_id:
+            taken.discard(exclude_id)
+
+        if provider_id in taken:
+            return json.dumps(
+                {
+                    "error": _(
+                        "Provider Name already exists as '{name}' (id '{provider_id}'). Choose a different name that does not match a built-in provider."
+                    ).format(name=name, provider_id=provider_id)
+                }
+            )
 
         return json.dumps({"success": provider_id})
 
@@ -72,6 +134,27 @@ class ConfigProviders(Config):
         return json.dumps({"success": success, "tv_categories": tv_categories, "error": error})
 
     @staticmethod
+    def getJackettCategories(url="", key="", indexer="all"):
+        """Fetch Torznab TV category caps from the built-in Jackett provider settings/form values."""
+        from sickchill.oldbeard.providers.jackett import Provider as JackettProvider
+
+        error = ""
+        if not url:
+            error += "\n" + _("No Jackett URL specified")
+        if not key:
+            error += "\n" + _("No Jackett API key specified")
+        if error:
+            return json.dumps({"success": False, "error": error.strip(), "tv_categories": []})
+
+        temp_provider = JackettProvider()
+        temp_provider.custom_url = url
+        temp_provider.api_key = key
+        temp_provider.indexer = (indexer or "all").strip() or "all"
+
+        success, tv_categories, err = temp_provider.get_jackett_categories()
+        return json.dumps({"success": success, "tv_categories": tv_categories, "error": err})
+
+    @staticmethod
     def deleteNewznabProvider(nnid):
         provider_dict = {x.get_id(): x for x in settings.newznab_provider_list}
         if nnid not in provider_dict or provider_dict[nnid].default:
@@ -86,19 +169,35 @@ class ConfigProviders(Config):
         return "1"
 
     @staticmethod
-    def canAddTorrentRssProvider(name, url, cookies, titleTAG):
+    def canAddTorrentRssProvider(name, url, cookies, titleTAG, exclude_id=""):
         if not name:
             return json.dumps({"error": "Invalid name specified"})
 
         url = config.clean_url(url)
         temp_provider = TorrentRssProvider(name, url, cookies, titleTAG)
+        provider_id = temp_provider.get_id()
+        exclude_id = GenericProvider.make_id(exclude_id) if exclude_id else ""
+        if exclude_id and provider_id == exclude_id:
+            return json.dumps({"success": provider_id})
 
-        if temp_provider.get_id() in (x.get_id() for x in settings.torrent_rss_provider_list):
-            return json.dumps({"error": "Exists as " + temp_provider.name})
+        taken = {x.get_id() for x in settings.torrent_rss_provider_list}
+        taken.update(x.get_id() for x in settings.newznab_provider_list)
+        taken.update(x.get_id() for x in (settings.providerList or []))
+        if exclude_id:
+            taken.discard(exclude_id)
+
+        if provider_id in taken:
+            return json.dumps(
+                {
+                    "error": _(
+                        "Provider Name already exists as '{name}' (id '{provider_id}'). Choose a different name that does not match a built-in provider."
+                    ).format(name=name, provider_id=provider_id)
+                }
+            )
 
         (succ, errMsg) = temp_provider.validateRSS()
         if succ:
-            return json.dumps({"success": temp_provider.get_id()})
+            return json.dumps({"success": provider_id})
 
         return json.dumps({"error": errMsg})
 
@@ -122,60 +221,60 @@ class ConfigProviders(Config):
 
         finished_names = []
 
-        newznab_string = self.get_body_argument("newznab_string", default="")
-        torrent_rss_string = self.get_body_argument("torrent_rss_string", default="")
+        # None = section not in the form (e.g. NZB search disabled). "" = user deleted all customs.
+        newznab_string = self.get_body_argument("newznab_string", default=None)
+        torrent_rss_string = self.get_body_argument("torrent_rss_string", default=None)
         provider_order = self.get_body_argument("provider_order", default="")
 
         # print line for testing order of providers
         # print(provider_order)
 
-        for current_newznab_string in newznab_string.split("!!!"):
-            if not current_newznab_string:
-                continue
+        if newznab_string is not None:
+            for current_newznab_string in newznab_string.split("!!!"):
+                if not current_newznab_string:
+                    continue
 
-            name, url, key, categories = current_newznab_string.split("|")
-            url = config.clean_url(url)
-            provider_id = GenericProvider.make_id(name)
+                name, url, key, categories = current_newznab_string.split("|")
+                url = config.clean_url(url)
+                provider_id = GenericProvider.make_id(name)
 
-            # if it does not already exist then add it
-            if provider_id not in newznab_provider_dict:
-                new_provider = NewznabProvider(name, url, key=key, categories=categories)
-                settings.newznab_provider_list.append(new_provider)
-                newznab_provider_dict[provider_id] = new_provider
+                # if it does not already exist then add it
+                if provider_id not in newznab_provider_dict:
+                    new_provider = NewznabProvider(name, url, key=key, categories=categories)
+                    settings.newznab_provider_list.append(new_provider)
+                    newznab_provider_dict[provider_id] = new_provider
 
-            # set all params
-            newznab_provider_dict[provider_id].name = name
-            newznab_provider_dict[provider_id].url = url
-            newznab_provider_dict[provider_id].key = key
-            newznab_provider_dict[provider_id].categories = categories
-            # a 0 in the key spot indicates that no key is needed
-            newznab_provider_dict[provider_id].needs_auth = key and key != "0"
-            newznab_provider_dict[provider_id].search_mode = self.get_body_argument(provider_id + "_search_mode", "episode")
-            newznab_provider_dict[provider_id].search_fallback = config.checkbox_to_value(
-                self.get_body_argument(provider_id + "search_fallback", 0), value_on=1, value_off=0
-            )
-            newznab_provider_dict[provider_id].enable_daily = config.checkbox_to_value(
-                self.get_body_argument(provider_id + "enable_daily", 0), value_on=1, value_off=0
-            )
-            newznab_provider_dict[provider_id].enable_backlog = config.checkbox_to_value(
-                self.get_body_argument(provider_id + "enable_backlog", 0), value_on=1, value_off=0
-            )
+                # set all params
+                newznab_provider_dict[provider_id].name = name
+                newznab_provider_dict[provider_id].url = url
+                newznab_provider_dict[provider_id].key = key
+                newznab_provider_dict[provider_id].categories = categories
+                # a 0 in the key spot indicates that no key is needed
+                newznab_provider_dict[provider_id].needs_auth = key and key != "0"
+                newznab_provider_dict[provider_id].search_mode = self.get_body_argument(provider_id + "_search_mode", "episode")
+                newznab_provider_dict[provider_id].search_fallback = config.checkbox_to_value(
+                    self.get_body_argument(provider_id + "_search_fallback", 0), value_on=1, value_off=0
+                )
+                newznab_provider_dict[provider_id].enable_daily = config.checkbox_to_value(
+                    self.get_body_argument(provider_id + "_enable_daily", 0), value_on=1, value_off=0
+                )
+                newznab_provider_dict[provider_id].enable_backlog = config.checkbox_to_value(
+                    self.get_body_argument(provider_id + "_enable_backlog", 0), value_on=1, value_off=0
+                )
 
-            # mark it finished
-            finished_names.append(provider_id)
+                # mark it finished
+                finished_names.append(provider_id)
 
-        # delete anything that is in the list that was not processed just now
-        if newznab_string:
-            for provider in settings.newznab_provider_list:
-                if provider.get_id() not in finished_names:
-                    settings.newznab_provider_list.remove(provider)
-                    del newznab_provider_dict[provider.get_id()]
+            # Reconcile to the submitted list (empty string clears all customs). Avoid remove-while-iterating.
+            keep_ids = set(finished_names)
+            settings.newznab_provider_list = [provider for provider in settings.newznab_provider_list if provider.get_id() in keep_ids]
+            newznab_provider_dict = {provider.get_id(): provider for provider in settings.newznab_provider_list}
 
         torrent_rss_provider_dict = {x.get_id(): x for x in settings.torrent_rss_provider_list}
 
         finished_names = []
 
-        if torrent_rss_string:
+        if torrent_rss_string is not None:
             for current_torrent_rss_provider_string in torrent_rss_string.split("!!!"):
                 if not current_torrent_rss_provider_string:
                     continue
@@ -199,19 +298,24 @@ class ConfigProviders(Config):
                 # mark it finished
                 finished_names.append(provider_id)
 
-        # delete anything that is in the list that was not processed just now
-        if torrent_rss_string:
-            for provider in settings.torrent_rss_provider_list:
-                if provider.get_id() not in finished_names:
-                    settings.torrent_rss_provider_list.remove(provider)
-                    del torrent_rss_provider_dict[provider.get_id()]
+            keep_ids = set(finished_names)
+            settings.torrent_rss_provider_list = [provider for provider in settings.torrent_rss_provider_list if provider.get_id() in keep_ids]
+            torrent_rss_provider_dict = {provider.get_id(): provider for provider in settings.torrent_rss_provider_list}
 
-        # do the enable/disable
+        # do the enable/disable — POST still uses id:0/id:1 for all list items; persist enabled-only order
         enabled_provider_list = []
-        disabled_provider_list = []
+        known_provider_ids = {provider.get_id() for provider in sickchill.oldbeard.providers.sorted_provider_list()}
+        known_provider_ids.update(newznab_provider_dict)
+        known_provider_ids.update(torrent_rss_provider_dict)
 
-        for provider_id, enabled in (provider.split(":") for provider in provider_order.split()):
-            enabled = bool(try_int(enabled))
+        for entry in provider_order.split():
+            # Require exactly "provider_id:0" or "provider_id:1" with a known id
+            if not entry or entry.count(":") != 1:
+                continue
+            provider_id, flag = entry.split(":")
+            if not provider_id or flag not in ("0", "1") or provider_id not in known_provider_ids:
+                continue
+            enabled = flag == "1"
 
             current_provider_object = [x for x in sickchill.oldbeard.providers.sorted_provider_list() if x.get_id() == provider_id and hasattr(x, "enabled")]
 
@@ -220,18 +324,31 @@ class ConfigProviders(Config):
 
             if enabled:
                 enabled_provider_list.append(provider_id)
-            else:
-                disabled_provider_list.append(provider_id)
 
             if provider_id in newznab_provider_dict:
                 newznab_provider_dict[provider_id].enabled = enabled
             elif provider_id in torrent_rss_provider_dict:
                 torrent_rss_provider_dict[provider_id].enabled = enabled
 
-        # dynamically load provider settings
+        from sickchill.plugins.providers import config as providers_config
+
+        posted_loaded = {part.strip() for part in (self.get_body_argument("provider_settings_loaded", default="") or "").split() if part.strip()}
+        for provider_id in posted_loaded:
+            providers_config.mark_provider_settings_loaded(provider_id)
+
+        # dynamically load provider settings only for providers whose fields were applied
         for provider in sickchill.oldbeard.providers.sorted_provider_list():
+            if provider.get_id() not in posted_loaded:
+                continue
             provider.check_set_option(self, "custom_url")
             provider.check_set_option(self, "cookies")
+            provider.check_set_option(self, "indexer", "all")
+            # Newznab + Jackett-SC only — leave other torrent categories alone (#9148).
+            if getattr(provider, "uses_configurable_categories", False):
+                provider.check_set_option(self, "categories", "5000,5030,5040,5045,5050,5060,5070")
+            elif hasattr(provider, "tv_category_choices") and callable(getattr(provider, "set_tv_categories", None)):
+                posted = self.get_body_arguments(provider.get_id("_tv_categories"))
+                provider.set_tv_categories(posted)
 
             provider.check_set_option(self, "minseed", 0, int)
             provider.check_set_option(self, "minleech", 0, int)
@@ -260,14 +377,30 @@ class ConfigProviders(Config):
             provider.check_set_option(self, "ratio", 0, cast=lambda x: max(try_float(x), -1))
 
         settings.NEWZNAB_DATA = "!!!".join([x.config_string() for x in settings.newznab_provider_list])
-        settings.PROVIDER_ORDER = enabled_provider_list + disabled_provider_list
+        settings.PROVIDER_ORDER = enabled_provider_list
 
         self.log_configuration_save("Search Providers")
-        sickchill.start.save_config()
+        # Prune only the custom types not listed.
+        prune_types: set[str] = set()
+        if newznab_string is not None:
+            prune_types.add("newznab")
+        if torrent_rss_string is not None:
+            prune_types.add("torrentrss")
+        providers_config._prune_custom_provider_types = prune_types
+        # save_config → write_providers_to_cfg persists [PROVIDERS][[id]] (no legacy [ID] / blobs).
+        try:
+            if settings.CFG is not None:
+                providers_config.write_providers_to_cfg(settings.CFG)
+        except Exception as error:
+            logger.debug("Could not pre-write provider settings to CFG before save_config: %s", error)
+        try:
+            sickchill.start.save_config()
+        finally:
+            providers_config._prune_custom_provider_types = set()
 
         # Add a site_message if no providers are enabled for daily and/or backlog
         sickchill.oldbeard.providers.check_enabled_providers()
 
         ui.notifications.message(_("Configuration Saved"), os.path.join(settings.CONFIG_FILE))
 
-        return self.redirect("/config/providers/")
+        return self.config_save_response("/config/providers/")

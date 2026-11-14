@@ -4,6 +4,7 @@ import binascii
 import datetime
 import json
 import os
+import time
 import urllib.parse
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -18,7 +19,19 @@ from sickchill.helper.common import episode_num, pretty_file_size
 from sickchill.helper.exceptions import CantUpdateShowException, NoNFOException, ShowDirectoryNotFoundException
 from sickchill.oldbeard import clients, config, db, filters, helpers, notifiers, sab, search_queue, ui
 from sickchill.oldbeard.blackandwhitelist import BlackAndWhiteList, short_group_names
-from sickchill.oldbeard.common import FAILED, IGNORED, SKIPPED, SNATCHED_BEST, UNAIRED, WANTED, Overview, Quality, statusStrings
+from sickchill.oldbeard.common import (
+    FAILED,
+    IGNORED,
+    SKIPPED,
+    SNATCHED_BEST,
+    UNAIRED,
+    WANTED,
+    Overview,
+    Quality,
+    parse_anime_form,
+    parse_anime_mode,
+    statusStrings,
+)
 from sickchill.oldbeard.network_timezones import sc_now, sc_timezone, sc_today
 from sickchill.oldbeard.scene_numbering import (
     get_scene_absolute_numbering,
@@ -29,10 +42,17 @@ from sickchill.oldbeard.scene_numbering import (
     get_xem_numbering_for_show,
     set_scene_numbering,
 )
-from sickchill.oldbeard.trakt_api import TraktAPI
+from sickchill.oldbeard.trakt_api import (
+    TraktAPI,
+    traktDeviceCodeExpiredException,
+    traktDeviceCodePendingException,
+    traktException,
+    traktRateLimitException,
+)
 from sickchill.providers import result_classes
 from sickchill.providers.GenericProvider import GenericProvider
 from sickchill.providers.metadata.generic import GenericMetadata
+from sickchill.providers.metadata.helpers import getShowImage, is_allowed_show_image_url
 from sickchill.show.Show import Show
 from sickchill.system.Restart import Restart
 from sickchill.system.Shutdown import Shutdown
@@ -241,10 +261,7 @@ class Home(WebRoot):
 
         sql_statement += " (SELECT airdate FROM tv_episodes WHERE showid=tv_eps.showid AND airdate > 1"
         sql_statement += (" AND season > 0", "")[settings.DISPLAY_SHOW_SPECIALS] + f" AND status <> {UNAIRED}"
-        sql_statement += " ORDER BY airdate DESC LIMIT 1) AS ep_airs_prev,"
-
-        # @TODO: Store each show_size in tv_shows. also change in displayShow.mako:250, where we use helpers.get_size()
-        sql_statement += " (SELECT SUM(file_size) FROM tv_episodes WHERE showid=tv_eps.showid) AS show_size"
+        sql_statement += " ORDER BY airdate DESC LIMIT 1) AS ep_airs_prev"
         sql_statement += " FROM tv_episodes tv_eps GROUP BY showid"
 
         sql_result = main_db_con.select(sql_statement)
@@ -326,7 +343,10 @@ class Home(WebRoot):
         torrent_method = self.get_body_argument("torrent_method")
         host = config.clean_url(self.get_body_argument("host"))
         username = self.get_body_argument("username")
-        password = filters.unhide(settings.TORRENT_PASSWORD, self.get_body_argument("password"))
+        from sickchill.plugins.clients.config import stored_client_password
+
+        stored = stored_client_password(settings.CFG, torrent_method, fallback=settings.TORRENT_PASSWORD)
+        password = filters.unhide(stored, self.get_body_argument("password"))
         return self.__torrent_test(host, username, password, torrent_method)
 
     def testFreeMobile(self):
@@ -358,20 +378,6 @@ class Home(WebRoot):
 
         return _("Error sending join notification: {message}".format(message=message))
 
-    def testGrowl(self):
-        host = self.get_query_argument("host")
-        password = filters.unhide(settings.GROWL_PASSWORD, self.get_query_argument("password"))
-        # self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
-
-        host = config.clean_host(host, default_port=23053)
-        result = notifiers.growl_notifier.test_notify(host, password)
-
-        pw_append = _(" with password") + ": " + password if password else ""
-        if result:
-            return _("Registered and Tested growl successfully {growl_host}").format(growl_host=unquote_plus(host)) + pw_append
-
-        return _("Registration and Testing of growl failed {growl_host}").format(growl_host=unquote_plus(host)) + pw_append
-
     def testProwl(self):
         prowl_api = self.get_query_argument("prowl_api")
         prowl_priority = self.get_query_argument("prowl_priority")
@@ -380,14 +386,6 @@ class Home(WebRoot):
             return _("Test prowl notice sent successfully")
 
         return _("Test prowl notice failed")
-
-    def testBoxcar2(self):
-        access_token = self.get_query_argument("accesstoken")
-        result = notifiers.boxcar2_notifier.test_notify(access_token)
-        if result:
-            return _("Boxcar2 notification succeeded. Check your Boxcar2 clients to make sure it worked")
-
-        return _("Error sending Boxcar2 notification")
 
     def testPushover(self):
         user_key = self.get_query_argument("userKey")
@@ -432,26 +430,6 @@ class Home(WebRoot):
             return _("Tweet successful, check your twitter to make sure it worked")
 
         return _("Error sending tweet")
-
-    @staticmethod
-    def testTwilio():
-        # if not notifiers.twilio_notifier.account_regex.match(settings.TWILIO_ACCOUNT_SID):
-        #     return _("Please enter a valid account sid")
-        #
-        # if not notifiers.twilio_notifier.auth_regex.match(settings.TWILIO_AUTH_TOKEN):
-        #     return _("Please enter a valid auth token")
-        #
-        # if not notifiers.twilio_notifier.phone_regex.match(settings.TWILIO_PHONE_SID):
-        #     return _("Please enter a valid phone sid")
-        #
-        # if not notifiers.twilio_notifier.number_regex.match(settings.TWILIO_TO_NUMBER):
-        #     return _('Please format the phone number as "+1-###-###-####"')
-        #
-        # result = notifiers.twilio_notifier.test_notify()
-        # if result:
-        #     return _("Authorization successful and number ownership verified")
-        # else:
-        return _("Error sending sms")
 
     @staticmethod
     def testSlack():
@@ -639,6 +617,58 @@ class Home(WebRoot):
             return _("Trakt Authorized")
         return _("Trakt Not Authorized!")
 
+    def startTraktDeviceAuth(self):
+        """Kick off the Trakt OAuth Device Code flow.
+
+        Returns a JSON payload with the ``user_code`` and ``verification_url`` to display
+        to the user, plus the ``device_code`` and polling ``interval`` used by the browser
+        to call :meth:`pollTraktDeviceAuth`.
+        """
+        trakt_api = TraktAPI(settings.SSL_VERIFY, settings.TRAKT_TIMEOUT)
+        try:
+            payload = trakt_api.device_code_start()
+        except traktException as error:
+            logger.warning(f"Trakt device code start failed: {error}")
+            self.set_header("Content-Type", "application/json")
+            return json.dumps({"error": str(error)})
+        self.set_header("Content-Type", "application/json")
+        return json.dumps(
+            {
+                "device_code": payload.get("device_code"),
+                "user_code": payload.get("user_code"),
+                "verification_url": payload.get("verification_url"),
+                "expires_in": payload.get("expires_in"),
+                "interval": payload.get("interval", 5),
+            }
+        )
+
+    def pollTraktDeviceAuth(self):
+        """Poll Trakt once for a pending device code authorization.
+
+        Returns a small JSON payload:
+        ``{"status": "authorized"|"pending"|"expired"|"slow_down"|"error", ...}``.
+        The browser polls this at ``interval`` seconds until it stops receiving ``pending``
+        (or ``slow_down``, which should increase the poll interval and retry).
+        """
+        device_code = self.get_body_argument("device_code", default="")
+        self.set_header("Content-Type", "application/json")
+        if not device_code:
+            return json.dumps({"status": "error", "message": _("Missing device_code")})
+
+        trakt_api = TraktAPI(settings.SSL_VERIFY, settings.TRAKT_TIMEOUT)
+        try:
+            if trakt_api.device_code_poll(device_code):
+                return json.dumps({"status": "authorized"})
+            return json.dumps({"status": "error", "message": _("Unknown error")})
+        except traktDeviceCodePendingException:
+            return json.dumps({"status": "pending"})
+        except traktDeviceCodeExpiredException:
+            return json.dumps({"status": "expired"})
+        except traktRateLimitException as error:
+            return json.dumps({"status": "slow_down", "message": str(error)})
+        except traktException as error:
+            return json.dumps({"status": "error", "message": str(error)})
+
     def testTrakt(self):
         username = self.get_body_argument("username")
         blacklist_name = self.get_body_argument("blacklist_name")
@@ -706,7 +736,7 @@ class Home(WebRoot):
 
         entries = {"emails": emails, "prowlAPIs": prowl_apis}
 
-        # TODO: Split emails and do validators.email
+        # TODO: Split emails and do validate.email
         if emails or prowl_apis:
             result = main_db_con.action("UPDATE tv_shows SET notify_list = ? WHERE indexer_id = ?", [str(entries), show])
         else:
@@ -731,14 +761,6 @@ class Home(WebRoot):
 
         return _("ERROR: {last_error}").format(last_error=notifiers.email_notifier.last_err)
 
-    def testPushalot(self):
-        authorization_token = self.get_body_argument("authorizationToken")
-        result = notifiers.pushalot_notifier.test_notify(authorization_token)
-        if result:
-            return _("Pushalot notification succeeded. Check your Pushalot clients to make sure it worked")
-
-        return _("Error sending Pushalot notification")
-
     def testPushbullet(self):
         api = self.get_body_argument("api")
         result = notifiers.pushbullet_notifier.test_notify(api)
@@ -749,7 +771,6 @@ class Home(WebRoot):
 
     def getPushbulletDevices(self):
         api = self.get_body_argument("api")
-        # self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
 
         result = notifiers.pushbullet_notifier.get_devices(api)
         if result:
@@ -876,7 +897,6 @@ class Home(WebRoot):
             self.set_header("Pragma", "no-cache")
             self.set_header("Expires", "0")
 
-        # todo: add more comprehensive show validation
         try:
             show_obj = Show.find(settings.show_list, int(show))
         except (ValueError, TypeError):
@@ -1131,7 +1151,6 @@ class Home(WebRoot):
     def editShow(self, direct_call=False):
         """Edit show settings"""
 
-        # Initialize image variables for ALL call paths
         banner = None
         fanart = None
         poster = None
@@ -1161,7 +1180,7 @@ class Home(WebRoot):
                 air_by_date = config.checkbox_to_value(self.get_body_argument("air_by_date", default="False"))
                 scene = config.checkbox_to_value(self.get_body_argument("scene", default="False"))
                 sports = config.checkbox_to_value(self.get_body_argument("sports", default="False"))
-                anime = config.checkbox_to_value(self.get_body_argument("anime", default="False"))
+                anime = self.get_body_argument("anime", default=None)
                 subtitles = config.checkbox_to_value(self.get_body_argument("subtitles", default="False"))
 
             # === IMAGE UPLOAD SUPPORT ===
@@ -1220,6 +1239,8 @@ class Home(WebRoot):
         if not (location or any_qualities or best_qualities or season_folders):
             t = PageTemplate(rh=self, filename="editShow.mako")
             groups = []
+            whitelist = []
+            blacklist = []
 
             if show_obj.is_anime:
                 whitelist = show_obj.release_groups.whitelist
@@ -1245,30 +1266,27 @@ class Home(WebRoot):
                     {"slug": "dvd", "name": "DVD Order"},
                 ]
 
-            if show_obj.is_anime:
-                return t.render(
-                    show=show_obj,
-                    scene_exceptions=show_obj.exceptions,
-                    seasonResults=seasonResults,
-                    groups=groups,
-                    whitelist=whitelist,
-                    blacklist=blacklist,
-                    season_order_types=season_order_types,
-                    title=_("Edit Show"),
-                    header=_("Edit Show"),
-                    controller="home",
-                    action="editShow",
-                )
-
             return t.render(
                 show=show_obj,
                 scene_exceptions=show_obj.exceptions,
                 seasonResults=seasonResults,
+                groups=groups,
+                whitelist=whitelist,
+                blacklist=blacklist,
                 season_order_types=season_order_types,
                 title=_("Edit Show"),
                 header=_("Edit Show"),
                 controller="home",
                 action="editShow",
+            )
+
+        if direct_call:
+            anime = parse_anime_mode(anime, int(show_obj.anime or 0))
+        else:
+            anime = parse_anime_form(
+                config.checkbox_to_value(anime),
+                self.get_body_argument("anime_numbering", default=None),
+                int(show_obj.anime or 0),
             )
 
         # Read from body if not already set
@@ -1344,7 +1362,7 @@ class Home(WebRoot):
                 data = bytes(image)
                 return data, data
 
-            # 1. Upload from imageSelector (data:image;base64...)
+            # Upload from imageSelector (data:image;base64...)
             if isinstance(image, str) and image.startswith("data:image"):
                 try:
                     header, image_data = image.split(",", 1)
@@ -1361,35 +1379,100 @@ class Home(WebRoot):
                     logger.warning(f"Failed to decode uploaded image: {e}")
                     return None, None
 
-            # 2. Remote URL (TheTVDB, Fanart.tv, etc.) — do not block edit save on CDN fetch.
-            # Queued show update/refresh can refresh artwork later; uploaded bytes still write below.
-            elif isinstance(image, str) and image.startswith(("http://", "https://")):
-                logger.debug(f"Skipping remote image fetch on edit save for show {show_obj.indexerid}")
-                return None, None
+            # Remote URL (TheTVDB, Fanart.tv, etc.) — optional "full|thumb" pipe form from the selector.
+            # TVDB/TMDB often send the same URL for both; only fetch thumb when it differs.
+            # SSRF: only allowlisted public artwork hosts (same set as imageSelector.url_wrap).
+            # One shared deadline for full+thumb so edit-save cannot stall the redirect.
+            elif isinstance(image, str) and image.strip():
+                try:
+                    image_parts = image.split("|")
+                    full_url = (image_parts[0] or "").strip()
+                    thumb_url = (image_parts[1] if len(image_parts) > 1 else "").strip()
+                    if not is_allowed_show_image_url(full_url):
+                        logger.warning(f"Rejected non-allowlisted image URL for show {show_obj.indexerid}: {full_url}")
+                        return None, None
+                    if thumb_url and thumb_url != full_url and not is_allowed_show_image_url(thumb_url):
+                        logger.warning(f"Rejected non-allowlisted thumb URL for show {show_obj.indexerid}: {thumb_url}")
+                        thumb_url = ""
+
+                    deadline = time.monotonic() + 10.0
+
+                    def _remaining_timeout():
+                        return max(0.0, deadline - time.monotonic())
+
+                    remaining = _remaining_timeout()
+                    if remaining <= 0:
+                        return None, None
+                    # Remaining budget is shared with streamed chunk reads inside getShowImage.
+                    _img_data = getShowImage(full_url, timeout=remaining)
+                    if not _img_data:
+                        return None, None
+                    if thumb_url and thumb_url != full_url:
+                        remaining = _remaining_timeout()
+                        if remaining <= 0:
+                            return _img_data, _img_data
+                        _thumb = getShowImage(thumb_url, timeout=remaining)
+                        return _img_data, _thumb or _img_data
+                    return _img_data, _img_data
+                except Exception as e:  # getShowImage / CDN can raise various errors
+                    logger.warning(f"Failed to fetch remote image for show {show_obj.indexerid}: {e}")
+                    return None, None
 
             return None, None
 
+        def _write_replaced_image(data, path):
+            if not data:
+                return False
+            return metadata_generator._write_image(data, path, overwrite=True)
+
+        def _replace_artwork(kind, image_value, write_targets):
+            """Fetch/write one artwork kind; failures here must not skip other kinds.
+
+            write_targets: list of (image_data_key, path) where image_data_key is 'full' or 'thumb'
+            """
+            try:
+                img_data, img_thumb_data = get_images(image_value)
+                if not img_data:
+                    artwork_errors.append(_("Could not process the selected {kind} image.").format(kind=kind))
+                    return
+                payloads = {"full": img_data, "thumb": img_thumb_data or img_data}
+                for key, path in write_targets:
+                    if not _write_replaced_image(payloads[key], path):
+                        # Continue other targets for this kind (e.g. thumb after full) and other kinds.
+                        artwork_errors.append(_("Could not save the selected {kind} image.").format(kind=kind))
+            except Exception as error:
+                logger.warning(f"Error replacing {kind} for show {show_obj.indexerid}: {error}")
+                artwork_errors.append(_("Error replacing {kind} artwork: {error}").format(kind=kind, error=error))
+
+        # Artwork replace must never prevent returning to displayShow after a successful settings save.
+        # Isolate each kind so one failure does not skip the others.
+        artwork_errors = []
         if poster:
-            img_data, img_thumb_data = get_images(poster)
-            dest_path = settings.IMAGE_CACHE.poster_path(show_obj.indexerid)
-            dest_thumb_path = settings.IMAGE_CACHE.poster_thumb_path(show_obj.indexerid)
-            # noinspection PyProtectedMember
-            metadata_generator._write_image(img_data, dest_path, overwrite=True)
-            # noinspection PyProtectedMember
-            metadata_generator._write_image(img_thumb_data, dest_thumb_path, overwrite=True)
+            _replace_artwork(
+                _("poster"),
+                poster,
+                [
+                    ("full", settings.IMAGE_CACHE.poster_path(show_obj.indexerid)),
+                    ("thumb", settings.IMAGE_CACHE.poster_thumb_path(show_obj.indexerid)),
+                ],
+            )
         if banner:
-            img_data, img_thumb_data = get_images(banner)
-            dest_path = settings.IMAGE_CACHE.banner_path(show_obj.indexerid)
-            dest_thumb_path = settings.IMAGE_CACHE.banner_thumb_path(show_obj.indexerid)
-            # noinspection PyProtectedMember
-            metadata_generator._write_image(img_data, dest_path, overwrite=True)
-            # noinspection PyProtectedMember
-            metadata_generator._write_image(img_thumb_data, dest_thumb_path, overwrite=True)
+            _replace_artwork(
+                _("banner"),
+                banner,
+                [
+                    ("full", settings.IMAGE_CACHE.banner_path(show_obj.indexerid)),
+                    ("thumb", settings.IMAGE_CACHE.banner_thumb_path(show_obj.indexerid)),
+                ],
+            )
         if fanart:
-            img_data, img_thumb_data = get_images(fanart)
-            dest_path = settings.IMAGE_CACHE.fanart_path(show_obj.indexerid)
-            # noinspection PyProtectedMember
-            metadata_generator._write_image(img_data, dest_path, overwrite=True)
+            _replace_artwork(
+                _("fanart"),
+                fanart,
+                [
+                    ("full", settings.IMAGE_CACHE.fanart_path(show_obj.indexerid)),
+                ],
+            )
 
         # If direct_call from mass_edit_update no scene exceptions handling or blackandwhite list handling
         if not direct_call:
@@ -1410,7 +1493,7 @@ class Home(WebRoot):
                     else:
                         show_obj.release_groups.set_black_keywords([])
 
-        errors = []
+        errors = list(artwork_errors)
         with show_obj.lock:
             new_quality = Quality.combineQualities([int(q) for q in any_qualities], [int(q) for q in best_qualities])
             show_obj.quality = new_quality
@@ -1839,7 +1922,9 @@ class Home(WebRoot):
         return self.redirect(f"/home/displayShow?show={show}")
 
     def testRename(self):
-        show = self.get_query_argument("show")
+        show = self.get_query_argument("show", None)
+        if not show:
+            return self._genericMessage(_("Error"), _("You must specify a show"))
 
         show_obj = Show.find(settings.show_list, show)
 
@@ -2094,12 +2179,12 @@ class Home(WebRoot):
 
             if isinstance(searchThread, sickchill.oldbeard.search_queue.ManualSearchQueueItem):
                 # noinspection PyTypeChecker
-                if not [x for x in episodes if x["episodeindexid"] == searchThread.segment.indexerid]:
+                if not any(row["episodeindexid"] == searchThread.segment.indexerid for row in episodes):
                     episodes += getEpisodes(searchThread, searchstatus)
             else:
-                # ## These are only Failed Downloads/Retry SearchThreadItems.. lets loop through the segment/episodes
-                # TODO: WTF is this doing? Intensive
-                if not [i for i, j in zip(searchThread.segment, episodes) if i.indexerid == j["episodeindexid"]]:
+                # Failed/retry items: segment is a list of episodes — skip if any are already listed.
+                segment_ids = {ep.indexerid for ep in searchThread.segment}
+                if segment_ids.isdisjoint(row["episodeindexid"] for row in episodes):
                     episodes += getEpisodes(searchThread, searchstatus)
 
         self.set_header("Cache-Control", "max-age=0,no-cache,no-store")

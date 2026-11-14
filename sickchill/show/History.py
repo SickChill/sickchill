@@ -183,13 +183,24 @@ class History(object, metaclass=Singleton):
         """
         Log history of download
 
-        :param episode: episode of show
+        :param episode: episode of show (root; related_episodes are logged too for multi-ep files)
         :param filename: file on disk where the download is
         :param quality: Quality of download
         :param group: Release group
         :param version: Version of file (defaults to -1)
         """
-        self._log_history_item(episode.status, episode.show.indexerid, episode.season, episode.episode, quality, filename, group or -1, version)
+        # Parity with log_snatch: one history row per episode sharing the file.
+        for cur_episode in [episode] + list(getattr(episode, "related_episodes", None) or []):
+            self._log_history_item(
+                cur_episode.status,
+                cur_episode.show.indexerid,
+                cur_episode.season,
+                cur_episode.episode,
+                quality,
+                filename,
+                group or -1,
+                version,
+            )
 
     def log_subtitle(self, show: int, season: int, episode: int, status: int, subtitle: subliminal.subtitle.Subtitle, scores: "Scores"):
         """
@@ -255,7 +266,7 @@ class History(object, metaclass=Singleton):
             size = sql_results[0]["size"]
             provider = sql_results[0]["provider"]
 
-        if not self.has_failed(release, size, provider):
+        if not self.has_failed(release):
             self.failed_db.action('INSERT INTO failed ("release", size, provider) VALUES (?, ?, ?)', [release, size, provider])
 
         self.remove_snatch(release, size, provider)
@@ -273,25 +284,19 @@ class History(object, metaclass=Singleton):
     def log_success(self, release):
         self.failed_db.action('DELETE FROM history WHERE "release" = ?', [self.prepare_failed_name(release)])
 
-    def has_failed(self, release: str, size: int, provider: str = "%"):
+    def has_failed(self, release: str):
         """
         Returns True if a release has previously failed.
 
-        If provider is given, return True only if the release is found
-        with that specific provider. Otherwise, return True if the release
-        is found with any provider.
+        Matches on the normalised release name only. Size is deliberately not compared:
+        search results built from the provider cache carry no size (-1), so a size
+        comparison missed releases that had already failed and they were snatched again.
 
-        :param release: Release name to record failure
-        :param size: Size of release
-        :param provider: Specific provider to search (defaults to all providers)
+        :param release: Release name to check
         :return: True if a release has previously failed.
         """
 
-        return bool(
-            self.failed_db.select_one(
-                'SELECT "release" FROM failed WHERE "release" = ? AND size = ? AND provider LIKE ? ', [self.prepare_failed_name(release), size, provider]
-            )
-        )
+        return bool(self.failed_db.select_one('SELECT "release" FROM failed WHERE "release" = ?', [self.prepare_failed_name(release)]))
 
     def revert_episode(self, episode_object: "TVEpisode"):
         """Restore the episodes of a failed download to their original state"""

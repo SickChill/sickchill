@@ -102,9 +102,12 @@ class ApiHandler(RequestHandler):
         _call_dispatcher = self.call_dispatcher
         # if profile was set wrap "_call_dispatcher" in the profile function
         if "profile" in kwargs:
-            from profilehooks import profile
-
-            _call_dispatcher = profile(_call_dispatcher, immediate=True)
+            try:
+                from profilehooks import profile
+            except ImportError:
+                logger.debug("API profile requested but profilehooks is not installed")
+            else:
+                _call_dispatcher = profile(_call_dispatcher, immediate=True)
             del kwargs["profile"]
 
         try:
@@ -251,8 +254,7 @@ class ApiCall(ApiHandler):
 
     # noinspection PyMissingConstructor
     def __init__(self, args, kwargs):
-        # TODO: Find out why this buggers up RequestHandler init if called
-        # super().__init__(args, kwargs)
+        # Not a Tornado RequestHandler instance path — do not call RequestHandler.__init__.
         self.rh = None
         self.indexer = 1
         self._missing = []
@@ -1310,7 +1312,8 @@ class CMDPostProcess(ApiCall):
             "nzbName": {"desc": "The name of the release to process (deprecated, use release_name param instead)"},
             "force_replace": {"desc": "Force already post-processed files to be post-processed again"},
             "force": {"desc": "Force already post-processed files to be post-processed again (deprecated, use force_replace param instead)"},
-            "force_next": {"desc": "Waits for the current processing queue item to finish and returns result of this request"},
+            "no_queue": {"desc": "Waits for the current processing queue item to finish and returns result of this request"},
+            "force_next": {"desc": "Waits for the current processing queue item to finish (deprecated, use no_queue instead)"},
             "return_data": {"desc": "Returns the result of the post-process"},
             "quiet": {"desc": "Returns the result of the post-process (deprecated, use return_data param instead)"},
             "process_method": {"desc": "How should valid post-processed files be handled"},
@@ -1324,18 +1327,26 @@ class CMDPostProcess(ApiCall):
     def __init__(self, args, kwargs):
         super().__init__(args, kwargs)
         self.proc_dir, args = self.check_params(args, kwargs, "proc_dir", None, False, "string", [])
-        self.path, args = self.check_params(args, kwargs, "path", None, False, "string", []) or self.proc_dir
+        self.path, args = self.check_params(args, kwargs, "path", None, False, "string", [])
+        self.path = self.path or self.proc_dir
 
         self.nzbName, args = self.check_params(args, kwargs, "nzbName", None, False, "string", [])
-        self.release_name, args = self.check_params(args, kwargs, "release_name", None, False, "string", []) or self.nzbName
+        self.release_name, args = self.check_params(args, kwargs, "release_name", None, False, "string", [])
+        self.release_name = self.release_name or self.nzbName
 
         self.force, args = self.check_params(args, kwargs, "force", False, False, "bool", [])
-        self.force_replace, args = self.check_params(args, kwargs, "force_replace", False, False, "bool", []) or self.force
+        self.force_replace, args = self.check_params(args, kwargs, "force_replace", False, False, "bool", [])
+        if "force_replace" not in kwargs:
+            self.force_replace = self.force_replace or self.force
 
         self.force_next, args = self.check_params(args, kwargs, "force_next", False, False, "bool", [])
+        self.no_queue, args = self.check_params(args, kwargs, "no_queue", False, False, "bool", [])
+        self.no_queue = self.no_queue or self.force_next
 
         self.quiet, args = self.check_params(args, kwargs, "quiet", False, False, "bool", [])
-        self.return_data, args = self.check_params(args, kwargs, "return_data", False, False, "bool", []) or self.quiet
+        self.return_data, args = self.check_params(args, kwargs, "return_data", False, False, "bool", [])
+        if "return_data" not in kwargs:
+            self.return_data = self.return_data or self.quiet
 
         self.process_method, args = self.check_params(args, kwargs, "process_method", False, False, "string", PROCESS_METHODS)
         self.is_priority, args = self.check_params(args, kwargs, "is_priority", False, False, "bool", [])
@@ -1363,7 +1374,7 @@ class CMDPostProcess(ApiCall):
             failed=self.failed,
             delete=self.delete,
             mode=self.type,
-            force_next=self.force_next,
+            no_queue=self.no_queue,
         )
 
         if not self.return_data:
