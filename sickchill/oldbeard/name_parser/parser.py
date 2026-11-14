@@ -207,7 +207,8 @@ class NameParser(object):
 
             matches.append(result)
             # Later patterns cover names standard/fov did not match. A series plus episode
-            # numbers, or an air date, is enough; keep scanning season-only and no-season names.
+            # numbers is enough. An air date is not: scene_sports_format can tie
+            # scene_date_format and keep an event number out of the series name.
             if self._result_is_confident(result):
                 break
 
@@ -245,8 +246,6 @@ class NameParser(object):
 
     def _result_is_confident(self, result):
         """True when a later regex is only a fallback for names this match already explained."""
-        if result.air_date:
-            return True
         if result.series_name and result.season_number is not None and result.episode_numbers:
             return True
         # Absolute numbers are the anime list's own fallback. In the combined list they
@@ -555,11 +554,18 @@ class NameParser(object):
         if isinstance(release_group, list):
             release_group = release_group[0] if release_group else None
 
+        # guessit reports PROPER, REPACK, and REAL as other="Proper". _finalize reads that word from extra_info.
+        others = guess.get("other")
+        if not isinstance(others, list):
+            others = [others]
+        correction = [str(item) for item in others if str(item or "").lower() in {"proper", "repack", "real"}]
+
         result = ParseResult(
             name,
             series_name=series_name,
             season_number=season_number,
             episode_numbers=episodes,
+            extra_info=" ".join(correction) or None,
             release_group=str(release_group) if release_group else None,
             air_date=air_date,
             ab_episode_numbers=absolutes,

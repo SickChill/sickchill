@@ -1077,15 +1077,22 @@ def _sanitized_show_labels(show):
 
 
 def _check_against_names(nameInQuestion, show, season=-1):
-    showNames = []
-    if season in [-1, 1]:
-        showNames = [show.name]
+    """True when nameInQuestion is this show or one of its scene exceptions.
 
-    showNames.extend(sickchill.oldbeard.scene_exceptions.get_scene_exceptions(show.indexerid, season=season))
+    Own names are compared first. Startup naming validation parses a sample
+    episode before cache.db has scene_exceptions, and a missing table is fatal.
+    """
+    if season in (-1, 1):
+        for candidate in (getattr(show, "name", None), getattr(show, "show_name", None), getattr(show, "custom_name", None)):
+            if candidate and full_sanitizeSceneName(candidate) == nameInQuestion:
+                return True
 
-    for showName in showNames:
-        nameFromList = full_sanitizeSceneName(showName)
-        if nameFromList == nameInQuestion:
+    # Shows are loaded after the cache schema exists. Skip the query until then.
+    if not settings.show_list:
+        return False
+
+    for show_name in sickchill.oldbeard.scene_exceptions.get_scene_exceptions(show.indexerid, season=season):
+        if full_sanitizeSceneName(show_name) == nameInQuestion:
             return True
 
     return False
