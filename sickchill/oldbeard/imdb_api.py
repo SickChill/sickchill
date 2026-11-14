@@ -293,14 +293,15 @@ class ImdbFacade:
             else:
                 country_codes = str(origins or "").strip()
         except (TypeError, ValueError):
-                country_codes=""
+            country_codes = ""
+
         return SimpleNamespace(
             imdb_id=imdb_id,
             title=base.get("title"),
             year=base.get("year"),
             runtime=runtime,
             genres=genres,
-            countries = country_codes,
+            country_codes=country_codes,
             certification=certification or "",
             rating=rating,
             rating_count=rating_count,
