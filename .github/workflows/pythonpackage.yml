@@ -183,8 +183,7 @@ jobs:
         uses: docker/setup-buildx-action@v4
         with:
           buildkitd-config-inline: |
-            experimental = true
-            insecure-entitlements = ["security.insecure"]
+            debug = true
 
       - name: Test Docker Build
         uses: docker/build-push-action@v7
@@ -207,8 +206,6 @@ jobs:
             GIT_SHA=${{ github.sha }}
             GIT_BRANCH=${{ github.head_ref || (startsWith(github.ref, 'refs/heads/') && github.ref_name) || '' }}
             PIP_EXTRA_INDEX_URL=https://www.piwheels.org/simple
-          allow: |
-            security.insecure
 
       - name: Test Docker Image
         run: |
@@ -271,8 +268,7 @@ jobs:
         uses: docker/setup-buildx-action@v4
         with:
           buildkitd-config-inline: |
-            experimental = true
-            insecure-entitlements = ["security.insecure"]
+            debug = true
 
       - if: success() && !env.ACT && github.actor != 'dependabot[bot]'
         name: Login to DockerHub
@@ -309,8 +305,6 @@ jobs:
             GIT_SHA=${{ github.sha }}
             GIT_BRANCH=${{ github.head_ref || (startsWith(github.ref, 'refs/heads/') && github.ref_name) || '' }}
             PIP_EXTRA_INDEX_URL=https://www.piwheels.org/simple
-          allow: |
-            security.insecure
 
       # Second target build; skip on PRs (no registry push). Layer cache from the image build above.
       - if: success() && github.event_name != 'pull_request' && !env.ACT
@@ -332,8 +326,6 @@ jobs:
             GIT_SHA=${{ github.sha }}
             GIT_BRANCH=${{ github.head_ref || (startsWith(github.ref, 'refs/heads/') && github.ref_name) || '' }}
             PIP_EXTRA_INDEX_URL=https://www.piwheels.org/simple
-          allow: |
-            security.insecure
 
       - if: success() && github.event_name != 'pull_request' && !env.ACT
         name: List wheels directory
