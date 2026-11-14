@@ -1202,12 +1202,12 @@ class TVShow(object):
                     logger.info(f"{self.indexerid}: IMDb id {self.imdb_id} redirects to {new_imdb_id}")
                     self.imdb_id = new_imdb_id
 
-                # Normalize countries (imdbpie returns a tuple/list) to a pipe-separated string
-                countries_raw = getattr(title, "countries", ()) or ()
-                if isinstance(countries_raw, (list, tuple)):
-                    countries_str = "|".join(str(c) for c in countries_raw if c)
+                # country_codes from auxiliary origins (pipe-separated ISO alpha-2)
+                country_codes_raw = getattr(title, "country_codes", "") or ""
+                if isinstance(country_codes_raw, (list, tuple)):
+                    country_codes_str = "|".join(str(c) for c in country_codes_raw if c)
                 else:
-                    countries_str = str(countries_raw or "")
+                    country_codes_str = str(country_codes_raw or "")
 
                 self.imdb_info.update(
                     {
@@ -1218,8 +1218,8 @@ class TVShow(object):
                         "akas": self.imdb_info.get("akas", ""),
                         "runtimes": getattr(title, "runtime", self.runtime),
                         "genres": "|".join(getattr(title, "genres", []) or []),
-                        "countries": countries_str or self.imdb_info.get("countries", ""),
-                        "country_codes": self.imdb_info.get("country_codes", ""),
+                        "countries": "",  # legacy column, no longer populated
+                        "country_codes": country_codes_str or self.imdb_info.get("country_codes", ""),
                         "certificates": getattr(title, "certification", "") or "",
                         "rating": str(getattr(title, "rating", 0.0)),
                         "votes": str(getattr(title, "rating_count", 0)),
@@ -1561,7 +1561,7 @@ class TVShow(object):
                 "akas": self.imdb_info.get("akas") or "",
                 "runtimes": self.imdb_info.get("runtimes") or self.runtime or "",
                 "genres": self.imdb_info.get("genres") or "",
-                "countries": countries_val,
+                "countries": "",  # legacy column, cleared
                 "country_codes": self.imdb_info.get("country_codes") or "",
                 "certificates": self.imdb_info.get("certificates") or self.imdb_info.get("certification") or "",
                 "rating": str(self.imdb_info.get("rating") or 0.0),

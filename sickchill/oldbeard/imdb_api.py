@@ -286,13 +286,22 @@ class ImdbFacade:
             rating_count = int(ratings.get("ratingCount") or 0)
         except (TypeError, ValueError):
             rating_count = 0
+        try:
+            origins = aux.get("origins") or ()
+            if isinstance(origins, (list, tuple)):
+                country_codes = "|".join(str(c).strip() for c in origins if c)
+            else:
+                country_codes = str(origins or "").strip()
+        except (TypeError, ValueError):
+            country_codes = ""
+
         return SimpleNamespace(
             imdb_id=imdb_id,
             title=base.get("title"),
             year=base.get("year"),
             runtime=runtime,
             genres=genres,
-            countries="",
+            country_codes=country_codes,
             certification=certification or "",
             rating=rating,
             rating_count=rating_count,
