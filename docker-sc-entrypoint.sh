@@ -3,7 +3,7 @@
 set -euo pipefail
 
 # SickChill Docker entrypoint.sh (NAS-friendly, Python 3.14 image)
-# - Persistent venv at /.venv, beside /data. Both live in the Docker install folder.
+# - Persistent mount at /.venv, beside /data. The environment is /.venv/venv.
 # - Minimal PUID/PGID support via gosu
 # - Auto-update when image GIT_SHA changes. An unknown revision uses a content id of the template venv.
 # - Launch via the persistent interpreter (avoids relocated console-script shebangs)
@@ -19,9 +19,12 @@ VENV_IMAGE="${VENV_IMAGE_PATH:-/opt/sickchill/.venv}"
 IMAGE_REV_FILE="/sickchill/.image_revision"
 TEMPLATE_CONTENT_ID=""
 
-# /.venv is the sibling of /data. The image's /sickchill directory is not a volume.
-# An explicit VENV_RUNTIME_PATH still wins.
-VENV_PERSISTENT="${VENV_RUNTIME_PATH:-/.venv}"
+# /.venv is the sibling of /data and is the persistent mount. Never rename it.
+# The environment, staging directory, and backup live inside that mount.
+# An explicit VENV_RUNTIME_PATH still names the mount.
+VENV_MOUNT="${VENV_RUNTIME_PATH:-/.venv}"
+VENV_MOUNT="${VENV_MOUNT%/}"
+VENV_PERSISTENT="${VENV_MOUNT}/venv"
 
 umask "$UMASK"
 mkdir -p "$DATADIR"
@@ -95,16 +98,15 @@ repair_ownership() {
     fi
 }
 
-# Copy image venv to a temp sibling, validate SickChill import, then replace
-# VENV_PERSISTENT atomically. On any failure, leave the existing venv in place.
+# Copy the image venv inside the mount, validate SickChill import, then replace
+# the venv subdirectory. On any failure, leave the existing venv in place.
 install_persistent_venv() {
-    local parent tmp old
-    parent="$(dirname "$VENV_PERSISTENT")"
-    tmp="${parent}/.venv.new.$$"
-    old="${parent}/.venv.old.$$"
+    local tmp old
+    tmp="${VENV_MOUNT}/.venv.new.$$"
+    old="${VENV_MOUNT}/.venv.old.$$"
 
     echo "==> Installing persistent venv at $VENV_PERSISTENT"
-    mkdir -p "$parent"
+    mkdir -p "$VENV_MOUNT"
     rm -rf "$tmp" "$old"
 
     if ! cp -a "$VENV_IMAGE" "$tmp"; then

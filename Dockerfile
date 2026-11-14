@@ -2,7 +2,7 @@
 
 # NAS-friendly SickChill image, on the develop Python 3.14 packaging:
 # - Pre-builds a template venv at /opt/sickchill/.venv (image layer; not under a volume)
-# - Entrypoint copies it to /.venv, the sibling of /data, and launches that interpreter
+# - Entrypoint copies it to /.venv/venv inside the persistent mount and launches that interpreter
 # - Bakes Help & Info revision via sickchill/_revision.txt + SICKCHILL_* env
 # - gosu + PUID/PGID for Synology / DSM style installs
 # - Rustup uses a /proc/self/exe sed so builds do not need BuildKit security.insecure
