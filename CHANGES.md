@@ -1,6 +1,6 @@
 ### Unreleased
 
-* docker: NAS image tracks develop on Python 3.14, with a persistent `/data/.venv` and PUID/PGID. Drop the setuptools<81 pin, distutils helper, system libmediainfo, and BuildKit `security.insecure`
+* docker: NAS image tracks develop on Python 3.14, with persistent `data` and `.venv` in the Docker install folder, and PUID/PGID. Drop the setuptools<81 pin, distutils helper, system libmediainfo, and BuildKit `security.insecure`
 * feat: pause the search queue and retry connectivity on DNS/connect failures and hung searches
 * fix: use the new release group in `%RG` when replacing an existing episode file
 * fix: persist a filename-derived release group after a successful rename when none is stored

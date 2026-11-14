@@ -32,11 +32,11 @@ services:
       - SICKCHILL_BRANCH=${GIT_BRANCH:-}
 
     volumes:
-      # Main persistent folder - AFTER FIRST START this will contain:
-      #   .venv/          (full Python environment + sickchill package — lives on the NAS share)
-      #   .venv/.image_revision  (GIT_SHA used to detect image updates)
-      #   cache/ logs/
-      #   config.ini sickchill.db etc
+      # The sickchill folder is created by the Docker install.
+      # Only these two directories are defined inside it:
+      #   .venv   persistent Python environment  -> /.venv
+      #   data    config.ini, database, cache, logs -> /data
+      - /docker/sickchill/.venv:/.venv
       - /docker/sickchill/data:/data
 
       # Optional media folders (adjust paths for your NAS)

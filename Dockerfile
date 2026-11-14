@@ -1,8 +1,8 @@
 # syntax=docker/dockerfile:1
 
 # NAS-friendly SickChill image, on the develop Python 3.14 packaging:
-# - Pre-builds a template venv at /opt/sickchill/.venv (image layer; not under VOLUME)
-# - Entrypoint copies it to /data/.venv and launches via that interpreter (not stale shebangs)
+# - Pre-builds a template venv at /opt/sickchill/.venv (image layer; not under a volume)
+# - Entrypoint copies it to /.venv, the sibling of /data, and launches that interpreter
 # - Bakes Help & Info revision via sickchill/_revision.txt + SICKCHILL_* env
 # - gosu + PUID/PGID for Synology / DSM style installs
 # - Rustup uses a /proc/self/exe sed so builds do not need BuildKit security.insecure
@@ -10,12 +10,15 @@
 # Pruned after Python 3.14: setuptools<81 (pkg_resources pin), system libmediainfo
 # (pymediainfo vendors it), and python3-distutils-extra (distutils is gone).
 #
-# Note: the venv cannot be created at /data/.venv during build — /data is a runtime
-# volume/bind-mount and would hide any bake-time contents.
+# Note: Docker creates the install folder. Compose only names data and .venv inside it.
+# Do not bake the runtime venv at /.venv — that path is a bind mount.
+# The template stays at /opt/sickchill/.venv. The image directory /sickchill is not a volume.
 
 # docker run -dit --name sickchill --restart=on-failure \
 #   -e PUID=1026 -e PGID=100 -e TZ=America/New_York \
-#   -v /docker/sickchill/data:/data -p 8081:8081 sickchill/sickchill:develop
+#   -v /docker/sickchill/data:/data \
+#   -v /docker/sickchill/.venv:/.venv \
+#   -p 8081:8081 sickchill/sickchill:develop
 
 ARG PYTHON_VERSION=3.14
 FROM --platform=$TARGETPLATFORM python:${PYTHON_VERSION}-slim-bookworm AS base
@@ -32,12 +35,12 @@ ARG PIP_EXTRA_INDEX_URL="https://www.piwheels.org/simple"
 ARG GIT_SHA=unknown
 ARG GIT_BRANCH=unknown
 
-# Template venv in the image (copied to /data/.venv at runtime — see entrypoint).
-# Keep this off DATADIR so VOLUME/bind-mounts do not erase the bake.
+# Template venv in the image (copied to /.venv at runtime — see entrypoint).
+# Keep the template off the runtime path so the NAS mount does not erase the bake.
 # Do not key the venv path off HOME: the final stage sets HOME=/data.
 ENV DATADIR=/data
 ENV VENV_IMAGE_PATH=/opt/sickchill/.venv
-ENV VENV_RUNTIME_PATH=/data/.venv
+ENV VENV_RUNTIME_PATH=/.venv
 ENV POETRY_INSTALLER_PARALLEL=false
 ENV POETRY_VIRTUALENVS_CREATE=false
 ENV POETRY_VIRTUALENVS_IN_PROJECT=false
@@ -50,7 +53,11 @@ ENV PIP_EXTRA_INDEX_URL=$PIP_EXTRA_INDEX_URL
 
 # Runtime deps. gosu drops to PUID/PGID.
 # pymediainfo vendors libmediainfo; keep unrar for rarfile and curl for HEALTHCHECK.
-RUN mkdir -m 777 -p /sickchill "$VENV_IMAGE_PATH" "$POETRY_CACHE_DIR"
+# The template venv is root-owned and not writable by the app. The persistent copy is the writable one.
+# /sickchill and the Poetry cache stay writable for the image build.
+RUN mkdir -m 777 -p /sickchill "$POETRY_CACHE_DIR" \
+ && mkdir -p "$VENV_IMAGE_PATH" \
+ && chmod 755 "$VENV_IMAGE_PATH"
 RUN sed -i "s/Components: main/Components: main contrib non-free/" /etc/apt/sources.list.d/debian.sources
 RUN apt-get update -qq && apt-get upgrade -yqq && \
     apt-get install -yqq curl libxml2 libxslt1.1 libffi8 libssl3 unrar gosu ca-certificates && \
@@ -171,7 +178,7 @@ ENV SICKCHILL_BRANCH=$GIT_BRANCH
 LABEL org.opencontainers.image.revision=$GIT_SHA
 
 # Image revision marker for entrypoint persistent-venv refresh.
-# Written into the venv so cp -a carries it into /data/.venv on first start.
+# Written into the venv so cp -a carries it into /.venv on first start.
 RUN if [ -n "$GIT_SHA" ] && [ "$GIT_SHA" != "unknown" ]; then \
       printf '%s\n' "$GIT_SHA" > /sickchill/.image_revision && \
       printf '%s\n' "$GIT_SHA" > "$VENV_IMAGE_PATH/.image_revision"; \
@@ -180,10 +187,11 @@ RUN if [ -n "$GIT_SHA" ] && [ "$GIT_SHA" != "unknown" ]; then \
       printf 'unknown\n' > "$VENV_IMAGE_PATH/.image_revision"; \
     fi
 
-# Runtime configuration — datadir is the accessible NAS mount
+# Runtime configuration - data and .venv are the mounts.
+# The listen port is published by Compose, not set here.
 ENV HOME=/data
 ENV DATADIR=/data
-ENV VENV_RUNTIME_PATH=/data/.venv
+ENV VENV_RUNTIME_PATH=/.venv
 ENV PATH="$VENV_IMAGE_PATH/bin:$PATH"
 WORKDIR /data
 
@@ -191,11 +199,11 @@ COPY docker-sc-entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
 ENTRYPOINT ["entrypoint.sh"]
-CMD ["sickchill", "--nolaunch", "--datadir", "/data", "--port", "8081"]
+CMD ["sickchill", "--nolaunch", "--datadir", "/data"]
 
 EXPOSE 8081
-# Operator drop-in plugins: /data/plugins (host: $DATA_DIR/plugins or settings.PLUGIN_DIR)
-VOLUME /data /downloads /tv
+# Operator drop-in plugins: /data/plugins (host data folder, or settings.PLUGIN_DIR)
+VOLUME /data /.venv /downloads /tv
 
 HEALTHCHECK --interval=5m --timeout=3s \
     CMD bash -c 'if [ "$(curl -f http://localhost:8081/ui/get_messages -s)" == "{}" ]; then echo "sickchill is alive"; elif [ "$(curl -fk https://localhost:8081/ui/get_messages -s)" == "{}" ]; then echo "sickchill is alive"; else echo "sickchill is not responding" && exit 1; fi'

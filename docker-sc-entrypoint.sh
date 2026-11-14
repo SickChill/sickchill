@@ -3,9 +3,9 @@
 set -euo pipefail
 
 # SickChill Docker entrypoint.sh (NAS-friendly, Python 3.14 image)
-# - Persistent venv in datadir (/data/.venv) — accessible on the NAS share
+# - Persistent venv at /.venv, beside /data. Both live in the Docker install folder.
 # - Minimal PUID/PGID support via gosu
-# - Auto-update when image GIT_SHA / .image_revision changes (aligned with develop bake)
+# - Auto-update when image GIT_SHA changes. An unknown revision uses a content id of the template venv.
 # - Launch via the persistent interpreter (avoids relocated console-script shebangs)
 
 echo "==> SickChill container starting..."
@@ -15,21 +15,13 @@ PUID=${PUID:-1000}
 PGID=${PGID:-1000}
 DATADIR=${DATADIR:-/data}
 UMASK=${UMASK:-002}
-PORT=${PORT:-8081}
 VENV_IMAGE="${VENV_IMAGE_PATH:-/opt/sickchill/.venv}"
 IMAGE_REV_FILE="/sickchill/.image_revision"
+TEMPLATE_CONTENT_ID=""
 
-# Keep DATADIR and runtime venv path consistent:
-# - default / image pairing → ${DATADIR}/.venv
-# - explicit custom VENV_RUNTIME_PATH (not the legacy /data/.venv default) is respected
-case "${VENV_RUNTIME_PATH:-}" in
-    "" | "${DATADIR}/.venv" | /data/.venv)
-        VENV_PERSISTENT="${DATADIR}/.venv"
-        ;;
-    *)
-        VENV_PERSISTENT="$VENV_RUNTIME_PATH"
-        ;;
-esac
+# /.venv is the sibling of /data. The image's /sickchill directory is not a volume.
+# An explicit VENV_RUNTIME_PATH still wins.
+VENV_PERSISTENT="${VENV_RUNTIME_PATH:-/.venv}"
 
 umask "$UMASK"
 mkdir -p "$DATADIR"
@@ -50,18 +42,57 @@ write_persistent_revision() {
 }
 
 # After cp -a, console scripts still shebang the image path. Point them at the
-# persistent interpreter so PATH lookups and manual bin/* use stay consistent.
+# final persistent interpreter. $2 is that path when $1 is still a staging dir.
 fix_venv_shebangs() {
     local venv="$1"
-    local shebang="#!${venv}/bin/python"
+    local target="${2:-$1}"
+    local shebang="#!${target}/bin/python"
     local script
     for script in "$venv"/bin/*; do
         [ -f "$script" ] && [ ! -L "$script" ] || continue
         # Only rewrite Python shebang scripts
         if head -n 1 "$script" 2>/dev/null | grep -q '^#!.*python'; then
             sed -i "1c${shebang}" "$script"
+            chmod a+x "$script"
         fi
     done
+}
+
+# Stable id of the image template. Git SHA "unknown" must not count as "current".
+template_content_id() {
+    if [ -z "$TEMPLATE_CONTENT_ID" ]; then
+        TEMPLATE_CONTENT_ID="$(
+            find "$VENV_IMAGE" -type f \
+                ! -name '.image_revision' \
+                ! -name '.image_content_id' \
+                -printf '%P %s %T@\n' \
+                | sort \
+                | sha256sum \
+                | awk '{print $1}'
+        )"
+    fi
+    printf '%s\n' "$TEMPLATE_CONTENT_ID"
+}
+
+persistent_content_id() {
+    if [ -f "$VENV_PERSISTENT/.image_content_id" ]; then
+        tr -d '[:space:]' <"$VENV_PERSISTENT/.image_content_id"
+    fi
+}
+
+# Root start: if a tree is not the requested identity, fix it before exec.
+repair_ownership() {
+    local path="$1"
+    [ "$(id -u)" = "0" ] || return 0
+    [ "$PUID" = "0" ] && return 0
+    [ -d "$path" ] || return 0
+    local uid gid
+    uid="$(stat -c '%u' "$path")"
+    gid="$(stat -c '%g' "$path")"
+    if [ "$uid" != "$PUID" ] || [ "$gid" != "$PGID" ]; then
+        echo "==> $path ownership ${uid}:${gid} does not match ${PUID}:${PGID} — repairing"
+        chown -R "$PUID:$PGID" "$path" || true
+    fi
 }
 
 # Copy image venv to a temp sibling, validate SickChill import, then replace
@@ -82,9 +113,11 @@ install_persistent_venv() {
         return 1
     fi
 
-    fix_venv_shebangs "$tmp"
-    # Stamp revision on the staged tree before swap (only committed if validation passes)
+    # Shebangs name the final path, not the staging directory that is removed after mv.
+    fix_venv_shebangs "$tmp" "$VENV_PERSISTENT"
+    # Stamp markers on the staged tree before swap (only committed if validation passes)
     image_revision >"$tmp/.image_revision"
+    template_content_id >"$tmp/.image_content_id"
 
     if [ ! -x "$tmp/bin/python" ] || ! "$tmp/bin/python" -c 'import SickChill'; then
         echo "ERROR: staged venv failed SickChill import check — keeping existing persistent venv (if any)"
@@ -121,7 +154,7 @@ if [ ! -x "$VENV_PERSISTENT/bin/python" ]; then
 
     # First run: chown the whole datadir
     if [ "$(id -u)" = "0" ]; then
-        chown -R "$PUID:$PGID" "$DATADIR" || true
+        chown -R "$PUID:$PGID" "$DATADIR" "$VENV_PERSISTENT" || true
     fi
     echo "==> Persistent venv initialized (revision $(image_revision))."
 
@@ -149,8 +182,18 @@ else
             chown -R "$PUID:$PGID" "$VENV_PERSISTENT" || true
         fi
         echo "==> Persistent venv updated."
+    elif [ "$CURRENT" = "unknown" ] && [ "$(template_content_id)" != "$(persistent_content_id)" ]; then
+        echo "==> Image revision is unknown and the template venv changed — updating persistent venv..."
+        install_persistent_venv
+
+        if [ "$(id -u)" = "0" ]; then
+            chown -R "$PUID:$PGID" "$VENV_PERSISTENT" || true
+        fi
+        echo "==> Persistent venv updated."
     else
         fix_venv_shebangs "$VENV_PERSISTENT"
+        repair_ownership "$DATADIR"
+        repair_ownership "$VENV_PERSISTENT"
     fi
 fi
 
@@ -172,7 +215,19 @@ fi
 # invocation so we never depend on image-path shebangs after the venv copy.
 if [ "$#" -gt 0 ] && { [ "$1" = "sickchill" ] || [ "$1" = "SickChill" ]; }; then
     shift
-    set -- "$PYTHON_BIN" -c 'import sys; sys.argv[0] = "sickchill"; from SickChill import main; raise SystemExit(main())' "$@"
+    launch_args=()
+    has_datadir=0
+    for arg in "$@"; do
+        case "$arg" in
+            --datadir | --datadir=*) has_datadir=1 ;;
+        esac
+        launch_args+=("$arg")
+    done
+    # Datadir default comes from DATADIR. --port is left to the process and compose publish.
+    if [ "$has_datadir" -eq 0 ]; then
+        launch_args+=(--datadir "$DATADIR")
+    fi
+    set -- "$PYTHON_BIN" -c 'import sys; sys.argv[0] = "sickchill"; from SickChill import main; raise SystemExit(main())' "${launch_args[@]}"
 fi
 
 # Drop privileges + exec CMD
