@@ -600,7 +600,6 @@ class QueueItemAdd(ShowQueueItem):
             logger.debug(traceback.format_exc())
 
         # if they set default ep status to WANTED then run the backlog to search for episodes
-        # FIXME: This needs to be a backlog queue item!!!
         if self.show.default_ep_status == WANTED:
             logger.info("Launching backlog for this show since its episodes are WANTED")
             settings.backlogSearchScheduler.action.searchBacklog([self.show])

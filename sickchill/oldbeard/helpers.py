@@ -687,11 +687,12 @@ def sanitizeSceneName(name, anime=False):
     return name
 
 
-def scene_title_matches_show(title, show_name, anime=False):
+def scene_title_matches_show(title, show_name, anime=False, guess=None):
     """True when guessit series title equals the show name (same path as postProcessor.guessit_findit)."""
     if not title or not show_name:
         return False
-    guess = guessit(title, {"type": "episode"})
+    if guess is None:
+        guess = guessit(title, {"type": "episode"})
     parsed_title = guess.get("title")
     if isinstance(parsed_title, list):
         parsed_title = " ".join(str(part) for part in parsed_title)
@@ -731,19 +732,21 @@ def _guessit_int(value):
     return None if value is None else int(value)
 
 
-def split_release_fingerprint(name, anime=False):
+def split_release_fingerprint(name, anime=False, guess=None):
     """Split a history release using guessit, EpisodeTags, and Quality.nameQuality."""
     if not name:
         return None
     name = str(remove_extension(Path(str(name)).name))
-    guess = guessit(name, {"type": "episode"})
+    if guess is None:
+        guess = guessit(name, {"type": "episode"})
     title = sanitizeSceneName(_guessit_title(guess), anime=anime).lower()
     if not title:
         return None
 
-    tags = EpisodeTags(name)
-    quality_token = tags.res or str(guess.get("screen_size") or "")
-    quality = Quality.nameQuality(name, anime=anime)
+    quality_token = str(guess.get("screen_size") or "")
+    if not quality_token:
+        quality_token = EpisodeTags(name).res or ""
+    quality = Quality.nameQuality(name, anime=anime, guess=guess)
     tokens = _release_tokens(name)
     quality_idx = None
     if quality_token:
@@ -1058,6 +1061,21 @@ def full_sanitizeSceneName(name):
     return re.sub("[. -]", " ", sanitizeSceneName(name)).lower().strip()
 
 
+def _sanitized_show_labels(show):
+    """Sanitized show and custom names, reused until those strings change."""
+    key = (show.show_name, show.custom_name)
+    if getattr(show, "_sanitized_label_key", None) == key:
+        return show._sanitized_label_values
+    values = []
+    if show.show_name:
+        values.append(full_sanitizeSceneName(show.show_name))
+    if show.custom_name:
+        values.append(full_sanitizeSceneName(show.custom_name))
+    show._sanitized_label_key = key
+    show._sanitized_label_values = values
+    return values
+
+
 def _check_against_names(nameInQuestion, show, season=-1):
     showNames = []
     if season in [-1, 1]:
@@ -1091,12 +1109,7 @@ def get_show(name, try_indexers=False):
             show_object = Show.find(settings.show_list, int(cache))
         else:
             check_names = [full_sanitizeSceneName(name), name]
-            show_matches = [
-                show
-                for show in settings.show_list
-                if (show.show_name and full_sanitizeSceneName(show.show_name) in check_names)
-                or (show.custom_name and full_sanitizeSceneName(show.custom_name) in check_names)
-            ]
+            show_matches = [show for show in settings.show_list if any(label in check_names for label in _sanitized_show_labels(show))]
 
             if len(show_matches) == 1:
                 show_object = show_matches[0]
