@@ -4,7 +4,6 @@ import time
 from base64 import b16encode, b32decode
 from datetime import datetime
 from email.utils import parsedate_to_datetime
-from itertools import chain
 from os.path import join
 from random import shuffle
 from typing import TYPE_CHECKING, Callable, ClassVar, Dict, Iterable, List, Union
@@ -204,8 +203,9 @@ class GenericProvider(object):
         items_list = []
         searched_scene_season = None
 
+        cached = self.cache.find_needed_episodes(episodes, manual_search, download_current_quality) if episodes else {}
         for episode in episodes:
-            cache_result = self.cache.search_cache(episode, manual_search=manual_search, down_cur_quality=download_current_quality)
+            cache_result = cached.get(episode, [])
             if cache_result:
                 if episode.episode not in results:
                     results[episode.episode] = cache_result
@@ -230,27 +230,7 @@ class GenericProvider(object):
             for search_string in search_strings:
                 items_list += self.search(search_string)
 
-        if items_list:
-            items = {}
-            unknown_items = []
-
-            for item in items_list:
-                quality = self.get_quality(item, anime=show.is_anime)
-
-                if quality == Quality.UNKNOWN:
-                    unknown_items.append(item)
-                elif quality == Quality.NONE:
-                    pass  # Skipping an HEVC when HEVC is not allowed by settings
-                else:
-                    if quality not in items:
-                        items[quality] = []
-                    items[quality].append(item)
-
-            items_list = list(chain(*[v for (k_, v) in sorted(items.items(), reverse=True)]))
-            items_list += unknown_items
-
-        cache_list = []
-
+        parsed_rows = []
         for item in items_list:
             title, url = self._get_title_and_url(item)
             if is_blocked_search_result(title, url):
@@ -265,8 +245,20 @@ class GenericProvider(object):
                 logger.debug(f"{error}")
                 continue
 
-            show_object = parse_result.show
             quality = parse_result.quality
+            if quality == Quality.NONE:
+                continue  # Skipping an HEVC when HEVC is not allowed by settings
+            parsed_rows.append((quality, item, title, url, seeders, leechers, size, parse_result))
+
+        unknown_rows = [row for row in parsed_rows if row[0] == Quality.UNKNOWN]
+        known_rows = [row for row in parsed_rows if row[0] != Quality.UNKNOWN]
+        known_rows.sort(key=lambda row: row[0], reverse=True)
+        parsed_rows = known_rows + unknown_rows
+
+        cache_list = []
+
+        for quality, item, title, url, seeders, leechers, size, parse_result in parsed_rows:
+            show_object = parse_result.show
             release_group = parse_result.release_group
             version = parse_result.version
             skip_release = False

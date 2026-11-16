@@ -13,11 +13,10 @@ from sickchill.helper.exceptions import (
     CantRefreshShowException,
     CantRemoveShowException,
     CantUpdateShowException,
-    EpisodeDeletedException,
     MultipleShowObjectsException,
     ShowDirectoryNotFoundException,
 )
-from sickchill.oldbeard import generic_queue, name_cache, notifiers, scene_numbering, ui
+from sickchill.oldbeard import db, generic_queue, name_cache, notifiers, scene_numbering, ui
 from sickchill.oldbeard.blackandwhitelist import BlackAndWhiteList
 from sickchill.oldbeard.common import WANTED
 from sickchill.oldbeard.helpers import chmodAsParent, makeDir, sortable_name
@@ -841,20 +840,29 @@ class QueueItemUpdate(ShowQueueItem):
             indexer_episodes = dict()
 
         for season in indexer_episodes:
+            season_rows = database_episodes.get(season)
+            if not season_rows:
+                continue
             for episode in indexer_episodes[season]:
-                self.show.get_episode(season, episode).save_to_db()
-                if season in database_episodes and episode in database_episodes[season]:
-                    del database_episodes[season][episode]
+                season_rows.pop(episode, None)
 
         if indexer_episodes:
             # remaining episodes in the database list are not on the indexer, just delete them from the DB
+            deletes = []
             for season in database_episodes:
                 for episode in database_episodes[season]:
                     logger.info("Permanently deleting episode {0:02d}E{1:02d} from the database".format(season, episode))
-                    try:
-                        self.show.get_episode(season, episode).delete_episode()
-                    except EpisodeDeletedException:
-                        pass
+                    season_map = self.show.episodes.get(season)
+                    if season_map is not None:
+                        season_map.pop(episode, None)
+                    deletes.append(
+                        [
+                            "DELETE FROM tv_episodes WHERE showid = ? AND season = ? AND episode = ?",
+                            [self.show.indexerid, season, episode],
+                        ]
+                    )
+            if deletes:
+                db.DBConnection().mass_action(deletes)
 
         # Pending XEM refresh requested by editShow (scene/anime change) — run off the web thread
         if getattr(self.show, "_pending_xem_refresh", False):

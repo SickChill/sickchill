@@ -571,33 +571,36 @@ def search_providers(show, episodes, manual=False, downCurQuality=False):
             logger.info(f"The quality of the season {best_season_result.provider.provider_type} is {Quality.qualityStrings[season_quality]}")
 
             main_db_con = db.DBConnection()
-            all_episodes = [
-                int(x["episode"])
-                for x in main_db_con.select(
-                    f"SELECT episode FROM tv_episodes WHERE showid = ? AND ( season IN ( {','.join(['?'] * len(searched_seasons))} ) )",
-                    [show.indexerid] + list(searched_seasons),
+            if searched_seasons:
+                placeholders = ",".join(["?"] * len(searched_seasons))
+                pair_rows = main_db_con.select(
+                    f"SELECT season, episode, status FROM tv_episodes WHERE showid = ? AND season IN ({placeholders})",
+                    [show.indexerid, *list(searched_seasons)],
                 )
-            ]
+            else:
+                pair_rows = []
+            pairs = [(int(row["season"]), int(row["episode"]), int(row["status"])) for row in pair_rows]
 
-            logger.info(f"Executed query: [SELECT episode FROM tv_episodes WHERE showid = {show.indexerid} AND season in {searched_seasons}]")
-            logger.debug(f"Episode list: {all_episodes}")
+            logger.info(f"Executed query: [SELECT season, episode, status FROM tv_episodes WHERE showid = {show.indexerid} AND season in {searched_seasons}]")
+            logger.debug(f"Episode list: {pairs}")
 
             all_wanted = True
             some_wanted = False
-            for episode_number in all_episodes:
-                for season in (x.season for x in episodes):
-                    if not show.want_episode(season, episode_number, season_quality, downCurQuality):
-                        all_wanted = False
-                    else:
-                        some_wanted = True
+            for season, episode_number, status in pairs:
+                if not show.want_episode(season, episode_number, season_quality, downCurQuality, known_status=status):
+                    all_wanted = False
+                else:
+                    some_wanted = True
+                if some_wanted and not all_wanted:
+                    break
+
+            def season_episode_objects():
+                return [show.get_episode(season, episode_number) for season, episode_number, _status in pairs]
 
             # if we need every ep in the season and there's nothing better, then just download this and be done with it (unless single episodes are preferred)
             if all_wanted and best_season_result.quality == highest_quality_overall:
                 logger.info(f"Every ep in this season is needed, downloading the whole {best_season_result.provider.provider_type} {best_season_result.name}")
-                episode_objects = []
-                for episode_number in all_episodes:
-                    for season in {x.season for x in episodes}:
-                        episode_objects.append(show.get_episode(season, episode_number))
+                episode_objects = season_episode_objects()
                 best_season_result.episodes = episode_objects
 
                 # Remove provider from thread name before return results
@@ -632,10 +635,7 @@ def search_providers(show, episodes, manual=False, downCurQuality=False):
                     logger.info(
                         "Adding multi-ep result for full-season torrent. Set the episodes you don't want to 'don't download' in your torrent client if desired!"
                     )
-                    episode_objects = []
-                    for episode_number in all_episodes:
-                        for season in {x.season for x in episodes}:
-                            episode_objects.append(show.get_episode(season, episode_number))
+                    episode_objects = season_episode_objects()
                     best_season_result.episodes = episode_objects
 
                     if MULTI_EP_RESULT in found_results[curProvider.name]:

@@ -330,21 +330,97 @@ class DBConnection(object):
 
         return sql_results
 
+    @staticmethod
+    def _assignment_clause(my_dict, separator):
+        return separator.join(["{} = ?".format(x) for x in my_dict])
+
+    def _upsert_statements(self, table_name, value_dict, key_dict):
+        assert None not in list(key_dict.values()), _("Control dict to upsert cannot have values of None!")
+
+        update = None
+        if key_dict:
+            # language=TEXT
+            query = "UPDATE [{table}] SET {pairs} WHERE {control}".format(
+                table=table_name,
+                pairs=self._assignment_clause(value_dict, ", "),
+                control=self._assignment_clause(key_dict, " AND "),
+            )
+            update = (query, list(value_dict.values()) + list(key_dict.values()))
+
+        keys = list(value_dict) + list(key_dict)
+        # language=TEXT
+        insert_query = "INSERT INTO '{table}' ({columns}) VALUES ({replacements})".format(
+            table=table_name,
+            columns=", ".join(keys),
+            replacements=", ".join(["?"] * len(keys)),
+        )
+        insert = (insert_query, list(value_dict.values()) + list(key_dict.values()))
+        return update, insert
+
+    def _apply_upsert(self, table_name, value_dict, key_dict, execute):
+        """Run UPDATE then INSERT. ``execute`` must not commit; the caller owns the transaction."""
+        update, insert = self._upsert_statements(table_name, value_dict, key_dict)
+        if update:
+            updated = execute(update[0], update[1])
+            if not self._write_succeeded(updated):
+                logger.warning(_("Upsert failed for {table}").format(table=table_name))
+                return False
+            # rowcount is this statement only. total_changes includes every write on the shared connection.
+            if updated.rowcount:
+                return True
+
+        inserted = execute(insert[0], insert[1])
+        if not self._write_succeeded(inserted):
+            logger.warning(_("Upsert failed for {table}").format(table=table_name))
+            return False
+        return True
+
     def mass_upsert(self, table_name, query_list, log_transaction=False):
         # type: (str, List[tuple, list], bool) -> bool
         """
-        Execute multiple queries
+        Update or insert every row in one transaction.
 
         :param table_name: name of table to upsert
-        :param query_list: list of queries
-        :param log_transaction: Boolean to wrap all in one transaction
+        :param query_list: list of (value_dict, key_dict) pairs
+        :param log_transaction: Boolean to log each statement at debug
         :return: True when every upsert wrote a row
         """
+        if not query_list:
+            return True
+
         log_level = (logger.DB, logger.DEBUG)[log_transaction]
         succeeded = True
-        for values, control in query_list:
-            logger.log(log_level, _("{filename}: {query} [{control}]").format(filename=self.filename, query=values, control=control))
-            succeeded = self.upsert(table_name, values, control) and succeeded
+        attempt = 0
+
+        with db_locks[self.filename]:
+            self._set_row_factory()
+            while attempt <= self.MAX_ATTEMPTS:
+                succeeded = True
+                try:
+                    for values, control in query_list:
+                        logger.log(log_level, _("{filename}: {query} [{control}]").format(filename=self.filename, query=values, control=control))
+                        if not self._apply_upsert(table_name, values, control, self._execute):
+                            succeeded = False
+                    self.connection.commit()
+                    logger.log(log_level, _("Transaction with {count:d} upserts executed successfully").format(count=len(query_list)))
+                    break
+                except (sqlite3.OperationalError, sqlite3.DatabaseError) as error:
+                    succeeded = False
+                    if self.connection:
+                        self.connection.rollback()
+                    severity = (logger.ERROR, logger.WARNING)[self._is_locked_or_denied(error) and attempt < self.MAX_ATTEMPTS]
+                    self._error_log_helper(error, severity, locals(), attempt, "db.mass_upsert")
+                    if severity == logger.ERROR:
+                        raise
+                    time.sleep(1)
+                except Exception as error:
+                    if self.connection:
+                        self.connection.rollback()
+                    self._error_log_helper(error, logger.ERROR, locals(), attempt, "db.mass_upsert")
+                    raise
+
+                attempt += 1
+
         return succeeded
 
     def upsert(self, table_name, value_dict, key_dict):
@@ -357,39 +433,7 @@ class DBConnection(object):
         :return: True when this call's update changed a row or its insert executed.
             False when that write did not run. Fatal database errors still raise.
         """
-
-        assert None not in list(key_dict.values()), _("Control dict to upsert cannot have values of None!")
-
-        def make_string(my_dict, separator):
-            return separator.join(["{} = ?".format(x) for x in my_dict])
-
-        if key_dict:
-            # language=TEXT
-            query = "UPDATE [{table}] SET {pairs} WHERE {control}".format(
-                table=table_name, pairs=make_string(value_dict, ", "), control=make_string(key_dict, " AND ")
-            )
-            updated = self.action(query, list(value_dict.values()) + list(key_dict.values()))
-            if not self._write_succeeded(updated):
-                logger.warning(_("Upsert failed for {table}").format(table=table_name))
-                return False
-            # rowcount is this statement only. total_changes includes every write on the shared connection.
-            if updated.rowcount:
-                return True
-
-        keys = list(value_dict) + list(key_dict)
-        count = len(keys)
-        columns = ", ".join(keys)
-        replacements = ", ".join(["?"] * count)
-        values = list(value_dict.values()) + list(key_dict.values())
-
-        # language=TEXT
-        query = "INSERT INTO '{table}' ({columns}) VALUES ({replacements})".format(table=table_name, columns=columns, replacements=replacements)
-
-        if not self._write_succeeded(self.action(query, values)):
-            logger.warning(_("Upsert failed for {table}").format(table=table_name))
-            return False
-
-        return True
+        return self._apply_upsert(table_name, value_dict, key_dict, lambda query, args: self.action(query, args))
 
     def table_info(self, table_name):
         """
