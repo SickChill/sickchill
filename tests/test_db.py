@@ -104,32 +104,32 @@ class CacheDBTests(conftest.SickChillTestDBCase):
 
         assert num_rows() == 1, num_rows()
 
-        self.cache_db_con.upsert("results", self.record[0], self.record[1])
+        assert self.cache_db_con.upsert("results", self.record[0], self.record[1])
         assert num_rows() == 1, num_rows()
 
-        self.cache_db_con.mass_upsert("results", [self.record], log_transaction=True)
+        assert self.cache_db_con.mass_upsert("results", [self.record], log_transaction=True)
         assert num_rows() == 1
 
         self.record[0]["url"] = self.record[1]["url"] = "new_url"
 
-        self.cache_db_con.upsert("results", self.record[0], self.record[1])
+        assert self.cache_db_con.upsert("results", self.record[0], self.record[1])
         assert num_rows() == 2
 
-        self.cache_db_con.mass_upsert("results", [self.record], log_transaction=True)
+        assert self.cache_db_con.mass_upsert("results", [self.record], log_transaction=True)
         assert num_rows() == 2
 
-        self.cache_db_con.upsert("results", self.record[0], self.record[1])
+        assert self.cache_db_con.upsert("results", self.record[0], self.record[1])
         assert num_rows() == 2
 
         self.record[0]["url"] = self.record[1]["url"] = "third_url"
         self.record[0]["seeders"] = 9999
-        self.cache_db_con.mass_upsert("results", [self.record], log_transaction=True)
+        assert self.cache_db_con.mass_upsert("results", [self.record], log_transaction=True)
         assert num_rows() == 3
 
-        self.cache_db_con.upsert("results", self.record[0], self.record[1])
+        assert self.cache_db_con.upsert("results", self.record[0], self.record[1])
         assert num_rows() == 3
 
-        self.cache_db_con.mass_upsert("results", [self.record], log_transaction=True)
+        assert self.cache_db_con.mass_upsert("results", [self.record], log_transaction=True)
         assert num_rows() == 3
 
         results = self.cache_db_con.select("SELECT * FROM results WHERE url = ?", [self.record[1]["url"]])

@@ -129,6 +129,16 @@ class DBConnection(object):
         except Exception:
             raise
 
+    @staticmethod
+    def _write_succeeded(result) -> bool:
+        """True when a write executed.
+
+        action() returns a cursor after a committed write. An empty list means
+        the retry loop gave up, which is not a successful write. Selects are
+        not checked here: an empty list is a real result for them.
+        """
+        return result is not None and not isinstance(result, list)
+
     def get_db_version(self):
         """
         Fetch major database version
@@ -321,44 +331,49 @@ class DBConnection(object):
         return sql_results
 
     def mass_upsert(self, table_name, query_list, log_transaction=False):
-        # type: (str, List[tuple, list], bool) -> None
+        # type: (str, List[tuple, list], bool) -> bool
         """
         Execute multiple queries
 
         :param table_name: name of table to upsert
         :param query_list: list of queries
         :param log_transaction: Boolean to wrap all in one transaction
-        :return: None
+        :return: True when every upsert wrote a row
         """
         log_level = (logger.DB, logger.DEBUG)[log_transaction]
+        succeeded = True
         for values, control in query_list:
             logger.log(log_level, _("{filename}: {query} [{control}]").format(filename=self.filename, query=values, control=control))
-            self.upsert(table_name, values, control)
+            succeeded = self.upsert(table_name, values, control) and succeeded
+        return succeeded
 
     def upsert(self, table_name, value_dict, key_dict):
         """
         Update values, or if no updates done, insert values
-        TODO: Make this return true/false on success/error
 
         :param table_name: table to update/insert
         :param value_dict: values in table to update/insert
         :param key_dict:  columns in table to update/insert
+        :return: True when the update or insert executed, False when the write did not run.
+            Fatal database errors still raise.
         """
 
         changesBefore = self.connection.total_changes
 
         assert None not in list(key_dict.values()), _("Control dict to upsert cannot have values of None!")
+
+        def make_string(my_dict, separator):
+            return separator.join(["{} = ?".format(x) for x in my_dict])
+
         if key_dict:
-
-            def make_string(my_dict, separator):
-                return separator.join(["{} = ?".format(x) for x in my_dict])
-
             # language=TEXT
             query = "UPDATE [{table}] SET {pairs} WHERE {control}".format(
                 table=table_name, pairs=make_string(value_dict, ", "), control=make_string(key_dict, " AND ")
             )
 
-            self.action(query, list(value_dict.values()) + list(key_dict.values()))
+            if not self._write_succeeded(self.action(query, list(value_dict.values()) + list(key_dict.values()))):
+                logger.warning(_("Upsert failed for {table}").format(table=table_name))
+                return False
 
         if self.connection.total_changes == changesBefore:
             keys = list(value_dict) + list(key_dict)
@@ -370,7 +385,11 @@ class DBConnection(object):
             # language=TEXT
             query = "INSERT INTO '{table}' ({columns}) VALUES ({replacements})".format(table=table_name, columns=columns, replacements=replacements)
 
-            self.action(query, values)
+            if not self._write_succeeded(self.action(query, values)):
+                logger.warning(_("Upsert failed for {table}").format(table=table_name))
+                return False
+
+        return True
 
     def table_info(self, table_name):
         """
@@ -416,18 +435,26 @@ class DBConnection(object):
     def add_column(self, table, column, col_type="NUMERIC", default=0):
         """
         Adds a column to a table, default column type is NUMERIC
-        TODO: Make this return true/false on success/failure
 
         :param table: Table to add column too
         :param column: Column name to add
         :param col_type: Column type to add
         :param default: Default value for column
+        :return: True when the column was added and its default was written.
+            False when either write did not run. Fatal database errors still raise.
         """
 
         # language=TEXT
-        self.action("ALTER TABLE [{0}] ADD {1} {2}".format(table, column, col_type))
+        altered = self.action("ALTER TABLE [{0}] ADD {1} {2}".format(table, column, col_type))
+        if not self._write_succeeded(altered):
+            logger.warning(_("Failed to add column {column} to {table}").format(column=column, table=table))
+            return False
         # language=TEXT
-        self.action("UPDATE [{0}] SET {1} = ?".format(table, column), (default,))
+        updated = self.action("UPDATE [{0}] SET {1} = ?".format(table, column), (default,))
+        if not self._write_succeeded(updated):
+            logger.warning(_("Failed to set the default for {column} on {table}").format(column=column, table=table))
+            return False
+        return True
 
 
 def sanity_check_database(connection, sanity_check):
@@ -496,25 +523,32 @@ class SchemaUpgrade(object):
         return self.connection.has_index(index_name=index_name)
 
     def add_column(self, table, column, col_type="NUMERIC", default=0):
-        self.connection.add_column(table=table, column=column, col_type=col_type, default=default)
+        return self.connection.add_column(table=table, column=column, col_type=col_type, default=default)
 
     def get_db_version(self):
         return self.connection.get_db_version()
 
+    def _require_version_write(self, result, statement):
+        if not self.connection._write_succeeded(result):
+            raise sqlite3.OperationalError(f"Failed to update db_version: {statement}")
+
     def increment_db_version(self):
         new_version = self.get_db_version() + 1
-        self.connection.action("UPDATE db_version SET db_version = ?", [new_version])
+        statement = "UPDATE db_version SET db_version = ?"
+        self._require_version_write(self.connection.action(statement, [new_version]), statement)
         return new_version
 
     def inc_major_version(self):
         major_version, minor_version = self.connection.version
         major_version += 1
         minor_version = 0
-        self.connection.action("UPDATE db_version SET db_version = ?, db_minor_version = ?", [major_version, minor_version])
+        statement = "UPDATE db_version SET db_version = ?, db_minor_version = ?"
+        self._require_version_write(self.connection.action(statement, [major_version, minor_version]), statement)
         return self.connection.version
 
     def inc_minor_version(self):
         major_version, minor_version = self.connection.version
         minor_version += 1
-        self.connection.action("UPDATE db_version SET db_version = ?, db_minor_version = ?", [major_version, minor_version])
+        statement = "UPDATE db_version SET db_version = ?, db_minor_version = ?"
+        self._require_version_write(self.connection.action(statement, [major_version, minor_version]), statement)
         return self.connection.version
