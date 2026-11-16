@@ -323,13 +323,13 @@ class SeasonModeCacheTests(unittest.TestCase):
         provider = GenericProvider("CacheSeason")
         provider.cache = MagicMock()
         cache_hit = [MagicMock()]
-        provider.cache.search_cache.return_value = cache_hit
         provider.search = MagicMock(return_value=[])
         provider.get_season_search_strings = MagicMock(return_value=[{"Season": {"Show S01"}}])
 
         show = MagicMock()
         show.is_anime = False
         episodes = [_episode(1), _episode(2)]
+        provider.cache.find_needed_episodes.return_value = {episode: cache_hit for episode in episodes}
 
         results = provider.find_search_results(show, episodes, "season")
 
@@ -342,13 +342,14 @@ class SeasonModeCacheTests(unittest.TestCase):
         provider = GenericProvider("CacheEpisode")
         provider.cache = MagicMock()
         cache_hit = [MagicMock()]
-        provider.cache.search_cache.return_value = cache_hit
         provider.search = MagicMock(return_value=[])
         provider.get_episode_search_strings = MagicMock(return_value=[{"Episode": {"Show S01E01"}}])
 
         show = MagicMock()
         show.is_anime = False
-        results = provider.find_search_results(show, [_episode(1)], "episode")
+        episode = _episode(1)
+        provider.cache.find_needed_episodes.return_value = {episode: cache_hit}
+        results = provider.find_search_results(show, [episode], "episode")
 
         provider.search.assert_called()
         provider.get_episode_search_strings.assert_called()
@@ -357,7 +358,7 @@ class SeasonModeCacheTests(unittest.TestCase):
     def test_episode_mode_omits_quality_tokens_for_manual(self):
         provider = GenericProvider("QualityEpisode")
         provider.cache = MagicMock()
-        provider.cache.search_cache.return_value = []
+        provider.cache.find_needed_episodes.return_value = {}
         provider.search = MagicMock(return_value=[])
 
         def fake_episode_strings(_episode, add_string=""):
@@ -380,7 +381,7 @@ class SeasonModeCacheTests(unittest.TestCase):
     def test_episode_mode_omits_quality_tokens_for_backlog(self):
         provider = GenericProvider("QualityEpisodeBacklog")
         provider.cache = MagicMock()
-        provider.cache.search_cache.return_value = []
+        provider.cache.find_needed_episodes.return_value = {}
         provider.search = MagicMock(return_value=[])
 
         def fake_episode_strings(_episode, add_string=""):
@@ -403,7 +404,7 @@ class SeasonModeCacheTests(unittest.TestCase):
     def test_season_mode_omits_quality_tokens_for_manual(self):
         provider = GenericProvider("QualitySeason")
         provider.cache = MagicMock()
-        provider.cache.search_cache.return_value = []
+        provider.cache.find_needed_episodes.return_value = {}
         provider.search = MagicMock(return_value=[])
         provider.get_season_search_strings = MagicMock(return_value=[{"Season": {"Show S01"}}])
 
@@ -418,7 +419,7 @@ class SeasonModeCacheTests(unittest.TestCase):
     def test_season_mode_omits_quality_tokens_for_backlog(self):
         provider = GenericProvider("QualitySeasonBacklog")
         provider.cache = MagicMock()
-        provider.cache.search_cache.return_value = []
+        provider.cache.find_needed_episodes.return_value = {}
         provider.search = MagicMock(return_value=[])
         provider.get_season_search_strings = MagicMock(return_value=[{"Season": {"Show S01"}}])
 

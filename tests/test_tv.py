@@ -158,10 +158,10 @@ class TVTests(conftest.SickChillTestDBCase):
         episode.name = "Pilot"
         episode.save_to_db()
 
-        def specify_from_db(self, season, episode_number, allow_indexer=True):
+        def specify_from_db(self, season, episode_number, allow_indexer=True, db_row=None):
             # Local DB load only (conftest stubs specify_episode to avoid indexer I/O).
             _ = allow_indexer
-            assert self.load_from_db(season, episode_number)
+            assert self.load_from_db(season, episode_number, row=db_row)
 
         # Empty cache → get_episode must populate from DB via specify_episode.
         show.episodes = {}
