@@ -148,6 +148,21 @@ class CacheDBTests(conftest.SickChillTestDBCase):
 
         assert num_rows() == 3
 
+    def test_upsert_inserts_when_update_misses_after_other_writes(self):
+        self.cache_db_con.action("UPDATE results SET seeders = seeders")
+        row = dict(self.record[0])
+        row["url"] = "race-url"
+        assert self.cache_db_con.upsert("results", row, {"url": "race-url"})
+        found = self.cache_db_con.select("SELECT url FROM results WHERE url = ?", ["race-url"])
+        assert len(found) == 1
+
+    def test_upsert_inserts_when_there_is_no_key(self):
+        row = dict(self.record[0])
+        row["url"] = "nokey-url"
+        assert self.cache_db_con.upsert("results", row, {})
+        found = self.cache_db_con.select("SELECT url FROM results WHERE url = ?", ["nokey-url"])
+        assert len(found) == 1
+
 
 if __name__ == "__main__":
     print("==================")

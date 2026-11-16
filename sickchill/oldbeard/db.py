@@ -354,11 +354,9 @@ class DBConnection(object):
         :param table_name: table to update/insert
         :param value_dict: values in table to update/insert
         :param key_dict:  columns in table to update/insert
-        :return: True when the update or insert executed, False when the write did not run.
-            Fatal database errors still raise.
+        :return: True when this call's update changed a row or its insert executed.
+            False when that write did not run. Fatal database errors still raise.
         """
-
-        changesBefore = self.connection.total_changes
 
         assert None not in list(key_dict.values()), _("Control dict to upsert cannot have values of None!")
 
@@ -370,24 +368,26 @@ class DBConnection(object):
             query = "UPDATE [{table}] SET {pairs} WHERE {control}".format(
                 table=table_name, pairs=make_string(value_dict, ", "), control=make_string(key_dict, " AND ")
             )
-
-            if not self._write_succeeded(self.action(query, list(value_dict.values()) + list(key_dict.values()))):
+            updated = self.action(query, list(value_dict.values()) + list(key_dict.values()))
+            if not self._write_succeeded(updated):
                 logger.warning(_("Upsert failed for {table}").format(table=table_name))
                 return False
+            # rowcount is this statement only. total_changes includes every write on the shared connection.
+            if updated.rowcount:
+                return True
 
-        if self.connection.total_changes == changesBefore:
-            keys = list(value_dict) + list(key_dict)
-            count = len(keys)
-            columns = ", ".join(keys)
-            replacements = ", ".join(["?"] * count)
-            values = list(value_dict.values()) + list(key_dict.values())
+        keys = list(value_dict) + list(key_dict)
+        count = len(keys)
+        columns = ", ".join(keys)
+        replacements = ", ".join(["?"] * count)
+        values = list(value_dict.values()) + list(key_dict.values())
 
-            # language=TEXT
-            query = "INSERT INTO '{table}' ({columns}) VALUES ({replacements})".format(table=table_name, columns=columns, replacements=replacements)
+        # language=TEXT
+        query = "INSERT INTO '{table}' ({columns}) VALUES ({replacements})".format(table=table_name, columns=columns, replacements=replacements)
 
-            if not self._write_succeeded(self.action(query, values)):
-                logger.warning(_("Upsert failed for {table}").format(table=table_name))
-                return False
+        if not self._write_succeeded(self.action(query, values)):
+            logger.warning(_("Upsert failed for {table}").format(table=table_name))
+            return False
 
         return True
 
