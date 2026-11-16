@@ -1264,25 +1264,51 @@ class PostProcessor(object):
         return True
 
 
+_EXPLICIT_EPISODE = re.compile(r"(?i)(?:s\d{1,2}[. _-]*e\d{1,3}|\d{1,2}x\d{2})")
+
+
+def _guess_title(guess):
+    title = guess.get("title") if guess else None
+    if isinstance(title, list):
+        title = " ".join(str(part) for part in title)
+    return title or ""
+
+
+def _guess_has_usable_episode(name, guess, show):
+    """Season/episode, an air date, or an anime absolute number that guessit did not invent."""
+    if not guess or show is None:
+        return False
+    if guess.get("date") and not (guess.get("season") and guess.get("episode")):
+        return True
+    if show.is_anime and guess.get("absolute_episode"):
+        return True
+    if guess.get("season") and guess.get("episode"):
+        # Bare numbers like 102 are absolute episodes for anime, not S01E02.
+        return (not show.is_anime) or _EXPLICIT_EPISODE.search(name or "") is not None
+    return False
+
+
 def guessit_findit(name: str) -> Union["ParseResult", None]:
     logger.debug(f"Trying a new way to verify if we can parse this file; {name}")
-    title = guessit(name, {"type": "episode"}).get("title")
-
-    if title:
-        # if the title is a list instead of a string, then join it with spaces.
-        if isinstance(title, list):
-            title = " ".join(title)
-
-        show: "TVShow" = helpers.get_show(title)
-        if show:
-            try:
-                np = NameParser(show_object=show).parse(name, cache_result=False)
-                return np
-            except (InvalidNameException, InvalidShowException) as error:
-                logger.debug(f"Sorry, guessit failed to parse {show.name}: {name} Error: {error} ... continuing with the old way")
     try:
-        np = NameParser().parse(name, cache_result=False)
-        return np
+        guess = guessit(name, {"type": "episode"})
+    except Exception:
+        guess = {}
+
+    title = _guess_title(guess)
+    show: "TVShow" = helpers.get_show(title) if title else None
+    if _guess_has_usable_episode(name, guess, show):
+        try:
+            parsed = NameParser(show_object=show).result_from_guess(name, guess, show)
+            if parsed:
+                return parsed
+        except (InvalidNameException, InvalidShowException) as error:
+            logger.debug(f"Sorry, guessit failed to parse {show.name}: {name} Error: {error} ... continuing with the old way")
+
+    try:
+        # One regex pass: the show's normal or anime list, or both when the show is unknown.
+        parser = NameParser(show_object=show) if show else NameParser()
+        return parser.parse(name, cache_result=False)
     except (InvalidNameException, InvalidShowException) as error:
         logger.debug(f"Could not properly parse a show and episode from [{name}]: {error}")
 

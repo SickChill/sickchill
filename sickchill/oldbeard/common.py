@@ -2,7 +2,10 @@ import operator
 import re
 from functools import reduce
 from os import path
+from types import SimpleNamespace
 from typing import List
+
+from guessit import guessit
 
 from sickchill.helper import video_screen_size
 from sickchill.helper.media_info import video_codec_from_file
@@ -270,15 +273,26 @@ class Quality(object):
         return sorted(allowed_qualities), sorted(preferred_qualities)
 
     @staticmethod
-    def nameQuality(name, anime=False):
+    def nameQuality(name, anime=False, guess=None):
         """
         Return The quality from an episode File renamed by SickChill
         If no quality is achieved it will try scene_quality regex
 
         :param name: to parse
         :param anime: Boolean to indicate if the show we're resolving is Anime
+        :param guess: optional guessit result so callers do not parse the name twice
         :return: Quality prefix
         """
+
+        if name and guess is None:
+            try:
+                guess = guessit(path.basename(str(name)), {"type": "episode"})
+            except Exception:
+                guess = None
+        if guess:
+            quality = Quality.quality_from_guess(guess, anime)
+            if quality != Quality.UNKNOWN:
+                return quality
 
         # Try Scene names first
         quality = Quality.scene_quality(name, anime)
@@ -330,7 +344,117 @@ class Quality(object):
             # SD TV
             elif sd_options:
                 result = Quality.SDTV
-        elif ep.mpeg:
+            return Quality.UNKNOWN if result is None else result
+
+        return Quality._quality_from_facts(ep)
+
+    @staticmethod
+    def quality_from_guess(guess, anime=False):
+        """Map a guessit result onto the existing scene-quality ladder.
+
+        Returns UNKNOWN when screen size or source is missing, or when the
+        anime path still needs the tag regexes. Callers then use scene_quality.
+        """
+        if not guess:
+            return Quality.UNKNOWN
+        screen = Quality._guess_text(guess.get("screen_size"))
+        source = Quality._guess_text(guess.get("source"))
+        # iTunes/Netflix/Amazon releases often have no separate source token.
+        if not source and guess.get("streaming_service"):
+            source = "Web"
+        if not screen or not source:
+            return Quality.UNKNOWN
+        # 1080i H.264 RawHD depends on the raw tag, which guessit does not emit.
+        codec = Quality._guess_text(guess.get("video_codec")).lower()
+        if screen.lower().endswith("i") and "mpeg" not in codec:
+            return Quality.UNKNOWN
+        if anime:
+            return Quality._anime_quality_from_guess(screen, source, guess.get("video_codec"))
+        facts = Quality._facts_from_guess(guess, screen, source)
+        if facts is None:
+            return Quality.UNKNOWN
+        return Quality._quality_from_facts(facts)
+
+    @staticmethod
+    def _guess_text(value):
+        if isinstance(value, list):
+            return " ".join(str(part) for part in value if part)
+        return str(value or "")
+
+    @staticmethod
+    def _anime_quality_from_guess(screen, source, video_codec):
+        match = re.match(r"(?P<vres>\d+)", str(screen))
+        vres = int(match.group("vres")) if match else 0
+        codec = str(video_codec or "").lower()
+        source_l = str(source).lower()
+        full_hd = vres == 1080
+        hd = vres == 720
+        sd = vres in {360, 480} or "xvid" in codec or "divx" in codec
+        bluray = "blu" in source_l or source_l in {"bdrip", "brrip"} or "hd-dvd" in source_l
+        dvd = source_l == "dvd"
+        if bluray and (full_hd or hd):
+            return Quality.FULLHDBLURAY if full_hd else Quality.HDBLURAY
+        if not bluray and (full_hd or hd):
+            return Quality.FULLHDTV if full_hd else Quality.HDTV
+        if dvd:
+            return Quality.SDDVD
+        if sd:
+            return Quality.SDTV
+        return Quality.UNKNOWN
+
+    @staticmethod
+    def _facts_from_guess(guess, screen, source):
+        match = re.match(r"(?P<vres>\d+)(?P<scan>[pi])", str(screen), re.IGNORECASE)
+        if not match:
+            return None
+        vres = int(match.group("vres"))
+        scan = match.group("scan").lower()
+        source_l = Quality._guess_text(source).lower()
+        service = Quality._guess_text(guess.get("streaming_service")).lower()
+        codec = Quality._guess_text(guess.get("video_codec")).lower()
+        audio = Quality._guess_text(guess.get("audio_codec")).lower()
+        bluray = "blu" in source_l
+        hddvd = "hd" if "hd-dvd" in source_l or "hddvd" in source_l else None
+        dvd = "dvd" if source_l == "dvd" else ""
+        web = "dl" if source_l == "web" or service else ""
+        tv = "hd" if "hdtv" in source_l else ""
+        sat = "sat" if "sat" in source_l or source_l == "dvb" else ""
+        itunes = "itunes" if "itunes" in service else ""
+        netflix = "netflix" if "netflix" in service else ""
+        amazon = "amazon" if "amazon" in service else ""
+        mpeg = "mpeg2" if "mpeg-2" in codec or codec == "mpeg2" else ""
+        hevc = "h265" if "265" in codec or "hevc" in codec else ""
+        avc = hevc or ("h264" if "264" in codec or codec == "avc" else "")
+        xvid = "xvid" if "xvid" in codec or "divx" in codec else ""
+        avc_non_free = avc if avc.lower().startswith("h") else ""
+        true_hd = "truehd" if "truehd" in audio else ""
+        return SimpleNamespace(
+            vres=vres,
+            scan=scan,
+            res=f"{vres}{scan}",
+            bluray="bluray" if bluray else "",
+            hddvd=hddvd,
+            dvd=dvd,
+            web=web,
+            tv=tv,
+            sat=sat,
+            itunes=itunes,
+            netflix=netflix,
+            amazon=amazon,
+            mpeg=mpeg,
+            hevc=hevc,
+            avc=avc,
+            avc_non_free=avc_non_free,
+            xvid=xvid,
+            trueHD=true_hd,
+            raw="",
+            hrws="",
+        )
+
+    @staticmethod
+    def _quality_from_facts(ep):
+        result = None
+        if ep.mpeg:
             result = Quality.RAWHDTV
         # Is it UHD?
         elif ep.vres in {2160, 4320} and ep.scan == "p":
