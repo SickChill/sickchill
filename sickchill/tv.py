@@ -93,6 +93,9 @@ class DirtySetter(object):
     def __set__(self, instance, value):
         if value != self.data.get(instance):
             instance.dirty = True
+            # Episodes record a generation so a batch write can see edits made after its snapshot.
+            if hasattr(instance, "_mutation"):
+                instance._mutation += 1
 
         self.data[instance] = value
 
@@ -841,12 +844,13 @@ class TVShow(object):
                             # (sqlite "near 'U': syntax error" when the first char of UPDATE is executed).
                             if preload_ok:
                                 existing_row = existing_rows.get((int(episode.season), int(episode.episode)), False)
-                                sql = episode.get_sql(existing_row=existing_row)
+                                # Absent in the preload is not proof the row is still absent. Recheck before INSERT OR IGNORE.
+                                sql = episode.get_sql() if existing_row is False else episode.get_sql(existing_row=existing_row)
                             else:
                                 sql = episode.get_sql()
                             if sql:
                                 sql_l.append(sql)
-                                written.append(episode)
+                                written.append((episode, episode._mutation))
                             applied += 1
                         else:
                             skipped_unchanged += 1
@@ -857,10 +861,13 @@ class TVShow(object):
             scanned_episodes[indexer_episode["airedSeason"]][indexer_episode["airedEpisodeNumber"]] = True
 
         if sql_l:
-            main_db_con = db.DBConnection()
-            main_db_con.mass_action(sql_l)
-            for saved in written:
-                saved.dirty = False
+            results = db.DBConnection().mass_action(sql_l)
+            for (saved, generation), result in zip(written, results or []):
+                updated = getattr(result, "rowcount", 0) or 0
+                with saved.lock:
+                    # A later edit, or an INSERT OR IGNORE that did not change a row, still needs a write.
+                    if updated > 0 and saved._mutation == generation:
+                        saved.dirty = False
 
         # Done updating save last update date (show-level ordinal for ended-show interval)
         self.last_update_indexer = sc_now().toordinal()
@@ -1828,6 +1835,7 @@ class TVEpisode(object):
     last_update_indexer = DirtySetter(0)
 
     def __init__(self, show: TVShow, season, episode, ep_file="", allow_indexer: bool = True, db_row=None):
+        self._mutation = 0
         self.season: int = season
         self.episode: int = episode
         self._location = ep_file
@@ -1866,6 +1874,7 @@ class TVEpisode(object):
             if new_location != "":
                 logger.debug(f"Setter sets Episode location to {new_location}")
             self.dirty = True
+            self._mutation += 1
 
         self._location = new_location
 
