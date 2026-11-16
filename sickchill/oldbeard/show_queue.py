@@ -848,8 +848,6 @@ class QueueItemUpdate(ShowQueueItem):
 
         if indexer_episodes:
             # remaining episodes in the database list are not on the indexer, just delete them from the DB
-            # TODO: database: maybe add a "marked for deletion" column to the database, and when we delete an episode just mark it and do the actual deletion after a few days.
-            #  episodes marked for deletion can be hidden from the ui, but we wont lose downloaded files for episodes that are then brought back and they wont be sent to download again?
             for season in database_episodes:
                 for episode in database_episodes[season]:
                     logger.info("Permanently deleting episode {0:02d}E{1:02d} from the database".format(season, episode))

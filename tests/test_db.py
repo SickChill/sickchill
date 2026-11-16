@@ -104,32 +104,32 @@ class CacheDBTests(conftest.SickChillTestDBCase):
 
         assert num_rows() == 1, num_rows()
 
-        self.cache_db_con.upsert("results", self.record[0], self.record[1])
+        assert self.cache_db_con.upsert("results", self.record[0], self.record[1])
         assert num_rows() == 1, num_rows()
 
-        self.cache_db_con.mass_upsert("results", [self.record], log_transaction=True)
+        assert self.cache_db_con.mass_upsert("results", [self.record], log_transaction=True)
         assert num_rows() == 1
 
         self.record[0]["url"] = self.record[1]["url"] = "new_url"
 
-        self.cache_db_con.upsert("results", self.record[0], self.record[1])
+        assert self.cache_db_con.upsert("results", self.record[0], self.record[1])
         assert num_rows() == 2
 
-        self.cache_db_con.mass_upsert("results", [self.record], log_transaction=True)
+        assert self.cache_db_con.mass_upsert("results", [self.record], log_transaction=True)
         assert num_rows() == 2
 
-        self.cache_db_con.upsert("results", self.record[0], self.record[1])
+        assert self.cache_db_con.upsert("results", self.record[0], self.record[1])
         assert num_rows() == 2
 
         self.record[0]["url"] = self.record[1]["url"] = "third_url"
         self.record[0]["seeders"] = 9999
-        self.cache_db_con.mass_upsert("results", [self.record], log_transaction=True)
+        assert self.cache_db_con.mass_upsert("results", [self.record], log_transaction=True)
         assert num_rows() == 3
 
-        self.cache_db_con.upsert("results", self.record[0], self.record[1])
+        assert self.cache_db_con.upsert("results", self.record[0], self.record[1])
         assert num_rows() == 3
 
-        self.cache_db_con.mass_upsert("results", [self.record], log_transaction=True)
+        assert self.cache_db_con.mass_upsert("results", [self.record], log_transaction=True)
         assert num_rows() == 3
 
         results = self.cache_db_con.select("SELECT * FROM results WHERE url = ?", [self.record[1]["url"]])
@@ -147,6 +147,21 @@ class CacheDBTests(conftest.SickChillTestDBCase):
         assert results[0]["seeders"] != self.record[0]["seeders"]
 
         assert num_rows() == 3
+
+    def test_upsert_inserts_when_update_misses_after_other_writes(self):
+        self.cache_db_con.action("UPDATE results SET seeders = seeders")
+        row = dict(self.record[0])
+        row["url"] = "race-url"
+        assert self.cache_db_con.upsert("results", row, {"url": "race-url"})
+        found = self.cache_db_con.select("SELECT url FROM results WHERE url = ?", ["race-url"])
+        assert len(found) == 1
+
+    def test_upsert_inserts_when_there_is_no_key(self):
+        row = dict(self.record[0])
+        row["url"] = "nokey-url"
+        assert self.cache_db_con.upsert("results", row, {})
+        found = self.cache_db_con.select("SELECT url FROM results WHERE url = ?", ["nokey-url"])
+        assert len(found) == 1
 
 
 if __name__ == "__main__":
