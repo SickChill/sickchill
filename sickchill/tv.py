@@ -762,7 +762,10 @@ class TVShow(object):
                 cached = self.episodes.get(season, {}).get(episode)
                 if cached:
                     episode_object = cached
-                    episode_object.load_from_db(season, episode, row=result)
+                    # Unsaved edits live on a dirty episode. Reloading the row would discard them.
+                    with episode_object.lock:
+                        if not episode_object.dirty:
+                            episode_object.load_from_db(season, episode, row=result)
                 else:
                     episode_object = self.get_episode(season, episode, db_row=result)
                 if not episode_object:

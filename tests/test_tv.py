@@ -3,7 +3,7 @@ Test tv
 """
 
 import unittest
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 from sickchill import settings
 from sickchill.tv import TVEpisode, TVShow
@@ -176,6 +176,43 @@ class TVTests(conftest.SickChillTestDBCase):
             # Second call returns the cached instance.
             assert show.get_episode(1, 1) is loaded
             assert show.episodes[1][1] is loaded
+
+    def _db_episode_row(self, show):
+        return {"season": 1, "episode": 1, "showid": show.indexerid, "show_name": show.name}
+
+    def test_load_episodes_from_db_skips_dirty_cached_episode(self):
+        show = TVShow(1, 91)
+        show.name = "Dirty Skip"
+        episode = TVEpisode(show, 1, 1)
+        episode.dirty = True
+        episode.lock = MagicMock()
+        show.episodes[1] = {1: episode}
+        row = self._db_episode_row(show)
+
+        with patch("sickchill.tv.db.DBConnection") as connection, patch.object(episode, "load_from_db") as reload:
+            connection.return_value.select.return_value = [row]
+            scanned = show.load_episodes_from_db()
+
+        episode.lock.__enter__.assert_called_once()
+        reload.assert_not_called()
+        self.assertTrue(scanned[1][1])
+
+    def test_load_episodes_from_db_reloads_clean_cached_episode(self):
+        show = TVShow(1, 92)
+        show.name = "Clean Reload"
+        episode = TVEpisode(show, 1, 1)
+        episode.dirty = False
+        episode.lock = MagicMock()
+        show.episodes[1] = {1: episode}
+        row = self._db_episode_row(show)
+
+        with patch("sickchill.tv.db.DBConnection") as connection, patch.object(episode, "load_from_db", return_value=True) as reload:
+            connection.return_value.select.return_value = [row]
+            scanned = show.load_episodes_from_db()
+
+        episode.lock.__enter__.assert_called_once()
+        reload.assert_called_once_with(1, 1, row=row)
+        self.assertTrue(scanned[1][1])
 
 
 if __name__ == "__main__":

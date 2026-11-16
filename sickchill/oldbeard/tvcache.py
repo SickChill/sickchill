@@ -417,7 +417,7 @@ class TVCache(RSSTorrentMixin):
         return needed_eps.get(episode, [])
 
     def _cache_query(self, episode_object, filter_quality):
-        """One cache select. Quality is constrained only for the daily list search."""
+        """One cache select. Quality is constrained only when the caller asks and wantedQuality has values."""
         sql = "SELECT * FROM results WHERE provider = ? AND indexerid = ? AND season = ? AND episodes LIKE ?"
         params = [
             self.provider_id,
@@ -489,7 +489,10 @@ class TVCache(RSSTorrentMixin):
         if episode is None:
             sql_results = cache_db_con.select("SELECT * FROM results WHERE provider = ?", [self.provider_id])
         elif isinstance(episode, list):
-            sql_results = cache_db_con.mass_action([self._cache_query(episode_object, True) for episode_object in episode], fetchall=True)
+            # Manual search may accept the current quality, so leave that filter to want_episode.
+            filter_quality = not manual_search
+            queries = [self._cache_query(episode_object, filter_quality) for episode_object in episode]
+            sql_results = cache_db_con.mass_action(queries, fetchall=True)
             sql_results = list(itertools.chain.from_iterable(sql_results or []))
         else:
             query, params = self._cache_query(episode, False)

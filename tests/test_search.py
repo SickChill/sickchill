@@ -5,6 +5,7 @@ import sickchill.oldbeard.providers
 from sickchill import settings
 from sickchill.oldbeard import common as common
 from sickchill.oldbeard.search import search_for_needed_episodes, search_providers
+from sickchill.oldbeard.tvcache import TVCache
 from sickchill.providers.GenericProvider import GenericProvider
 from sickchill.tv import TVEpisode, TVShow
 from tests import conftest
@@ -316,6 +317,31 @@ class SearchFallbackTests(unittest.TestCase):
         provider.search_rss.assert_not_called()
         finder_cls.return_value.process_cached_propers.assert_called_once_with([provider])
         provider.find_propers.assert_not_called()
+
+
+class CacheListQualityFilterTests(unittest.TestCase):
+    def test_manual_list_search_keeps_every_cached_quality(self):
+        cache = TVCache(GenericProvider("QualityFilter"))
+        episode = MagicMock()
+        episode.show.indexerid = 7
+        episode.season = 1
+        episode.episode = 3
+        episode.wantedQuality = [16]
+
+        with (
+            patch.object(cache, "get_db") as get_db,
+            patch.object(cache, "_shows_by_indexer", return_value=({}, set())),
+            patch.object(cache, "set_last_search"),
+        ):
+            get_db.return_value.mass_action.return_value = []
+            cache.find_needed_episodes([episode], manual_search=True)
+            manual_sql = get_db.return_value.mass_action.call_args[0][0][0][0]
+            get_db.return_value.mass_action.reset_mock()
+            cache.find_needed_episodes([episode], manual_search=False)
+            daily_sql = get_db.return_value.mass_action.call_args[0][0][0][0]
+
+        self.assertNotIn("quality IN", manual_sql)
+        self.assertIn("quality IN (16)", daily_sql)
 
 
 class SeasonModeCacheTests(unittest.TestCase):
