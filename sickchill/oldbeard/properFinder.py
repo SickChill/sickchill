@@ -5,6 +5,8 @@ import threading
 import time
 import traceback
 
+from guessit import guessit
+
 from sickchill import logger, oldbeard, settings
 from sickchill.helper.exceptions import AuthException
 from sickchill.oldbeard import db, helpers
@@ -159,6 +161,7 @@ class ProperFinder(object):
         sorted_propers = sorted(propers.values(), key=operator.attrgetter("date"), reverse=True)
         final_propers = []
         pack_episode_keys = set()
+        selected_keys = set()
 
         for proper in sorted_propers:
             try:
@@ -195,7 +198,14 @@ class ProperFinder(object):
             proper.episode = parse_result.episode_numbers[0] if parse_result.episode_numbers else -1
             proper.release_group = parse_result.release_group
             proper.version = parse_result.version
-            proper.quality = Quality.nameQuality(proper.name, parse_result.is_anime)
+            try:
+                guess = guessit(proper.name, {"type": "episode"})
+            except Exception:
+                guess = None
+            guess_quality = Quality.quality_from_guess(guess, parse_result.is_anime) if guess else Quality.UNKNOWN
+            proper.quality = guess_quality if guess_quality != Quality.UNKNOWN else parse_result.quality
+            if proper.quality in (None, Quality.UNKNOWN):
+                proper.quality = Quality.nameQuality(proper.name, parse_result.is_anime, guess=guess or {})
             proper.content = None
 
             # filter release
@@ -259,7 +269,15 @@ class ProperFinder(object):
                     continue
 
             history_age = sc_now() - datetime.timedelta(days=30)
-            matched_history = self._fingerprint_matching_history(best_result, is_season_pack, history_age)
+            latest_resources = self._latest_history_resources(
+                best_result.indexerid,
+                best_result.season,
+                None if is_season_pack else best_result.episode,
+                best_result.quality,
+                history_age,
+            )
+            best_result.history_resources = latest_resources
+            matched_history = self._fingerprint_matching_history(best_result, is_season_pack, history_age, latest_resources)
             if is_season_pack:
                 if len(matched_history) < 2:
                     logger.debug(_("Ignoring season pack {name} because fewer than two history releases share its remainder").format(name=best_result.name))
@@ -271,31 +289,40 @@ class ProperFinder(object):
             if best_result.indexerid == -1:
                 continue
 
-            if self._merge_selected_proper(final_propers, pack_episode_keys, best_result, is_season_pack, matched_history):
+            if self._merge_selected_proper(final_propers, pack_episode_keys, best_result, is_season_pack, matched_history, selected_keys):
                 logger.info(_("Found a proper that we need: {name}").format(name=best_result.name))
 
         return final_propers
 
     @staticmethod
-    def _merge_selected_proper(final_propers, pack_episode_keys, best_result, is_season_pack, matched_history):
+    def _merge_selected_proper(final_propers, pack_episode_keys, best_result, is_season_pack, matched_history, selected_keys=None):
         """Keep a pack only for its matched episodes; leave unmatched episode propers in that season."""
+        if selected_keys is None:
+            selected_keys = {(item.indexerid, item.season, item.episode) for item in final_propers}
+
         if is_season_pack:
             matched_keys = {(best_result.indexerid, season, episode) for season, episode in matched_history}
             if len(matched_keys) < 2 or matched_keys & pack_episode_keys:
                 return False
             pack_episode_keys.update(matched_keys)
-            kept = [item for item in final_propers if (item.indexerid, item.season, item.episode) not in matched_keys]
+            kept = []
+            for item in final_propers:
+                item_key = (item.indexerid, item.season, item.episode)
+                if item_key in matched_keys:
+                    selected_keys.discard(item_key)
+                else:
+                    kept.append(item)
             final_propers.clear()
             final_propers.extend(kept)
             final_propers.append(best_result)
+            selected_keys.add((best_result.indexerid, best_result.season, best_result.episode))
             return True
 
         key = (best_result.indexerid, best_result.season, best_result.episode)
-        if key in pack_episode_keys:
-            return False
-        if key in {(item.indexerid, item.season, item.episode) for item in final_propers}:
+        if key in pack_episode_keys or key in selected_keys:
             return False
         final_propers.append(best_result)
+        selected_keys.add(key)
         return True
 
     def _download_propers(self, proper_list):
@@ -309,13 +336,15 @@ class ProperFinder(object):
             history_age = sc_now() - datetime.timedelta(days=30)
             is_season_pack = proper.episode < 1
             clean_proper_name = self._generic_name(helpers.remove_non_release_groups(proper.name))
-            latest_resources = self._latest_history_resources(
-                proper.indexerid,
-                proper.season,
-                None if is_season_pack else proper.episode,
-                proper.quality,
-                history_age,
-            )
+            latest_resources = getattr(proper, "history_resources", None)
+            if not isinstance(latest_resources, dict):
+                latest_resources = self._latest_history_resources(
+                    proper.indexerid,
+                    proper.season,
+                    None if is_season_pack else proper.episode,
+                    proper.quality,
+                    history_age,
+                )
 
             if not latest_resources:
                 logger.info(_("Unable to find an original history entry for proper {name} so I'm not downloading it.").format(name=proper.name))
@@ -383,14 +412,15 @@ class ProperFinder(object):
             latest[key] = row["resource"] or ""
         return latest
 
-    def _fingerprint_matching_history(self, proper, is_season_pack, since):
-        latest = self._latest_history_resources(
-            proper.indexerid,
-            proper.season,
-            None if is_season_pack else proper.episode,
-            proper.quality,
-            since,
-        )
+    def _fingerprint_matching_history(self, proper, is_season_pack, since, latest=None):
+        if not isinstance(latest, dict):
+            latest = self._latest_history_resources(
+                proper.indexerid,
+                proper.season,
+                None if is_season_pack else proper.episode,
+                proper.quality,
+                since,
+            )
         anime = bool(getattr(proper.show, "is_anime", False))
         matched = {}
         for key, resource in latest.items():

@@ -163,6 +163,26 @@ class CacheDBTests(conftest.SickChillTestDBCase):
         found = self.cache_db_con.select("SELECT url FROM results WHERE url = ?", ["nokey-url"])
         assert len(found) == 1
 
+    def test_mass_upsert_writes_two_rows_in_one_transaction(self):
+        updated = (dict(self.record[0]), {"url": "url"})
+        updated[0]["seeders"] = 42
+        added = (dict(self.record[0]), {"url": "batch-new"})
+        added[0]["url"] = "batch-new"
+        added[0]["seeders"] = 7
+
+        traced = []
+        self.cache_db_con.connection.set_trace_callback(traced.append)
+        try:
+            assert self.cache_db_con.mass_upsert("results", [updated, added])
+        finally:
+            self.cache_db_con.connection.set_trace_callback(None)
+
+        assert sum(1 for statement in traced if statement.strip().upper() == "COMMIT") == 1
+        original = self.cache_db_con.select("SELECT seeders FROM results WHERE url = ?", ["url"])
+        new_row = self.cache_db_con.select("SELECT seeders FROM results WHERE url = ?", ["batch-new"])
+        assert len(original) == 1 and original[0]["seeders"] == 42
+        assert len(new_row) == 1 and new_row[0]["seeders"] == 7
+
 
 if __name__ == "__main__":
     print("==================")
