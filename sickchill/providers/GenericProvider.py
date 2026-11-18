@@ -377,7 +377,7 @@ class GenericProvider(object):
         if cache_list:
             # Access to a protected member of a client class
             cache_db = self.cache.get_db()
-            cache_db.mass_upsert("results", cache_list)
+            cache_db.mass_upsert("results", cache_list, replace_same_release=True)
 
         return results
 

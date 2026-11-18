@@ -357,6 +357,21 @@ class DBConnection(object):
         insert = (insert_query, list(value_dict.values()) + list(key_dict.values()))
         return update, insert
 
+    @staticmethod
+    def _stale_release_delete(value_dict):
+        """Drop older copies of one cached release so a new download URL replaces them.
+
+        The results table is unique on url. A provider that rotates that URL, such as
+        Jackett's encrypted ``path`` token, would otherwise insert another row.
+        """
+        fields = ("provider", "name", "indexerid", "season", "episodes", "url")
+        if any(value_dict.get(field) is None for field in fields):
+            return None
+        return (
+            "DELETE FROM results WHERE provider = ? AND name = ? AND indexerid = ? AND season = ? AND episodes = ? AND url != ?",
+            [value_dict[field] for field in fields],
+        )
+
     def _apply_upsert(self, table_name, value_dict, key_dict, execute):
         """Run UPDATE then INSERT. ``execute`` must not commit; the caller owns the transaction."""
         update, insert = self._upsert_statements(table_name, value_dict, key_dict)
@@ -375,14 +390,15 @@ class DBConnection(object):
             return False
         return True
 
-    def mass_upsert(self, table_name, query_list, log_transaction=False):
-        # type: (str, List[tuple, list], bool) -> bool
+    def mass_upsert(self, table_name, query_list, log_transaction=False, replace_same_release=False):
+        # type: (str, List[tuple, list], bool, bool) -> bool
         """
         Update or insert every row in one transaction.
 
         :param table_name: name of table to upsert
         :param query_list: list of (value_dict, key_dict) pairs
         :param log_transaction: Boolean to log each statement at debug
+        :param replace_same_release: For the results cache, delete other URLs of the same release first
         :return: True when every upsert wrote a row
         """
         if not query_list:
@@ -399,6 +415,10 @@ class DBConnection(object):
                 try:
                     for values, control in query_list:
                         logger.log(log_level, _("{filename}: {query} [{control}]").format(filename=self.filename, query=values, control=control))
+                        if replace_same_release:
+                            stale = self._stale_release_delete(values)
+                            if stale:
+                                self._execute(stale[0], stale[1])
                         if not self._apply_upsert(table_name, values, control, self._execute):
                             succeeded = False
                     self.connection.commit()

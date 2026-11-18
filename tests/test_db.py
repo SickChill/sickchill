@@ -183,6 +183,30 @@ class CacheDBTests(conftest.SickChillTestDBCase):
         assert len(original) == 1 and original[0]["seeders"] == 42
         assert len(new_row) == 1 and new_row[0]["seeders"] == 7
 
+    def test_mass_upsert_replace_same_release_keeps_one_url(self):
+        first = (dict(self.record[0]), {"url": "path-1"})
+        first[0]["url"] = "path-1"
+        first[0]["time"] = 100
+        second = (dict(self.record[0]), {"url": "path-2"})
+        second[0]["url"] = "path-2"
+        second[0]["time"] = 200
+        other = (dict(self.record[0]), {"url": "other"})
+        other[0]["name"] = "Other.Show.S01E01"
+        other[0]["episodes"] = "|2|"
+        other[0]["url"] = "other"
+
+        traced = []
+        self.cache_db_con.connection.set_trace_callback(traced.append)
+        try:
+            assert self.cache_db_con.mass_upsert("results", [first, second, other], replace_same_release=True)
+        finally:
+            self.cache_db_con.connection.set_trace_callback(None)
+
+        assert sum(1 for statement in traced if statement.strip().upper() == "COMMIT") == 1
+        rows = self.cache_db_con.select("SELECT url, name FROM results")
+        by_name = {row["name"]: row["url"] for row in rows}
+        assert by_name == {"name": "path-2", "Other.Show.S01E01": "other"}
+
 
 if __name__ == "__main__":
     print("==================")

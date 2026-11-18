@@ -344,6 +344,58 @@ class CacheListQualityFilterTests(unittest.TestCase):
         self.assertIn("quality IN (16)", daily_sql)
 
 
+class CacheReleaseCollapseTests(unittest.TestCase):
+    def test_collapse_keeps_newest_url_for_one_release(self):
+        older = {
+            "provider": "jackett",
+            "indexerid": 7,
+            "season": 8,
+            "episodes": "|26|",
+            "name": "Paw.Patrol.S08E26.WEBRip.x264-PHOENiX",
+            "url": "http://192.168.1.34:9117/dl/1337x/?path=old",
+            "time": 10,
+            "seeders": 50,
+        }
+        newer = dict(older)
+        newer["url"] = "http://192.168.1.34:9117/dl/1337x/?path=new"
+        newer["time"] = 20
+        newer["seeders"] = 1
+        other_episode = dict(older)
+        other_episode["name"] = "Paw.Patrol.S08E25.WEBRip.x264-PHOENiX"
+        other_episode["episodes"] = "|25|"
+        other_episode["url"] = "http://192.168.1.34:9117/dl/1337x/?path=e25"
+        other_episode["time"] = 5
+
+        kept = TVCache._collapse_cache_rows([older, newer, other_episode, dict(newer)])
+        self.assertEqual(
+            {row["url"] for row in kept},
+            {
+                "http://192.168.1.34:9117/dl/1337x/?path=new",
+                "http://192.168.1.34:9117/dl/1337x/?path=e25",
+            },
+        )
+
+    def test_collapse_prefers_seeders_when_time_matches(self):
+        quiet = {
+            "provider": "jackett",
+            "indexerid": "7",
+            "season": "8",
+            "episodes": "|26|",
+            "name": "Same.Release",
+            "url": "http://example/quiet",
+            "time": 20,
+            "seeders": 1,
+        }
+        busy = dict(quiet)
+        busy["url"] = "http://example/busy"
+        busy["indexerid"] = 7
+        busy["season"] = 8
+        busy["seeders"] = 9
+
+        kept = TVCache._collapse_cache_rows([quiet, busy])
+        self.assertEqual([row["url"] for row in kept], ["http://example/busy"])
+
+
 class SeasonModeCacheTests(unittest.TestCase):
     def test_season_mode_still_searches_when_every_episode_is_cached(self):
         provider = GenericProvider("CacheSeason")

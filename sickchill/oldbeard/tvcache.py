@@ -241,7 +241,7 @@ class TVCache(RSSTorrentMixin):
 
                 if cl:
                     cache_db_con = self.get_db()
-                    cache_db_con.mass_upsert("results", cl)
+                    cache_db_con.mass_upsert("results", cl, replace_same_release=True)
 
         except AuthException as error:
             logger.warning(f"Authentication error: {error}")
@@ -437,6 +437,43 @@ class TVCache(RSSTorrentMixin):
         return [sql, params]
 
     @staticmethod
+    def _collapse_cache_rows(rows):
+        """Keep the newest stored copy of each release.
+
+        The results table is unique on the download URL. Jackett encrypts a new
+        ``path`` token on every 1337x response, so one release is inserted again
+        on each search. Later reads must see one row, the latest token.
+        """
+
+        def as_int(value):
+            try:
+                return int(value)
+            except (TypeError, ValueError):
+                return value
+
+        def rank(row):
+            stamp = as_int(row["time"])
+            seeders = as_int(row["seeders"])
+            return (stamp if isinstance(stamp, int) else 0, seeders if isinstance(seeders, int) else 0)
+
+        def release_key(row):
+            return (
+                row["provider"],
+                as_int(row["indexerid"]),
+                as_int(row["season"]),
+                row["episodes"] or "",
+                row["name"] or "",
+            )
+
+        chosen = {}
+        for row in rows or []:
+            identity = release_key(row)
+            current = chosen.get(identity)
+            if current is None or rank(row) >= rank(current):
+                chosen[identity] = row
+        return list(chosen.values())
+
+    @staticmethod
     def _shows_by_indexer():
         shows_by_id = {}
         duplicates = set()
@@ -475,7 +512,7 @@ class TVCache(RSSTorrentMixin):
             sql += " AND time >= ?"
             params.append(int(time.mktime(date.timetuple())))
 
-        propers_results = cache_db_con.select(sql, params)
+        propers_results = self._collapse_cache_rows(cache_db_con.select(sql, params))
         return [x for x in propers_results if x["indexerid"]]
 
     def find_needed_episodes(self, episode, manual_search=False, down_cur_quality=False):
@@ -498,16 +535,12 @@ class TVCache(RSSTorrentMixin):
             query, params = self._cache_query(episode, False)
             sql_results = cache_db_con.select(query, params)
 
+        # Overlapping episode queries and rotated download URLs both repeat one release.
+        sql_results = self._collapse_cache_rows(sql_results)
+
         shows_by_id, duplicate_ids = self._shows_by_indexer()
         candidates = []
-        seen_urls = set()
         for cur_result in sql_results:
-            url = cur_result["url"]
-            if url and url in seen_urls:
-                continue
-            if url:
-                seen_urls.add(url)
-
             try:
                 indexer_id = int(cur_result["indexerid"])
             except (TypeError, ValueError):
