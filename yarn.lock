@@ -2872,10 +2872,10 @@ at-least-node@^1.0.0:
   resolved "https://registry.npmjs.org/at-least-node/-/at-least-node-1.0.0.tgz"
   integrity sha512-+q/t7Ekv1EDY2l6Gda6LLiX14rU9TV20Wa3ofeQmwPFZbOMo9DXrLbOjFaaclkXKWidIaopwAObQDqwWtGUjqg==
 
-ava@^8.1.1:
-  version "8.2.0"
-  resolved "https://registry.yarnpkg.com/ava/-/ava-8.2.0.tgz#3f34984d83cbca1056ce258c9933f866c7a37c9a"
-  integrity sha512-9THsZEBUhwvA3e1oVqyJx9o4cBaLSkxScfP0oPlA9I7TDga51UDLMQJRy6bMDqMl3eubFCqxlj12h5IHEsLO7g==
+ava@^8.3.0:
+  version "8.3.0"
+  resolved "https://registry.yarnpkg.com/ava/-/ava-8.3.0.tgz#de4cdd733e04a38c0d3f20923dab3d1c95b48bd2"
+  integrity sha512-Tr/p0fmC+oCJo5+m1oJdpmBxC1OO57xtVKlJfbN0gkz31yofpk08jl4Hzx654RdKq1FPc0XYiHF4ZzdqR+87gg==
   dependencies:
     "@vercel/nft" "^1.11.0"
     acorn "^8.19.0"
