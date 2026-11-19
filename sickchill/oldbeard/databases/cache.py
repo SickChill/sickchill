@@ -131,6 +131,4 @@ class AddResultsReleaseIndex(UniqueSceneNamesIndex):
         return self.has_index("idx_results_release")
 
     def execute(self):
-        self.connection.action(
-            "CREATE INDEX IF NOT EXISTS idx_results_release ON results (provider, name, indexerid, season, episodes)"
-        )
+        self.connection.action("CREATE INDEX IF NOT EXISTS idx_results_release ON results (provider, name, indexerid, season, episodes)")
