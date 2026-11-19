@@ -194,11 +194,13 @@ window.SICKCHILL.manage = {
                 if (this.checked !== true) {
                     return;
                 }
+
                 const deadUrl = $(this).attr('data-dead-url');
                 if (deadUrl) {
                     deadArray.push(deadUrl);
                     return;
                 }
+
                 removeArray.push($(this).attr('id').split('-', 2)[1]);
             });
 
@@ -206,7 +208,7 @@ window.SICKCHILL.manage = {
                 return false;
             }
 
-            $.post(scRoot + '/manage/failedDownloads', {remove: removeArray, remove_dead: deadArray}, () => {
+            $.post(scRoot + '/manage/failedDownloads', {remove: removeArray, removeDead: deadArray}, () => {
                 location.reload(true);
             });
         });
