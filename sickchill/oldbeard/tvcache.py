@@ -599,6 +599,7 @@ class TVCache(RSSTorrentMixin):
         for candidate in candidates:
             by_show.setdefault(candidate[1], []).append(candidate)
 
+        reported_releases = set()
         for show_obj, show_candidates in by_show.items():
             statuses = show_obj.load_episode_statuses((season, episode_number) for _, _, season, episode_number in show_candidates)
             for cur_result, show_obj, cur_season, cur_ep in show_candidates:
@@ -617,7 +618,9 @@ class TVCache(RSSTorrentMixin):
                 title = cur_result["name"]
                 url = cur_result["url"]
 
-                logger.info("Found result " + title + " at " + url)
+                if (title, url) not in reported_releases:
+                    logger.info("Found result " + title + " at " + url)
+                    reported_releases.add((title, url))
 
                 result = self.provider.get_result([episode_object], url)
                 result.show = show_obj
