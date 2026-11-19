@@ -393,9 +393,15 @@ class GenericProvider(object):
         if not fresh_urls:
             return results
 
+        # A multi-episode hit lives in another bucket from the cached first episode.
+        covered = set()
+        for found in results.values():
+            for item in found:
+                if item.name in fresh_urls and item.url in fresh_urls[item.name]:
+                    covered.add(item.name)
+
         preferred = {}
         for episode_number, found in results.items():
-            covered = {item.name for item in found if item.name in fresh_urls and item.url in fresh_urls[item.name]}
             preferred[episode_number] = [item for item in found if item.name not in covered or item.url in fresh_urls.get(item.name, ())]
         return preferred
 

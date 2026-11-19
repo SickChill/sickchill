@@ -417,6 +417,30 @@ class LiveReleaseUrlTests(unittest.TestCase):
 
         self.assertEqual([item.url for item in kept[1]], ["http://jackett/old"])
 
+    def test_multi_episode_live_url_covers_the_cached_first_episode(self):
+        stale = SimpleNamespace(name="Show.S01E01E02", url="http://jackett/old")
+        fresh = SimpleNamespace(name="Show.S01E01E02", url="http://jackett/new")
+        cache_list = [({"name": "Show.S01E01E02", "url": "http://jackett/new"}, {"url": "http://jackett/new"})]
+
+        kept = GenericProvider._drop_stale_cached_urls({1: [stale], common.MULTI_EP_RESULT: [fresh]}, cache_list)
+
+        self.assertEqual([item.url for item in kept[1]], [])
+        self.assertEqual([item.url for item in kept[common.MULTI_EP_RESULT]], ["http://jackett/new"])
+
+
+class EpisodeTextTests(unittest.TestCase):
+    def test_episode_zero_is_kept_and_numbers_are_sorted(self):
+        cache = TVCache(GenericProvider("EpisodeText"))
+        show = SimpleNamespace(indexerid=7)
+
+        zero = SimpleNamespace(season_number=1, episode_numbers=[0], show=show, quality=4, release_group="G", version=1)
+        stored, _control = cache.add_cache_entry("Show.S01E00", "http://example/0", 1, 1, 0, parse_result=zero)
+        self.assertEqual(stored["episodes"], "|0|")
+
+        mixed = SimpleNamespace(season_number=1, episode_numbers=[10, 2, None, 2, 0], show=show, quality=4, release_group="G", version=1)
+        stored, _control = cache.add_cache_entry("Show.S01", "http://example/mix", 1, 1, 0, parse_result=mixed)
+        self.assertEqual(stored["episodes"], "|0|2|10|")
+
 
 class SeasonModeCacheTests(unittest.TestCase):
     def test_season_mode_still_searches_when_every_episode_is_cached(self):
