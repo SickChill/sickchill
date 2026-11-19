@@ -6,6 +6,7 @@ import sickchill.oldbeard.providers
 from sickchill import settings
 from sickchill.oldbeard import common as common
 from sickchill.oldbeard.search import search_for_needed_episodes, search_providers
+from sickchill.oldbeard.search_queue import DailySearchQueueItem
 from sickchill.oldbeard.tvcache import TVCache
 from sickchill.providers.GenericProvider import GenericProvider
 from sickchill.tv import TVEpisode, TVShow
@@ -504,6 +505,86 @@ class CacheEpisodeLookupTests(unittest.TestCase):
             "release_group": "G",
             "version": 1,
         }
+
+
+class DailyReleaseSubmissionTests(unittest.TestCase):
+    def test_cached_two_episode_release_is_submitted_once(self):
+        cache = TVCache(GenericProvider("DailyPack"))
+        show = MagicMock()
+        show.indexerid = 7
+        show.paused = False
+        show.is_anime = False
+        catalog = {}
+
+        class Episode(object):
+            def __init__(self, season, number):
+                self.season = season
+                self.episode = number
+                self.show = show
+                self.wantedQuality = [4]
+
+        def get_episode(season, episode, *args, **kwargs):
+            key = (int(season), int(episode))
+            if key not in catalog:
+                catalog[key] = Episode(key[0], key[1])
+            return catalog[key]
+
+        show.get_episode.side_effect = get_episode
+        show.want_episode.return_value = True
+        show.load_episode_statuses.side_effect = lambda pairs: {(int(season), int(number)): 3 for season, number in pairs}
+
+        row = {
+            "provider": cache.provider_id,
+            "indexerid": 7,
+            "season": 1,
+            "episodes": "|1|2|",
+            "name": "Show.S01E01E02",
+            "url": "http://example/pack",
+            "time": 10,
+            "seeders": 1,
+            "quality": 4,
+            "release_group": "G",
+            "version": 1,
+        }
+
+        def select(_sql, params):
+            token = params[3].strip("%")
+            return [row] if token in row["episodes"] and int(row["season"]) == int(params[2]) else []
+
+        db = MagicMock()
+        db.select.side_effect = select
+        db.mass_action.side_effect = lambda queries, fetchall=True: [select(sql, params) for sql, params in queries]
+        episode1 = show.get_episode(1, 1)
+        episode2 = show.get_episode(1, 2)
+        provider = _provider()
+        provider.enable_daily = True
+        provider.can_daily = True
+        provider.search_rss.side_effect = lambda episodes: cache.find_needed_episodes(episodes)
+
+        with (
+            patch.object(cache, "get_db", return_value=db),
+            patch.object(cache, "_shows_by_indexer", return_value=({7: show}, set())),
+            patch.object(cache, "set_last_search"),
+            patch("sickchill.oldbeard.tvcache.show_name_helpers.filter_bad_releases", return_value=True),
+            patch("sickchill.oldbeard.providers.sorted_provider_list", return_value=[provider]),
+            patch("sickchill.oldbeard.search.settings.show_list", [show]),
+            patch("sickchill.oldbeard.search.settings.RANDOMIZE_PROVIDERS", False),
+            patch("sickchill.oldbeard.search.settings.DOWNLOAD_PROPERS", False),
+            patch("sickchill.oldbeard.search.wanted_episodes", return_value=[episode1, episode2]),
+            patch("sickchill.oldbeard.search.pick_best_result", side_effect=lambda results, _show: results[0]),
+            patch("sickchill.oldbeard.search_queue.settings.CPU_PRESET", "HIGH"),
+            patch("sickchill.oldbeard.search_queue.time.sleep"),
+            patch("sickchill.oldbeard.search_queue.search.snatch_episode", return_value=True) as snatch,
+        ):
+            selected = search_for_needed_episodes()
+            DailySearchQueueItem().run()
+
+        self.assertEqual([result.url for result in selected], ["http://example/pack"])
+        self.assertCountEqual([episode.episode for episode in selected[0].episodes], [1, 2])
+        self.assertEqual(snatch.call_count, 1)
+        submitted = snatch.call_args.args[0]
+        self.assertEqual(submitted.url, "http://example/pack")
+        self.assertCountEqual([episode.episode for episode in submitted.episodes], [1, 2])
 
 
 class EpisodeTextTests(unittest.TestCase):

@@ -208,8 +208,12 @@ class DailySearchQueueItem(generic_queue.QueueItem):
             if not found_results:
                 logger.info("No needed episodes found")
             else:
+                seen_urls = set()
                 for result in found_results:
-                    # just use the first result for now
+                    if result.url and result.url in seen_urls:
+                        continue
+                    if result.url:
+                        seen_urls.add(result.url)
                     logger.info(f"Downloading {result.name} from {result.provider.name}")
                     self.success = search.snatch_episode(result)
 
