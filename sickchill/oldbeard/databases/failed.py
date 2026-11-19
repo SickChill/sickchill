@@ -23,3 +23,17 @@ class InitialSchema(db.SchemaUpgrade):
                 self.connection.action(query[0])
             else:
                 self.connection.action(query[0], query[1:])
+
+
+class AddDeadUrls(InitialSchema):
+    """One row per download URL that did not return a file.
+
+    The ``failed`` table is keyed by release name. Two indexer rows can share that name
+    and differ only by URL, so a dead link is stored here instead.
+    """
+
+    def test(self):
+        return self.has_table("dead_urls")
+
+    def execute(self):
+        self.connection.action("CREATE TABLE IF NOT EXISTS dead_urls (url TEXT PRIMARY KEY, name TEXT, provider TEXT, date NUMERIC)")

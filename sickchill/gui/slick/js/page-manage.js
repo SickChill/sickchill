@@ -188,18 +188,25 @@ window.SICKCHILL.manage = {
 
         $('#submitMassRemove').on('click', () => {
             const removeArray = [];
+            const deadArray = [];
 
             $('.removeCheck').each(function () {
-                if (this.checked === true) {
-                    removeArray.push($(this).attr('id').split('-', 2)[1]);
+                if (this.checked !== true) {
+                    return;
                 }
+                const deadUrl = $(this).attr('data-dead-url');
+                if (deadUrl) {
+                    deadArray.push(deadUrl);
+                    return;
+                }
+                removeArray.push($(this).attr('id').split('-', 2)[1]);
             });
 
-            if (removeArray.length === 0) {
+            if (removeArray.length === 0 && deadArray.length === 0) {
                 return false;
             }
 
-            $.post(scRoot + '/manage/failedDownloads', {remove: removeArray}, () => {
+            $.post(scRoot + '/manage/failedDownloads', {remove: removeArray, remove_dead: deadArray}, () => {
                 location.reload(true);
             });
         });
