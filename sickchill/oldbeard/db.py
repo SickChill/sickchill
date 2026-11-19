@@ -358,6 +358,45 @@ class DBConnection(object):
         return update, insert
 
     @staticmethod
+    def _cache_value(row, field):
+        try:
+            return row[field]
+        except (KeyError, IndexError, TypeError):
+            return None
+
+    @classmethod
+    def _release_rank(cls, row):
+        """Same order as ``TVCache._collapse_cache_rows``: newer time, then more seeders."""
+
+        def as_int(value):
+            try:
+                return int(value)
+            except (TypeError, ValueError):
+                return 0
+
+        return as_int(cls._cache_value(row, "time")), as_int(cls._cache_value(row, "seeders"))
+
+    @classmethod
+    def _incoming_release_wins(cls, value_dict, execute):
+        """True when this row should be written.
+
+        A new download URL replaces stored copies only when its (time, seeders) rank is
+        higher. An equal or older row leaves the stored release alone. Rows without a
+        release identity fall through to a normal upsert.
+        """
+        fields = ("provider", "name", "indexerid", "season", "episodes")
+        if any(value_dict.get(field) is None for field in fields) or value_dict.get("url") is None:
+            return True
+
+        stored = execute(
+            "SELECT time, seeders FROM results WHERE provider = ? AND name = ? AND indexerid = ? AND season = ? AND episodes = ?",
+            [value_dict[field] for field in fields],
+            fetchall=True,
+        )
+        incoming = cls._release_rank(value_dict)
+        return all(incoming > cls._release_rank(row) for row in stored or [])
+
+    @staticmethod
     def _stale_release_delete(value_dict):
         """Drop older copies of one cached release so a new download URL replaces them.
 
@@ -415,6 +454,8 @@ class DBConnection(object):
                 try:
                     for values, control in query_list:
                         logger.log(log_level, _("{filename}: {query} [{control}]").format(filename=self.filename, query=values, control=control))
+                        if replace_same_release and not self._incoming_release_wins(values, self._execute):
+                            continue
                         if replace_same_release:
                             stale = self._stale_release_delete(values)
                             if stale:

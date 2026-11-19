@@ -118,3 +118,19 @@ class UniqueSceneNamesIndex(AddShowDirMtime):
         self.connection.action("CREATE UNIQUE INDEX IF NOT EXISTS idx_scene_names_indexer_name ON scene_names (indexer_id, name)")
         if self.get_db_version() < 5:
             self.increment_db_version()
+
+
+class AddResultsReleaseIndex(UniqueSceneNamesIndex):
+    """Find one cached release by provider, name, show, season, and episodes.
+
+    The stale-release delete matches those columns and then rejects a different url.
+    AddCacheIndexes has already run on existing databases, so this is its own step.
+    """
+
+    def test(self):
+        return self.has_index("idx_results_release")
+
+    def execute(self):
+        self.connection.action(
+            "CREATE INDEX IF NOT EXISTS idx_results_release ON results (provider, name, indexerid, season, episodes)"
+        )

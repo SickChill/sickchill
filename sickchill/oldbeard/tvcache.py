@@ -377,8 +377,8 @@ class TVCache(RSSTorrentMixin):
         episodes = parse_result.episode_numbers
 
         if season and episodes:
-            # store episodes as a separated string
-            episode_text = "|" + "|".join({str(episode) for episode in sorted(episodes) if episode}) + "|"
+            # store episodes as a separated string. Sort after de-duplicating so the text is stable.
+            episode_text = "|" + "|".join(str(episode) for episode in sorted({episode for episode in episodes if episode})) + "|"
 
             # get the current timestamp
             cur_timestamp = int(time.mktime(sc_now().timetuple()))

@@ -1,4 +1,5 @@
 import unittest
+from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 
 import sickchill.oldbeard.providers
@@ -367,12 +368,12 @@ class CacheReleaseCollapseTests(unittest.TestCase):
         other_episode["time"] = 5
 
         kept = TVCache._collapse_cache_rows([older, newer, other_episode, dict(newer)])
-        self.assertEqual(
-            {row["url"] for row in kept},
-            {
+        self.assertCountEqual(
+            [row["url"] for row in kept],
+            [
                 "http://192.168.1.34:9117/dl/1337x/?path=new",
                 "http://192.168.1.34:9117/dl/1337x/?path=e25",
-            },
+            ],
         )
 
     def test_collapse_prefers_seeders_when_time_matches(self):
@@ -394,6 +395,27 @@ class CacheReleaseCollapseTests(unittest.TestCase):
 
         kept = TVCache._collapse_cache_rows([quiet, busy])
         self.assertEqual([row["url"] for row in kept], ["http://example/busy"])
+
+
+class LiveReleaseUrlTests(unittest.TestCase):
+    def test_fresh_url_stays_selectable_when_cache_has_the_same_release(self):
+        stale = SimpleNamespace(name="Show.S01E01", url="http://jackett/old")
+        fresh = SimpleNamespace(name="Show.S01E01", url="http://jackett/new")
+        other = SimpleNamespace(name="Show.S01E02", url="http://jackett/e2")
+        cache_list = [({"name": "Show.S01E01", "url": "http://jackett/new"}, {"url": "http://jackett/new"})]
+
+        kept = GenericProvider._drop_stale_cached_urls({1: [stale, fresh], 2: [other]}, cache_list)
+
+        self.assertEqual([item.url for item in kept[1]], ["http://jackett/new"])
+        self.assertEqual([item.url for item in kept[2]], ["http://jackett/e2"])
+
+    def test_stale_url_stays_when_the_live_result_was_not_accepted(self):
+        stale = SimpleNamespace(name="Show.S01E01", url="http://jackett/old")
+        cache_list = [({"name": "Show.S01E01", "url": "http://jackett/new"}, {"url": "http://jackett/new"})]
+
+        kept = GenericProvider._drop_stale_cached_urls({1: [stale]}, cache_list)
+
+        self.assertEqual([item.url for item in kept[1]], ["http://jackett/old"])
 
 
 class SeasonModeCacheTests(unittest.TestCase):
