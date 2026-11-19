@@ -478,7 +478,8 @@ class CacheEpisodeLookupTests(unittest.TestCase):
         ):
             by_zero = cache.find_needed_episodes([episode0])
             by_one = cache.find_needed_episodes([episode1])
-            by_pack = cache.find_needed_episodes([episode0, episode1, episode2])
+            with self.assertLogs("sickchill", level="INFO") as logged:
+                by_pack = cache.find_needed_episodes([episode0, episode1, episode2])
             cached_for_one = cache.search_cache(episode1)
 
         self.assertCountEqual([item.name for item in by_zero[episode0]], ["zero", "pack"])
@@ -489,6 +490,14 @@ class CacheEpisodeLookupTests(unittest.TestCase):
         self.assertCountEqual([item.name for item in by_pack[episode1]], ["one", "pack"])
         self.assertCountEqual([item.name for item in by_pack[episode2]], ["pack"])
         self.assertCountEqual([item.name for item in cached_for_one], ["one", "pack"])
+        self.assertCountEqual(
+            logged.output,
+            [
+                "INFO:sickchill:Found result zero at http://example/0",
+                "INFO:sickchill:Found result one at http://example/1",
+                "INFO:sickchill:Found result pack at http://example/pack",
+            ],
+        )
 
     @staticmethod
     def _row(cache, name, url, episodes):
