@@ -428,6 +428,84 @@ class LiveReleaseUrlTests(unittest.TestCase):
         self.assertEqual([item.url for item in kept[common.MULTI_EP_RESULT]], ["http://jackett/new"])
 
 
+class CacheEpisodeLookupTests(unittest.TestCase):
+    def test_lookup_matches_each_requested_episode(self):
+        cache = TVCache(GenericProvider("Lookup"))
+        show = MagicMock()
+        show.indexerid = 7
+        show.is_anime = False
+        catalog = {}
+
+        def get_episode(season, episode, *args, **kwargs):
+            key = (int(season), int(episode))
+            if key not in catalog:
+                item = MagicMock()
+                item.season = key[0]
+                item.episode = key[1]
+                item.show = show
+                catalog[key] = item
+            return catalog[key]
+
+        show.get_episode.side_effect = get_episode
+        show.want_episode.return_value = True
+        show.load_episode_statuses.side_effect = lambda pairs: {(int(season), int(number)): 3 for season, number in pairs}
+        cache.provider.get_result = lambda episodes, url: SimpleNamespace(episodes=list(episodes), url=url)
+
+        rows = [
+            self._row(cache, "zero", "http://example/0", "|0|"),
+            self._row(cache, "one", "http://example/1", "|1|"),
+            self._row(cache, "pack", "http://example/pack", "|0|1|2|"),
+        ]
+
+        def select(_sql, params):
+            token = params[3].strip("%")
+            return [row for row in rows if token in row["episodes"] and int(row["season"]) == int(params[2])]
+
+        db = MagicMock()
+        db.select.side_effect = select
+        db.mass_action.side_effect = lambda queries, fetchall=True: [select(sql, params) for sql, params in queries]
+
+        episode0 = show.get_episode(1, 0)
+        episode1 = show.get_episode(1, 1)
+        episode2 = show.get_episode(1, 2)
+
+        with (
+            patch.object(cache, "get_db", return_value=db),
+            patch.object(cache, "_shows_by_indexer", return_value=({7: show}, set())),
+            patch.object(cache, "set_last_search"),
+            patch("sickchill.oldbeard.tvcache.show_name_helpers.filter_bad_releases", return_value=True),
+        ):
+            by_zero = cache.find_needed_episodes([episode0])
+            by_one = cache.find_needed_episodes([episode1])
+            by_pack = cache.find_needed_episodes([episode0, episode1, episode2])
+            cached_for_one = cache.search_cache(episode1)
+
+        self.assertCountEqual([item.name for item in by_zero[episode0]], ["zero", "pack"])
+        self.assertNotIn(episode1, by_zero)
+        self.assertCountEqual([item.name for item in by_one[episode1]], ["one", "pack"])
+        self.assertNotIn(episode0, by_one)
+        self.assertCountEqual([item.name for item in by_pack[episode0]], ["zero", "pack"])
+        self.assertCountEqual([item.name for item in by_pack[episode1]], ["one", "pack"])
+        self.assertCountEqual([item.name for item in by_pack[episode2]], ["pack"])
+        self.assertCountEqual([item.name for item in cached_for_one], ["one", "pack"])
+
+    @staticmethod
+    def _row(cache, name, url, episodes):
+        return {
+            "provider": cache.provider_id,
+            "indexerid": 7,
+            "season": 1,
+            "episodes": episodes,
+            "name": name,
+            "url": url,
+            "time": 10,
+            "seeders": 1,
+            "quality": 4,
+            "release_group": "G",
+            "version": 1,
+        }
+
+
 class EpisodeTextTests(unittest.TestCase):
     def test_episode_zero_is_kept_and_numbers_are_sorted(self):
         cache = TVCache(GenericProvider("EpisodeText"))
