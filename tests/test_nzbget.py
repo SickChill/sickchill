@@ -1,4 +1,5 @@
 import datetime
+import gzip
 import unittest
 from base64 import standard_b64encode
 from types import SimpleNamespace
@@ -85,6 +86,38 @@ class NzbGetSendTests(unittest.TestCase):
         self.assertFalse(sent)
         proxy.append.assert_not_called()
         history.return_value.log_dead_url.assert_not_called()
+
+    def test_truncated_gzip_is_rejected_and_valid_gzip_is_sent(self):
+        sent, proxy, _history = self._send(_result(gzip.compress(NZB)[:8]), "26.3", 5)
+
+        self.assertFalse(sent)
+        proxy.append.assert_not_called()
+
+        sent, proxy, history = self._send(_result(gzip.compress(NZB)), "26.3", 8)
+
+        self.assertTrue(sent)
+        self.assertEqual(proxy.append.call_args.args[1], standard_b64encode(NZB).decode("ascii"))
+        history.return_value.log_dead_url.assert_not_called()
+
+    def test_newznab_account_error_stays_retryable_and_missing_item_is_dead(self):
+        account = _result(b'<?xml version="1.0" encoding="UTF-8"?><error code="100" description="Incorrect user credentials"/>')
+        account.url = "http://indexer/account"
+        account.provider.check_auth_from_data.return_value = False
+        sent, proxy, history = self._send(account, "26.3", 5)
+
+        self.assertFalse(sent)
+        proxy.append.assert_not_called()
+        account.provider.check_auth_from_data.assert_called_once()
+        history.return_value.log_dead_url.assert_not_called()
+
+        missing = _result(b'<?xml version="1.0" encoding="UTF-8"?><error code="300" description="No such item"/>')
+        missing.url = "http://indexer/missing-item"
+        missing.provider.check_auth_from_data.return_value = False
+        sent, proxy, history = self._send(missing, "26.3", 5)
+
+        self.assertFalse(sent)
+        proxy.append.assert_not_called()
+        history.return_value.log_dead_url.assert_called_once_with("http://indexer/missing-item", "Show.S01E01", "Indexer")
 
     def test_login_failure_is_not_recorded_as_dead(self):
         result = _result()

@@ -404,18 +404,26 @@ def _result_is_better(result, picked, show):
     return "xvid" in picked_name and "x264" in name
 
 
+def _rank_by_selection(candidates, show):
+    """Best first. Each pass uses the same replacement rules as ``pick_best_result``."""
+    remaining = list(candidates)
+    ranked = []
+    while remaining:
+        winner = None
+        for result in remaining:
+            if winner is None or _result_is_better(result, winner, show):
+                winner = result
+        ranked.append(winner)
+        remaining = [item for item in remaining if item is not winner]
+    return ranked
+
+
 def _ranked_results(results, show):
     """Acceptable results, best first, using the same order as ``pick_best_result``."""
     ordered = list(results if isinstance(results, list) else [results])
     ordered.sort(key=lambda item: show_name_helpers.has_preferred_words(item.name, item.show), reverse=True)
-    ranked = []
-    for result in ordered:
-        if not _result_is_acceptable(result, show):
-            continue
-        if not ranked or _result_is_better(result, ranked[0], show):
-            ranked.insert(0, result)
-        else:
-            ranked.append(result)
+    acceptable = [result for result in ordered if _result_is_acceptable(result, show)]
+    ranked = _rank_by_selection(acceptable, show)
     if ranked:
         logger.debug(f"Picked {ranked[0].name} as the best")
     else:
@@ -450,14 +458,24 @@ def _one_result_per_url(found_results):
 
 
 def _submission_candidates(by_episode):
-    """Best result for each episode first. The next copy follows, so a dead NZB can be skipped."""
+    """Best result for each episode first. Each URL is sent once, with every episode it covers."""
     if not by_episode:
         return []
     submissions = []
+    seen = {}
     max_rank = max(len(options) for options in by_episode.values())
     for rank in range(max_rank):
         chosen = {episode: options[rank] for episode, options in by_episode.items() if rank < len(options)}
-        submissions.extend(_one_result_per_url(chosen))
+        for result in _one_result_per_url(chosen):
+            key = result.url or id(result)
+            current = seen.get(key)
+            if current is None:
+                seen[key] = result
+                submissions.append(result)
+                continue
+            for episode in result.episodes:
+                if episode not in current.episodes:
+                    current.episodes.append(episode)
     return submissions
 
 

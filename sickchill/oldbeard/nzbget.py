@@ -2,6 +2,7 @@ import datetime
 import gzip
 import http.client
 import xmlrpc.client
+import zlib
 from base64 import standard_b64encode
 from typing import TYPE_CHECKING
 
@@ -74,7 +75,7 @@ def _nzb_bytes(data: bytes, name: str):
     if data.startswith(b"\x1f\x8b"):
         try:
             data = gzip.decompress(data)
-        except OSError:
+        except (OSError, EOFError, zlib.error):
             logger.warning(_("NZB link for {name} was not a readable gzip file").format(name=name))
             return None
     if data.startswith(b"\xef\xbb\xbf"):
@@ -83,6 +84,33 @@ def _nzb_bytes(data: bytes, name: str):
         logger.warning(_("Download for {name} is not an NZB").format(name=name))
         return None
     return data
+
+
+def _retryable_api_error(result: "SearchResult", data: bytes) -> bool:
+    """True when the body is an account or API error, not a missing NZB.
+
+    Newznab answers those with HTTP 200 and an ``<error>`` document. ``check_auth_from_data``
+    already classifies that document. Error code 300 is the missing item and stays dead.
+    """
+    if b"<error" not in data.lower():
+        return False
+    provider = getattr(result, "provider", None)
+    checker = getattr(provider, "check_auth_from_data", None)
+    try:
+        from sickchill.oldbeard.bs4_parser import BS4Parser
+
+        with BS4Parser(data.decode("utf-8", errors="replace"), language="xml") as parsed:
+            error = getattr(parsed, "error", None)
+            attrs = getattr(error, "attrs", None) or {}
+            code = str(attrs.get("code", "") or "")
+            if not code and not attrs.get("description"):
+                return False
+            classified = checker(parsed) if callable(checker) else False
+    except (AttributeError, TypeError, ValueError):
+        return False
+    if code == "300":
+        return False
+    return classified is False
 
 
 def _nzb_payload(result: "SearchResult"):
@@ -119,6 +147,9 @@ def _nzb_payload(result: "SearchResult"):
 
     data = _nzb_bytes(downloaded, result.name)
     if data is None:
+        if _retryable_api_error(result, downloaded):
+            logger.warning(_("NZB link for {name} returned an API error").format(name=result.name))
+            return None, False
         return None, True
     return data, False
 
