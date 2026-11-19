@@ -1,10 +1,12 @@
 import unittest
+from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 
 import sickchill.oldbeard.providers
 from sickchill import settings
 from sickchill.oldbeard import common as common
 from sickchill.oldbeard.search import search_for_needed_episodes, search_providers
+from sickchill.oldbeard.search_queue import DailySearchQueueItem
 from sickchill.oldbeard.tvcache import TVCache
 from sickchill.providers.GenericProvider import GenericProvider
 from sickchill.tv import TVEpisode, TVShow
@@ -367,12 +369,12 @@ class CacheReleaseCollapseTests(unittest.TestCase):
         other_episode["time"] = 5
 
         kept = TVCache._collapse_cache_rows([older, newer, other_episode, dict(newer)])
-        self.assertEqual(
-            {row["url"] for row in kept},
-            {
+        self.assertCountEqual(
+            [row["url"] for row in kept],
+            [
                 "http://192.168.1.34:9117/dl/1337x/?path=new",
                 "http://192.168.1.34:9117/dl/1337x/?path=e25",
-            },
+            ],
         )
 
     def test_collapse_prefers_seeders_when_time_matches(self):
@@ -394,6 +396,209 @@ class CacheReleaseCollapseTests(unittest.TestCase):
 
         kept = TVCache._collapse_cache_rows([quiet, busy])
         self.assertEqual([row["url"] for row in kept], ["http://example/busy"])
+
+
+class LiveReleaseUrlTests(unittest.TestCase):
+    def test_fresh_url_stays_selectable_when_cache_has_the_same_release(self):
+        stale = SimpleNamespace(name="Show.S01E01", url="http://jackett/old")
+        fresh = SimpleNamespace(name="Show.S01E01", url="http://jackett/new")
+        other = SimpleNamespace(name="Show.S01E02", url="http://jackett/e2")
+        cache_list = [({"name": "Show.S01E01", "url": "http://jackett/new"}, {"url": "http://jackett/new"})]
+
+        kept = GenericProvider._drop_stale_cached_urls({1: [stale, fresh], 2: [other]}, cache_list)
+
+        self.assertEqual([item.url for item in kept[1]], ["http://jackett/new"])
+        self.assertEqual([item.url for item in kept[2]], ["http://jackett/e2"])
+
+    def test_stale_url_stays_when_the_live_result_was_not_accepted(self):
+        stale = SimpleNamespace(name="Show.S01E01", url="http://jackett/old")
+        cache_list = [({"name": "Show.S01E01", "url": "http://jackett/new"}, {"url": "http://jackett/new"})]
+
+        kept = GenericProvider._drop_stale_cached_urls({1: [stale]}, cache_list)
+
+        self.assertEqual([item.url for item in kept[1]], ["http://jackett/old"])
+
+    def test_multi_episode_live_url_covers_the_cached_first_episode(self):
+        stale = SimpleNamespace(name="Show.S01E01E02", url="http://jackett/old")
+        fresh = SimpleNamespace(name="Show.S01E01E02", url="http://jackett/new")
+        cache_list = [({"name": "Show.S01E01E02", "url": "http://jackett/new"}, {"url": "http://jackett/new"})]
+
+        kept = GenericProvider._drop_stale_cached_urls({1: [stale], common.MULTI_EP_RESULT: [fresh]}, cache_list)
+
+        self.assertEqual([item.url for item in kept[1]], [])
+        self.assertEqual([item.url for item in kept[common.MULTI_EP_RESULT]], ["http://jackett/new"])
+
+
+class CacheEpisodeLookupTests(unittest.TestCase):
+    def test_lookup_matches_each_requested_episode(self):
+        cache = TVCache(GenericProvider("Lookup"))
+        show = MagicMock()
+        show.indexerid = 7
+        show.is_anime = False
+        catalog = {}
+
+        def get_episode(season, episode, *args, **kwargs):
+            key = (int(season), int(episode))
+            if key not in catalog:
+                item = MagicMock()
+                item.season = key[0]
+                item.episode = key[1]
+                item.show = show
+                catalog[key] = item
+            return catalog[key]
+
+        show.get_episode.side_effect = get_episode
+        show.want_episode.return_value = True
+        show.load_episode_statuses.side_effect = lambda pairs: {(int(season), int(number)): 3 for season, number in pairs}
+        cache.provider.get_result = lambda episodes, url: SimpleNamespace(episodes=list(episodes), url=url)
+
+        rows = [
+            self._row(cache, "zero", "http://example/0", "|0|"),
+            self._row(cache, "one", "http://example/1", "|1|"),
+            self._row(cache, "pack", "http://example/pack", "|0|1|2|"),
+        ]
+
+        def select(_sql, params):
+            token = params[3].strip("%")
+            return [row for row in rows if token in row["episodes"] and int(row["season"]) == int(params[2])]
+
+        db = MagicMock()
+        db.select.side_effect = select
+        db.mass_action.side_effect = lambda queries, fetchall=True: [select(sql, params) for sql, params in queries]
+
+        episode0 = show.get_episode(1, 0)
+        episode1 = show.get_episode(1, 1)
+        episode2 = show.get_episode(1, 2)
+
+        with (
+            patch.object(cache, "get_db", return_value=db),
+            patch.object(cache, "_shows_by_indexer", return_value=({7: show}, set())),
+            patch.object(cache, "set_last_search"),
+            patch("sickchill.oldbeard.tvcache.show_name_helpers.filter_bad_releases", return_value=True),
+        ):
+            by_zero = cache.find_needed_episodes([episode0])
+            by_one = cache.find_needed_episodes([episode1])
+            by_pack = cache.find_needed_episodes([episode0, episode1, episode2])
+            cached_for_one = cache.search_cache(episode1)
+
+        self.assertCountEqual([item.name for item in by_zero[episode0]], ["zero", "pack"])
+        self.assertNotIn(episode1, by_zero)
+        self.assertCountEqual([item.name for item in by_one[episode1]], ["one", "pack"])
+        self.assertNotIn(episode0, by_one)
+        self.assertCountEqual([item.name for item in by_pack[episode0]], ["zero", "pack"])
+        self.assertCountEqual([item.name for item in by_pack[episode1]], ["one", "pack"])
+        self.assertCountEqual([item.name for item in by_pack[episode2]], ["pack"])
+        self.assertCountEqual([item.name for item in cached_for_one], ["one", "pack"])
+
+    @staticmethod
+    def _row(cache, name, url, episodes):
+        return {
+            "provider": cache.provider_id,
+            "indexerid": 7,
+            "season": 1,
+            "episodes": episodes,
+            "name": name,
+            "url": url,
+            "time": 10,
+            "seeders": 1,
+            "quality": 4,
+            "release_group": "G",
+            "version": 1,
+        }
+
+
+class DailyReleaseSubmissionTests(unittest.TestCase):
+    def test_cached_two_episode_release_is_submitted_once(self):
+        cache = TVCache(GenericProvider("DailyPack"))
+        show = MagicMock()
+        show.indexerid = 7
+        show.paused = False
+        show.is_anime = False
+        catalog = {}
+
+        class Episode(object):
+            def __init__(self, season, number):
+                self.season = season
+                self.episode = number
+                self.show = show
+                self.wantedQuality = [4]
+
+        def get_episode(season, episode, *args, **kwargs):
+            key = (int(season), int(episode))
+            if key not in catalog:
+                catalog[key] = Episode(key[0], key[1])
+            return catalog[key]
+
+        show.get_episode.side_effect = get_episode
+        show.want_episode.return_value = True
+        show.load_episode_statuses.side_effect = lambda pairs: {(int(season), int(number)): 3 for season, number in pairs}
+
+        row = {
+            "provider": cache.provider_id,
+            "indexerid": 7,
+            "season": 1,
+            "episodes": "|1|2|",
+            "name": "Show.S01E01E02",
+            "url": "http://example/pack",
+            "time": 10,
+            "seeders": 1,
+            "quality": 4,
+            "release_group": "G",
+            "version": 1,
+        }
+
+        def select(_sql, params):
+            token = params[3].strip("%")
+            return [row] if token in row["episodes"] and int(row["season"]) == int(params[2]) else []
+
+        db = MagicMock()
+        db.select.side_effect = select
+        db.mass_action.side_effect = lambda queries, fetchall=True: [select(sql, params) for sql, params in queries]
+        episode1 = show.get_episode(1, 1)
+        episode2 = show.get_episode(1, 2)
+        provider = _provider()
+        provider.enable_daily = True
+        provider.can_daily = True
+        provider.search_rss.side_effect = lambda episodes: cache.find_needed_episodes(episodes)
+
+        with (
+            patch.object(cache, "get_db", return_value=db),
+            patch.object(cache, "_shows_by_indexer", return_value=({7: show}, set())),
+            patch.object(cache, "set_last_search"),
+            patch("sickchill.oldbeard.tvcache.show_name_helpers.filter_bad_releases", return_value=True),
+            patch("sickchill.oldbeard.providers.sorted_provider_list", return_value=[provider]),
+            patch("sickchill.oldbeard.search.settings.show_list", [show]),
+            patch("sickchill.oldbeard.search.settings.RANDOMIZE_PROVIDERS", False),
+            patch("sickchill.oldbeard.search.settings.DOWNLOAD_PROPERS", False),
+            patch("sickchill.oldbeard.search.wanted_episodes", return_value=[episode1, episode2]),
+            patch("sickchill.oldbeard.search.pick_best_result", side_effect=lambda results, _show: results[0]),
+            patch("sickchill.oldbeard.search_queue.settings.CPU_PRESET", "HIGH"),
+            patch("sickchill.oldbeard.search_queue.time.sleep"),
+            patch("sickchill.oldbeard.search_queue.search.snatch_episode", return_value=True) as snatch,
+        ):
+            selected = search_for_needed_episodes()
+            DailySearchQueueItem().run()
+
+        self.assertEqual([result.url for result in selected], ["http://example/pack"])
+        self.assertCountEqual([episode.episode for episode in selected[0].episodes], [1, 2])
+        self.assertEqual(snatch.call_count, 1)
+        submitted = snatch.call_args.args[0]
+        self.assertEqual(submitted.url, "http://example/pack")
+        self.assertCountEqual([episode.episode for episode in submitted.episodes], [1, 2])
+
+
+class EpisodeTextTests(unittest.TestCase):
+    def test_episode_zero_is_kept_and_numbers_are_sorted(self):
+        cache = TVCache(GenericProvider("EpisodeText"))
+        show = SimpleNamespace(indexerid=7)
+
+        zero = SimpleNamespace(season_number=1, episode_numbers=[0], show=show, quality=4, release_group="G", version=1)
+        stored, _control = cache.add_cache_entry("Show.S01E00", "http://example/0", 1, 1, 0, parse_result=zero)
+        self.assertEqual(stored["episodes"], "|0|")
+
+        mixed = SimpleNamespace(season_number=1, episode_numbers=[10, 2, None, 2, 0], show=show, quality=4, release_group="G", version=1)
+        stored, _control = cache.add_cache_entry("Show.S01", "http://example/mix", 1, 1, 0, parse_result=mixed)
+        self.assertEqual(stored["episodes"], "|0|2|10|")
 
 
 class SeasonModeCacheTests(unittest.TestCase):

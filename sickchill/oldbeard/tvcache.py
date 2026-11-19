@@ -377,8 +377,9 @@ class TVCache(RSSTorrentMixin):
         episodes = parse_result.episode_numbers
 
         if season and episodes:
-            # store episodes as a separated string
-            episode_text = "|" + "|".join({str(episode) for episode in sorted(episodes) if episode}) + "|"
+            # Sort after de-duplicating. Keep episode 0; drop only missing values.
+            present_episodes = sorted(episode for episode in set(episodes) if episode is not None)
+            episode_text = "|" + "|".join(str(episode) for episode in present_episodes) + "|"
 
             # get the current timestamp
             cur_timestamp = int(time.mktime(sc_now().timetuple()))
@@ -515,12 +516,34 @@ class TVCache(RSSTorrentMixin):
         propers_results = self._collapse_cache_rows(cache_db_con.select(sql, params))
         return [x for x in propers_results if x["indexerid"]]
 
+    @staticmethod
+    def _cached_episode_numbers(episodes_text):
+        """Numbers stored as ``|0|1|2|``. The empty pieces are delimiters; 0 is a real episode."""
+        numbers = []
+        for part in str(episodes_text or "").split("|"):
+            if not part:
+                continue
+            try:
+                number = int(part)
+            except ValueError:
+                continue
+            if number not in numbers:
+                numbers.append(number)
+        return numbers
+
     def find_needed_episodes(self, episode, manual_search=False, down_cur_quality=False):
         needed_eps = {}
 
         # An empty list is "nothing to look up". None keeps the full provider scan.
         if isinstance(episode, list) and not episode:
             return {}
+
+        if episode is None:
+            requested_episodes = None
+        elif isinstance(episode, list):
+            requested_episodes = {(int(item.show.indexerid), int(item.season), int(item.episode)) for item in episode}
+        else:
+            requested_episodes = {(int(episode.show.indexerid), int(episode.season), int(episode.episode))}
 
         cache_db_con = self.get_db()
         if episode is None:
@@ -563,11 +586,14 @@ class TVCache(RSSTorrentMixin):
             if cur_season == -1:
                 continue
 
-            episode_parts = (cur_result["episodes"] or "").split("|")
-            if len(episode_parts) < 2 or not episode_parts[1]:
+            episode_numbers = self._cached_episode_numbers(cur_result["episodes"])
+            if not episode_numbers:
                 continue
 
-            candidates.append((cur_result, show_obj, cur_season, int(episode_parts[1])))
+            for cur_ep in episode_numbers:
+                if requested_episodes is not None and (indexer_id, cur_season, cur_ep) not in requested_episodes:
+                    continue
+                candidates.append((cur_result, show_obj, cur_season, cur_ep))
 
         by_show = {}
         for candidate in candidates:

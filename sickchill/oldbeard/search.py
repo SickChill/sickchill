@@ -355,6 +355,32 @@ def wanted_episodes(show, from_date):
     return wanted
 
 
+def _one_result_per_url(found_results):
+    """One download per URL, covering every episode that selected that release."""
+    chosen = {}
+    order = []
+    for episode, result in found_results.items():
+        key = result.url or id(result)
+        current = chosen.get(key)
+        if current is None:
+            covered = list(result.episodes)
+            if episode not in covered:
+                covered.append(episode)
+            result.episodes = covered
+            chosen[key] = result
+            order.append(key)
+            continue
+        if episode not in current.episodes:
+            current.episodes.append(episode)
+        for covered in result.episodes:
+            if covered not in current.episodes:
+                current.episodes.append(covered)
+        if result.quality > current.quality:
+            result.episodes = current.episodes
+            chosen[key] = result
+    return [chosen[key] for key in order]
+
+
 def search_for_needed_episodes():
     """
     Check providers for details on wanted episodes
@@ -431,7 +457,7 @@ def search_for_needed_episodes():
         except Exception as error:
             logger.debug(f"Daily proper processing failed: {error}")
 
-    return list(found_results.values())
+    return _one_result_per_url(found_results)
 
 
 def _search_results_cover_requested(search_results, episodes, search_mode, show):

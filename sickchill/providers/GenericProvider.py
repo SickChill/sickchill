@@ -375,11 +375,35 @@ class GenericProvider(object):
                 results[episode_number].append(result)
 
         if cache_list:
+            # A live hit for a release already in the cache must stay selectable.
+            # The cached copy can carry an older download URL for the same name.
+            results = self._drop_stale_cached_urls(results, cache_list)
             # Access to a protected member of a client class
             cache_db = self.cache.get_db()
             cache_db.mass_upsert("results", cache_list, replace_same_release=True)
 
         return results
+
+    @staticmethod
+    def _drop_stale_cached_urls(results, cache_list):
+        """Drop a cached URL when this search already has a fresh URL for that release."""
+        fresh_urls = {}
+        for values, _control in cache_list or []:
+            fresh_urls.setdefault(values["name"], set()).add(values["url"])
+        if not fresh_urls:
+            return results
+
+        # A multi-episode hit lives in another bucket from the cached first episode.
+        covered = set()
+        for found in results.values():
+            for item in found:
+                if item.name in fresh_urls and item.url in fresh_urls[item.name]:
+                    covered.add(item.name)
+
+        preferred = {}
+        for episode_number, found in results.items():
+            preferred[episode_number] = [item for item in found if item.name not in covered or item.url in fresh_urls.get(item.name, ())]
+        return preferred
 
     def get_id(self, suffix=""):
         return GenericProvider.make_id(self.name) + str(suffix)
