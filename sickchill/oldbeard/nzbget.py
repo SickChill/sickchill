@@ -103,12 +103,13 @@ def _retryable_api_error(result: "SearchResult", data: bytes) -> bool:
             error = getattr(parsed, "error", None)
             attrs = getattr(error, "attrs", None) or {}
             code = str(attrs.get("code", "") or "")
-            if not code and not attrs.get("description"):
+            # A missing item is dead. Decide that before the provider checker runs.
+            if code == "300":
+                return False
+            if not code:
                 return False
             classified = checker(parsed) if callable(checker) else False
-    except (AttributeError, TypeError, ValueError):
-        return False
-    if code == "300":
+    except Exception:
         return False
     return classified is False
 

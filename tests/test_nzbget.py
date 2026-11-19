@@ -118,6 +118,25 @@ class NzbGetSendTests(unittest.TestCase):
         self.assertFalse(sent)
         proxy.append.assert_not_called()
         history.return_value.log_dead_url.assert_called_once_with("http://indexer/missing-item", "Show.S01E01", "Indexer")
+        missing.provider.check_auth_from_data.assert_not_called()
+
+        coded = _result(b'<?xml version="1.0" encoding="UTF-8"?><error code="101"/>')
+        coded.url = "http://indexer/limited"
+        coded.provider.check_auth_from_data.return_value = False
+        sent, _proxy_obj, history = self._send(coded, "26.3", 5)
+
+        self.assertFalse(sent)
+        coded.provider.check_auth_from_data.assert_called_once()
+        history.return_value.log_dead_url.assert_not_called()
+
+        broken = _result(b'<?xml version="1.0" encoding="UTF-8"?><error code="100" description="Incorrect user credentials"/>')
+        broken.url = "http://indexer/boom"
+        broken.provider.check_auth_from_data.side_effect = RuntimeError("checker failed")
+        sent, proxy, history = self._send(broken, "26.3", 5)
+
+        self.assertFalse(sent)
+        proxy.append.assert_not_called()
+        history.return_value.log_dead_url.assert_called_once_with("http://indexer/boom", "Show.S01E01", "Indexer")
 
     def test_login_failure_is_not_recorded_as_dead(self):
         result = _result()
