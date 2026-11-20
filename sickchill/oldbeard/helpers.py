@@ -1352,19 +1352,19 @@ def make_session():
     return CacheControl(sess=session, cache_etags=True)
 
 
-# A backslash that does not start a JSON escape. Providers sometimes emit \' for an apostrophe.
-_INVALID_JSON_ESCAPE = re.compile(r'\\(?!["\\/bfnrtu])')
+# An invalid escape introducer. Paired \\ sequences stay, so a Windows path is left intact.
+_INVALID_JSON_ESCAPE = re.compile(r'(?<!\\)(?P<pairs>(?:\\\\)*)\\(?!["\\/bfnrtu])')
 
 
 def _load_json(text: str, url: str = ""):
-    """Parse JSON. When the only failure is an invalid escape, drop those backslashes and parse again."""
+    """Parse JSON. When the only failure is an invalid escape, drop that introducer and parse again."""
     try:
         return json.loads(text)
     except json.JSONDecodeError as error:
         if "escape" not in error.msg.lower():
             raise
     logger.debug(_("Cleaned invalid JSON escapes from {url}").format(url=url))
-    return json.loads(_INVALID_JSON_ESCAPE.sub("", text))
+    return json.loads(_INVALID_JSON_ESCAPE.sub(r"\g<pairs>", text))
 
 
 def request_defaults(kwargs):

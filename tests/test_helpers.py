@@ -799,6 +799,14 @@ class JsonLoadTests(unittest.TestCase):
 
         self.assertEqual(parsed["name"], "Georgie and Mandy's First Marriage")
 
+    def test_windows_path_backslashes_stay_while_apostrophe_escape_is_cleaned(self):
+        session = self._response('{"path": "C:\\\\Shows\\\\TV", "name": "Mandy\\\'s"}')
+
+        parsed = helpers.getURL("http://indexer/list", session=session, returns="json")
+
+        self.assertEqual(parsed["path"], "C:\\Shows\\TV")
+        self.assertEqual(parsed["name"], "Mandy's")
+
     def test_non_json_still_returns_empty(self):
         session = self._response("<html>not json</html>")
 
