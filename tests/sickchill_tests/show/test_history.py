@@ -83,6 +83,28 @@ class HistoryTests(unittest.TestCase):
 
         self.assertFalse(history.has_failed("Show.Name.S01E01.1080p.WEB.h264-OTHER"))
 
+    def test_dead_url_does_not_fail_the_release_name(self):
+        connection = sqlite3.connect(":memory:")
+        self.addCleanup(connection.close)
+        connection.execute("CREATE TABLE dead_urls (url TEXT PRIMARY KEY, name TEXT, provider TEXT, date NUMERIC)")
+        connection.execute('CREATE TABLE failed ("release" TEXT, size NUMERIC, provider TEXT)')
+
+        with patch.object(History, "trim"):
+            history = History()
+
+        failed_db = MagicMock()
+        failed_db.action.side_effect = lambda query, args=None: connection.execute(query, args or [])
+        failed_db.select_one.side_effect = lambda query, args=None: connection.execute(query, args or []).fetchone() or []
+        patcher = patch.object(history, "failed_db", failed_db)
+        patcher.start()
+        self.addCleanup(patcher.stop)
+
+        history.log_dead_url("http://indexer/dead", "Show.S01E01", "Indexer")
+
+        self.assertTrue(history.is_dead_url("http://indexer/dead"))
+        self.assertFalse(history.is_dead_url("http://indexer/good"))
+        self.assertFalse(history.has_failed("Show.S01E01"))
+
 
 if __name__ == "__main__":
     print("=====> Testing {0}".format(__file__))

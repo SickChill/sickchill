@@ -5,8 +5,8 @@ from unittest.mock import MagicMock, patch
 import sickchill.oldbeard.providers
 from sickchill import settings
 from sickchill.oldbeard import common as common
-from sickchill.oldbeard.search import search_for_needed_episodes, search_providers
-from sickchill.oldbeard.search_queue import DailySearchQueueItem
+from sickchill.oldbeard.search import _ranked_results, _submission_candidates, pick_best_result, search_for_needed_episodes, search_providers
+from sickchill.oldbeard.search_queue import DailySearchQueueItem, ManualSearchQueueItem
 from sickchill.oldbeard.tvcache import TVCache
 from sickchill.providers.GenericProvider import GenericProvider
 from sickchill.tv import TVEpisode, TVShow
@@ -580,7 +580,7 @@ class DailyReleaseSubmissionTests(unittest.TestCase):
             patch("sickchill.oldbeard.search.settings.RANDOMIZE_PROVIDERS", False),
             patch("sickchill.oldbeard.search.settings.DOWNLOAD_PROPERS", False),
             patch("sickchill.oldbeard.search.wanted_episodes", return_value=[episode1, episode2]),
-            patch("sickchill.oldbeard.search.pick_best_result", side_effect=lambda results, _show: results[0]),
+            patch("sickchill.oldbeard.search._ranked_results", side_effect=lambda results, _show: list(results)),
             patch("sickchill.oldbeard.search_queue.settings.CPU_PRESET", "HIGH"),
             patch("sickchill.oldbeard.search_queue.time.sleep"),
             patch("sickchill.oldbeard.search_queue.search.snatch_episode", return_value=True) as snatch,
@@ -594,6 +594,127 @@ class DailyReleaseSubmissionTests(unittest.TestCase):
         submitted = snatch.call_args.args[0]
         self.assertEqual(submitted.url, "http://example/pack")
         self.assertCountEqual([episode.episode for episode in submitted.episodes], [1, 2])
+
+    def test_daily_search_tries_the_next_nzb_when_the_first_is_rejected(self):
+        class Episode(object):
+            pass
+
+        episode = Episode()
+        episode.episode = 1
+        dead = SimpleNamespace(url="http://indexer/dead", name="Show.S01E01", provider=SimpleNamespace(name="Indexer"), episodes=[episode])
+        good = SimpleNamespace(url="http://indexer/good", name="Show.S01E01.PROPER", provider=SimpleNamespace(name="Indexer"), episodes=[episode])
+
+        def snatch(result, end_status=None):
+            return result.url == "http://indexer/good"
+
+        with (
+            patch("sickchill.oldbeard.search_queue.search.search_for_needed_episodes", return_value=[dead, good]),
+            patch("sickchill.oldbeard.search_queue.search.snatch_episode", side_effect=snatch) as snatched,
+            patch("sickchill.oldbeard.search_queue.settings.CPU_PRESET", "HIGH"),
+            patch("sickchill.oldbeard.search_queue.time.sleep"),
+        ):
+            item = DailySearchQueueItem()
+            item.run()
+
+        self.assertEqual([call.args[0].url for call in snatched.call_args_list], ["http://indexer/dead", "http://indexer/good"])
+        self.assertTrue(item.success)
+
+    def test_manual_search_tries_the_alternate_when_the_first_is_rejected(self):
+        episode = SimpleNamespace(pretty_name="Show S01E01")
+        good = SimpleNamespace(url="http://indexer/good", name="Show.S01E01.PROPER", provider=SimpleNamespace(name="Indexer"))
+        dead = SimpleNamespace(url="http://indexer/dead", name="Show.S01E01", provider=SimpleNamespace(name="Indexer"), alternatives=[good])
+        item = ManualSearchQueueItem(MagicMock(), episode)
+
+        def snatch(result, end_status=None):
+            return result.url == "http://indexer/good"
+
+        with (
+            patch("sickchill.oldbeard.search_queue.search.search_providers", return_value=[dead]),
+            patch("sickchill.oldbeard.search_queue.search.snatch_episode", side_effect=snatch) as snatched,
+            patch("sickchill.oldbeard.search_queue.settings.CPU_PRESET", "HIGH"),
+            patch("sickchill.oldbeard.search_queue.time.sleep"),
+        ):
+            item.run()
+
+        self.assertEqual([call.args[0].url for call in snatched.call_args_list], ["http://indexer/dead", "http://indexer/good"])
+        self.assertTrue(item.success)
+
+
+class ResultRankingTests(unittest.TestCase):
+    def test_later_proper_ranks_ahead_of_the_first_copy(self):
+        show = MagicMock()
+        show.is_anime = False
+        show.quality = common.Quality.HDTV
+        first = SimpleNamespace(name="Show.HDTV", quality=common.Quality.HDTV, show=show, url="http://indexer/first")
+        proper = SimpleNamespace(name="Show.HDTV.PROPER", quality=common.Quality.HDTV, show=show, url="http://indexer/proper")
+
+        with (
+            patch("sickchill.oldbeard.search.show_name_helpers.filter_bad_releases", return_value=True),
+            patch("sickchill.oldbeard.search.show_name_helpers.has_preferred_words", return_value=False),
+            patch("sickchill.oldbeard.search.settings.USE_FAILED_DOWNLOADS", False),
+            patch("sickchill.oldbeard.search.History") as history,
+        ):
+            history.return_value.is_dead_url.return_value = False
+            ranked = _ranked_results([first, proper], show)
+
+        self.assertEqual([item.url for item in ranked], ["http://indexer/proper", "http://indexer/first"])
+
+    def test_fallback_candidates_use_the_same_selection_order(self):
+        show = MagicMock()
+        show.is_anime = False
+        show.quality = common.Quality.SDTV | common.Quality.HDTV
+        standard = SimpleNamespace(name="Show.SDTV", quality=common.Quality.SDTV, show=show, url="http://indexer/sd")
+        hdtv = SimpleNamespace(name="Show.HDTV", quality=common.Quality.HDTV, show=show, url="http://indexer/hd")
+        proper = SimpleNamespace(name="Show.SDTV.PROPER", quality=common.Quality.SDTV, show=show, url="http://indexer/sd-proper")
+
+        with (
+            patch("sickchill.oldbeard.search.show_name_helpers.filter_bad_releases", return_value=True),
+            patch("sickchill.oldbeard.search.show_name_helpers.has_preferred_words", return_value=False),
+            patch("sickchill.oldbeard.search.settings.USE_FAILED_DOWNLOADS", False),
+            patch("sickchill.oldbeard.search.History") as history,
+        ):
+            history.return_value.is_dead_url.return_value = False
+            ranked = _ranked_results([standard, hdtv, proper], show)
+
+        self.assertEqual([item.url for item in ranked], ["http://indexer/hd", "http://indexer/sd-proper", "http://indexer/sd"])
+
+    def test_one_url_keeps_episode_coverage_from_later_ranks(self):
+        class Episode(object):
+            def __init__(self, number):
+                self.episode = number
+
+        episode1 = Episode(1)
+        episode2 = Episode(2)
+        first = SimpleNamespace(url="http://indexer/a", quality=4, episodes=[episode1], name="A")
+        other = SimpleNamespace(url="http://indexer/b", quality=4, episodes=[episode2], name="B")
+        later = SimpleNamespace(url="http://indexer/a", quality=4, episodes=[episode2], name="A2")
+        third = SimpleNamespace(url="http://indexer/c", quality=4, episodes=[episode1], name="C")
+
+        submitted = _submission_candidates({episode1: [first, third], episode2: [other, later]})
+
+        self.assertEqual([item.url for item in submitted], ["http://indexer/a", "http://indexer/b", "http://indexer/c"])
+        self.assertCountEqual(submitted[0].episodes, [episode1, episode2])
+
+    def test_dead_url_is_skipped_and_the_other_copy_remains(self):
+        show = MagicMock()
+        show.is_anime = False
+        show.quality = common.Quality.HDTV
+        dead = SimpleNamespace(name="Show.HDTV", quality=common.Quality.HDTV, show=show, url="http://indexer/dead")
+        good = SimpleNamespace(name="Show.HDTV", quality=common.Quality.HDTV, show=show, url="http://indexer/good")
+
+        with (
+            patch("sickchill.oldbeard.search.show_name_helpers.filter_bad_releases", return_value=True),
+            patch("sickchill.oldbeard.search.show_name_helpers.has_preferred_words", return_value=False),
+            patch("sickchill.oldbeard.search.settings.USE_FAILED_DOWNLOADS", False),
+            patch("sickchill.oldbeard.search.History") as history,
+        ):
+            history.return_value.is_dead_url.side_effect = lambda url: url == "http://indexer/dead"
+            ranked = _ranked_results([dead, good], show)
+            picked = pick_best_result([dead, good], show)
+
+        self.assertEqual([item.url for item in ranked], ["http://indexer/good"])
+        self.assertEqual(picked.url, "http://indexer/good")
+        history.return_value.has_failed.assert_not_called()
 
 
 class EpisodeTextTests(unittest.TestCase):

@@ -298,6 +298,25 @@ class History(object, metaclass=Singleton):
 
         return bool(self.failed_db.select_one('SELECT "release" FROM failed WHERE "release" = ?', [self.prepare_failed_name(release)]))
 
+    def log_dead_url(self, url: str, name: str = "", provider: str = ""):
+        """Remember a download URL that did not return a file.
+
+        The release name is not written to ``failed``. Another URL of the same name stays eligible.
+        """
+        if not url or self.is_dead_url(url):
+            return
+
+        self.failed_db.action(
+            "INSERT INTO dead_urls (url, name, provider, date) VALUES (?, ?, ?, ?)",
+            [url, name or "", provider or "", sc_now().strftime(self.date_format)],
+        )
+
+    def is_dead_url(self, url: str):
+        """True when this download URL has already failed to return a file."""
+        if not url:
+            return False
+        return bool(self.failed_db.select_one("SELECT url FROM dead_urls WHERE url = ?", [url]))
+
     def revert_episode(self, episode_object: "TVEpisode"):
         """Restore the episodes of a failed download to their original state"""
         if not settings.USE_FAILED_DOWNLOADS:

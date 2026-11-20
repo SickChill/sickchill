@@ -79,6 +79,9 @@ def snatch_episode(result: "SearchResult", end_status=SNATCHED):
         logger.info(f"Refusing to snatch {result.name}: blocked .exe file")
         return False
 
+    if _download_link_is_dead(result):
+        return False
+
     if settings.ALLOW_HIGH_PRIORITY:
         # if it aired recently make it high priority
         for episode in result.episodes:
@@ -230,6 +233,9 @@ def pick_best_result(results, show):
         if not show_name_helpers.filter_bad_releases(result.name, parse=False, show=show):
             continue
 
+        if _download_link_is_dead(result):
+            continue
+
         if settings.USE_FAILED_DOWNLOADS and History().has_failed(result.name):
             logger.info(f"{result.name} has previously failed, rejecting it")
             continue
@@ -355,6 +361,76 @@ def wanted_episodes(show, from_date):
     return wanted
 
 
+def _download_link_is_dead(result):
+    """True when this URL already failed to return a file. The release name can still match another URL."""
+    url = getattr(result, "url", None)
+    if not url or not History().is_dead_url(url):
+        return False
+    logger.info(f"{result.name} download link is dead, rejecting it")
+    return True
+
+
+def _result_is_acceptable(result, show):
+    """Same rejects as ``pick_best_result`` before it starts comparing quality."""
+    if show and result.show is not show:
+        return False
+    if show.is_anime and not show.release_groups.is_valid(result):
+        return False
+    allowed_qualities, preferred_qualities = Quality.splitQuality(show.quality)
+    if result.quality not in allowed_qualities + preferred_qualities:
+        return False
+    if not show_name_helpers.filter_bad_releases(result.name, parse=False, show=show):
+        return False
+    if _download_link_is_dead(result):
+        return False
+    return not (settings.USE_FAILED_DOWNLOADS and History().has_failed(result.name))
+
+
+def _result_is_better(result, picked, show):
+    """True when ``pick_best_result`` would replace its current pick with this result."""
+    allowed_qualities, preferred_qualities = Quality.splitQuality(show.quality)
+    if result.quality in preferred_qualities and (picked.quality < result.quality or picked.quality not in preferred_qualities):
+        return True
+    if result.quality in allowed_qualities and picked.quality not in preferred_qualities and picked.quality < result.quality:
+        return True
+    if picked.quality != result.quality:
+        return False
+    name = result.name.lower()
+    picked_name = picked.name.lower()
+    if "proper" in name or "real" in name or "repack" in name:
+        return True
+    if "internal" in picked_name and "internal" not in name:
+        return True
+    return "xvid" in picked_name and "x264" in name
+
+
+def _rank_by_selection(candidates, show):
+    """Best first. Each pass uses the same replacement rules as ``pick_best_result``."""
+    remaining = list(candidates)
+    ranked = []
+    while remaining:
+        winner = None
+        for result in remaining:
+            if winner is None or _result_is_better(result, winner, show):
+                winner = result
+        ranked.append(winner)
+        remaining = [item for item in remaining if item is not winner]
+    return ranked
+
+
+def _ranked_results(results, show):
+    """Acceptable results, best first, using the same order as ``pick_best_result``."""
+    ordered = list(results if isinstance(results, list) else [results])
+    ordered.sort(key=lambda item: show_name_helpers.has_preferred_words(item.name, item.show), reverse=True)
+    acceptable = [result for result in ordered if _result_is_acceptable(result, show)]
+    ranked = _rank_by_selection(acceptable, show)
+    if ranked:
+        logger.debug(f"Picked {ranked[0].name} as the best")
+    else:
+        logger.debug("No result picked.")
+    return ranked
+
+
 def _one_result_per_url(found_results):
     """One download per URL, covering every episode that selected that release."""
     chosen = {}
@@ -381,13 +457,35 @@ def _one_result_per_url(found_results):
     return [chosen[key] for key in order]
 
 
+def _submission_candidates(by_episode):
+    """Best result for each episode first. Each URL is sent once, with every episode it covers."""
+    if not by_episode:
+        return []
+    submissions = []
+    seen = {}
+    max_rank = max(len(options) for options in by_episode.values())
+    for rank in range(max_rank):
+        chosen = {episode: options[rank] for episode, options in by_episode.items() if rank < len(options)}
+        for result in _one_result_per_url(chosen):
+            key = result.url or id(result)
+            current = seen.get(key)
+            if current is None:
+                seen[key] = result
+                submissions.append(result)
+                continue
+            for episode in result.episodes:
+                if episode not in current.episodes:
+                    current.episodes.append(episode)
+    return submissions
+
+
 def search_for_needed_episodes():
     """
     Check providers for details on wanted episodes
 
     :return: episodes we have a search hit for
     """
-    found_results = {}
+    found_candidates = {}
 
     did_search = False
 
@@ -431,18 +529,18 @@ def search_for_needed_episodes():
                     logger.debug(f"Skipping {current_episode.pretty_name} because the show is paused ")
                     continue
 
-                best_result = pick_best_result(found_rss_results[current_episode], current_episode.show)
+                ranked = _ranked_results(found_rss_results[current_episode], current_episode.show)
 
                 # if all results were rejected move on to the next episode
-                if not best_result:
+                if not ranked:
                     logger.debug(f"All found results for {current_episode.pretty_name} were rejected.")
                     continue
 
                 # if it's already in the list (from another provider) and the newly found quality is no better, then skip it
-                if current_episode in found_results and best_result.quality <= found_results[current_episode].quality:
+                if current_episode in found_candidates and ranked[0].quality <= found_candidates[current_episode][0].quality:
                     continue
 
-                found_results[current_episode] = best_result
+                found_candidates[current_episode] = ranked
 
         threading.current_thread().name = original_thread_name
 
@@ -457,7 +555,7 @@ def search_for_needed_episodes():
         except Exception as error:
             logger.debug(f"Daily proper processing failed: {error}")
 
-    return _one_result_per_url(found_results)
+    return _submission_candidates(found_candidates)
 
 
 def _search_results_cover_requested(search_results, episodes, search_mode, show):
@@ -735,6 +833,8 @@ def search_providers(show, episodes, manual=False, downCurQuality=False):
             best_result = pick_best_result(found_results[curProvider.name][current_episode], show)
             if not best_result:
                 continue
+            ranked = _ranked_results(found_results[curProvider.name][current_episode], show)
+            best_result.alternatives = [item for item in ranked if item is not best_result]
 
             # add result if it's not a duplicate and
             found = False

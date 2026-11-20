@@ -3,6 +3,7 @@ import ctypes
 import datetime
 import hashlib
 import ipaddress
+import json
 import os
 import platform
 import random
@@ -1351,6 +1352,21 @@ def make_session():
     return CacheControl(sess=session, cache_etags=True)
 
 
+# An invalid escape introducer. Paired \\ sequences stay, so a Windows path is left intact.
+_INVALID_JSON_ESCAPE = re.compile(r'(?<!\\)(?P<pairs>(?:\\\\)*)\\(?!["\\/bfnrtu])')
+
+
+def _load_json(text: str, url: str = ""):
+    """Parse JSON. When the only failure is an invalid escape, drop that introducer and parse again."""
+    try:
+        return json.loads(text)
+    except json.JSONDecodeError as error:
+        if "escape" not in error.msg.lower():
+            raise
+    logger.debug(_("Cleaned invalid JSON escapes from {url}").format(url=url))
+    return json.loads(_INVALID_JSON_ESCAPE.sub(r"\g<pairs>", text))
+
+
 def request_defaults(kwargs):
     verify = certifi.where() if all([settings.SSL_VERIFY, kwargs.pop("verify", True)]) else False
 
@@ -1381,6 +1397,7 @@ def getURL(
         response_type = kwargs.pop("returns", "text")
         stream = kwargs.pop("stream", False)
         allow_redirects = kwargs.pop("allow_redirects", True)
+        raise_status = kwargs.pop("raise_status", True)
 
         hooks, cookies, verify, proxies = request_defaults(kwargs)
 
@@ -1432,9 +1449,10 @@ def getURL(
         )
         is_redirect = getattr(response, "is_redirect", False) or response.status_code in {301, 302, 303, 307, 308}
         # When callers disable redirects they must inspect 3xx themselves (e.g. SSRF-safe image fetch).
-        if allow_redirects or not is_redirect:
+        # raise_status=False leaves 404 and other HTTP errors on the response for the caller.
+        if raise_status and (allow_redirects or not is_redirect):
             response.raise_for_status()
-        elif response_type not in ("response", None):
+        elif raise_status and response_type not in ("response", None):
             # Do not treat a redirect payload as successful text/json/content (e.g. Jackett with allow_redirects=False).
             logger.debug(_("Ignoring redirect response for {url} because redirects are disabled").format(url=url))
             return ""
@@ -1443,7 +1461,11 @@ def getURL(
         return ""
 
     try:
-        return response if response_type in ("response", None) else response.json() if response_type == "json" else getattr(response, response_type, response)
+        if response_type in ("response", None):
+            return response
+        if response_type == "json":
+            return _load_json(response.text, url)
+        return getattr(response, response_type, response)
     except ValueError:
         logger.debug(_("Requested a json response but response was not json, check the url: {url}").format(url=url))
         return ""

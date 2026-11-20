@@ -62,6 +62,7 @@ import ssl
 import unittest
 from pathlib import Path
 from shutil import rmtree
+from unittest.mock import MagicMock
 
 from sickchill import settings
 from sickchill.oldbeard import helpers
@@ -774,6 +775,46 @@ class HelpersMiscTests(unittest.TestCase):
         """
 
 
+class JsonLoadTests(unittest.TestCase):
+    def _response(self, body):
+        response = MagicMock()
+        response.status_code = 200
+        response.is_redirect = False
+        response.text = body
+        session = MagicMock()
+        session.request.return_value = response
+        return session
+
+    def test_valid_json_is_unchanged(self):
+        session = self._response('{"name": "Show.S01E01"}')
+
+        parsed = helpers.getURL("http://indexer/list", session=session, returns="json")
+
+        self.assertEqual(parsed, {"name": "Show.S01E01"})
+
+    def test_invalid_apostrophe_escape_is_cleaned(self):
+        session = self._response('{"name": "Georgie and Mandy\\\'s First Marriage"}')
+
+        parsed = helpers.getURL("http://indexer/list", session=session, returns="json")
+
+        self.assertEqual(parsed["name"], "Georgie and Mandy's First Marriage")
+
+    def test_windows_path_backslashes_stay_while_apostrophe_escape_is_cleaned(self):
+        session = self._response('{"path": "C:\\\\Shows\\\\TV", "name": "Mandy\\\'s"}')
+
+        parsed = helpers.getURL("http://indexer/list", session=session, returns="json")
+
+        self.assertEqual(parsed["path"], "C:\\Shows\\TV")
+        self.assertEqual(parsed["name"], "Mandy's")
+
+    def test_non_json_still_returns_empty(self):
+        session = self._response("<html>not json</html>")
+
+        parsed = helpers.getURL("http://indexer/list", session=session, returns="json")
+
+        self.assertEqual(parsed, "")
+
+
 if __name__ == "__main__":
     print("==================")
     print("STARTING - Helpers TESTS")
@@ -809,4 +850,7 @@ if __name__ == "__main__":
     unittest.TextTestRunner(verbosity=2).run(SUITE)
 
     SUITE = unittest.TestLoader().loadTestsFromTestCase(HelpersZipTests)
+    unittest.TextTestRunner(verbosity=2).run(SUITE)
+
+    SUITE = unittest.TestLoader().loadTestsFromTestCase(JsonLoadTests)
     unittest.TextTestRunner(verbosity=2).run(SUITE)
