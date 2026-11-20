@@ -90,12 +90,14 @@ def _retryable_api_error(result: "SearchResult", data: bytes) -> bool:
     """True when the body is an account or API error, not a missing NZB.
 
     Newznab answers those with HTTP 200 and an ``<error>`` document. ``check_auth_from_data``
-    already classifies that document. Error code 300 is the missing item and stays dead.
+    classifies that document, including one that has a description and no code. Error code 300
+    is the missing item and stays dead. Any other code stays retryable when the checker raises.
     """
     if b"<error" not in data.lower():
         return False
     provider = getattr(result, "provider", None)
     checker = getattr(provider, "check_auth_from_data", None)
+    code = ""
     try:
         from sickchill.oldbeard.bs4_parser import BS4Parser
 
@@ -106,11 +108,11 @@ def _retryable_api_error(result: "SearchResult", data: bytes) -> bool:
             # A missing item is dead. Decide that before the provider checker runs.
             if code == "300":
                 return False
-            if not code:
-                return False
             classified = checker(parsed) if callable(checker) else False
     except Exception:
-        return False
+        # A known code other than 300 is an account or API error and stays retryable.
+        # A parse failure, or a description-only document whose checker raises, stays dead.
+        return bool(code) and code != "300"
     return classified is False
 
 
@@ -133,7 +135,7 @@ def _nzb_payload(result: "SearchResult"):
             return None, False
         downloaded, dead = _downloaded_body(provider.get_url(result.url, returns="response", raise_status=False))
     else:
-        logger.warning(_("Cannot send {name} to NZBget because it is not an NZB").format(name=result.name))
+        logger.warning(_("Cannot send {name} because it is not an NZB").format(name=result.name))
         return None, False
 
     if downloaded is None:

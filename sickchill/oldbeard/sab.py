@@ -5,6 +5,7 @@ from urllib.parse import urljoin
 from sickchill import logger, settings
 from sickchill.oldbeard import helpers
 from sickchill.oldbeard.network_timezones import sc_today
+from sickchill.oldbeard.nzbget import _nzb_payload, _remember_dead_link
 
 session = helpers.make_session()
 
@@ -28,8 +29,16 @@ def send_nzb(result: "SearchResult"):
         if sc_today() - curEp.airdate > datetime.timedelta(days=7):
             category = settings.SAB_CATEGORY_ANIME_BACKLOG if result.show.is_anime else settings.SAB_CATEGORY_BACKLOG
 
+    # Fetch and check the NZB here. addurl returns success before SABnzbd downloads the link,
+    # and that download does not use the provider login.
+    nzb_bytes, dead_link = _nzb_payload(result)
+    if not nzb_bytes:
+        if dead_link:
+            _remember_dead_link(result)
+        return False
+
     # set up a dict with the URL params in it
-    params = {"output": "json"}
+    params = {"output": "json", "mode": "addfile"}
     if settings.SAB_USERNAME:
         params["ma_username"] = settings.SAB_USERNAME
     if settings.SAB_PASSWORD:
@@ -44,18 +53,10 @@ def send_nzb(result: "SearchResult"):
         params["priority"] = 2 if settings.SAB_FORCED else 1
 
     logger.info("Sending NZB to SABnzbd")
+    logger.debug(f"URL: {result.url}")
     url = urljoin(settings.SAB_HOST, "api")
-
-    if result.is_nzb:
-        params["mode"] = "addurl"
-        params["name"] = result.url
-        json_response = helpers.getURL(url, params=params, session=session, returns="json", verify=False)
-    elif result.is_nzbdata:
-        params["mode"] = "addfile"
-        multi_part_params = {"nzbfile": (f"{result.name}.nzb", result.extraInfo[0])}
-        json_response = helpers.getURL(url, params=params, files=multi_part_params, session=session, returns="json", verify=False)
-    else:
-        json_response = {"error": "This result was a torrent, maybe from jackett? Please report."}
+    files = {"nzbfile": (f"{result.name}.nzb", nzb_bytes)}
+    json_response = helpers.getURL(url, params=params, files=files, session=session, returns="json", verify=False)
 
     if not json_response:
         logger.info("Error connecting to sab, no data returned")

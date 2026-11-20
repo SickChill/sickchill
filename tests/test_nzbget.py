@@ -5,7 +5,7 @@ from base64 import standard_b64encode
 from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 
-from sickchill.oldbeard import nzbget
+from sickchill.oldbeard import nzbget, sab
 
 NZB = b'<?xml version="1.0" encoding="UTF-8"?><nzb></nzb>'
 
@@ -24,6 +24,7 @@ def _result(body=NZB, nzbdata=False):
         episodes=[episode],
         show=show,
         quality=4,
+        priority=0,
         is_nzb=not nzbdata,
         is_nzbdata=nzbdata,
         extraInfo=[body] if nzbdata else [],
@@ -129,6 +130,16 @@ class NzbGetSendTests(unittest.TestCase):
         coded.provider.check_auth_from_data.assert_called_once()
         history.return_value.log_dead_url.assert_not_called()
 
+        described = _result(b'<?xml version="1.0" encoding="UTF-8"?><error description="Request limit reached"/>')
+        described.url = "http://indexer/described"
+        described.provider.check_auth_from_data.return_value = False
+        sent, proxy, history = self._send(described, "26.3", 5)
+
+        self.assertFalse(sent)
+        proxy.append.assert_not_called()
+        described.provider.check_auth_from_data.assert_called_once()
+        history.return_value.log_dead_url.assert_not_called()
+
         broken = _result(b'<?xml version="1.0" encoding="UTF-8"?><error code="100" description="Incorrect user credentials"/>')
         broken.url = "http://indexer/boom"
         broken.provider.check_auth_from_data.side_effect = RuntimeError("checker failed")
@@ -136,7 +147,7 @@ class NzbGetSendTests(unittest.TestCase):
 
         self.assertFalse(sent)
         proxy.append.assert_not_called()
-        history.return_value.log_dead_url.assert_called_once_with("http://indexer/boom", "Show.S01E01", "Indexer")
+        history.return_value.log_dead_url.assert_not_called()
 
     def test_login_failure_is_not_recorded_as_dead(self):
         result = _result()
@@ -191,3 +202,73 @@ class NzbGetSendTests(unittest.TestCase):
 
         self.assertFalse(sent)
         history.return_value.log_dead_url.assert_not_called()
+
+
+class SabSendTests(unittest.TestCase):
+    def _send(self, result, sab_response):
+        with (
+            patch("sickchill.oldbeard.sab.settings.SAB_HOST", "http://sab:8080/"),
+            patch("sickchill.oldbeard.sab.settings.SAB_APIKEY", "key"),
+            patch("sickchill.oldbeard.sab.settings.SAB_USERNAME", ""),
+            patch("sickchill.oldbeard.sab.settings.SAB_PASSWORD", ""),
+            patch("sickchill.oldbeard.sab.settings.SAB_CATEGORY", "tv"),
+            patch("sickchill.oldbeard.sab.settings.SAB_CATEGORY_BACKLOG", "backlog"),
+            patch("sickchill.oldbeard.sab.settings.SAB_CATEGORY_ANIME", "anime"),
+            patch("sickchill.oldbeard.sab.settings.SAB_CATEGORY_ANIME_BACKLOG", "anime-backlog"),
+            patch("sickchill.oldbeard.sab.settings.SAB_FORCED", False),
+            patch("sickchill.oldbeard.sab.helpers.getURL", return_value=sab_response) as sab_call,
+            patch("sickchill.oldbeard.nzbget.History") as history,
+        ):
+            sent = sab.send_nzb(result)
+        return sent, sab_call, history
+
+    def test_dead_link_is_not_sent(self):
+        sent, sab_call, history = self._send(_result(b"<html>404</html>"), {"status": True, "nzo_ids": ["1"]})
+
+        self.assertFalse(sent)
+        sab_call.assert_not_called()
+        history.return_value.log_dead_url.assert_called_once_with("http://indexer/dead", "Show.S01E01", "Indexer")
+
+    def test_valid_nzb_is_uploaded(self):
+        sent, sab_call, history = self._send(_result(), {"status": True, "nzo_ids": ["SABnzbd_nzo_1"]})
+
+        self.assertTrue(sent)
+        params = sab_call.call_args.kwargs["params"]
+        filename, body = sab_call.call_args.kwargs["files"]["nzbfile"]
+        self.assertEqual(params["mode"], "addfile")
+        self.assertNotIn("name", params)
+        self.assertEqual(filename, "Show.S01E01.nzb")
+        self.assertEqual(body, NZB)
+        history.return_value.log_dead_url.assert_not_called()
+
+    def test_account_error_stays_retryable_and_missing_item_is_dead(self):
+        account = _result(b'<?xml version="1.0" encoding="UTF-8"?><error code="100" description="Incorrect user credentials"/>')
+        account.url = "http://indexer/account"
+        account.provider.check_auth_from_data.return_value = False
+        sent, sab_call, history = self._send(account, {"status": True})
+
+        self.assertFalse(sent)
+        sab_call.assert_not_called()
+        history.return_value.log_dead_url.assert_not_called()
+
+        missing = _result(b'<?xml version="1.0" encoding="UTF-8"?><error code="300" description="No such item"/>')
+        missing.url = "http://indexer/missing-item"
+        sent, sab_call, history = self._send(missing, {"status": True})
+
+        self.assertFalse(sent)
+        sab_call.assert_not_called()
+        history.return_value.log_dead_url.assert_called_once_with("http://indexer/missing-item", "Show.S01E01", "Indexer")
+
+    def test_sab_rejection_does_not_record_a_dead_link(self):
+        sent, sab_call, history = self._send(_result(), {"status": False, "error": "Failed to add NZB"})
+
+        self.assertFalse(sent)
+        sab_call.assert_called_once()
+        history.return_value.log_dead_url.assert_not_called()
+
+    def test_nzbdata_is_uploaded(self):
+        sent, sab_call, _history = self._send(_result(NZB.decode("ascii"), nzbdata=True), {"status": True, "nzo_ids": ["1"]})
+
+        self.assertTrue(sent)
+        _filename, body = sab_call.call_args.kwargs["files"]["nzbfile"]
+        self.assertEqual(body, NZB)
