@@ -3,6 +3,7 @@ import ctypes
 import datetime
 import hashlib
 import ipaddress
+import json
 import os
 import platform
 import random
@@ -1351,6 +1352,21 @@ def make_session():
     return CacheControl(sess=session, cache_etags=True)
 
 
+# A backslash that does not start a JSON escape. Providers sometimes emit \' for an apostrophe.
+_INVALID_JSON_ESCAPE = re.compile(r'\\(?!["\\/bfnrtu])')
+
+
+def _load_json(text: str, url: str = ""):
+    """Parse JSON. When the only failure is an invalid escape, drop those backslashes and parse again."""
+    try:
+        return json.loads(text)
+    except json.JSONDecodeError as error:
+        if "escape" not in error.msg.lower():
+            raise
+    logger.debug(_("Cleaned invalid JSON escapes from {url}").format(url=url))
+    return json.loads(_INVALID_JSON_ESCAPE.sub("", text))
+
+
 def request_defaults(kwargs):
     verify = certifi.where() if all([settings.SSL_VERIFY, kwargs.pop("verify", True)]) else False
 
@@ -1445,7 +1461,11 @@ def getURL(
         return ""
 
     try:
-        return response if response_type in ("response", None) else response.json() if response_type == "json" else getattr(response, response_type, response)
+        if response_type in ("response", None):
+            return response
+        if response_type == "json":
+            return _load_json(response.text, url)
+        return getattr(response, response_type, response)
     except ValueError:
         logger.debug(_("Requested a json response but response was not json, check the url: {url}").format(url=url))
         return ""
