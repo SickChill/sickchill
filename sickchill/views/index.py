@@ -1,6 +1,7 @@
 import base64
 import json
 import os
+import threading
 import time
 import traceback
 from concurrent.futures import ThreadPoolExecutor
@@ -142,10 +143,15 @@ class BaseHandler(RequestHandler):
         return settings.GUI_LANG or None
 
 
+def webserver_thread_name(handler) -> str:
+    """Page name written to the log. The pool's ``_0`` suffix is not part of the filter."""
+    return f"WEBSERVER-{type(handler).__name__.upper()}"
+
+
 class WebHandler(BaseHandler):
     def initialize(self):
         super().initialize()
-        self.executor = ThreadPoolExecutor(thread_name_prefix="WEBSERVER-" + self.__class__.__name__.upper())
+        self.executor = ThreadPoolExecutor(thread_name_prefix=webserver_thread_name(self))
 
     def _client_disconnected(self) -> bool:
         """True if the browser already closed the request (navigate away, AJAX abort, etc.)."""
@@ -238,6 +244,7 @@ class WebHandler(BaseHandler):
 
     @run_on_executor
     def async_call(self, function, needs_params):
+        threading.current_thread().name = webserver_thread_name(self)
         try:
             # TODO: Make all routes use get_*_argument so we can take advantage of tornado's argument sanitization, separate post and get, and get rid of this
             # TODO: Until the new web interface is ready, we should also make each route asynchronous and yield back the result.

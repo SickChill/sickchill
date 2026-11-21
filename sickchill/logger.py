@@ -290,16 +290,19 @@ LOG_FILTERS = {
     "SEARCHQUEUE-BACKLOG": _("Search Queue (Backlog)"),
     "SEARCHQUEUE-MANUAL": _("Search Queue (Manual)"),
     "SEARCHQUEUE-RETRY": _("Search Queue (Retry/Failed)"),
-    "SEARCHQUEUE-RSS": _("Search Queue (RSS)"),
+    "SEARCHQUEUE-PROPER-SEARCH": _("Search Queue (Proper Search)"),
+    "SEARCHQUEUE-SUBTITLE": _("Search Queue (Subtitles)"),
     "SEARCHQUEUE-CONNECTIVITY-CHECK": _("Search Queue (Connectivity)"),
     "FINDPROPERS": _("Find Propers"),
     "POSTPROCESSOR": _("Postprocessor"),
     "FINDSUBTITLES": _("Find Subtitles"),
     "TRAKTCHECKER": _("Trakt Checker"),
+    # Matches the scheduler thread and every NOTIFICATIONS-<notifier> task.
+    "NOTIFICATIONS": _("Notifications"),
     "EVENT": _("Event"),
-    "ERROR": _("Error"),
-    "TORNADO": _("Tornado"),
-    "Thread": _("Thread"),
+    # Matches the server thread and every WEBSERVER-<page> worker.
+    "WEBSERVER": _("Web Server"),
+    "WEBSERVER-HOME": _("Web Server (Home)"),
     "MAIN": _("Main"),
 }
 
