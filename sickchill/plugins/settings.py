@@ -491,7 +491,7 @@ def _is_password_field(name: str, field_type: str = "") -> bool:
 def decrypt_stored_password(value: Any, encryption_version: int | None = None) -> str:
     """Decrypt a [NOTIFIERS]/[CLIENTS]/[extensions] password for settings.*."""
     from sickchill import settings as sc_settings
-    from sickchill.oldbeard import helpers
+    from sickchill.helper import helpers
 
     if value in (None, ""):
         return ""
@@ -508,7 +508,7 @@ def decrypt_stored_password(value: Any, encryption_version: int | None = None) -
 def encrypt_stored_password(value: Any, encryption_version: int | None = None) -> str:
     """Encrypt a runtime password before writing [NOTIFIERS]/[CLIENTS]/[extensions]."""
     from sickchill import settings as sc_settings
-    from sickchill.oldbeard import helpers
+    from sickchill.helper import helpers
 
     if value in (None, ""):
         return ""

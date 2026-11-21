@@ -5,10 +5,10 @@ from __future__ import annotations
 import unittest
 from unittest.mock import MagicMock, patch
 
-from sickchill.oldbeard import db
-from sickchill.oldbeard.databases.main import TARGET_DB_MAJOR, TARGET_DB_MINOR, AddShowSize, ReconcileSchemaVersion, _full_schema_present
-from sickchill.oldbeard.processTV import ProcessResult, _update_processed_show_sizes, process_media
-from sickchill.oldbeard.show_queue import QueueItemAdd, QueueItemRefresh
+from sickchill import db
+from sickchill.databases.main import TARGET_DB_MAJOR, TARGET_DB_MINOR, AddShowSize, ReconcileSchemaVersion, _full_schema_present
+from sickchill.process.processTV import ProcessResult, _update_processed_show_sizes, process_media
+from sickchill.show.show_queue import QueueItemAdd, QueueItemRefresh
 from sickchill.tv import TVShow
 from tests import conftest
 
@@ -34,7 +34,7 @@ class TestShowSizeSchema(conftest.SickChillTestDBCase):
         migration = AddShowSize(con)
         self.assertTrue(con.has_column("tv_shows", "show_size"))
         self.assertFalse(migration.test())
-        with patch("sickchill.oldbeard.databases.main.backup_database"):
+        with patch("sickchill.databases.main.backup_database"):
             migration.execute()
         self.assertEqual(con.version, (44, 8))
 
@@ -101,8 +101,8 @@ class TestRefreshRecalculatesShowSize(unittest.TestCase):
         item = QueueItemRefresh(show, force=False, silent=True)
         with (
             patch.object(item, "finish"),
-            patch("sickchill.oldbeard.show_queue.scene_numbering.xem_refresh"),
-            patch("sickchill.oldbeard.show_dir_mtime.stamp_show_dir_mtime") as stamp,
+            patch("sickchill.show.show_queue.scene_numbering.xem_refresh"),
+            patch("sickchill.show.show_dir_mtime.stamp_show_dir_mtime") as stamp,
         ):
             item.run()
         show.refresh_dir.assert_called_once()
@@ -116,8 +116,8 @@ class TestRefreshRecalculatesShowSize(unittest.TestCase):
         item = QueueItemRefresh(show, force=False, silent=True)
         with (
             patch.object(item, "finish") as finish,
-            patch("sickchill.oldbeard.show_queue.scene_numbering.xem_refresh") as xem,
-            patch("sickchill.oldbeard.show_dir_mtime.stamp_show_dir_mtime") as stamp,
+            patch("sickchill.show.show_queue.scene_numbering.xem_refresh") as xem,
+            patch("sickchill.show.show_dir_mtime.stamp_show_dir_mtime") as stamp,
         ):
             item.run()
         show.populate_cache.assert_called_once()
@@ -156,13 +156,13 @@ class TestRefreshRecalculatesShowSize(unittest.TestCase):
         with (
             patch.object(item, "finish") as finish,
             patch.object(item, "_finish_early") as early,
-            patch("sickchill.oldbeard.show_queue.sickchill.indexer.series_by_id", return_value=series),
-            patch("sickchill.oldbeard.show_queue.TVShow", return_value=show),
-            patch("sickchill.oldbeard.show_queue.Show.find", return_value=None),
-            patch("sickchill.oldbeard.show_queue.name_cache.build_name_cache"),
-            patch("sickchill.oldbeard.show_queue.scene_numbering.xem_refresh") as xem,
-            patch("sickchill.oldbeard.show_queue.scene_numbering.get_xem_numbering_for_show", return_value={}),
-            patch("sickchill.oldbeard.show_queue.settings") as st,
+            patch("sickchill.show.show_queue.sickchill.indexer.series_by_id", return_value=series),
+            patch("sickchill.show.show_queue.TVShow", return_value=show),
+            patch("sickchill.show.show_queue.Show.find", return_value=None),
+            patch("sickchill.show.show_queue.name_cache.build_name_cache"),
+            patch("sickchill.show.show_queue.scene_numbering.xem_refresh") as xem,
+            patch("sickchill.show.show_queue.scene_numbering.get_xem_numbering_for_show", return_value={}),
+            patch("sickchill.show.show_queue.settings") as st,
         ):
             st.show_list = []
             st.USE_TRAKT = False
@@ -207,13 +207,13 @@ class TestRefreshRecalculatesShowSize(unittest.TestCase):
         with (
             patch.object(item, "finish"),
             patch.object(item, "_finish_early") as early,
-            patch("sickchill.oldbeard.show_queue.sickchill.indexer.series_by_id", return_value=series),
-            patch("sickchill.oldbeard.show_queue.TVShow", return_value=show),
-            patch("sickchill.oldbeard.show_queue.Show.find", return_value=None),
-            patch("sickchill.oldbeard.show_queue.name_cache.build_name_cache"),
-            patch("sickchill.oldbeard.show_queue.scene_numbering.xem_refresh"),
-            patch("sickchill.oldbeard.show_queue.scene_numbering.get_xem_numbering_for_show", return_value={}),
-            patch("sickchill.oldbeard.show_queue.settings") as st,
+            patch("sickchill.show.show_queue.sickchill.indexer.series_by_id", return_value=series),
+            patch("sickchill.show.show_queue.TVShow", return_value=show),
+            patch("sickchill.show.show_queue.Show.find", return_value=None),
+            patch("sickchill.show.show_queue.name_cache.build_name_cache"),
+            patch("sickchill.show.show_queue.scene_numbering.xem_refresh"),
+            patch("sickchill.show.show_queue.scene_numbering.get_xem_numbering_for_show", return_value={}),
+            patch("sickchill.show.show_queue.settings") as st,
         ):
             st.show_list = []
             st.USE_TRAKT = False
@@ -239,8 +239,8 @@ class TestPostProcessBatchShowSize(unittest.TestCase):
         processor.log = ""
         processor.failure_reason = ""
         with (
-            patch("sickchill.oldbeard.processTV.postProcessor.PostProcessor", return_value=processor),
-            patch("sickchill.oldbeard.processTV.already_processed", return_value=False),
+            patch("sickchill.process.processTV.postProcessor.PostProcessor", return_value=processor),
+            patch("sickchill.process.processTV.already_processed", return_value=False),
         ):
             process_media("/tmp", ["a.mkv", "b.mkv"], None, "copy", False, False, result)
         self.assertEqual(result.processed_shows, {show})
@@ -255,8 +255,8 @@ class TestPostProcessBatchShowSize(unittest.TestCase):
         processor.log = ""
         processor.failure_reason = "nope"
         with (
-            patch("sickchill.oldbeard.processTV.postProcessor.PostProcessor", return_value=processor),
-            patch("sickchill.oldbeard.processTV.already_processed", return_value=False),
+            patch("sickchill.process.processTV.postProcessor.PostProcessor", return_value=processor),
+            patch("sickchill.process.processTV.already_processed", return_value=False),
         ):
             process_media("/tmp", ["a.mkv"], None, "copy", False, False, result)
         self.assertEqual(result.processed_shows, set())

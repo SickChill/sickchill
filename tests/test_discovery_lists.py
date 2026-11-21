@@ -6,7 +6,7 @@ import unittest
 from unittest.mock import MagicMock, patch
 
 from sickchill.helper.list_status import build_list_status
-from sickchill.oldbeard import tmdbLists, tvmazePremieres
+from sickchill.show import tmdbLists, tvmazePremieres
 from sickchill.views.manage.add_shows import AddShows
 
 
@@ -27,13 +27,13 @@ class TMDBListsTests(unittest.TestCase):
     def setUp(self):
         tmdbLists.clear_cache()
 
-    @patch("sickchill.oldbeard.tmdbLists._api_key", return_value="")
+    @patch("sickchill.show.tmdbLists._api_key", return_value="")
     def test_missing_key(self, _key):
         with self.assertRaises(tmdbLists.TMDBMissingKeyError):
             tmdbLists.fetch_list("trending")
 
-    @patch("sickchill.oldbeard.tmdbLists._api_key", return_value="test-key")
-    @patch("sickchill.oldbeard.tmdbLists.helpers.getURL")
+    @patch("sickchill.show.tmdbLists._api_key", return_value="test-key")
+    @patch("sickchill.show.tmdbLists.helpers.getURL")
     def test_fetch_list_normalizes_cards(self, get_url, _key):
         get_url.return_value = {
             "results": [
@@ -60,8 +60,8 @@ class TMDBListsTests(unittest.TestCase):
         tmdbLists.fetch_list("trending")
         self.assertEqual(get_url.call_count, 1)
 
-    @patch("sickchill.oldbeard.tmdbLists._api_key", return_value="test-key")
-    @patch("sickchill.oldbeard.tmdbLists.helpers.getURL")
+    @patch("sickchill.show.tmdbLists._api_key", return_value="test-key")
+    @patch("sickchill.show.tmdbLists.helpers.getURL")
     def test_resolve_tvdb_id(self, get_url, _key):
         get_url.return_value = {"tvdb_id": 121361, "imdb_id": "tt0944947"}
         self.assertEqual(tmdbLists.resolve_tvdb_id(1399), 121361)
@@ -74,7 +74,7 @@ class TVMazePremieresTests(unittest.TestCase):
     def setUp(self):
         tvmazePremieres.clear_cache()
 
-    @patch("sickchill.oldbeard.tvmazePremieres.helpers.getURL")
+    @patch("sickchill.show.tvmazePremieres.helpers.getURL")
     def test_filters_s01e01_and_dedupes(self, get_url):
         get_url.return_value = [
             {

@@ -1,6 +1,6 @@
 from tornado.web import addslash
 
-import sickchill.oldbeard
+import sickchill
 from sickchill import logger
 from sickchill.helper import try_int
 from sickchill.logging.weblog import WebErrorViewer

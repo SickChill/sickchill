@@ -4,8 +4,8 @@ Test qualities
 
 import unittest
 
+from sickchill.common import ANY, HD, SD, HD720p, HD1080p, Quality
 from sickchill.helper.quality import get_quality_string
-from sickchill.oldbeard.common import ANY, HD, SD, HD720p, HD1080p, Quality
 
 
 class QualityTests(unittest.TestCase):

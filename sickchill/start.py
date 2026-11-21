@@ -11,29 +11,12 @@ from configobj import ConfigObj
 from tornado.locale import load_gettext_translations
 
 import sickchill
-from sickchill import logger, settings, show_updater, update_manager
-from sickchill.init_helpers import locale_dir, setup_gettext
-from sickchill.oldbeard import (
-    clients,
-    config,
-    dailysearcher,
-    db,
-    helpers,
-    image_cache,
-    naming,
-    notifications_queue,
-    post_processing_queue,
-    properFinder,
-    providers,
-    scheduler,
-    search_queue,
-    searchBacklog,
-    show_queue,
-    subtitles,
-    traktChecker,
-)
-from sickchill.oldbeard.common import ARCHIVED, IGNORED, MULTI_EP_STRINGS, SD, SKIPPED, WANTED
-from sickchill.oldbeard.config import (
+from sickchill import clients, db, logger, providers, settings, update_manager
+from sickchill.clients.trakt_api import traktChecker
+from sickchill.common import ARCHIVED, IGNORED, MULTI_EP_STRINGS, SD, SKIPPED, WANTED
+from sickchill.databases import cache, failed, main
+from sickchill.helper import config, helpers, scheduler
+from sickchill.helper.config import (
     ConfigMigrator,
     check_section,
     check_setting_bool,
@@ -44,10 +27,14 @@ from sickchill.oldbeard.config import (
     peek_setting_int,
     peek_setting_str,
 )
-from sickchill.oldbeard.databases import cache, failed, main
-from sickchill.oldbeard.network_timezones import sc_now
-from sickchill.oldbeard.providers.newznab import NewznabProvider
-from sickchill.oldbeard.providers.rsstorrent import TorrentRssProvider
+from sickchill.helper.network_timezones import sc_now
+from sickchill.init_helpers import locale_dir, setup_gettext
+from sickchill.notifiers import notifications_queue
+from sickchill.process import post_processing_queue
+from sickchill.providers.newznab import NewznabProvider
+from sickchill.providers.rsstorrent import TorrentRssProvider
+from sickchill.search import dailysearcher, properFinder, search_queue, searchBacklog
+from sickchill.show import image_cache, naming, show_queue, show_updater, subtitles
 from sickchill.system.Shutdown import Shutdown
 
 
@@ -689,7 +676,7 @@ def initialize(console_logging: bool = True, debug: bool = False, dbdebug: bool 
         apply_providers_from_cfg(settings.CFG)
 
         try:
-            from sickchill.oldbeard.providers.jackett import warn_jackett_newznab_overlap
+            from sickchill.providers.jackett import warn_jackett_newznab_overlap
 
             warn_jackett_newznab_overlap()
         except Exception as error:
@@ -732,7 +719,7 @@ def initialize(console_logging: bool = True, debug: bool = False, dbdebug: bool 
 
         # After NOTIFIERS sync: blank revoked stock Trakt Client IDs from older installs.
         try:
-            from sickchill.oldbeard.trakt_api.trakt import clear_revoked_trakt_defaults, refresh_trakt_pin_url
+            from sickchill.clients.trakt_api.trakt import clear_revoked_trakt_defaults, refresh_trakt_pin_url
 
             if clear_revoked_trakt_defaults():
                 logger.warning(
@@ -975,7 +962,7 @@ def save_all():
         show.save_to_db()
 
     # persist in-memory name cache (scene_names) in one write
-    from sickchill.oldbeard import name_cache
+    from sickchill.show import name_cache
 
     name_cache.save_all_cached_names()
 

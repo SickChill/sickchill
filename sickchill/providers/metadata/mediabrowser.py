@@ -5,9 +5,9 @@ from xml.etree import ElementTree
 
 import sickchill
 from sickchill import logger, settings
+from sickchill.helper import helpers
 from sickchill.helper.common import dateFormat, replace_extension
-from sickchill.oldbeard import helpers
-from sickchill.oldbeard.network_timezones import sc_timezone, sc_today
+from sickchill.helper.network_timezones import sc_timezone, sc_today
 from sickchill.providers.metadata import generic
 
 

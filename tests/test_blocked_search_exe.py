@@ -5,29 +5,29 @@ from __future__ import annotations
 import unittest
 from unittest.mock import patch
 
-from sickchill.oldbeard.search import snatch_episode
-from sickchill.oldbeard.tvcache import RSSTorrentMixin, TVCache
 from sickchill.providers.GenericProvider import GenericProvider
 from sickchill.providers.result_classes import SearchResult
+from sickchill.search.search import snatch_episode
+from sickchill.search.tvcache import RSSTorrentMixin, TVCache
 
 
 class BlockedSearchExeTests(unittest.TestCase):
     def test_add_cache_entry_skips_exe_title(self):
         cache = TVCache(GenericProvider("Test"))
-        with patch("sickchill.oldbeard.tvcache.NameParser") as parser:
+        with patch("sickchill.search.tvcache.NameParser") as parser:
             result = cache.add_cache_entry("Show.Name.S01E01.720p.HDTV.x264.exe", "https://example.com/dl/file.torrent", 1, 1, 0)
         self.assertIsNone(result)
         parser.assert_not_called()
 
     def test_add_cache_entry_skips_exe_url(self):
         cache = TVCache(GenericProvider("Test"))
-        with patch("sickchill.oldbeard.tvcache.NameParser") as parser:
+        with patch("sickchill.search.tvcache.NameParser") as parser:
             result = cache.add_cache_entry("Show.Name.S01E01.720p.HDTV.x264-GROUP", "https://example.com/dl/Show.S01E01.exe", 1, 1, 0)
         self.assertIsNone(result)
         parser.assert_not_called()
 
     def test_parse_feed_item_skips_exe_title(self):
-        from sickchill.oldbeard.bs4_parser import BS4Parser
+        from sickchill.helper.bs4_parser import BS4Parser
 
         xml = """<?xml version="1.0"?>
 <rss version="2.0">

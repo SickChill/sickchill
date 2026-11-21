@@ -1,8 +1,8 @@
 import sys
 import unittest
 
-from sickchill import settings
-from sickchill.oldbeard import common, db, name_cache, scene_exceptions, show_name_helpers
+from sickchill import common, db, settings
+from sickchill.show import name_cache, scene_exceptions, show_name_helpers
 from sickchill.tv import TVShow as Show
 from tests import conftest
 

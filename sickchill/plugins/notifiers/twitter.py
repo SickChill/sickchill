@@ -37,7 +37,7 @@ class TwitterNotifier(NotifierPlugin):
         settings.TWITTER_USEDM = bool(self.ctx.get("usedm"))
 
     def _impl(self):
-        from sickchill.oldbeard.notifiers import tweet as _mod
+        from sickchill.notifiers import tweet as _mod
 
         return _mod.Notifier()
 

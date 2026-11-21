@@ -3,7 +3,7 @@ import traceback
 from tornado.web import RequestHandler
 
 from sickchill import logger, settings
-from sickchill.oldbeard import helpers
+from sickchill.helper import helpers
 
 
 class KeyHandler(RequestHandler):

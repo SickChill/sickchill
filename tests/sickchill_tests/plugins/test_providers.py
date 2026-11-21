@@ -9,7 +9,7 @@ from io import StringIO
 from configobj import ConfigObj
 
 from sickchill import settings
-from sickchill.oldbeard.config import peek_setting_bool, peek_setting_str
+from sickchill.helper.config import peek_setting_bool, peek_setting_str
 from sickchill.plugins.api import PluginKind, clear_registry
 from sickchill.plugins.manager import PluginManager
 from sickchill.plugins.providers import config as providers_config, load_first_party_providers
@@ -240,7 +240,7 @@ class ProviderPluginTests(unittest.TestCase):
             {"enabled": True, "username": "from_providers", "password": "pw", "minseed": 3},
         )
 
-        from sickchill.oldbeard.providers.abnormal import Provider as AbnormalProvider
+        from sickchill.providers.abnormal import Provider as AbnormalProvider
 
         provider = AbnormalProvider()
         provider.enabled = False
@@ -266,7 +266,7 @@ class ProviderPluginTests(unittest.TestCase):
         cfg["ABNORMAL"] = {"abnormal": 0}
         cfg["General"] = {"provider_order": "abnormal"}
 
-        from sickchill.oldbeard.providers.abnormal import Provider as AbnormalProvider
+        from sickchill.providers.abnormal import Provider as AbnormalProvider
 
         fake = AbnormalProvider()
         fake.enabled = True
@@ -318,7 +318,7 @@ class ProviderPluginTests(unittest.TestCase):
             },
         )
 
-        from sickchill.oldbeard.providers.jackett import Provider as JackettProvider
+        from sickchill.providers.jackett import Provider as JackettProvider
 
         jackett = JackettProvider()
         settings.providerList = [jackett]
@@ -391,7 +391,7 @@ class ProviderPluginTests(unittest.TestCase):
             {"enabled": False, "username": "secret_user", "password": "secret_pw", "minseed": 7},
         )
 
-        from sickchill.oldbeard.providers.abnormal import Provider as AbnormalProvider
+        from sickchill.providers.abnormal import Provider as AbnormalProvider
 
         provider = AbnormalProvider()
         provider.enabled = True
@@ -425,8 +425,8 @@ class ProviderPluginTests(unittest.TestCase):
         write_provider_section(cfg, "abnormal", {"enabled": True, "username": "u"})
         write_provider_section(cfg, "eztv", {"enabled": False})
 
-        from sickchill.oldbeard.providers.abnormal import Provider as AbnormalProvider
-        from sickchill.oldbeard.providers.eztv import Provider as EztvProvider
+        from sickchill.providers.abnormal import Provider as AbnormalProvider
+        from sickchill.providers.eztv import Provider as EztvProvider
 
         abnormal = AbnormalProvider()
         eztv = EztvProvider()
@@ -440,10 +440,10 @@ class ProviderPluginTests(unittest.TestCase):
         self.assertEqual(settings.PROVIDER_ORDER, ["abnormal"])
 
     def test_sorted_provider_list_enabled_order_then_disabled_alpha(self):
-        from sickchill.oldbeard.providers import sorted_provider_list
-        from sickchill.oldbeard.providers.abnormal import Provider as AbnormalProvider
-        from sickchill.oldbeard.providers.eztv import Provider as EztvProvider
-        from sickchill.oldbeard.providers.nyaa import Provider as NyaaProvider
+        from sickchill.providers import sorted_provider_list
+        from sickchill.providers.abnormal import Provider as AbnormalProvider
+        from sickchill.providers.eztv import Provider as EztvProvider
+        from sickchill.providers.nyaa import Provider as NyaaProvider
 
         alpha = AbnormalProvider()
         alpha.enabled = True
@@ -455,7 +455,7 @@ class ProviderPluginTests(unittest.TestCase):
         disabled_b.enabled = False
         disabled_b.name = "Bravo Disabled"
         # Second disabled via a duplicate-style fake using torrentrss custom
-        from sickchill.oldbeard.providers.rsstorrent import TorrentRssProvider
+        from sickchill.providers.rsstorrent import TorrentRssProvider
 
         disabled_a = TorrentRssProvider("Alpha Disabled", "https://a.example/rss", "", "title")
         disabled_a.enabled = False
@@ -486,7 +486,7 @@ class ProviderPluginTests(unittest.TestCase):
             {"type": "newznab", "name": "Orphan", "url": "https://orphan.example/", "key": "k", "enabled": False},
         )
 
-        from sickchill.oldbeard.providers.abnormal import Provider as AbnormalProvider
+        from sickchill.providers.abnormal import Provider as AbnormalProvider
 
         provider = AbnormalProvider()
         provider.enabled = True
@@ -511,7 +511,7 @@ class ProviderPluginTests(unittest.TestCase):
             {"enabled": False, "username": "keep_me", "password": "keep_pw", "minseed": 9},
         )
 
-        from sickchill.oldbeard.providers.abnormal import Provider as AbnormalProvider
+        from sickchill.providers.abnormal import Provider as AbnormalProvider
 
         provider = AbnormalProvider()
         provider.enabled = False
@@ -537,7 +537,7 @@ class ProviderPluginTests(unittest.TestCase):
         write_provider_section(cfg, "abnormal", {"enabled": True, "username": "live"})
         write_provider_section(cfg, "nyaa", {"enabled": False, "username": "keep_nyaa", "minseed": 10})
 
-        from sickchill.oldbeard.providers.abnormal import Provider as AbnormalProvider
+        from sickchill.providers.abnormal import Provider as AbnormalProvider
 
         provider = AbnormalProvider()
         provider.enabled = True
@@ -563,7 +563,7 @@ class ProviderPluginTests(unittest.TestCase):
             {"enabled": False, "username": "keep_me", "password": "keep_pw", "minseed": 9},
         )
 
-        from sickchill.oldbeard.providers.abnormal import Provider as AbnormalProvider
+        from sickchill.providers.abnormal import Provider as AbnormalProvider
 
         provider = AbnormalProvider()
         provider.enabled = True
@@ -592,8 +592,8 @@ class ProviderPluginTests(unittest.TestCase):
             {"enabled": False, "username": "lazy_user", "minseed": 4},
         )
 
-        from sickchill.oldbeard.providers.abnormal import Provider as AbnormalProvider
         from sickchill.plugins.providers.config import apply_one_provider_from_cfg
+        from sickchill.providers.abnormal import Provider as AbnormalProvider
 
         provider = AbnormalProvider()
         provider.enabled = True
@@ -609,9 +609,9 @@ class ProviderPluginTests(unittest.TestCase):
         self.assertIn("abnormal", providers_config.loaded_provider_ids())
 
     def test_provider_settings_for_ui_masks_secrets_not_hash(self):
-        from sickchill.oldbeard.filters import hide
-        from sickchill.oldbeard.providers.abnormal import Provider as AbnormalProvider
+        from sickchill.helper.filters import hide
         from sickchill.plugins.providers.config import provider_settings_for_ui
+        from sickchill.providers.abnormal import Provider as AbnormalProvider
 
         provider = AbnormalProvider()
         provider.username = "visible_user"
@@ -651,7 +651,7 @@ class ProviderPluginTests(unittest.TestCase):
             {"type": "newznab", "name": "Orphan", "url": "https://orphan.example/", "key": "k", "enabled": False},
         )
 
-        from sickchill.oldbeard.providers.abnormal import Provider as AbnormalProvider
+        from sickchill.providers.abnormal import Provider as AbnormalProvider
 
         provider = AbnormalProvider()
         provider.enabled = True
@@ -670,7 +670,7 @@ class ProviderPluginTests(unittest.TestCase):
         self.assertNotIn("orphan_custom", cfg["PROVIDERS"])
 
     def test_make_provider_list_enabled_only_and_lazy_load(self):
-        from sickchill.oldbeard import providers as providers_mod
+        from sickchill import providers as providers_mod
 
         settings.providerList = providers_mod.makeProviderList(enabled_ids={"eztv", "jackett_sc"})
         ids = {p.get_id() for p in settings.providerList}

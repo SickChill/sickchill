@@ -6,9 +6,9 @@ import json
 import unittest
 
 from sickchill import settings
-from sickchill.oldbeard.providers.newznab import NewznabProvider
-from sickchill.oldbeard.providers.rsstorrent import TorrentRssProvider
 from sickchill.providers.GenericProvider import GenericProvider
+from sickchill.providers.newznab import NewznabProvider
+from sickchill.providers.rsstorrent import TorrentRssProvider
 from sickchill.views.config.providers import ConfigProviders
 
 

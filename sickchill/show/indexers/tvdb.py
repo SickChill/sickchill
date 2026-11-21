@@ -5,7 +5,7 @@ import traceback
 import requests
 
 from sickchill import logger, settings
-from sickchill.oldbeard.scdatetime import format_preset_datetime
+from sickchill.helper.scdatetime import format_preset_datetime
 from sickchill.tv import TVEpisode
 
 from .base import Indexer
@@ -759,7 +759,7 @@ class TVDB(Indexer):
         import json
         import time as _time
 
-        from sickchill.oldbeard import db as sc_db
+        from sickchill import db as sc_db
 
         series_id = int(series_id)
         now_mono = _time.monotonic()

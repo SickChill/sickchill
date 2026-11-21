@@ -33,7 +33,7 @@ class MattermostNotifier(NotifierPlugin):
         settings.MATTERMOST_ICON_EMOJI = self.ctx.get("icon_emoji") or ""
 
     def _impl(self):
-        from sickchill.oldbeard.notifiers import mattermost as _mod
+        from sickchill.notifiers import mattermost as _mod
 
         return _mod.Notifier()
 

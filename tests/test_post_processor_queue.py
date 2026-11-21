@@ -7,9 +7,9 @@ import os.path
 import time
 import unittest
 
-import sickchill.oldbeard
+import sickchill
 from sickchill import settings
-from sickchill.oldbeard.post_processing_queue import PostProcessorTask, ProcessingQueue
+from sickchill.process.post_processing_queue import PostProcessorTask, ProcessingQueue
 from tests import conftest
 
 CHECK_CLEARS = False
@@ -26,7 +26,7 @@ class PostProcessorQueueTests(conftest.SickChillTestPostProcessorCase):
 
     def setUp(self):
         super().setUp()
-        self.queue = sickchill.oldbeard.scheduler.Scheduler(
+        self.queue = sickchill.helper.scheduler.Scheduler(
             ProcessingQueue(),
             run_delay=datetime.timedelta(seconds=0),
             cycleTime=datetime.timedelta(seconds=1),

@@ -2,9 +2,9 @@
 <%!
     import datetime
     from sickchill import settings
-    from sickchill.oldbeard import common
-    from sickchill.oldbeard.common import SKIPPED, WANTED, IGNORED
-    from sickchill.oldbeard.common import statusStrings
+    from sickchill import common
+    from sickchill.common import SKIPPED, WANTED, IGNORED
+    from sickchill.common import statusStrings
     from sickchill import indexer as show_indexer
 %>
 

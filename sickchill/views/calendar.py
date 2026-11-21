@@ -2,10 +2,9 @@ import datetime
 
 from tornado.web import authenticated
 
-from sickchill import logger, settings
-from sickchill.helper import try_int
-from sickchill.oldbeard import db, network_timezones
-from sickchill.oldbeard.network_timezones import sc_today
+from sickchill import db, logger, settings
+from sickchill.helper import network_timezones, try_int
+from sickchill.helper.network_timezones import sc_today
 from sickchill.views.index import BaseHandler
 
 

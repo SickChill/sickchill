@@ -65,7 +65,7 @@ class TraktNotifier(NotifierPlugin):
         settings.TRAKT_BLACKLIST_NAME = self.ctx.get("blacklist_name") or ""
 
     def _impl(self):
-        from sickchill.oldbeard.notifiers import trakt as _mod
+        from sickchill.notifiers import trakt as _mod
 
         return _mod.Notifier()
 

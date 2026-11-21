@@ -10,7 +10,7 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
-from sickchill.oldbeard import processTV
+from sickchill.process import processTV
 from sickchill.views.api.webapi import CMDPostProcess
 
 
@@ -24,18 +24,18 @@ class FailedMissingFolderTests(unittest.TestCase):
     def tearDown(self):
         os.rmdir(self.parent)
 
-    @patch("sickchill.oldbeard.processTV.process_failed")
+    @patch("sickchill.process.processTV.process_failed")
     def test_failed_missing_folder_uses_folder_name(self, process_failed):
         processTV.process_dir(self.missing, failed=True)
         process_failed.assert_called_once()
         self.assertEqual(process_failed.call_args.args[:2], (self.missing, self.release))
 
-    @patch("sickchill.oldbeard.processTV.process_failed")
+    @patch("sickchill.process.processTV.process_failed")
     def test_failed_missing_folder_prefers_release_name(self, process_failed):
         processTV.process_dir(self.missing, release_name="Other.Name.S01E02.1080p.WEB-GRP", failed=True)
         self.assertEqual(process_failed.call_args.args[1], "Other.Name.S01E02.1080p.WEB-GRP")
 
-    @patch("sickchill.oldbeard.processTV.process_failed")
+    @patch("sickchill.process.processTV.process_failed")
     def test_not_failed_missing_folder_is_skipped(self, process_failed):
         output = processTV.process_dir(self.missing, failed=False)
         process_failed.assert_not_called()

@@ -49,7 +49,7 @@ class EmailNotifier(NotifierPlugin):
         settings.EMAIL_SUBJECT = self.ctx.get("subject") or ""
 
     def _impl(self):
-        from sickchill.oldbeard.notifiers import emailnotify as _mod
+        from sickchill.notifiers import emailnotify as _mod
 
         return _mod.Notifier()
 

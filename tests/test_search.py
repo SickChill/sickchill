@@ -2,13 +2,12 @@ import unittest
 from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 
-import sickchill.oldbeard.providers
-from sickchill import settings
-from sickchill.oldbeard import common as common
-from sickchill.oldbeard.search import _ranked_results, _submission_candidates, pick_best_result, search_for_needed_episodes, search_providers
-from sickchill.oldbeard.search_queue import DailySearchQueueItem, ManualSearchQueueItem
-from sickchill.oldbeard.tvcache import TVCache
+import sickchill.providers
+from sickchill import common as common, settings
 from sickchill.providers.GenericProvider import GenericProvider
+from sickchill.search.search import _ranked_results, _submission_candidates, pick_best_result, search_for_needed_episodes, search_providers
+from sickchill.search.search_queue import DailySearchQueueItem, ManualSearchQueueItem
+from sickchill.search.tvcache import TVCache
 from sickchill.tv import TVEpisode, TVShow
 from tests import conftest
 
@@ -151,7 +150,7 @@ def _show():
 class SearchFallbackTests(unittest.TestCase):
     def _run(self, provider, manual=False):
         episodes = [_episode(1), _episode(2)]
-        with patch("sickchill.oldbeard.providers.sorted_provider_list", return_value=[provider]):
+        with patch("sickchill.providers.sorted_provider_list", return_value=[provider]):
             search_providers(_show(), episodes, manual=manual)
         return [call.args[2] for call in provider.find_search_results.call_args_list]
 
@@ -174,13 +173,13 @@ class SearchFallbackTests(unittest.TestCase):
             return {}
 
         provider.find_search_results.side_effect = fake_find
-        with patch("sickchill.oldbeard.search.pick_best_result", return_value=None):
+        with patch("sickchill.search.search.pick_best_result", return_value=None):
             self.assertEqual(self._run(provider), ["season", "episode"])
 
     def test_season_fallback_off_does_not_switch_when_only_episode_cache_hits(self):
         provider = _provider(search_mode="season", search_fallback=False)
         provider.find_search_results.return_value = {1: [MagicMock(quality=1)]}
-        with patch("sickchill.oldbeard.search.pick_best_result", return_value=None):
+        with patch("sickchill.search.search.pick_best_result", return_value=None):
             self.assertEqual(self._run(provider), ["season"])
 
     def test_season_fallback_on_does_not_switch_when_pack_found(self):
@@ -188,7 +187,7 @@ class SearchFallbackTests(unittest.TestCase):
         pack = MagicMock()
         pack.quality = 1
         provider.find_search_results.return_value = {common.SEASON_RESULT: [pack]}
-        with patch("sickchill.oldbeard.search.pick_best_result", side_effect=[pack, None]):
+        with patch("sickchill.search.search.pick_best_result", side_effect=[pack, None]):
             self.assertEqual(self._run(provider), ["season"])
 
     def test_season_fallback_on_switches_when_pack_not_selectable(self):
@@ -196,7 +195,7 @@ class SearchFallbackTests(unittest.TestCase):
         pack = MagicMock()
         pack.quality = 1
         provider.find_search_results.return_value = {common.SEASON_RESULT: [pack]}
-        with patch("sickchill.oldbeard.search.pick_best_result", return_value=None):
+        with patch("sickchill.search.search.pick_best_result", return_value=None):
             self.assertEqual(self._run(provider), ["season", "episode"])
 
     def test_episode_fallback_on_switches_to_season_when_empty(self):
@@ -212,13 +211,13 @@ class SearchFallbackTests(unittest.TestCase):
     def test_episode_fallback_on_switches_when_only_some_episodes_found(self):
         provider = _provider(search_mode="episode", search_fallback=True)
         provider.find_search_results.return_value = {1: [MagicMock(quality=1)]}
-        with patch("sickchill.oldbeard.search.pick_best_result", return_value=None):
+        with patch("sickchill.search.search.pick_best_result", return_value=None):
             self.assertEqual(self._run(provider), ["episode", "season"])
 
     def test_episode_fallback_on_does_not_switch_when_all_episodes_found(self):
         provider = _provider(search_mode="episode", search_fallback=True)
         provider.find_search_results.return_value = {1: [MagicMock(quality=1)], 2: [MagicMock(quality=1)]}
-        with patch("sickchill.oldbeard.search.pick_best_result", return_value=None):
+        with patch("sickchill.search.search.pick_best_result", return_value=None):
             self.assertEqual(self._run(provider), ["episode"])
 
     def test_episode_fallback_on_manual_does_not_switch_to_season(self):
@@ -245,10 +244,10 @@ class SearchFallbackTests(unittest.TestCase):
         show = _show()
         show.paused = False
         with (
-            patch("sickchill.oldbeard.providers.sorted_provider_list", return_value=[provider]),
-            patch("sickchill.oldbeard.search.settings.show_list", [show]),
-            patch("sickchill.oldbeard.search.settings.RANDOMIZE_PROVIDERS", False),
-            patch("sickchill.oldbeard.search.wanted_episodes", return_value=[_episode(1)]),
+            patch("sickchill.providers.sorted_provider_list", return_value=[provider]),
+            patch("sickchill.search.search.settings.show_list", [show]),
+            patch("sickchill.search.search.settings.RANDOMIZE_PROVIDERS", False),
+            patch("sickchill.search.search.wanted_episodes", return_value=[_episode(1)]),
         ):
             search_for_needed_episodes()
 
@@ -265,12 +264,12 @@ class SearchFallbackTests(unittest.TestCase):
         show = _show()
         show.paused = False
         with (
-            patch("sickchill.oldbeard.providers.sorted_provider_list", return_value=[provider]),
-            patch("sickchill.oldbeard.search.settings.show_list", [show]),
-            patch("sickchill.oldbeard.search.settings.RANDOMIZE_PROVIDERS", False),
-            patch("sickchill.oldbeard.search.settings.DOWNLOAD_PROPERS", True),
-            patch("sickchill.oldbeard.search.wanted_episodes", return_value=[_episode(1)]),
-            patch("sickchill.oldbeard.properFinder.ProperFinder") as finder_cls,
+            patch("sickchill.providers.sorted_provider_list", return_value=[provider]),
+            patch("sickchill.search.search.settings.show_list", [show]),
+            patch("sickchill.search.search.settings.RANDOMIZE_PROVIDERS", False),
+            patch("sickchill.search.search.settings.DOWNLOAD_PROPERS", True),
+            patch("sickchill.search.search.wanted_episodes", return_value=[_episode(1)]),
+            patch("sickchill.search.properFinder.ProperFinder") as finder_cls,
         ):
             search_for_needed_episodes()
 
@@ -286,12 +285,12 @@ class SearchFallbackTests(unittest.TestCase):
         show = _show()
         show.paused = False
         with (
-            patch("sickchill.oldbeard.providers.sorted_provider_list", return_value=[provider]),
-            patch("sickchill.oldbeard.search.settings.show_list", [show]),
-            patch("sickchill.oldbeard.search.settings.RANDOMIZE_PROVIDERS", False),
-            patch("sickchill.oldbeard.search.settings.DOWNLOAD_PROPERS", False),
-            patch("sickchill.oldbeard.search.wanted_episodes", return_value=[_episode(1)]),
-            patch("sickchill.oldbeard.properFinder.ProperFinder") as finder_cls,
+            patch("sickchill.providers.sorted_provider_list", return_value=[provider]),
+            patch("sickchill.search.search.settings.show_list", [show]),
+            patch("sickchill.search.search.settings.RANDOMIZE_PROVIDERS", False),
+            patch("sickchill.search.search.settings.DOWNLOAD_PROPERS", False),
+            patch("sickchill.search.search.wanted_episodes", return_value=[_episode(1)]),
+            patch("sickchill.search.properFinder.ProperFinder") as finder_cls,
         ):
             search_for_needed_episodes()
 
@@ -306,12 +305,12 @@ class SearchFallbackTests(unittest.TestCase):
         show = _show()
         show.paused = False
         with (
-            patch("sickchill.oldbeard.providers.sorted_provider_list", return_value=[provider]),
-            patch("sickchill.oldbeard.search.settings.show_list", [show]),
-            patch("sickchill.oldbeard.search.settings.RANDOMIZE_PROVIDERS", False),
-            patch("sickchill.oldbeard.search.settings.DOWNLOAD_PROPERS", True),
-            patch("sickchill.oldbeard.search.wanted_episodes", return_value=[]),
-            patch("sickchill.oldbeard.properFinder.ProperFinder") as finder_cls,
+            patch("sickchill.providers.sorted_provider_list", return_value=[provider]),
+            patch("sickchill.search.search.settings.show_list", [show]),
+            patch("sickchill.search.search.settings.RANDOMIZE_PROVIDERS", False),
+            patch("sickchill.search.search.settings.DOWNLOAD_PROPERS", True),
+            patch("sickchill.search.search.wanted_episodes", return_value=[]),
+            patch("sickchill.search.properFinder.ProperFinder") as finder_cls,
         ):
             search_for_needed_episodes()
 
@@ -474,7 +473,7 @@ class CacheEpisodeLookupTests(unittest.TestCase):
             patch.object(cache, "get_db", return_value=db),
             patch.object(cache, "_shows_by_indexer", return_value=({7: show}, set())),
             patch.object(cache, "set_last_search"),
-            patch("sickchill.oldbeard.tvcache.show_name_helpers.filter_bad_releases", return_value=True),
+            patch("sickchill.search.tvcache.show_name_helpers.filter_bad_releases", return_value=True),
         ):
             by_zero = cache.find_needed_episodes([episode0])
             by_one = cache.find_needed_episodes([episode1])
@@ -574,16 +573,16 @@ class DailyReleaseSubmissionTests(unittest.TestCase):
             patch.object(cache, "get_db", return_value=db),
             patch.object(cache, "_shows_by_indexer", return_value=({7: show}, set())),
             patch.object(cache, "set_last_search"),
-            patch("sickchill.oldbeard.tvcache.show_name_helpers.filter_bad_releases", return_value=True),
-            patch("sickchill.oldbeard.providers.sorted_provider_list", return_value=[provider]),
-            patch("sickchill.oldbeard.search.settings.show_list", [show]),
-            patch("sickchill.oldbeard.search.settings.RANDOMIZE_PROVIDERS", False),
-            patch("sickchill.oldbeard.search.settings.DOWNLOAD_PROPERS", False),
-            patch("sickchill.oldbeard.search.wanted_episodes", return_value=[episode1, episode2]),
-            patch("sickchill.oldbeard.search._ranked_results", side_effect=lambda results, _show: list(results)),
-            patch("sickchill.oldbeard.search_queue.settings.CPU_PRESET", "HIGH"),
-            patch("sickchill.oldbeard.search_queue.time.sleep"),
-            patch("sickchill.oldbeard.search_queue.search.snatch_episode", return_value=True) as snatch,
+            patch("sickchill.search.tvcache.show_name_helpers.filter_bad_releases", return_value=True),
+            patch("sickchill.providers.sorted_provider_list", return_value=[provider]),
+            patch("sickchill.search.search.settings.show_list", [show]),
+            patch("sickchill.search.search.settings.RANDOMIZE_PROVIDERS", False),
+            patch("sickchill.search.search.settings.DOWNLOAD_PROPERS", False),
+            patch("sickchill.search.search.wanted_episodes", return_value=[episode1, episode2]),
+            patch("sickchill.search.search._ranked_results", side_effect=lambda results, _show: list(results)),
+            patch("sickchill.search.search_queue.settings.CPU_PRESET", "HIGH"),
+            patch("sickchill.search.search_queue.time.sleep"),
+            patch("sickchill.search.search_queue.search.snatch_episode", return_value=True) as snatch,
         ):
             selected = search_for_needed_episodes()
             DailySearchQueueItem().run()
@@ -608,10 +607,10 @@ class DailyReleaseSubmissionTests(unittest.TestCase):
             return result.url == "http://indexer/good"
 
         with (
-            patch("sickchill.oldbeard.search_queue.search.search_for_needed_episodes", return_value=[dead, good]),
-            patch("sickchill.oldbeard.search_queue.search.snatch_episode", side_effect=snatch) as snatched,
-            patch("sickchill.oldbeard.search_queue.settings.CPU_PRESET", "HIGH"),
-            patch("sickchill.oldbeard.search_queue.time.sleep"),
+            patch("sickchill.search.search_queue.search.search_for_needed_episodes", return_value=[dead, good]),
+            patch("sickchill.search.search_queue.search.snatch_episode", side_effect=snatch) as snatched,
+            patch("sickchill.search.search_queue.settings.CPU_PRESET", "HIGH"),
+            patch("sickchill.search.search_queue.time.sleep"),
         ):
             item = DailySearchQueueItem()
             item.run()
@@ -629,10 +628,10 @@ class DailyReleaseSubmissionTests(unittest.TestCase):
             return result.url == "http://indexer/good"
 
         with (
-            patch("sickchill.oldbeard.search_queue.search.search_providers", return_value=[dead]),
-            patch("sickchill.oldbeard.search_queue.search.snatch_episode", side_effect=snatch) as snatched,
-            patch("sickchill.oldbeard.search_queue.settings.CPU_PRESET", "HIGH"),
-            patch("sickchill.oldbeard.search_queue.time.sleep"),
+            patch("sickchill.search.search_queue.search.search_providers", return_value=[dead]),
+            patch("sickchill.search.search_queue.search.snatch_episode", side_effect=snatch) as snatched,
+            patch("sickchill.search.search_queue.settings.CPU_PRESET", "HIGH"),
+            patch("sickchill.search.search_queue.time.sleep"),
         ):
             item.run()
 
@@ -649,10 +648,10 @@ class ResultRankingTests(unittest.TestCase):
         proper = SimpleNamespace(name="Show.HDTV.PROPER", quality=common.Quality.HDTV, show=show, url="http://indexer/proper")
 
         with (
-            patch("sickchill.oldbeard.search.show_name_helpers.filter_bad_releases", return_value=True),
-            patch("sickchill.oldbeard.search.show_name_helpers.has_preferred_words", return_value=False),
-            patch("sickchill.oldbeard.search.settings.USE_FAILED_DOWNLOADS", False),
-            patch("sickchill.oldbeard.search.History") as history,
+            patch("sickchill.search.search.show_name_helpers.filter_bad_releases", return_value=True),
+            patch("sickchill.search.search.show_name_helpers.has_preferred_words", return_value=False),
+            patch("sickchill.search.search.settings.USE_FAILED_DOWNLOADS", False),
+            patch("sickchill.search.search.History") as history,
         ):
             history.return_value.is_dead_url.return_value = False
             ranked = _ranked_results([first, proper], show)
@@ -668,10 +667,10 @@ class ResultRankingTests(unittest.TestCase):
         proper = SimpleNamespace(name="Show.SDTV.PROPER", quality=common.Quality.SDTV, show=show, url="http://indexer/sd-proper")
 
         with (
-            patch("sickchill.oldbeard.search.show_name_helpers.filter_bad_releases", return_value=True),
-            patch("sickchill.oldbeard.search.show_name_helpers.has_preferred_words", return_value=False),
-            patch("sickchill.oldbeard.search.settings.USE_FAILED_DOWNLOADS", False),
-            patch("sickchill.oldbeard.search.History") as history,
+            patch("sickchill.search.search.show_name_helpers.filter_bad_releases", return_value=True),
+            patch("sickchill.search.search.show_name_helpers.has_preferred_words", return_value=False),
+            patch("sickchill.search.search.settings.USE_FAILED_DOWNLOADS", False),
+            patch("sickchill.search.search.History") as history,
         ):
             history.return_value.is_dead_url.return_value = False
             ranked = _ranked_results([standard, hdtv, proper], show)
@@ -703,10 +702,10 @@ class ResultRankingTests(unittest.TestCase):
         good = SimpleNamespace(name="Show.HDTV", quality=common.Quality.HDTV, show=show, url="http://indexer/good")
 
         with (
-            patch("sickchill.oldbeard.search.show_name_helpers.filter_bad_releases", return_value=True),
-            patch("sickchill.oldbeard.search.show_name_helpers.has_preferred_words", return_value=False),
-            patch("sickchill.oldbeard.search.settings.USE_FAILED_DOWNLOADS", False),
-            patch("sickchill.oldbeard.search.History") as history,
+            patch("sickchill.search.search.show_name_helpers.filter_bad_releases", return_value=True),
+            patch("sickchill.search.search.show_name_helpers.has_preferred_words", return_value=False),
+            patch("sickchill.search.search.settings.USE_FAILED_DOWNLOADS", False),
+            patch("sickchill.search.search.History") as history,
         ):
             history.return_value.is_dead_url.side_effect = lambda url: url == "http://indexer/dead"
             ranked = _ranked_results([dead, good], show)
@@ -849,14 +848,14 @@ class ManualBacklogLiveSearchTests(unittest.TestCase):
     def test_manual_skips_rss_cache_update(self):
         provider = _provider(search_mode="episode")
         provider.find_search_results.return_value = {}
-        with patch("sickchill.oldbeard.providers.sorted_provider_list", return_value=[provider]):
+        with patch("sickchill.providers.sorted_provider_list", return_value=[provider]):
             search_providers(_show(), [_episode(1)], manual=True)
         provider.cache.update_cache.assert_not_called()
 
     def test_backlog_still_updates_rss_cache(self):
         provider = _provider(search_mode="episode")
         provider.find_search_results.return_value = {}
-        with patch("sickchill.oldbeard.providers.sorted_provider_list", return_value=[provider]):
+        with patch("sickchill.providers.sorted_provider_list", return_value=[provider]):
             search_providers(_show(), [_episode(1)], manual=False)
         provider.cache.update_cache.assert_called()
 
@@ -871,7 +870,7 @@ if __name__ == "__main__":
         for name, data in TESTS.items():
             filename = name.replace(" ", "_")
 
-            for provider in sickchill.oldbeard.providers.sorted_provider_list():
+            for provider in sickchill.providers.sorted_provider_list():
                 if provider.provider_type == GenericProvider.TORRENT:
                     if forceSearch:
                         test_name = "test_manual_{0}_{1}_{2}".format(filename, data["tvdbid"], provider.name)

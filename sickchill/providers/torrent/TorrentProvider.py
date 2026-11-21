@@ -3,11 +3,11 @@ from datetime import datetime
 import bencode
 
 from sickchill import logger, settings
+from sickchill.common import Quality
+from sickchill.db import DBConnection
 from sickchill.helper.common import try_int
-from sickchill.oldbeard.common import Quality
-from sickchill.oldbeard.db import DBConnection
-from sickchill.oldbeard.helpers import release_matches_fingerprint, split_release_fingerprint
-from sickchill.oldbeard.network_timezones import sc_now, sc_timezone
+from sickchill.helper.helpers import release_matches_fingerprint, split_release_fingerprint
+from sickchill.helper.network_timezones import sc_now, sc_timezone
 from sickchill.providers.GenericProvider import GenericProvider
 from sickchill.providers.result_classes import Proper, TorrentSearchResult
 from sickchill.show.History import History

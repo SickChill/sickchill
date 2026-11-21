@@ -11,10 +11,10 @@ from unittest.mock import MagicMock, patch
 
 from sickchill import settings
 from sickchill.helper.exceptions import EpisodeNotFoundException, EpisodePostProcessingFailedException
-from sickchill.oldbeard import processTV
-from sickchill.oldbeard.helpers import make_dirs
-from sickchill.oldbeard.name_cache import add_name
-from sickchill.oldbeard.postProcessor import METHOD_COPY, METHOD_HARDLINK, METHOD_MOVE, METHOD_SYMLINK, METHOD_SYMLINK_REVERSED, PostProcessor
+from sickchill.helper.helpers import make_dirs
+from sickchill.process import processTV
+from sickchill.process.postProcessor import METHOD_COPY, METHOD_HARDLINK, METHOD_MOVE, METHOD_SYMLINK, METHOD_SYMLINK_REVERSED, PostProcessor
+from sickchill.show.name_cache import add_name
 from sickchill.tv import TVEpisode, TVShow
 from tests import conftest
 
@@ -105,8 +105,8 @@ class PPMultiEpFailureMessageTests(unittest.TestCase):
         process_path = os.path.join(os.path.sep, "tmp")
         video_path = os.path.join(process_path, video_name)
 
-        with patch("sickchill.oldbeard.processTV.postProcessor.PostProcessor", return_value=processor):
-            with patch("sickchill.oldbeard.processTV.already_processed", return_value=False):
+        with patch("sickchill.process.processTV.postProcessor.PostProcessor", return_value=processor):
+            with patch("sickchill.process.processTV.already_processed", return_value=False):
                 processTV.process_media(process_path, [video_name], None, "move", False, False, result)
 
         self.assertFalse(result.result)
@@ -221,7 +221,7 @@ class SourcePreservingAssociatedFiles(unittest.TestCase):
 
     def _process(self, method):
         processor = PostProcessor(str(self.video), process_method=method)
-        with patch("sickchill.oldbeard.helpers.chmodAsParent"):
+        with patch("sickchill.helper.helpers.chmodAsParent"):
             if method == METHOD_COPY:
                 processor._copy(str(self.video), str(self.dest_dir), None, associated_files=True)
             elif method == METHOD_HARDLINK:

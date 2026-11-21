@@ -6,8 +6,8 @@ if TYPE_CHECKING:
     from sickchill.tv import TVEpisode, TVShow
 
 from sickchill import logger
-from sickchill.oldbeard import helpers
-from sickchill.oldbeard.common import uses_absolute_numbering
+from sickchill.common import uses_absolute_numbering
+from sickchill.helper import helpers
 from sickchill.providers.metadata import generic
 
 

@@ -1,7 +1,7 @@
 <%inherit file="/layouts/main.mako" />
 <%!
     from sickchill import settings
-    from sickchill.oldbeard.common import statusStrings
+    from sickchill.common import statusStrings
 %>
 
 <%block name="content">

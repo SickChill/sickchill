@@ -7,8 +7,8 @@ from unittest.mock import MagicMock, patch
 
 import requests
 
-from sickchill.oldbeard.kodi_jsonrpc import KodiClient, KodiRPCError
-from sickchill.oldbeard.notifiers.kodi import Notifier
+from sickchill.notifiers.kodi import Notifier
+from sickchill.notifiers.kodi_jsonrpc import KodiClient, KodiRPCError
 
 
 class TestKodiClient(unittest.TestCase):
@@ -68,11 +68,11 @@ class TestKodiClient(unittest.TestCase):
 class TestKodiNotifierSetup(unittest.TestCase):
     def test_setup_pings_and_keeps_reachable_host(self):
         notifier = Notifier()
-        with patch("sickchill.oldbeard.notifiers.kodi.settings") as kodi_settings:
+        with patch("sickchill.notifiers.kodi.settings") as kodi_settings:
             kodi_settings.KODI_HOST = "box.lan:9090"
             kodi_settings.KODI_USERNAME = "kodi"
             kodi_settings.KODI_PASSWORD = "pw"
-            with patch("sickchill.oldbeard.notifiers.kodi.KodiClient") as client_cls:
+            with patch("sickchill.notifiers.kodi.KodiClient") as client_cls:
                 instance = MagicMock()
                 instance.host = "box.lan"
                 instance.Settings.GetSettingValue.return_value = {"result": {"value": "Living Room"}}
@@ -86,11 +86,11 @@ class TestKodiNotifierSetup(unittest.TestCase):
 
     def test_setup_skips_host_when_ping_fails(self):
         notifier = Notifier()
-        with patch("sickchill.oldbeard.notifiers.kodi.settings") as kodi_settings:
+        with patch("sickchill.notifiers.kodi.settings") as kodi_settings:
             kodi_settings.KODI_HOST = "dead.lan"
             kodi_settings.KODI_USERNAME = ""
             kodi_settings.KODI_PASSWORD = ""
-            with patch("sickchill.oldbeard.notifiers.kodi.KodiClient") as client_cls:
+            with patch("sickchill.notifiers.kodi.KodiClient") as client_cls:
                 instance = MagicMock()
                 instance.ping.side_effect = KodiRPCError("down")
                 client_cls.return_value = instance

@@ -26,11 +26,10 @@ import pytest
 from configobj import ConfigObj
 
 import sickchill.logger
-import sickchill.oldbeard.tvcache
+import sickchill.search.tvcache
 import sickchill.start
-from sickchill import settings
-from sickchill.oldbeard import db, providers
-from sickchill.oldbeard.databases import cache, failed, main
+from sickchill import db, providers, settings
+from sickchill.databases import cache, failed, main
 from sickchill.show.indexers import ShowIndexer
 from sickchill.tv import TVEpisode, TVShow
 
@@ -241,8 +240,8 @@ class TestCacheDBConnection(TestDBConnection, object):
 
 
 # this will override the normal db connection
-sickchill.oldbeard.db.DBConnection = TestDBConnection
-sickchill.oldbeard.tvcache.CacheDBConnection = TestCacheDBConnection
+sickchill.db.DBConnection = TestDBConnection
+sickchill.search.tvcache.CacheDBConnection = TestCacheDBConnection
 
 
 # =================
@@ -270,7 +269,7 @@ def teardown_test_db():
     """
     Tear down the test database.
     """
-    from sickchill.oldbeard.db import db_cons
+    from sickchill.db import db_cons
 
     for connection in db_cons:
         db_cons[connection].commit()

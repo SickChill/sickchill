@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import ClassVar
 
-from sickchill.oldbeard.common import (
+from sickchill.common import (
     NOTIFY_DOWNLOAD,
     NOTIFY_LOGIN,
     NOTIFY_LOGIN_TEXT,
@@ -12,7 +12,7 @@ from sickchill.oldbeard.common import (
     NOTIFY_UPDATE_TEXT,
     notifyStrings,
 )
-from sickchill.oldbeard.helpers import make_session
+from sickchill.helper.helpers import make_session
 from sickchill.plugins.api import Field, register
 from sickchill.plugins.kinds.notifier import NotifierPlugin
 

@@ -6,7 +6,7 @@ import unittest
 from types import SimpleNamespace
 from unittest.mock import patch
 
-from sickchill.oldbeard.common import ANIME_ABSOLUTE, ANIME_NONE, ANIME_SEASON_EPISODE, parse_anime_form, parse_anime_mode, uses_absolute_numbering
+from sickchill.common import ANIME_ABSOLUTE, ANIME_NONE, ANIME_SEASON_EPISODE, parse_anime_form, parse_anime_mode, uses_absolute_numbering
 from sickchill.providers.GenericProvider import GenericProvider
 from sickchill.tv import TVEpisode, TVShow
 

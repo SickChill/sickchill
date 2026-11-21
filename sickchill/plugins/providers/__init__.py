@@ -1,6 +1,6 @@
 """First-party search provider plugins.
 
-Dynamic registration: import each ``oldbeard.providers.<mod>`` and register a
+Dynamic registration: import each ``sickchill.providers.<mod>`` and register a
 ``ProviderPlugin`` subclass whose ``id`` comes from ``provider_id_for_module``.
 """
 
@@ -12,30 +12,30 @@ import sys
 
 logger = logging.getLogger("sickchill.plugins.providers")
 
-# Populated from oldbeard.providers.__all__ at load time (excluding broken).
+# Populated from sickchill.providers.__all__ at load time (excluding broken).
 FIRST_PARTY_PROVIDER_MODULES: tuple[str, ...] = ()
 
 
 def _provider_modules() -> tuple[str, ...]:
-    from sickchill.oldbeard.providers import __all__ as provider_all, broken_providers
+    from sickchill.providers import __all__ as provider_all, broken_providers
 
     broken = set(broken_providers or [])
     return tuple(name for name in provider_all if name not in broken)
 
 
 def load_first_party_providers() -> None:
-    """Import oldbeard provider modules and @register thin ProviderPlugin wrappers."""
+    """Import provider modules and @register thin ProviderPlugin wrappers."""
     global FIRST_PARTY_PROVIDER_MODULES
 
-    from sickchill.oldbeard.providers import provider_id_for_module
     from sickchill.plugins.api import register
     from sickchill.plugins.kinds.provider import ProviderPlugin
+    from sickchill.providers import provider_id_for_module
 
     FIRST_PARTY_PROVIDER_MODULES = _provider_modules()
     registered_ids: set[str] = set()
 
     for module_name in FIRST_PARTY_PROVIDER_MODULES:
-        full = f"sickchill.oldbeard.providers.{module_name}"
+        full = f"sickchill.providers.{module_name}"
         try:
             if full in sys.modules:
                 mod = sys.modules[full]

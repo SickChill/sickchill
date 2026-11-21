@@ -9,11 +9,11 @@ from sqlalchemy.orm import Session
 from tmdbsimple import movies, search
 
 from sickchill import settings
-from sickchill.oldbeard.databases import movie
-from sickchill.oldbeard.db import db_cons, db_full_path, db_locks
-from sickchill.oldbeard.network_timezones import sc_timezone
+from sickchill.databases import movie
+from sickchill.db import db_cons, db_full_path, db_locks
+from sickchill.helper.network_timezones import sc_timezone
 
-# TODO: Wire IMDb title lookup through sickchill.oldbeard.imdb_api.
+# TODO: Wire IMDb title lookup through sickchill.show.indexers.imdb_api.
 logger = logging.getLogger("sickchill.movie")
 
 

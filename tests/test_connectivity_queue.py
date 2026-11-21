@@ -7,11 +7,12 @@ import threading
 import unittest
 from unittest.mock import MagicMock, patch
 
-from sickchill.oldbeard import connectivity, generic_queue
-from sickchill.oldbeard.connectivity import ConnectivityCheckQueueItem
-from sickchill.oldbeard.generic_queue import GenericQueue, QueueItem, QueuePriorities
-from sickchill.oldbeard.network_timezones import sc_now
-from sickchill.oldbeard.search_queue import DailySearchQueueItem, SearchQueue
+from sickchill.helper import generic_queue
+from sickchill.helper.generic_queue import GenericQueue, QueueItem, QueuePriorities
+from sickchill.helper.network_timezones import sc_now
+from sickchill.search import connectivity
+from sickchill.search.connectivity import ConnectivityCheckQueueItem
+from sickchill.search.search_queue import DailySearchQueueItem, SearchQueue
 from sickchill.show.indexers.tvdb_v4_client import TVDBv4Error
 from sickchill.show.indexers.wrappers import ExceptionDecorator
 
@@ -30,8 +31,8 @@ class TestProbeConnectivity(unittest.TestCase):
 
     def test_probe_succeeds_on_first_host(self):
         with (
-            patch("sickchill.oldbeard.connectivity.settings.PROXY_SETTING", ""),
-            patch("sickchill.oldbeard.connectivity.socket.create_connection") as connect,
+            patch("sickchill.search.connectivity.settings.PROXY_SETTING", ""),
+            patch("sickchill.search.connectivity.socket.create_connection") as connect,
         ):
             connect.return_value.__enter__.return_value = MagicMock()
             self.assertTrue(connectivity.probe_connectivity([("1.1.1.1", 53)], timeout=1))
@@ -39,8 +40,8 @@ class TestProbeConnectivity(unittest.TestCase):
 
     def test_probe_fails_when_all_hosts_raise(self):
         with (
-            patch("sickchill.oldbeard.connectivity.settings.PROXY_SETTING", ""),
-            patch("sickchill.oldbeard.connectivity.socket.create_connection", side_effect=OSError("offline")),
+            patch("sickchill.search.connectivity.settings.PROXY_SETTING", ""),
+            patch("sickchill.search.connectivity.socket.create_connection", side_effect=OSError("offline")),
         ):
             self.assertFalse(connectivity.probe_connectivity([("1.1.1.1", 53), ("8.8.8.8", 53)], timeout=1))
 
@@ -48,16 +49,16 @@ class TestProbeConnectivity(unittest.TestCase):
         cm = MagicMock()
         cm.__enter__.return_value = MagicMock()
         with (
-            patch("sickchill.oldbeard.connectivity.settings.PROXY_SETTING", ""),
-            patch("sickchill.oldbeard.connectivity.socket.create_connection", side_effect=[OverflowError("port"), cm]) as connect,
+            patch("sickchill.search.connectivity.settings.PROXY_SETTING", ""),
+            patch("sickchill.search.connectivity.socket.create_connection", side_effect=[OverflowError("port"), cm]) as connect,
         ):
             self.assertTrue(connectivity.probe_connectivity([("1.1.1.1", 70000), ("1.1.1.1", 443)], timeout=1))
             self.assertEqual(connect.call_count, 2)
 
     def test_probe_treats_value_error_as_miss(self):
         with (
-            patch("sickchill.oldbeard.connectivity.settings.PROXY_SETTING", ""),
-            patch("sickchill.oldbeard.connectivity.socket.create_connection", side_effect=UnicodeError("bad host")),
+            patch("sickchill.search.connectivity.settings.PROXY_SETTING", ""),
+            patch("sickchill.search.connectivity.socket.create_connection", side_effect=UnicodeError("bad host")),
         ):
             self.assertFalse(connectivity.probe_connectivity([("a..b", 53)], timeout=1))
 
@@ -65,24 +66,24 @@ class TestProbeConnectivity(unittest.TestCase):
         cm = MagicMock()
         cm.__enter__.return_value = MagicMock()
         with (
-            patch("sickchill.oldbeard.connectivity.settings.PROXY_SETTING", "http://127.0.0.1:8888"),
-            patch("sickchill.oldbeard.connectivity.socket.create_connection", return_value=cm) as connect,
+            patch("sickchill.search.connectivity.settings.PROXY_SETTING", "http://127.0.0.1:8888"),
+            patch("sickchill.search.connectivity.socket.create_connection", return_value=cm) as connect,
         ):
             self.assertTrue(connectivity.probe_connectivity([("1.1.1.1", 53)], timeout=1))
             connect.assert_called_once_with(("127.0.0.1", 8888), timeout=1)
 
     def test_probe_treats_unparseable_proxy_as_success(self):
         with (
-            patch("sickchill.oldbeard.connectivity.settings.PROXY_SETTING", "://"),
-            patch("sickchill.oldbeard.connectivity.socket.create_connection") as connect,
+            patch("sickchill.search.connectivity.settings.PROXY_SETTING", "://"),
+            patch("sickchill.search.connectivity.socket.create_connection") as connect,
         ):
             self.assertTrue(connectivity.probe_connectivity([("1.1.1.1", 53)], timeout=1))
             connect.assert_not_called()
 
     def test_probe_treats_invalid_proxy_port_as_success(self):
         with (
-            patch("sickchill.oldbeard.connectivity.settings.PROXY_SETTING", "http://127.0.0.1:abc"),
-            patch("sickchill.oldbeard.connectivity.socket.create_connection") as connect,
+            patch("sickchill.search.connectivity.settings.PROXY_SETTING", "http://127.0.0.1:abc"),
+            patch("sickchill.search.connectivity.socket.create_connection") as connect,
         ):
             self.assertTrue(connectivity.probe_connectivity([("1.1.1.1", 53)], timeout=1))
             connect.assert_not_called()
@@ -98,7 +99,7 @@ class TestProbeConnectivity(unittest.TestCase):
 
 class TestGenericQueueConnectivity(unittest.TestCase):
     def test_processing_queue_does_not_watch_stuck_items(self):
-        from sickchill.oldbeard.post_processing_queue import ProcessingQueue
+        from sickchill.process.post_processing_queue import ProcessingQueue
 
         self.assertFalse(ProcessingQueue().watch_stuck_items)
         self.assertTrue(SearchQueue().watch_stuck_items)
@@ -185,7 +186,7 @@ class TestSearchQueueStuckInjection(unittest.TestCase):
         q = SearchQueue()
         q.pause_for_connectivity()
         item = ConnectivityCheckQueueItem(q, attempt=3)
-        with patch("sickchill.oldbeard.connectivity.probe_connectivity", return_value=True):
+        with patch("sickchill.search.connectivity.probe_connectivity", return_value=True):
             item.run()
         self.assertFalse(q._connectivity_paused)
         self.assertEqual(q.min_priority, 0)
@@ -193,7 +194,7 @@ class TestSearchQueueStuckInjection(unittest.TestCase):
     def test_check_item_run_treats_probe_exception_as_failure(self):
         q = SearchQueue()
         item = ConnectivityCheckQueueItem(q, attempt=1)
-        with patch("sickchill.oldbeard.connectivity.probe_connectivity", side_effect=RuntimeError("boom")):
+        with patch("sickchill.search.connectivity.probe_connectivity", side_effect=RuntimeError("boom")):
             item.run()
         self.assertTrue(q._connectivity_paused)
         self.assertEqual(q.min_priority, QueuePriorities.CONNECTIVITY)
@@ -218,7 +219,7 @@ class TestSearchQueueStuckInjection(unittest.TestCase):
 
         with (
             patch("sickchill.settings.CONNECTIVITY_CHECK", True),
-            patch("sickchill.oldbeard.connectivity.probe_connectivity", side_effect=slow_probe) as probe,
+            patch("sickchill.search.connectivity.probe_connectivity", side_effect=slow_probe) as probe,
         ):
             q._maybe_inject_connectivity_check()
             q._maybe_inject_connectivity_check()
@@ -256,7 +257,7 @@ class TestSearchQueueStuckInjection(unittest.TestCase):
 
         with (
             patch("sickchill.settings.CONNECTIVITY_CHECK", True),
-            patch("sickchill.oldbeard.connectivity.probe_connectivity", side_effect=slow_probe_other) as probe2,
+            patch("sickchill.search.connectivity.probe_connectivity", side_effect=slow_probe_other) as probe2,
         ):
             q._maybe_inject_connectivity_check()
             self.assertTrue(started2.wait(timeout=2))
@@ -285,8 +286,8 @@ class TestSearchQueueStuckInjection(unittest.TestCase):
 
         with (
             patch("sickchill.settings.CONNECTIVITY_CHECK", True),
-            patch("sickchill.oldbeard.connectivity.probe_connectivity", side_effect=fail_then_reach) as probe,
-            patch("sickchill.oldbeard.connectivity.delay_after_failure", return_value=0),
+            patch("sickchill.search.connectivity.probe_connectivity", side_effect=fail_then_reach) as probe,
+            patch("sickchill.search.connectivity.delay_after_failure", return_value=0),
         ):
             q.inject_connectivity_check(stuck)
             self.assertTrue(started.wait(timeout=2))
@@ -323,8 +324,8 @@ class TestSearchQueueStuckInjection(unittest.TestCase):
 
         with (
             patch("sickchill.settings.CONNECTIVITY_CHECK", True),
-            patch("sickchill.oldbeard.connectivity.probe_connectivity", side_effect=fail_then_stop),
-            patch("sickchill.oldbeard.connectivity.delay_after_failure", return_value=0),
+            patch("sickchill.search.connectivity.probe_connectivity", side_effect=fail_then_stop),
+            patch("sickchill.search.connectivity.delay_after_failure", return_value=0),
         ):
             q.inject_connectivity_check(stuck)
             self.assertTrue(started.wait(timeout=2))
@@ -361,7 +362,7 @@ class TestSearchQueueStuckInjection(unittest.TestCase):
 
         with (
             patch("sickchill.settings.CONNECTIVITY_CHECK", True),
-            patch("sickchill.oldbeard.connectivity.probe_connectivity", side_effect=fail_probe),
+            patch("sickchill.search.connectivity.probe_connectivity", side_effect=fail_probe),
             patch.object(q, "handle_connectivity_failure", side_effect=handle_then_free),
         ):
             q.inject_connectivity_check(stuck)
@@ -399,7 +400,7 @@ class TestSearchQueueStuckInjection(unittest.TestCase):
 
         with (
             patch("sickchill.settings.CONNECTIVITY_CHECK", True),
-            patch("sickchill.oldbeard.connectivity.probe_connectivity", side_effect=fail_probe),
+            patch("sickchill.search.connectivity.probe_connectivity", side_effect=fail_probe),
             patch.object(q, "_wait_connectivity_retry", side_effect=wait_and_free),
         ):
             q.inject_connectivity_check(stuck)
@@ -432,8 +433,8 @@ class TestSearchQueueStuckInjection(unittest.TestCase):
 
         with (
             patch("sickchill.settings.CONNECTIVITY_CHECK", True),
-            patch("sickchill.oldbeard.connectivity.probe_connectivity", return_value=False),
-            patch("sickchill.oldbeard.connectivity.delay_after_failure", return_value=30),
+            patch("sickchill.search.connectivity.probe_connectivity", return_value=False),
+            patch("sickchill.search.connectivity.delay_after_failure", return_value=30),
             patch.object(SearchQueue, "_wait_connectivity_retry", signal_wait),
         ):
             q.inject_connectivity_check(stuck)
@@ -482,7 +483,7 @@ class TestRequestFailedInjectsConnectivity(unittest.TestCase):
 
         with (
             patch("sickchill.settings.CONNECTIVITY_CHECK", True),
-            patch("sickchill.oldbeard.connectivity.probe_connectivity", side_effect=slow_probe),
+            patch("sickchill.search.connectivity.probe_connectivity", side_effect=slow_probe),
         ):
             q.request_connectivity_check("NameResolutionError")
             stuck.join.assert_not_called()
@@ -514,7 +515,7 @@ class TestRequestFailedInjectsConnectivity(unittest.TestCase):
 
         with (
             patch("sickchill.settings.CONNECTIVITY_CHECK", True),
-            patch("sickchill.oldbeard.connectivity.probe_connectivity", side_effect=slow_probe) as probe,
+            patch("sickchill.search.connectivity.probe_connectivity", side_effect=slow_probe) as probe,
         ):
             q._maybe_inject_connectivity_check()
             self.assertTrue(started.wait(timeout=2))
@@ -529,7 +530,7 @@ class TestRequestFailedInjectsConnectivity(unittest.TestCase):
     def test_handle_requests_exception_enqueues_check_once(self):
         import requests
 
-        from sickchill.oldbeard import helpers
+        from sickchill.helper import helpers
 
         q = SearchQueue()
         scheduler = MagicMock(action=q)
@@ -553,7 +554,7 @@ class TestRequestFailedInjectsConnectivity(unittest.TestCase):
     def test_http_error_does_not_inject(self):
         import requests
 
-        from sickchill.oldbeard import helpers
+        from sickchill.helper import helpers
 
         q = SearchQueue()
         scheduler = MagicMock(action=q)
@@ -594,7 +595,7 @@ class TestRequestFailedInjectsConnectivity(unittest.TestCase):
             self.assertNotIn("probably does not have this item", debug_text)
             log.warning.assert_called()
 
-            with patch("sickchill.oldbeard.connectivity.probe_connectivity", return_value=True):
+            with patch("sickchill.search.connectivity.probe_connectivity", return_value=True):
                 search_q.queue[0].run()
             self.assertFalse(show_q._connectivity_paused)
             self.assertEqual(show_q.min_priority, 0)

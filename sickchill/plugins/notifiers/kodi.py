@@ -42,7 +42,7 @@ class KodiNotifier(NotifierPlugin):
         settings.KODI_PASSWORD = decrypt_stored_password(self.ctx.get("password"))
 
     def _impl(self):
-        from sickchill.oldbeard.notifiers import kodi as _mod
+        from sickchill.notifiers import kodi as _mod
 
         return _mod.Notifier()
 

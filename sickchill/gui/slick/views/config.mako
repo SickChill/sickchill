@@ -3,8 +3,8 @@
     from urllib.parse import quote
 
     from sickchill import settings
-    from sickchill.oldbeard import db
-    from sickchill.oldbeard.helpers import anon_url
+    from sickchill import db
+    from sickchill.helper.helpers import anon_url
     import sys
     import platform
 %>

@@ -5,7 +5,7 @@ from base64 import standard_b64encode
 from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 
-from sickchill.oldbeard import nzbget, sab
+from sickchill.clients import nzbget, sab
 
 NZB = b'<?xml version="1.0" encoding="UTF-8"?><nzb></nzb>'
 
@@ -44,12 +44,12 @@ class NzbGetSendTests(unittest.TestCase):
     def _send(self, result, version, append_result):
         proxy = _proxy(version, append_result)
         with (
-            patch("sickchill.oldbeard.nzbget.settings.NZBGET_HOST", "localhost:6789"),
-            patch("sickchill.oldbeard.nzbget.get_proxy", return_value=proxy),
-            patch("sickchill.oldbeard.nzbget.settings.NZBGET_CATEGORY", "tv"),
-            patch("sickchill.oldbeard.nzbget.settings.NZBGET_CATEGORY_BACKLOG", "tv"),
-            patch("sickchill.oldbeard.nzbget.settings.NZBGET_PRIORITY", 0),
-            patch("sickchill.oldbeard.nzbget.History") as history,
+            patch("sickchill.clients.nzbget.settings.NZBGET_HOST", "localhost:6789"),
+            patch("sickchill.clients.nzbget.get_proxy", return_value=proxy),
+            patch("sickchill.clients.nzbget.settings.NZBGET_CATEGORY", "tv"),
+            patch("sickchill.clients.nzbget.settings.NZBGET_CATEGORY_BACKLOG", "tv"),
+            patch("sickchill.clients.nzbget.settings.NZBGET_PRIORITY", 0),
+            patch("sickchill.clients.nzbget.History") as history,
         ):
             sent = nzbget.send_nzb(result)
         return sent, proxy, history
@@ -207,17 +207,17 @@ class NzbGetSendTests(unittest.TestCase):
 class SabSendTests(unittest.TestCase):
     def _send(self, result, sab_response):
         with (
-            patch("sickchill.oldbeard.sab.settings.SAB_HOST", "http://sab:8080/"),
-            patch("sickchill.oldbeard.sab.settings.SAB_APIKEY", "key"),
-            patch("sickchill.oldbeard.sab.settings.SAB_USERNAME", ""),
-            patch("sickchill.oldbeard.sab.settings.SAB_PASSWORD", ""),
-            patch("sickchill.oldbeard.sab.settings.SAB_CATEGORY", "tv"),
-            patch("sickchill.oldbeard.sab.settings.SAB_CATEGORY_BACKLOG", "backlog"),
-            patch("sickchill.oldbeard.sab.settings.SAB_CATEGORY_ANIME", "anime"),
-            patch("sickchill.oldbeard.sab.settings.SAB_CATEGORY_ANIME_BACKLOG", "anime-backlog"),
-            patch("sickchill.oldbeard.sab.settings.SAB_FORCED", False),
-            patch("sickchill.oldbeard.sab.helpers.getURL", return_value=sab_response) as sab_call,
-            patch("sickchill.oldbeard.nzbget.History") as history,
+            patch("sickchill.clients.sab.settings.SAB_HOST", "http://sab:8080/"),
+            patch("sickchill.clients.sab.settings.SAB_APIKEY", "key"),
+            patch("sickchill.clients.sab.settings.SAB_USERNAME", ""),
+            patch("sickchill.clients.sab.settings.SAB_PASSWORD", ""),
+            patch("sickchill.clients.sab.settings.SAB_CATEGORY", "tv"),
+            patch("sickchill.clients.sab.settings.SAB_CATEGORY_BACKLOG", "backlog"),
+            patch("sickchill.clients.sab.settings.SAB_CATEGORY_ANIME", "anime"),
+            patch("sickchill.clients.sab.settings.SAB_CATEGORY_ANIME_BACKLOG", "anime-backlog"),
+            patch("sickchill.clients.sab.settings.SAB_FORCED", False),
+            patch("sickchill.clients.sab.helpers.getURL", return_value=sab_response) as sab_call,
+            patch("sickchill.clients.nzbget.History") as history,
         ):
             sent = sab.send_nzb(result)
         return sent, sab_call, history

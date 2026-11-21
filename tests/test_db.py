@@ -11,7 +11,7 @@ import time
 import unittest
 from datetime import datetime
 
-import sickchill.oldbeard
+import sickchill
 from tests import conftest
 
 
@@ -28,7 +28,7 @@ class DBBasicTests(conftest.SickChillTestDBCase):
         Set up base.
         """
         super().setUp()
-        self.sc_db = sickchill.oldbeard.db.DBConnection()
+        self.sc_db = sickchill.db.DBConnection()
 
     def test_select(self):
         """
@@ -50,7 +50,7 @@ class DBMultiTests(conftest.SickChillTestDBCase):
         Set up base.
         """
         super().setUp()
-        self.sc_db = sickchill.oldbeard.db.DBConnection()
+        self.sc_db = sickchill.db.DBConnection()
 
     def select(self):
         """
@@ -70,9 +70,9 @@ class DBMultiTests(conftest.SickChillTestDBCase):
 class CacheDBTests(conftest.SickChillTestDBCase):
     def setUp(self):
         super().setUp()
-        self.cache_db_con = sickchill.oldbeard.db.DBConnection("cache.db")
-        sickchill.oldbeard.db.upgrade_database(self.cache_db_con, sickchill.oldbeard.databases.cache.InitialSchema)
-        from sickchill.oldbeard.network_timezones import sc_timezone
+        self.cache_db_con = sickchill.db.DBConnection("cache.db")
+        sickchill.db.upgrade_database(self.cache_db_con, sickchill.databases.cache.InitialSchema)
+        from sickchill.helper.network_timezones import sc_timezone
 
         cur_timestamp = int(time.mktime(datetime.now(tz=sc_timezone).timetuple()))
         self.record = (

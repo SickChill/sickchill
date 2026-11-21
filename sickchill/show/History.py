@@ -6,19 +6,18 @@ from typing import TYPE_CHECKING
 import subliminal
 
 from sickchill import logger, settings
-from sickchill.helper.metaclasses import Singleton
-from sickchill.oldbeard.network_timezones import sc_now
+from sickchill.helper.network_timezones import sc_now
 from sickchill.providers.result_classes import SearchResult
 
 if TYPE_CHECKING:
-    from sickchill.oldbeard.subtitles import Scores
     from sickchill.providers.GenericProvider import GenericProvider
+    from sickchill.show.subtitles import Scores
     from sickchill.tv import TVEpisode, TVShow
 
+from sickchill.common import FAILED, SNATCHED, SUBTITLED, WANTED, Quality, Singleton
+from sickchill.db import DBConnection
 from sickchill.helper.common import remove_extension, try_int
 from sickchill.helper.exceptions import EpisodeNotFoundException
-from sickchill.oldbeard.common import FAILED, SNATCHED, SUBTITLED, WANTED, Quality
-from sickchill.oldbeard.db import DBConnection
 
 
 class History(object, metaclass=Singleton):

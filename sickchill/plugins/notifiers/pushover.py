@@ -37,7 +37,7 @@ class PushoverNotifier(NotifierPlugin):
         settings.PUSHOVER_PRIORITY = self.ctx.get("priority") or ""
 
     def _impl(self):
-        from sickchill.oldbeard.notifiers import pushover as _mod
+        from sickchill.notifiers import pushover as _mod
 
         return _mod.Notifier()
 

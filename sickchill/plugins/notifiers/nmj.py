@@ -27,7 +27,7 @@ class NmjNotifier(NotifierPlugin):
         settings.NMJ_MOUNT = self.ctx.get("mount") or ""
 
     def _impl(self):
-        from sickchill.oldbeard.notifiers import nmj as _mod
+        from sickchill.notifiers import nmj as _mod
 
         return _mod.Notifier()
 

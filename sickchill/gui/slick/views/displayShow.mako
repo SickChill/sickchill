@@ -3,11 +3,13 @@
     import datetime
     from urllib.parse import quote, urljoin
     from sickchill import settings
-    from sickchill.oldbeard import subtitles, notifiers, scdatetime, network_timezones
+    from sickchill.show import subtitles
+    from sickchill import notifiers
+    from sickchill.helper import scdatetime, network_timezones
 
-    from sickchill.oldbeard.common import SKIPPED, WANTED, UNAIRED, ARCHIVED, IGNORED, FAILED, DOWNLOADED
-    from sickchill.oldbeard.common import Quality, qualityPresets, statusStrings, Overview, uses_absolute_numbering
-    from sickchill.oldbeard.helpers import anon_url
+    from sickchill.common import SKIPPED, WANTED, UNAIRED, ARCHIVED, IGNORED, FAILED, DOWNLOADED
+    from sickchill.common import Quality, qualityPresets, statusStrings, Overview, uses_absolute_numbering
+    from sickchill.helper.helpers import anon_url
     from sickchill.helper.common import pretty_file_size, try_int
 %>
 <%block name="metas">

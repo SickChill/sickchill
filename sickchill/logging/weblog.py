@@ -4,8 +4,8 @@ import sys
 from logging import ERROR, WARNING
 
 from sickchill.helper.common import dateTimeFormat
-from sickchill.oldbeard.network_timezones import sc_now
-from sickchill.oldbeard.notifiers import notify_logged_error
+from sickchill.helper.network_timezones import sc_now
+from sickchill.notifiers import notify_logged_error
 
 
 class __WebErrorViewer(object):

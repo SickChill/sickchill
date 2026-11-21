@@ -6,7 +6,7 @@ import unittest
 from configobj import ConfigObj
 
 from sickchill import settings
-from sickchill.oldbeard.config import peek_setting_str
+from sickchill.helper.config import peek_setting_str
 from sickchill.plugins.api import PluginKind, clear_registry
 from sickchill.plugins.manager import PluginManager
 from sickchill.plugins.metadata import FIRST_PARTY_METADATA_MODULES, load_first_party_metadata

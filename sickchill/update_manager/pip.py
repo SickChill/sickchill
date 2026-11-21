@@ -7,9 +7,9 @@ from typing import List, Union
 from packaging import version as packaging_version
 from packaging.version import Version
 
-from sickchill import logger, settings
+from sickchill import logger, notifiers, settings
+from sickchill.helper import helpers
 from sickchill.init_helpers import get_current_version, sickchill_dir
-from sickchill.oldbeard import helpers, notifiers
 from sickchill.update_manager.abstract import UpdateManagerBase
 
 

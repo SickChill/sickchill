@@ -7,7 +7,7 @@ import unittest
 from unittest.mock import MagicMock, patch
 
 from sickchill import settings
-from sickchill.oldbeard.trakt_api import (
+from sickchill.clients.trakt_api import (
     TraktAPI,
     clear_revoked_trakt_defaults,
     trakt_credentials_configured,
@@ -16,7 +16,7 @@ from sickchill.oldbeard.trakt_api import (
     traktException,
     traktRateLimitException,
 )
-from sickchill.oldbeard.trakt_api.trakt import _MAX_RETRY_AFTER_SECONDS, _parse_retry_after
+from sickchill.clients.trakt_api.trakt import _MAX_RETRY_AFTER_SECONDS, _parse_retry_after
 
 
 class TraktDeviceCodeAPITests(unittest.TestCase):
@@ -52,18 +52,18 @@ class TraktDeviceCodeAPITests(unittest.TestCase):
         with self.assertRaises(traktException):
             api.device_code_start()
 
-    @patch("sickchill.oldbeard.trakt_api.trakt._persist_tokens")
-    @patch("sickchill.oldbeard.trakt_api.trakt.requests.post")
+    @patch("sickchill.clients.trakt_api.trakt._persist_tokens")
+    @patch("sickchill.clients.trakt_api.trakt.requests.post")
     def test_device_code_poll_authorized(self, post, _persist):
         response = MagicMock()
         response.status_code = 200
         response.json.return_value = {"access_token": "access", "refresh_token": "refresh"}
         post.return_value = response
         api = self._api()
-        with patch("sickchill.oldbeard.trakt_api.trakt._safe_json", return_value={"access_token": "access", "refresh_token": "refresh"}):
+        with patch("sickchill.clients.trakt_api.trakt._safe_json", return_value={"access_token": "access", "refresh_token": "refresh"}):
             self.assertTrue(api.device_code_poll("dev-1"))
 
-    @patch("sickchill.oldbeard.trakt_api.trakt.requests.post")
+    @patch("sickchill.clients.trakt_api.trakt.requests.post")
     def test_device_code_poll_pending(self, post):
         response = MagicMock()
         response.status_code = 400
@@ -72,7 +72,7 @@ class TraktDeviceCodeAPITests(unittest.TestCase):
         with self.assertRaises(traktDeviceCodePendingException):
             api.device_code_poll("dev-1")
 
-    @patch("sickchill.oldbeard.trakt_api.trakt.requests.post")
+    @patch("sickchill.clients.trakt_api.trakt.requests.post")
     def test_device_code_poll_expired_status(self, post):
         response = MagicMock()
         response.status_code = 410
@@ -81,7 +81,7 @@ class TraktDeviceCodeAPITests(unittest.TestCase):
         with self.assertRaises(traktDeviceCodeExpiredException):
             api.device_code_poll("dev-1")
 
-    @patch("sickchill.oldbeard.trakt_api.trakt.requests.post")
+    @patch("sickchill.clients.trakt_api.trakt.requests.post")
     def test_device_code_poll_rate_limit(self, post):
         response = MagicMock()
         response.status_code = 429

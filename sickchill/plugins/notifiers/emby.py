@@ -25,7 +25,7 @@ class EmbyNotifier(NotifierPlugin):
         settings.EMBY_APIKEY = self.ctx.get("apikey") or ""
 
     def _impl(self):
-        from sickchill.oldbeard.notifiers import emby as _mod
+        from sickchill.notifiers import emby as _mod
 
         return _mod.Notifier()
 

@@ -6,7 +6,7 @@ import sqlite3
 import unittest
 from unittest.mock import MagicMock, patch
 
-from sickchill.oldbeard.common import DOWNLOADED, Quality
+from sickchill.common import DOWNLOADED, Quality
 from sickchill.show.History import History
 
 

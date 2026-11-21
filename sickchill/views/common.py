@@ -8,8 +8,8 @@ from mako.template import Template
 from tornado.escape import linkify
 
 from sickchill import logger, settings
+from sickchill.helper import helpers
 from sickchill.logging.weblog import WebErrorViewer
-from sickchill.oldbeard import helpers
 
 mako_lookup = {}
 
@@ -22,7 +22,7 @@ def get_lookup():
             module_directory=os.path.join(settings.CACHE_DIR, "mako"),
             strict_undefined=settings.DEVELOPER or settings.DEBUG,
             format_exceptions=True,
-            imports=["from sickchill.oldbeard.filters import checked, disabled, hidden, selected"],
+            imports=["from sickchill.helper.filters import checked, disabled, hidden, selected"],
         ),
     )
 

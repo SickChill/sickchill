@@ -48,7 +48,7 @@ class PlexNotifier(NotifierPlugin):
         settings.PLEX_SERVER_HTTPS = bool(self.ctx.get("server_https"))
 
     def _impl(self):
-        from sickchill.oldbeard.notifiers import plex as _mod
+        from sickchill.notifiers import plex as _mod
 
         return _mod.Notifier()
 

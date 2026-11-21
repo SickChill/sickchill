@@ -33,7 +33,7 @@ class PytivoNotifier(NotifierPlugin):
         settings.PYTIVO_TIVO_NAME = self.ctx.get("tivo_name") or ""
 
     def _impl(self):
-        from sickchill.oldbeard.notifiers import pytivo as _mod
+        from sickchill.notifiers import pytivo as _mod
 
         return _mod.Notifier()
 

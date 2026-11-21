@@ -27,7 +27,7 @@ class LibnotifyNotifier(NotifierPlugin):
         settings.LIBNOTIFY_NOTIFY_ONSUBTITLEDOWNLOAD = bool(self.ctx.get("notify_onsubtitledownload"))
 
     def _impl(self):
-        from sickchill.oldbeard.notifiers import libnotify as _mod
+        from sickchill.notifiers import libnotify as _mod
 
         return _mod.Notifier()
 

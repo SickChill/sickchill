@@ -7,9 +7,9 @@ from datetime import timedelta
 from unittest.mock import MagicMock, patch
 
 from sickchill import settings
+from sickchill.common import UNAIRED, WANTED
 from sickchill.helper.common import try_int
-from sickchill.oldbeard.common import UNAIRED, WANTED
-from sickchill.oldbeard.network_timezones import sc_today
+from sickchill.helper.network_timezones import sc_today
 from sickchill.show.ComingEpisodes import ComingEpisodes
 from sickchill.tv import TVShow
 

@@ -1,8 +1,8 @@
 <%
     from sickchill import settings
-    from sickchill.oldbeard.common import SKIPPED, WANTED, IGNORED
-    from sickchill.oldbeard.common import Quality, statusStrings
-    from sickchill.oldbeard.common import ANIME_ABSOLUTE, ANIME_SEASON_EPISODE
+    from sickchill.common import SKIPPED, WANTED, IGNORED
+    from sickchill.common import Quality, statusStrings
+    from sickchill.common import ANIME_ABSOLUTE, ANIME_SEASON_EPISODE
 %>
 <div class="field-pair row">
     <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
@@ -117,7 +117,7 @@
 <br>
 
 % if enable_anime_options:
-    <% import sickchill.oldbeard.blackandwhitelist %>
+    <% import sickchill.show.blackandwhitelist %>
     <%include file="/inc_blackwhitelist.mako" />
 % else:
     <input type="hidden" name="anime" id="anime" value="0" />

@@ -1,0 +1,642 @@
+import datetime
+import itertools
+import re
+import time
+import traceback
+from urllib.parse import urlparse
+
+from sickchill import db, logger, settings
+from sickchill.databases import cache
+from sickchill.helper.bs4_parser import BS4Parser
+from sickchill.helper.common import convert_size, is_blocked_search_result, try_int, valid_url
+from sickchill.helper.exceptions import AuthException, MultipleShowObjectsException
+from sickchill.helper.network_timezones import sc_now, sc_timezone
+from sickchill.process.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
+from sickchill.show import show_name_helpers
+from sickchill.show.Show import Show
+
+provider_cache_db = {}
+
+
+class RSSTorrentMixin:
+    # {'title': 'Danger.in.the.House.2022.720p.WEB.h264-BAE', 'title_detail': {'type': 'text/plain', 'language': None, 'base': '', 'value': 'Danger.in.the.House.2022.720p.WEB.h264-BAE'}, 'id': 'https://example.com/details/random-guid', 'guidislink': True, 'link': 'https://example.com/getnzb?id=random-guid.nzb&r=1260abc930e0cebbbfc687a42a7c1450', 'links': [{'rel': 'alternate', 'type': 'text/html', 'href': 'https://example.com/getnzb?id=random-guid.nzb&r=1260abc930e0cebbbfc687a42a7c1450'}, {'length': '1962145316', 'type': 'application/x-nzb', 'href': 'https://example.com/getnzb?id=random-guid.nzb&r=1260abc930e0cebbbfc687a42a7c1450', 'rel': 'enclosure'}], 'comments': 'https://example.com/details/random-guid#comments', 'published': 'Tue, 30 Aug 2022 01:30:51 +0200', 'published_parsed': time.struct_time(tm_year=2022, tm_mon=8, tm_mday=29, tm_hour=23, tm_min=30, tm_sec=51, tm_wday=0, tm_yday=241, tm_isdst=0), 'summary': 'Danger.in.the.House.2022.720p.WEB.h264-BAE', 'summary_detail': {'type': 'text/html', 'language': None, 'base': '', 'value': 'Danger.in.the.House.2022.720p.WEB.h264-BAE'}, 'newznab_attr': {'name': 'size', 'value': '1962145316'}}
+    #   <item>
+    #    <title>Danger.in.the.House.2022.720p.WEB.h264-BAE</title>
+    #    <guid isPermaLink="true">https://example.com/details/random-guid</guid>
+    #    <link>https://example.com/getnzb?id=random-guid.nzb&amp;r=1260abc930e0cebbbfc687a42a7c1450</link>
+    #    <comments>https://example.com/details/random-guid#comments</comments>
+    #    <pubDate>Tue, 30 Aug 2022 01:30:51 +0200</pubDate>
+    #    <description>Danger.in.the.House.2022.720p.WEB.h264-BAE</description>
+    #    <enclosure url="https://example.com/getnzb?id=random-guid.nzb&amp;r=1260abc930e0cebbbfc687a42a7c1450" length="1962145316" type="application/x-nzb"/>
+    #    <newznab:attr name="category" value="5010"/>
+    #    <newznab:attr name="size" value="1962145316"/>
+    #   </item>
+
+    @classmethod
+    def check_link(cls, link, url):
+        return urlparse(link).netloc == urlparse(url).netloc or valid_url(link) is True or link.startswith("magnet")
+
+    @classmethod
+    def parse_feed_item(cls, item, url, size_units=None):
+        seeders = 0
+        leechers = 0
+        item_size = -1
+        info_hash = ""
+        download_url = None
+
+        title = item.title.get_text(strip=True)
+
+        found_urls = set()
+        if item.link:
+            found_urls.add(item.link.get_text(strip=True))
+            if item.link.next.strip():
+                found_urls.add(item.link.next.strip())
+        if item.enclosure and item.enclosure.get("url", "").strip():
+            found_urls.add(item.enclosure.get("url", "").strip())
+
+        for found_url in found_urls:
+            if cls.check_link(found_url, url):
+                download_url = found_url
+
+        if not (title and download_url):
+            logger.debug(f"Skipping result {title}, {found_urls}")
+            logger.debug(f"{item}")
+            return
+
+        if is_blocked_search_result(title, download_url):
+            logger.info(f"Skipping result {title} because it is a .exe file")
+            return
+
+        attribute = item.find(["newznab:attr", "torznab:attr"], attrs={"name": ["infoHash", "info_hash", "guid"]})
+        if attribute:
+            info_hash = attribute["value"]
+
+        if not info_hash:
+            hash_tag = item.find(["nyaa:infoHash", "infoHash", "info_hash"])
+            if hash_tag:
+                info_hash = hash_tag.get_text(strip=True)
+            else:
+                regex = "^.*(?P<guid>[{]?[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}[}]?).*$"
+                guid_tag = item.find("guid")
+                if guid_tag:
+                    info_hash = guid_tag.get_text(strip=True)
+                    match = re.match(regex, info_hash)
+                    if match:
+                        info_hash = match.group("guid")
+
+        attribute = item.find(["newznab:attr", "torznab:attr"], attrs={"name": "seeders"})
+        if attribute:
+            seeders = try_int(attribute["value"])
+        else:
+            seeders_tag = item.find(["seeders", "nyaa:seeders"])
+            if seeders_tag:
+                seeders = try_int(seeders_tag.get_text(strip=True))
+
+        attribute = item.find(["newznab:attr", "torznab:attr"], attrs={"name": ["leechers", "peers"]})
+        if attribute:
+            leechers = try_int(attribute["value"])
+        else:
+            leechers_tag = item.find(["peers", "leechers", "nyaa:leechers", "nyaa:peers"])
+            if leechers_tag:
+                leechers = try_int(leechers_tag.get_text(strip=True))
+
+        attribute = item.find(["newznab:attr", "torznab:attr"], attrs={"name": "size"})
+        if attribute:
+            item_size = attribute["value"]
+
+        if item_size in (-1, "-1", None, ""):
+            size_tag = item.find(["size", "nyaa:size"])
+            if size_tag:
+                item_size = size_tag.get_text(strip=True) or -1
+            elif "gingadaddy" in url and item.description:
+                size_regex = re.search(r"\d*.?\d* [KMGT]B", item.description.get_text(strip=True))
+                if size_regex:
+                    item_size = size_regex.group()
+
+        torznab = any([item.seeders, item.leechers, item.peers, download_url.endswith("torrent"), download_url.startswith("magnet")])
+
+        if not item_size or (torznab and (seeders is None or leechers is None)):
+            logger.debug(f"Did not find size|seeders|leechers: {item_size}, {seeders}, {leechers}")
+            logger.debug(f"{item}")
+            return
+
+        if torznab and not seeders:
+            # TODO: Implement minseed/minleech for torznab
+            logger.debug(f"Skipping torznab result {title} because there are no seeders.")
+
+        if size_units:
+            size = convert_size(item_size, units=size_units) or -1
+        else:
+            size = convert_size(item_size) or -1
+
+        return {"title": title, "link": download_url, "size": size, "seeders": seeders, "leechers": leechers, "hash": info_hash}
+
+    @classmethod
+    def check_torznab(cls, soup) -> bool:
+        try:
+            torznab = soup.find("seeders") or soup.find("server").get("title") == "Jackett"
+        except AttributeError:
+            try:
+                torznab = "xmlns:torznab" in soup.rss.attrs
+            except AttributeError:
+                torznab = False
+        return torznab
+
+    @classmethod
+    def getFeed(cls, url, params=None, request_hook=None, size_units=None):
+        items = []
+        try:
+            data = request_hook(url, params=params, returns="text", timeout=30)
+            if not data:
+                raise Exception
+
+            with BS4Parser(data, language="xml") as feed:
+                for item in feed("item"):
+                    try:
+                        result = cls.parse_feed_item(item, url, size_units=size_units)
+                        if result:
+                            items.append(result)
+                    except Exception as error:
+                        logger.debug(f"Error parsing: {error}")
+                        logger.debug(traceback.format_exc())
+                        continue
+        except Exception as error:
+            logger.debug(f"RSS error: {error}")
+
+        return {"entries": items}
+
+
+class CacheDBConnection(db.DBConnection):
+    def __init__(self):
+        super().__init__("cache.db")
+        db.upgrade_database(self, cache.InitialSchema)
+        db.upgrade_database(self, cache.AddCacheIndexes)
+
+        # self.action("DELETE from results WHERE added < datetime(settings.CACHE_RETENTION)")
+        self.trim()
+
+    def trim(self, provider: str = ""):
+        sql = f"DELETE from results WHERE added < datetime('now','-{settings.CACHE_RETENTION} days')"
+        sql_args = []
+        if provider:
+            sql += "AND provider = ?"
+            sql_args.append(provider)
+        self.action(sql, sql_args)
+
+
+class TVCache(RSSTorrentMixin):
+    def __init__(self, provider, **kwargs):
+        self.provider = provider
+        self.provider_id = self.provider.get_id()
+        self.provider_db = None
+        self.min_time = kwargs.pop("min_time", 10)
+        self.search_params = kwargs.pop("search_params", dict(RSS=[""]))
+
+    def get_db(self):
+        # init provider database if not done already
+        if not provider_cache_db.get("instance"):
+            provider_cache_db["instance"] = CacheDBConnection()
+
+        return provider_cache_db.get("instance")
+
+    def _clear_cache(self):
+        if self.should_clear_cache():
+            cache_db_con = self.get_db()
+            cache_db_con.trim(self.provider_id)
+
+    def _get_seeders_and_leechers(self, item):
+        return self.provider._get_seeders_and_leechers(item)
+
+    def _get_size(self, item):
+        return self.provider._get_size(item)
+
+    def _get_title_and_url(self, item):
+        return self.provider._get_title_and_url(item)
+
+    def _get_rss_data(self):
+        return {"entries": self.provider.search(self.search_params)} if self.search_params else None
+
+    def _check_auth(self, data):
+        return True
+
+    def update_cache(self):
+        # check if we should update
+        if not self.should_update():
+            return
+
+        try:
+            data = self._get_rss_data()
+            if self._check_auth(data):
+                # clear cache
+                self._clear_cache()
+
+                # set updated
+                self.set_last_update()
+
+                cl = []
+                for item in data["entries"] or []:
+                    ci = self._parse_item(item)
+                    if ci:
+                        cl.append(ci)
+
+                if cl:
+                    cache_db_con = self.get_db()
+                    cache_db_con.mass_upsert("results", cl, replace_same_release=True)
+
+        except AuthException as error:
+            logger.warning(f"Authentication error: {error}")
+        except Exception as error:
+            logger.debug(f"Error while searching {self.provider.name}, skipping: {error}")
+            logger.debug(traceback.format_exc())
+
+    def get_rss_feed(self, url, params=None):
+        if self.provider.login():
+            return self.getFeed(url, params=params, request_hook=self.provider.get_url, size_units=self.provider.size_units)
+        return {"entries": []}
+
+    @staticmethod
+    def _translate_title(title):
+        return "" + title.replace(" ", ".")
+
+    @staticmethod
+    def _translate_link_url(url):
+        return url.replace("&amp;", "&")
+
+    @staticmethod
+    def _ts_to_dt(last_time) -> datetime.datetime:
+        try:
+            last_time = int(last_time or 0)
+        except (TypeError, ValueError):
+            last_time = 0
+        if last_time < 0:
+            last_time = 0
+        return datetime.datetime(1970, 1, 1, tzinfo=datetime.timezone.utc) + datetime.timedelta(seconds=last_time)
+
+    def _parse_item(self, item):
+        title, url = self._get_title_and_url(item)
+        size = self._get_size(item)
+        seeders, leechers = self._get_seeders_and_leechers(item)
+
+        if title and url:
+            title = self._translate_title(title)
+            url = self._translate_link_url(url)
+
+            # logger.debug("Attempting to add item to cache: " + title)
+            return self.add_cache_entry(title, url, size, seeders, leechers)
+
+        else:
+            logger.debug("The data returned from the " + self.provider.name + " feed is incomplete, this result is unusable")
+
+        return False
+
+    @property
+    def last_update(self):
+        cache_db_con = self.get_db()
+        sql_results = cache_db_con.select("SELECT time FROM lastUpdate WHERE provider = ?", [self.provider_id])
+        last_time = sql_results[0]["time"] if sql_results else 0
+        try:
+            last_time = int(last_time or 0)
+        except (TypeError, ValueError):
+            last_time = 0
+        if last_time > int(time.mktime(sc_now().timetuple())):
+            last_time = 0
+        return self._ts_to_dt(last_time)
+
+    @property
+    def last_search(self):
+        cache_db_con = self.get_db()
+        sql_results = cache_db_con.select("SELECT time FROM lastSearch WHERE provider = ?", [self.provider_id])
+        last_time = sql_results[0]["time"] if sql_results else 0
+        try:
+            last_time = int(last_time or 0)
+        except (TypeError, ValueError):
+            last_time = 0
+        if last_time > int(time.mktime(sc_now().timetuple())):
+            last_time = 0
+        return self._ts_to_dt(last_time)
+
+    def set_last_update(self, to_date=None):
+        """
+        Sets the last update date for the current provider in the cache database
+
+        :param to_date: date to set to, or None for today
+        """
+        if not to_date:
+            to_date = sc_now()
+
+        cache_db_con = self.get_db()
+        cache_db_con.upsert("lastUpdate", {"time": int(time.mktime(to_date.timetuple()))}, {"provider": self.provider_id})
+
+    def set_last_search(self, to_date=None):
+        """
+        Sets the last search date for the current provider in the cache database
+
+        :param to_date: date to set to, or None for today
+        """
+        if not to_date:
+            to_date = sc_now()
+
+        cache_db_con = self.get_db()
+        cache_db_con.upsert("lastSearch", {"time": int(time.mktime(to_date.timetuple()))}, {"provider": self.provider_id})
+
+    def should_update(self):
+        # if we've updated recently then skip the update
+        if sc_now() - self.last_update < datetime.timedelta(minutes=self.min_time):
+            logger.debug("Last update was too soon, using old cache: " + str(self.last_update) + ". Updated less then " + str(self.min_time) + " minutes ago")
+            return False
+
+        return True
+
+    def should_clear_cache(self):
+        # if daily search hasn't used our previous results yet then don't clear the cache
+        return self.last_update < self.last_search
+
+    def add_cache_entry(self, name, url, size, seeders, leechers, parse_result=None, indexer_id=0):
+        if is_blocked_search_result(name, url):
+            logger.info(f"Skipping cache of {name} because it is a .exe file")
+            return None
+
+        # check if we passed in a parsed result or should we try and create one
+        if not parse_result:
+            # create show_obj from indexer_id if available
+            show_obj = None
+            if indexer_id:
+                show_obj = Show.find(settings.show_list, indexer_id)
+
+            try:
+                parse_result = NameParser(show_object=show_obj).parse(name)
+            except (InvalidNameException, InvalidShowException) as error:
+                logger.debug(f"{error}")
+                return None
+
+            if not parse_result or not parse_result.series_name:
+                return None
+
+        # if we made it this far then lets add the parsed result to cache for usage later on
+        season = parse_result.season_number if parse_result.season_number else 1
+        episodes = parse_result.episode_numbers
+
+        if season and episodes:
+            # Sort after de-duplicating. Keep episode 0; drop only missing values.
+            present_episodes = sorted(episode for episode in set(episodes) if episode is not None)
+            episode_text = "|" + "|".join(str(episode) for episode in present_episodes) + "|"
+
+            # get the current timestamp
+            cur_timestamp = int(time.mktime(sc_now().timetuple()))
+
+            # get quality of release
+            quality = parse_result.quality
+
+            # get release group
+            release_group = parse_result.release_group
+
+            # get version
+            version = parse_result.version
+
+            logger.debug(_("Added RSS item: [{name}] to cache: {provider}").format(name=name, provider=self.provider_id))
+            return (
+                {
+                    "provider": self.provider_id,
+                    "name": name,
+                    "season": season,
+                    "episodes": episode_text,
+                    "indexerid": parse_result.show.indexerid,
+                    "url": url,
+                    "time": cur_timestamp,
+                    "quality": quality,
+                    "release_group": release_group,
+                    "version": version,
+                    "seeders": seeders,
+                    "leechers": leechers,
+                    "size": size,
+                },
+                {"url": url},
+            )
+
+    def search_cache(self, episode, manual_search=False, down_cur_quality=False):
+        needed_eps = self.find_needed_episodes(episode, manual_search, down_cur_quality)
+        return needed_eps.get(episode, [])
+
+    def _cache_query(self, episode_object, filter_quality):
+        """One cache select. Quality is constrained only when the caller asks and wantedQuality has values."""
+        sql = "SELECT * FROM results WHERE provider = ? AND indexerid = ? AND season = ? AND episodes LIKE ?"
+        params = [
+            self.provider_id,
+            episode_object.show.indexerid,
+            episode_object.season,
+            "%|" + str(episode_object.episode) + "|%",
+        ]
+        if filter_quality:
+            qualities = []
+            for quality in episode_object.wantedQuality or []:
+                try:
+                    qualities.append(int(quality))
+                except (TypeError, ValueError):
+                    continue
+            if qualities:
+                sql += " AND quality IN (" + ",".join(str(quality) for quality in qualities) + ")"
+        return [sql, params]
+
+    @staticmethod
+    def _collapse_cache_rows(rows):
+        """Keep the newest stored copy of each release.
+
+        The results table is unique on the download URL. Jackett encrypts a new
+        ``path`` token on every 1337x response, so one release is inserted again
+        on each search. Later reads must see one row, the latest token.
+        """
+
+        def as_int(value):
+            try:
+                return int(value)
+            except (TypeError, ValueError):
+                return value
+
+        def rank(row):
+            stamp = as_int(row["time"])
+            seeders = as_int(row["seeders"])
+            return (stamp if isinstance(stamp, int) else 0, seeders if isinstance(seeders, int) else 0)
+
+        def release_key(row):
+            return (
+                row["provider"],
+                as_int(row["indexerid"]),
+                as_int(row["season"]),
+                row["episodes"] or "",
+                row["name"] or "",
+            )
+
+        chosen = {}
+        for row in rows or []:
+            identity = release_key(row)
+            current = chosen.get(identity)
+            if current is None or rank(row) >= rank(current):
+                chosen[identity] = row
+        return list(chosen.values())
+
+    @staticmethod
+    def _shows_by_indexer():
+        shows_by_id = {}
+        duplicates = set()
+        for show in list(settings.show_list):
+            try:
+                indexer_id = int(show.indexerid)
+            except (TypeError, ValueError):
+                continue
+            previous = shows_by_id.get(indexer_id)
+            if previous is not None and previous is not show:
+                duplicates.add(indexer_id)
+            shows_by_id[indexer_id] = show
+        return shows_by_id, duplicates
+
+    def list_propers(self, date=None):
+        """Return cached PROPER/REPACK/REAL (etc.) results for this provider only.
+
+        Name matches are OR'd inside parentheses so ``provider = ?`` always applies.
+        """
+        cache_db_con = self.get_db()
+        # Always include the common proper tags; merge provider-specific proper_strings
+        tags = {"PROPER", "REPACK", "REAL"}
+        if getattr(self.provider, "proper_strings", None):
+            for item in self.provider.proper_strings:
+                for part in str(item).split("|"):
+                    part = part.strip(" .").upper()
+                    if part:
+                        tags.add(part)
+
+        # Leading '.' required (scene-style delimiter); trailing may be '.' or
+        like_clauses = " OR ".join(["name LIKE ?" for _ in tags])
+        params = [self.provider_id] + [f"%.{tag}%" for tag in sorted(tags)]
+        sql = f"SELECT * FROM results WHERE provider = ? AND ({like_clauses})"
+
+        if date is not None:
+            sql += " AND time >= ?"
+            params.append(int(time.mktime(date.timetuple())))
+
+        propers_results = self._collapse_cache_rows(cache_db_con.select(sql, params))
+        return [x for x in propers_results if x["indexerid"]]
+
+    @staticmethod
+    def _cached_episode_numbers(episodes_text):
+        """Numbers stored as ``|0|1|2|``. The empty pieces are delimiters; 0 is a real episode."""
+        numbers = []
+        for part in str(episodes_text or "").split("|"):
+            if not part:
+                continue
+            try:
+                number = int(part)
+            except ValueError:
+                continue
+            if number not in numbers:
+                numbers.append(number)
+        return numbers
+
+    def find_needed_episodes(self, episode, manual_search=False, down_cur_quality=False):
+        needed_eps = {}
+
+        # An empty list is "nothing to look up". None keeps the full provider scan.
+        if isinstance(episode, list) and not episode:
+            return {}
+
+        if episode is None:
+            requested_episodes = None
+        elif isinstance(episode, list):
+            requested_episodes = {(int(item.show.indexerid), int(item.season), int(item.episode)) for item in episode}
+        else:
+            requested_episodes = {(int(episode.show.indexerid), int(episode.season), int(episode.episode))}
+
+        cache_db_con = self.get_db()
+        if episode is None:
+            sql_results = cache_db_con.select("SELECT * FROM results WHERE provider = ?", [self.provider_id])
+        elif isinstance(episode, list):
+            # Manual search may accept the current quality, so leave that filter to want_episode.
+            filter_quality = not manual_search
+            queries = [self._cache_query(episode_object, filter_quality) for episode_object in episode]
+            sql_results = cache_db_con.mass_action(queries, fetchall=True)
+            sql_results = list(itertools.chain.from_iterable(sql_results or []))
+        else:
+            query, params = self._cache_query(episode, False)
+            sql_results = cache_db_con.select(query, params)
+
+        # Overlapping episode queries and rotated download URLs both repeat one release.
+        sql_results = self._collapse_cache_rows(sql_results)
+
+        shows_by_id, duplicate_ids = self._shows_by_indexer()
+        candidates = []
+        for cur_result in sql_results:
+            try:
+                indexer_id = int(cur_result["indexerid"])
+            except (TypeError, ValueError):
+                continue
+            if indexer_id in duplicate_ids:
+                raise MultipleShowObjectsException()
+            show_obj = shows_by_id.get(indexer_id)
+            if not show_obj:
+                continue
+
+            # Names were parsed before they were cached. Ignore and require words still apply.
+            if not show_name_helpers.filter_bad_releases(cur_result["name"], parse=False, show=show_obj):
+                continue
+
+            if self.provider.anime_only and not show_obj.is_anime:
+                logger.debug("" + str(show_obj.name) + " is not an anime, skiping")
+                continue
+
+            cur_season = int(cur_result["season"])
+            if cur_season == -1:
+                continue
+
+            episode_numbers = self._cached_episode_numbers(cur_result["episodes"])
+            if not episode_numbers:
+                continue
+
+            for cur_ep in episode_numbers:
+                if requested_episodes is not None and (indexer_id, cur_season, cur_ep) not in requested_episodes:
+                    continue
+                candidates.append((cur_result, show_obj, cur_season, cur_ep))
+
+        by_show = {}
+        for candidate in candidates:
+            by_show.setdefault(candidate[1], []).append(candidate)
+
+        reported_releases = set()
+        for show_obj, show_candidates in by_show.items():
+            statuses = show_obj.load_episode_statuses((season, episode_number) for _, _, season, episode_number in show_candidates)
+            for cur_result, show_obj, cur_season, cur_ep in show_candidates:
+                cur_quality = int(cur_result["quality"])
+                cur_release_group = cur_result["release_group"]
+                cur_version = cur_result["version"]
+                known_status = statuses[(cur_season, cur_ep)]
+
+                if not show_obj.want_episode(cur_season, cur_ep, cur_quality, manual_search, down_cur_quality, known_status=known_status):
+                    logger.debug("Ignoring " + cur_result["name"])
+                    continue
+
+                episode_object = show_obj.get_episode(cur_season, cur_ep)
+
+                # build a result object
+                title = cur_result["name"]
+                url = cur_result["url"]
+
+                if (title, url) not in reported_releases:
+                    logger.info("Found result " + title + " at " + url)
+                    reported_releases.add((title, url))
+
+                result = self.provider.get_result([episode_object], url)
+                result.show = show_obj
+                result.name = title
+                result.quality = cur_quality
+                result.release_group = cur_release_group
+                result.version = cur_version
+                result.content = None
+
+                # add it to the list
+                if episode_object not in needed_eps:
+                    needed_eps[episode_object] = [result]
+                else:
+                    needed_eps[episode_object].append(result)
+
+        # datetime stamp this search so cache gets cleared
+        self.set_last_search()
+
+        return needed_eps

@@ -4,10 +4,9 @@ from tornado.web import addslash
 
 import sickchill.start
 from sickchill import logger, settings
-from sickchill.helper import try_int
+from sickchill.common import Quality
+from sickchill.helper import config, filters, helpers, try_int, ui
 from sickchill.init_helpers import setup_gettext
-from sickchill.oldbeard import config, filters, helpers, ui
-from sickchill.oldbeard.common import Quality
 from sickchill.views.common import PageTemplate
 from sickchill.views.config.index import Config
 from sickchill.views.routes import Route
@@ -187,7 +186,7 @@ class ConfigGeneral(Config):
         if key_changed:
             settings.TRAKT_ACCESS_TOKEN = None
             settings.TRAKT_REFRESH_TOKEN = None
-        from sickchill.oldbeard.trakt_api.trakt import refresh_trakt_pin_url
+        from sickchill.clients.trakt_api.trakt import refresh_trakt_pin_url
 
         refresh_trakt_pin_url()
 

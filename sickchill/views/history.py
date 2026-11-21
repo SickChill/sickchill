@@ -1,7 +1,6 @@
 import sickchill.start
 from sickchill import settings
-from sickchill.helper import try_int
-from sickchill.oldbeard import ui
+from sickchill.helper import try_int, ui
 from sickchill.show.History import History as HistoryTool
 from sickchill.views.common import PageTemplate
 from sickchill.views.index import WebRoot

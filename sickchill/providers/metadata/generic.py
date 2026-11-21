@@ -10,8 +10,8 @@ from fanart.core import Request as fanartRequest
 
 import sickchill
 from sickchill import logger, settings
+from sickchill.helper import helpers
 from sickchill.helper.common import remove_extension, replace_extension, try_int
-from sickchill.oldbeard import helpers
 from sickchill.providers.metadata import helpers as metadata_helpers
 
 
