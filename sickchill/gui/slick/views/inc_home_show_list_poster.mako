@@ -1,8 +1,8 @@
 <%!
     from sickchill import settings
     import calendar
-    from sickchill.oldbeard.filters import filter_shows_being_removed
-    from sickchill.oldbeard import scdatetime, network_timezones
+    from sickchill.helper.filters import filter_shows_being_removed
+    from sickchill.helper import scdatetime, network_timezones
     from sickchill.helper.common import pretty_file_size
     import os
     import re

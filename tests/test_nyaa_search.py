@@ -8,8 +8,8 @@ from unittest.mock import patch
 
 from configobj import ConfigObj
 
-from sickchill.oldbeard.providers.nyaa import Provider
 from sickchill.plugins.providers.config import _apply_provider_options
+from sickchill.providers.nyaa import Provider
 
 
 class TestNyaaSearch(unittest.TestCase):
@@ -77,7 +77,7 @@ class TestNyaaSearch(unittest.TestCase):
         self.assertFalse(provider.confirmed)
         self.assertEqual(provider.minseed, 0)
 
-    @patch("sickchill.oldbeard.providers.nyaa.BS4Parser")
+    @patch("sickchill.providers.nyaa.BS4Parser")
     def test_multiple_modes_keep_earlier_results(self, parser_cls):
         provider = self._provider(confirmed=False, minseed=0)
 
@@ -110,8 +110,8 @@ class TestNyaaSearch(unittest.TestCase):
 
 class TestNyaaFeedSize(unittest.TestCase):
     def test_parse_feed_item_reads_nyaa_size_gib(self):
-        from sickchill.oldbeard.bs4_parser import BS4Parser
-        from sickchill.oldbeard.tvcache import RSSTorrentMixin
+        from sickchill.helper.bs4_parser import BS4Parser
+        from sickchill.search.tvcache import RSSTorrentMixin
 
         xml = """<?xml version="1.0"?>
 <rss xmlns:nyaa="https://nyaa.si/xmlns/nyaa" version="2.0">

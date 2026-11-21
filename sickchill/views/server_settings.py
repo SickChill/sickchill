@@ -11,7 +11,7 @@ from tornado.web import Application, RedirectHandler, StaticFileHandler, url
 
 import sickchill.start
 from sickchill import logger, settings
-from sickchill.oldbeard.helpers import create_https_certificates, generateApiKey
+from sickchill.helper.helpers import create_https_certificates, generateApiKey
 from sickchill.views import CalendarHandler, LoginHandler, LogoutHandler, MoviesHandler
 from sickchill.views.api import ApiHandler, KeyHandler
 from sickchill.views.routes import Route
@@ -57,8 +57,8 @@ class SCWebServer(threading.Thread):
                 "enable_https": settings.ENABLE_HTTPS,
                 "handle_reverse_proxy": settings.HANDLE_REVERSE_PROXY,
                 "log_dir": (None, settings.LOG_DIR)[settings.WEB_LOG],
-                # 'username': oldbeard.WEB_USERNAME or '',
-                # 'password': oldbeard.WEB_PASSWORD or '',
+                # 'username': settings.WEB_USERNAME or '',
+                # 'password': settings.WEB_PASSWORD or '',
             }
         )
 

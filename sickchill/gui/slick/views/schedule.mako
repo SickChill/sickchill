@@ -4,9 +4,9 @@
     import time
     import re
 
-    from sickchill.oldbeard.helpers import anon_url
-    from sickchill.oldbeard import scdatetime
-    from sickchill.oldbeard.common import Quality
+    from sickchill.helper.helpers import anon_url
+    from sickchill.helper import scdatetime
+    from sickchill.common import Quality
     from sickchill import indexer as show_indexer, settings
 
     SNATCHED = Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST  # type = list

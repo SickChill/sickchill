@@ -4,7 +4,7 @@ Test XEM
 
 import unittest
 
-import sickchill.oldbeard.db
+import sickchill.db
 from sickchill import settings
 from sickchill.tv import TVShow
 from tests import conftest
@@ -21,7 +21,7 @@ class XEMBasicTests(conftest.SickChillTestDBCase):
         Populates the show_list with shows from the database
         """
 
-        test_main_db_con = sickchill.oldbeard.db.DBConnection()
+        test_main_db_con = sickchill.db.DBConnection()
         sql_results = test_main_db_con.select("SELECT * FROM tv_shows")
 
         for sql_show in sql_results:
@@ -37,7 +37,7 @@ class XEMBasicTests(conftest.SickChillTestDBCase):
         """
         Populates the show_list with shows from the database
         """
-        test_main_db_con = sickchill.oldbeard.db.DBConnection()
+        test_main_db_con = sickchill.db.DBConnection()
         sql_results = test_main_db_con.select("SELECT * FROM tv_shows")
 
         for sql_show in sql_results:

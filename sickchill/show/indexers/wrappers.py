@@ -5,7 +5,7 @@ import requests
 from urllib3.exceptions import HTTPError, HTTPWarning
 
 from sickchill import logger
-from sickchill.oldbeard.connectivity import is_connectivity_error, maybe_request_connectivity_check
+from sickchill.search.connectivity import is_connectivity_error, maybe_request_connectivity_check
 
 
 class ExceptionDecorator(object):

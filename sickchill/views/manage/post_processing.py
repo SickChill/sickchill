@@ -2,7 +2,7 @@ from tornado.web import addslash
 
 import sickchill.start
 from sickchill import settings
-from sickchill.oldbeard import config
+from sickchill.helper import config
 from sickchill.views.common import PageTemplate
 from sickchill.views.home import Home
 from sickchill.views.routes import Route

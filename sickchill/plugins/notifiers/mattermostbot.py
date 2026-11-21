@@ -37,7 +37,7 @@ class MattermostbotNotifier(NotifierPlugin):
         settings.MATTERMOSTBOT_AUTHOR = self.ctx.get("author") or ""
 
     def _impl(self):
-        from sickchill.oldbeard.notifiers import mattermostbot as _mod
+        from sickchill.notifiers import mattermostbot as _mod
 
         return _mod.Notifier()
 

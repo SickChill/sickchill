@@ -4,10 +4,10 @@ import os
 import re
 import time
 
-from sickchill import logger, settings
+from sickchill import db, logger, settings
+from sickchill.helper import helpers, ui
 from sickchill.helper.exceptions import UpdaterException
-from sickchill.oldbeard import db, helpers, ui
-from sickchill.oldbeard.network_timezones import sc_timezone
+from sickchill.helper.network_timezones import sc_timezone
 from sickchill.update_manager.pip import PipUpdateManager
 
 
@@ -166,13 +166,13 @@ class UpdateManager(object):
             self.need_update()
             newest_version = self.get_newest_version()
             response = helpers.getURL(
-                f"https://raw.githubusercontent.com/{settings.GIT_ORG}/{settings.GIT_REPO}/{newest_version}/sickchill/oldbeard/databases/main.py",
+                f"https://raw.githubusercontent.com/{settings.GIT_ORG}/{settings.GIT_REPO}/{newest_version}/sickchill/databases/main.py",
                 session=self.session,
                 returns="text",
             )
             if not response:
                 response = helpers.getURL(
-                    f"https://raw.githubusercontent.com/{settings.GIT_ORG}/{settings.GIT_REPO}/master/sickchill/oldbeard/databases/main.py",
+                    f"https://raw.githubusercontent.com/{settings.GIT_ORG}/{settings.GIT_REPO}/master/sickchill/databases/main.py",
                     session=self.session,
                     returns="text",
                 )

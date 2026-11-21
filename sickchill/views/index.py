@@ -16,10 +16,10 @@ from tornado.iostream import StreamClosedError
 from tornado.web import HTTPError, RequestHandler, authenticated
 
 import sickchill.start
-from sickchill import logger, settings
+from sickchill import db, logger, settings
+from sickchill.helper import config, helpers, ui
+from sickchill.helper.network_timezones import sc_now, sc_timezone, sc_today
 from sickchill.init_helpers import check_installed, locale_dir
-from sickchill.oldbeard import config, db, helpers, ui
-from sickchill.oldbeard.network_timezones import sc_now, sc_timezone, sc_today
 from sickchill.show.ComingEpisodes import ComingEpisodes
 from sickchill.views.api.webapi import function_mapper
 from sickchill.views.common import PageTemplate

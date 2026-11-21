@@ -1,7 +1,7 @@
 import unittest
 
 from sickchill import settings
-from sickchill.oldbeard.show_name_helpers import filter_bad_releases
+from sickchill.show.show_name_helpers import filter_bad_releases
 from sickchill.tv import TVShow as Show
 
 

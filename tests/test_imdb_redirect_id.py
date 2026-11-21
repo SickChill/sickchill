@@ -6,7 +6,7 @@ import unittest
 from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 
-from sickchill.oldbeard import helpers
+from sickchill.helper import helpers
 
 
 class NormalizeImdbIdTests(unittest.TestCase):

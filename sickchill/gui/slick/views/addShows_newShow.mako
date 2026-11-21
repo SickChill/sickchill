@@ -1,7 +1,7 @@
 <%inherit file="/layouts/config.mako" />
 <%!
     from sickchill import settings
-    from sickchill.oldbeard.helpers import anon_url
+    from sickchill.helper.helpers import anon_url
     from sickchill import indexer as show_indexer
 %>
 <%block name="scripts">

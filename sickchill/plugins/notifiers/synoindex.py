@@ -21,7 +21,7 @@ class SynoindexNotifier(NotifierPlugin):
         settings.USE_SYNOINDEX = bool(self.ctx.get("enabled"))
 
     def _impl(self):
-        from sickchill.oldbeard.notifiers import synoindex as _mod
+        from sickchill.notifiers import synoindex as _mod
 
         return _mod.Notifier()
 

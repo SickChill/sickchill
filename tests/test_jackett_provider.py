@@ -8,8 +8,8 @@ from datetime import date
 from unittest.mock import MagicMock, patch
 
 from sickchill import settings
-from sickchill.oldbeard.providers.jackett import Provider, warn_jackett_newznab_overlap
 from sickchill.providers.GenericProvider import GenericProvider
+from sickchill.providers.jackett import Provider, warn_jackett_newznab_overlap
 
 
 class JackettProviderTests(unittest.TestCase):
@@ -108,7 +108,7 @@ class JackettProviderTests(unittest.TestCase):
 
     def test_check_auth_http_local_vs_public(self):
         # Public hostname over HTTP still rejected (apikey in query string)
-        with patch("sickchill.oldbeard.providers.jackett.socket.getaddrinfo", return_value=self._addrinfo("8.8.8.8")):
+        with patch("sickchill.providers.jackett.socket.getaddrinfo", return_value=self._addrinfo("8.8.8.8")):
             self.provider.custom_url = "http://jackett.example.com:9117"
             self.assertFalse(self.provider._check_auth())
         self.provider.custom_url = "https://jackett.example.com:9117"
@@ -125,7 +125,7 @@ class JackettProviderTests(unittest.TestCase):
         self.assertTrue(self.provider._check_auth())
 
         # Compose / .local hostnames: HTTP only when DNS pins to a local/private peer
-        with patch("sickchill.oldbeard.providers.jackett.socket.getaddrinfo", return_value=self._addrinfo("172.18.0.2")):
+        with patch("sickchill.providers.jackett.socket.getaddrinfo", return_value=self._addrinfo("172.18.0.2")):
             self.provider.custom_url = "http://jackett:9117"
             self.assertTrue(self.provider._check_auth())
             self.provider.custom_url = "http://jackett.local:9117"
@@ -146,14 +146,14 @@ class JackettProviderTests(unittest.TestCase):
         self.assertTrue(allow("http://10.0.0.5:9117"))
         self.assertTrue(allow("http://192.168.1.10:9117"))
         self.assertTrue(allow("http://172.16.5.1:9117"))
-        with patch("sickchill.oldbeard.providers.jackett.socket.getaddrinfo", return_value=self._addrinfo("127.0.0.1")):
+        with patch("sickchill.providers.jackett.socket.getaddrinfo", return_value=self._addrinfo("127.0.0.1")):
             self.assertTrue(allow("http://localhost:9117"))
-        with patch("sickchill.oldbeard.providers.jackett.socket.getaddrinfo", return_value=self._addrinfo("172.18.0.2")):
+        with patch("sickchill.providers.jackett.socket.getaddrinfo", return_value=self._addrinfo("172.18.0.2")):
             self.assertTrue(allow("https://jackett.local:9117"))
             self.assertTrue(allow("http://jackett:9117"))
             self.assertTrue(allow("http://host.docker.internal:9117"))
             self.assertTrue(allow("http://nas.local:9117"))
-        with patch("sickchill.oldbeard.providers.jackett.socket.getaddrinfo", return_value=self._addrinfo("8.8.8.8")):
+        with patch("sickchill.providers.jackett.socket.getaddrinfo", return_value=self._addrinfo("8.8.8.8")):
             self.assertFalse(allow("http://remote.example:9117"))
             self.assertFalse(allow("http://jackett.example.com:9117"))
         self.assertFalse(allow("http://8.8.8.8:9117"))
@@ -163,7 +163,7 @@ class JackettProviderTests(unittest.TestCase):
         self.assertFalse(allow("ftp://127.0.0.1:9117"))
         self.assertFalse(allow("http://127.0.0.1:99999"))
 
-    @patch("sickchill.oldbeard.providers.jackett.time.sleep", return_value=None)
+    @patch("sickchill.providers.jackett.time.sleep", return_value=None)
     @patch.object(Provider, "get_url")
     def test_structured_airdate_search_preserves_q(self, mock_get_url, _sleep):
         """Air-date/sports structured search must send q=airdate, not the generic search string."""
@@ -196,7 +196,7 @@ class JackettProviderTests(unittest.TestCase):
         self.assertEqual(params["q"], "2024-06-15")
         self.assertNotEqual(params["q"], "Show.Name.S01E01")
 
-    @patch("sickchill.oldbeard.providers.jackett.logger")
+    @patch("sickchill.providers.jackett.logger")
     def test_warn_overlap_one_warning_per_matching_provider(self, mock_logger):
         jackett = Provider()
         jackett.enabled = True
@@ -221,7 +221,7 @@ class JackettProviderTests(unittest.TestCase):
         self.assertEqual(self.provider.name, "Jackett-SC")
         self.assertEqual(self.provider.get_id(), "jackett_sc")
 
-    @patch("sickchill.oldbeard.providers.jackett.logger")
+    @patch("sickchill.providers.jackett.logger")
     def test_warn_overlap_name_collision_even_if_builtin_disabled(self, mock_logger):
         jackett = Provider()
         jackett.enabled = False
@@ -240,8 +240,8 @@ class JackettProviderTests(unittest.TestCase):
 
     def test_custom_newznab_named_jackett_coexists_with_builtin(self):
         """Custom Newznab 'Jackett' (id jackett) must not hide built-in Jackett-SC."""
-        from sickchill.oldbeard.providers import sorted_provider_list
-        from sickchill.oldbeard.providers.newznab import NewznabProvider
+        from sickchill.providers import sorted_provider_list
+        from sickchill.providers.newznab import NewznabProvider
 
         builtin = Provider()
         settings.providerList = [builtin]

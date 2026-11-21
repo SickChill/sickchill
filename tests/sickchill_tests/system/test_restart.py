@@ -5,7 +5,7 @@ Test restart
 import unittest
 
 from sickchill import settings
-from sickchill.oldbeard.event_queue import Events
+from sickchill.helper.event_queue import Events
 from sickchill.system.Restart import Restart
 
 

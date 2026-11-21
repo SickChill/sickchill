@@ -211,7 +211,7 @@ class LegacyMapsMigratorTests(unittest.TestCase):
 
     def test_notifiers_and_clients_do_not_recreate_legacy_sections(self):
         """Migrated-only config must not grow empty legacy KODI/SABnzbd/Blackhole/General.metadata_* shells."""
-        from sickchill.oldbeard.config import peek_setting_str
+        from sickchill.helper.config import peek_setting_str
         from sickchill.plugins.legacy_maps import ALL_LEGACY_MAPS, CLIENT_SECTION_MAPS
         from sickchill.plugins.metadata.config import DEFAULT_PACKED, migrate_metadata_from_general, unpack_packed_config
         from sickchill.plugins.settings import migrate_client_maps, write_metadata_section
@@ -309,7 +309,7 @@ class LegacyMapsMigratorTests(unittest.TestCase):
 
     def test_notifier_password_encrypted_on_write_decrypted_on_sync(self):
         from sickchill import settings
-        from sickchill.oldbeard import helpers
+        from sickchill.helper import helpers
         from sickchill.plugins.legacy_maps import KODI_MAP
 
         saved = {

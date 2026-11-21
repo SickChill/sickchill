@@ -2,8 +2,8 @@
 <%!
     import re
     from sickchill import settings
-    from sickchill.oldbeard.filters import hide
-    from sickchill.oldbeard.helpers import anon_url
+    from sickchill.helper.filters import hide
+    from sickchill.helper.helpers import anon_url
     import sickchill
 %>
 <%block name="tabs">

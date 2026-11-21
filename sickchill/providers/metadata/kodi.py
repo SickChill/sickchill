@@ -6,9 +6,9 @@ from babelfish import Country
 
 import sickchill
 from sickchill import logger
+from sickchill.helper import helpers
 from sickchill.helper.common import dateFormat
-from sickchill.oldbeard import helpers
-from sickchill.oldbeard.network_timezones import sc_timezone
+from sickchill.helper.network_timezones import sc_timezone
 from sickchill.providers.metadata import generic
 
 

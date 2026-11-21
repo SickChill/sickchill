@@ -5,8 +5,7 @@ from tornado.web import addslash
 
 import sickchill.start
 from sickchill import logger, settings
-from sickchill.helper import try_int
-from sickchill.oldbeard import config, filters, helpers, ui
+from sickchill.helper import config, filters, helpers, try_int, ui
 from sickchill.views.common import PageTemplate
 from sickchill.views.config.index import Config
 from sickchill.views.routes import Route
@@ -167,7 +166,7 @@ class ConfigSearch(Config):
 
     def getTorrentClientSettings(self):
         """Return [CLIENTS][[method]] fields for the Search Settings torrent form (JSON)."""
-        from sickchill.oldbeard.clients import default_host
+        from sickchill.clients import default_host
         from sickchill.plugins.settings import _as_bool, read_client_section
 
         method = (self.get_body_argument("torrent_method", default=None) or self.get_argument("torrent_method", default="") or "").lower()
@@ -234,7 +233,7 @@ class ConfigSearch(Config):
 
     def getNzbClientSettings(self):
         """Return [CLIENTS][[method]] fields for the Search Settings NZB form (JSON)."""
-        from sickchill.oldbeard.clients import default_host
+        from sickchill.clients import default_host
         from sickchill.plugins.settings import _as_bool, read_client_section
 
         method = (self.get_body_argument("nzb_method", default=None) or self.get_argument("nzb_method", default="") or "").lower()

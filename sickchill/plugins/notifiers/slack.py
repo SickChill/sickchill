@@ -6,7 +6,7 @@ from typing import ClassVar
 import requests
 from requests.structures import CaseInsensitiveDict
 
-from sickchill.oldbeard import common
+from sickchill import common
 from sickchill.plugins.api import Field, register
 from sickchill.plugins.kinds.notifier import NotifierPlugin
 

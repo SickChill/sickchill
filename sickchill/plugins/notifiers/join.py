@@ -31,7 +31,7 @@ class JoinNotifier(NotifierPlugin):
         settings.JOIN_APIKEY = self.ctx.get("apikey") or ""
 
     def _impl(self):
-        from sickchill.oldbeard.notifiers import join as _mod
+        from sickchill.notifiers import join as _mod
 
         return _mod.Notifier()
 

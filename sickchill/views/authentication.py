@@ -1,5 +1,5 @@
-from sickchill import logger, settings
-from sickchill.oldbeard import config, notifiers
+from sickchill import logger, notifiers, settings
+from sickchill.helper import config
 from sickchill.views.common import PageTemplate
 from sickchill.views.index import BaseHandler
 

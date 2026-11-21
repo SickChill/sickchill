@@ -1,7 +1,4 @@
 <%inherit file="/layouts/config.mako" />
-<%!
-    from sickchill import oldbeard
-%>
 
 <%block name="tabs">
     <li><a href="#backup">${_('Backup')}</a></li>

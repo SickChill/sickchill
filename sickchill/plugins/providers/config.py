@@ -126,7 +126,7 @@ def _dest_nonempty(section: dict[str, Any], key: str) -> bool:
 
 def _first_party_provider_ids() -> dict[str, str]:
     """Map provider_id → legacy section name (UPPER) without instantiating Provider()."""
-    from sickchill.oldbeard.providers import __all__ as provider_all, broken_providers, provider_id_for_module
+    from sickchill.providers import __all__ as provider_all, broken_providers, provider_id_for_module
 
     broken = set(broken_providers or [])
     result: dict[str, str] = {}
@@ -218,9 +218,9 @@ def _ini_blob_as_str(raw) -> str:
 def _parsed_blob_provider_ids(blob: str, ptype: str) -> list[str] | None:
     """Ids from a Newznab/TorrentRss blob, or None if any non-empty entry is unparseable."""
     if ptype == "newznab":
-        from sickchill.oldbeard.providers.newznab import NewznabProvider as provider_cls
+        from sickchill.providers.newznab import NewznabProvider as provider_cls
     elif ptype == "torrentrss":
-        from sickchill.oldbeard.providers.rsstorrent import TorrentRssProvider as provider_cls
+        from sickchill.providers.rsstorrent import TorrentRssProvider as provider_cls
     else:
         return None
 
@@ -279,7 +279,7 @@ def _migrate_newznab_blob(cfg: ConfigObj) -> bool:
     moved = False
 
     if blob:
-        from sickchill.oldbeard.providers.newznab import NewznabProvider
+        from sickchill.providers.newznab import NewznabProvider
 
         try:
             providers = NewznabProvider.providers_list(blob)
@@ -334,7 +334,7 @@ def _migrate_torrentrss_blob(cfg: ConfigObj) -> bool:
     moved = False
 
     if blob:
-        from sickchill.oldbeard.providers.rsstorrent import TorrentRssProvider
+        from sickchill.providers.rsstorrent import TorrentRssProvider
 
         try:
             providers = TorrentRssProvider.providers_list(blob)
@@ -426,7 +426,7 @@ def migrate_provider_sections(cfg: ConfigObj) -> bool:
 
 def _peek_legacy_field(cfg: ConfigObj, provider_id: str, field: str, default: Any, kind: str) -> Any:
     """Read one legacy [ID] field without creating the section."""
-    from sickchill.oldbeard.config import peek_setting_bool, peek_setting_int, peek_setting_str
+    from sickchill.helper.config import peek_setting_bool, peek_setting_int, peek_setting_str
 
     section = provider_id.upper()
     item = provider_id if field == "enabled" else f"{provider_id}_{field}"
@@ -484,7 +484,7 @@ def provider_settings_for_ui(provider) -> dict[str, Any]:
     """JSON-friendly live settings for filling the Providers config form."""
     if provider is None:
         return {}
-    from sickchill.oldbeard.filters import hide
+    from sickchill.helper.filters import hide
 
     data = _provider_to_section(provider)
     if hasattr(provider, "password"):
@@ -531,7 +531,7 @@ def _apply_provider_options(cfg: ConfigObj, provider) -> None:
         section = read_provider_section(cfg, provider_id)
         if "password" in section and section.get("password") not in (None, ""):
             from sickchill import settings as sc_settings
-            from sickchill.oldbeard import helpers
+            from sickchill.helper import helpers
 
             provider.password = helpers.decrypt(section.get("password") or "", sc_settings.ENCRYPTION_VERSION)
         else:
@@ -664,7 +664,7 @@ def apply_providers_from_cfg(cfg: ConfigObj, *, enabled_only: bool = True) -> No
     if cfg is None:
         return
 
-    from sickchill.oldbeard.providers import sorted_provider_list
+    from sickchill.providers import sorted_provider_list
 
     for provider in sorted_provider_list():
         _apply_provider_enabled(cfg, provider)
@@ -679,15 +679,15 @@ def apply_providers_from_cfg(cfg: ConfigObj, *, enabled_only: bool = True) -> No
 
 def _provider_to_section(provider) -> dict[str, Any]:
     from sickchill import settings as sc_settings
-    from sickchill.oldbeard import helpers
+    from sickchill.helper import helpers
 
     data: dict[str, Any] = {}
     if hasattr(provider, "enabled"):
         data["enabled"] = bool(provider.enabled)
 
     # Custom type markers
-    from sickchill.oldbeard.providers.newznab import NewznabProvider
-    from sickchill.oldbeard.providers.rsstorrent import TorrentRssProvider
+    from sickchill.providers.newznab import NewznabProvider
+    from sickchill.providers.rsstorrent import TorrentRssProvider
 
     if isinstance(provider, NewznabProvider):
         data["type"] = "newznab"
@@ -762,7 +762,7 @@ def write_providers_to_cfg(cfg: ConfigObj) -> None:
         return
 
     from sickchill import settings as sc_settings
-    from sickchill.oldbeard.providers import sorted_provider_list
+    from sickchill.providers import sorted_provider_list
 
     builtin_ids = set(_first_party_provider_ids())
     seen_ids: set[str] = set()
@@ -820,8 +820,8 @@ def custom_providers_from_cfg(cfg: ConfigObj, enabled_ids: set[str] | None = Non
 
     When ``enabled_ids`` is set, only those custom providers are constructed (startup).
     """
-    from sickchill.oldbeard.providers.newznab import NewznabProvider
-    from sickchill.oldbeard.providers.rsstorrent import TorrentRssProvider
+    from sickchill.providers.newznab import NewznabProvider
+    from sickchill.providers.rsstorrent import TorrentRssProvider
 
     newznab: list = []
     torrentrss: list = []

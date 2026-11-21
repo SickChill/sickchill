@@ -33,7 +33,7 @@ class MatrixNotifier(NotifierPlugin):
         settings.MATRIX_ROOM = self.ctx.get("room") or ""
 
     def _impl(self):
-        from sickchill.oldbeard.notifiers import matrix as _mod
+        from sickchill.notifiers import matrix as _mod
 
         return _mod.Notifier()
 

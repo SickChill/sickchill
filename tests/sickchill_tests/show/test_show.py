@@ -5,8 +5,8 @@ Test shows
 import unittest
 
 from sickchill import settings
+from sickchill.common import Quality
 from sickchill.helper.exceptions import MultipleShowObjectsException
-from sickchill.oldbeard.common import Quality
 from sickchill.show.Show import Show
 from sickchill.tv import TVShow
 

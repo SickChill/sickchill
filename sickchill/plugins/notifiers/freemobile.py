@@ -31,7 +31,7 @@ class FreemobileNotifier(NotifierPlugin):
         settings.FREEMOBILE_APIKEY = self.ctx.get("apikey") or ""
 
     def _impl(self):
-        from sickchill.oldbeard.notifiers import freemobile as _mod
+        from sickchill.notifiers import freemobile as _mod
 
         return _mod.Notifier()
 

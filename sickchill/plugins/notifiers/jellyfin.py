@@ -25,7 +25,7 @@ class JellyfinNotifier(NotifierPlugin):
         settings.JELLYFIN_APIKEY = self.ctx.get("apikey") or ""
 
     def _impl(self):
-        from sickchill.oldbeard.notifiers import jellyfin as _mod
+        from sickchill.notifiers import jellyfin as _mod
 
         return _mod.Notifier()
 

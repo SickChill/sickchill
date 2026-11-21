@@ -4,9 +4,9 @@ from tornado.web import addslash
 
 import sickchill.start
 from sickchill import logger, settings
-from sickchill.helper import try_int
-from sickchill.oldbeard import config, naming, ui
-from sickchill.oldbeard.common import NAMING_LIMITED_EXTEND_E_PREFIXED
+from sickchill.common import NAMING_LIMITED_EXTEND_E_PREFIXED
+from sickchill.helper import config, try_int, ui
+from sickchill.show import naming
 from sickchill.views.common import PageTemplate
 from sickchill.views.config.index import Config
 from sickchill.views.routes import Route

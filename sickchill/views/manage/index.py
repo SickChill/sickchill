@@ -3,10 +3,10 @@ import ntpath
 import os
 import posixpath
 
-from sickchill import logger, settings
-from sickchill.helper import episode_num, try_int
-from sickchill.oldbeard import db, subtitles as subtitle_module, ui
-from sickchill.oldbeard.common import SNATCHED, Overview, Quality
+from sickchill import db, logger, settings
+from sickchill.common import SNATCHED, Overview, Quality
+from sickchill.helper import episode_num, try_int, ui
+from sickchill.show import subtitles as subtitle_module
 from sickchill.show.Show import Show
 from sickchill.views.common import PageTemplate
 from sickchill.views.home import Home, WebRoot

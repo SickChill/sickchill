@@ -31,7 +31,7 @@ class RocketchatNotifier(NotifierPlugin):
         settings.ROCKETCHAT_ICON_EMOJI = self.ctx.get("icon_emoji") or ""
 
     def _impl(self):
-        from sickchill.oldbeard.notifiers import rocketchat as _mod
+        from sickchill.notifiers import rocketchat as _mod
 
         return _mod.Notifier()
 

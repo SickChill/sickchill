@@ -4,7 +4,8 @@ from __future__ import annotations
 
 import unittest
 
-from sickchill.oldbeard import db, name_cache
+from sickchill import db
+from sickchill.show import name_cache
 from tests import conftest
 
 

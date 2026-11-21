@@ -17,26 +17,10 @@ from xml.etree import ElementTree
 from text_unidecode import unidecode
 
 import sickchill
-import sickchill.oldbeard.providers
-import sickchill.oldbeard.scene_numbering
-from sickchill import logger, settings
-from sickchill.helper.common import dateTimeFormat, episode_num, is_media_file, remove_extension, replace_extension, sanitize_filename, try_int
-from sickchill.helper.exceptions import (
-    CantRefreshShowException,
-    CantRemoveShowException,
-    CantUpdateShowException,
-    EpisodeDeletedException,
-    EpisodeNotFoundException,
-    MultipleEpisodesInDatabaseException,
-    MultipleShowObjectsException,
-    MultipleShowsInDatabaseException,
-    NoNFOException,
-    ShowDirectoryNotFoundException,
-    ShowNotFoundException,
-)
-from sickchill.oldbeard import db, helpers, network_timezones, notifiers, postProcessor, subtitles
-from sickchill.oldbeard.blackandwhitelist import BlackAndWhiteList
-from sickchill.oldbeard.common import (
+import sickchill.providers
+import sickchill.show.scene_numbering
+from sickchill import db, logger, notifiers, settings
+from sickchill.common import (
     ARCHIVED,
     DOWNLOADED,
     FAILED,
@@ -57,9 +41,27 @@ from sickchill.oldbeard.common import (
     statusStrings,
     uses_absolute_numbering,
 )
-from sickchill.oldbeard.imdb_api import Imdb, ImdbFacade
-from sickchill.oldbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
-from sickchill.oldbeard.network_timezones import sc_now, sc_timezone, sc_today
+from sickchill.helper import helpers, network_timezones
+from sickchill.helper.common import dateTimeFormat, episode_num, is_media_file, remove_extension, replace_extension, sanitize_filename, try_int
+from sickchill.helper.exceptions import (
+    CantRefreshShowException,
+    CantRemoveShowException,
+    CantUpdateShowException,
+    EpisodeDeletedException,
+    EpisodeNotFoundException,
+    MultipleEpisodesInDatabaseException,
+    MultipleShowObjectsException,
+    MultipleShowsInDatabaseException,
+    NoNFOException,
+    ShowDirectoryNotFoundException,
+    ShowNotFoundException,
+)
+from sickchill.helper.network_timezones import sc_now, sc_timezone, sc_today
+from sickchill.process import postProcessor
+from sickchill.process.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
+from sickchill.show import subtitles
+from sickchill.show.blackandwhitelist import BlackAndWhiteList
+from sickchill.show.indexers.imdb_api import Imdb, ImdbFacade
 from sickchill.show.Show import Show
 
 try:
@@ -1347,11 +1349,11 @@ class TVShow(object):
         cache_db_con.mass_action(sql_l)
 
         # Drop process-global name cache entries for this show (DB rows already deleted)
-        from sickchill.oldbeard import name_cache
+        from sickchill.show import name_cache
 
         name_cache.drop_indexer(self.indexerid)
 
-        for provider in sickchill.oldbeard.providers.__all__:
+        for provider in sickchill.providers.__all__:
             if cache_db_con.has_table(provider) and cache_db_con.has_column(provider, "indexerid"):
                 cache_db_con.action("delete from {} WHERE indexerid = ?".format(provider), [self.indexerid])
 
@@ -1477,7 +1479,7 @@ class TVShow(object):
                 # check if downloaded files still exist, update our data if this has changed
                 if not settings.SKIP_REMOVED_FILES:
                     with episode_object.lock:
-                        # if it used to have a file associated with it, and it doesn't anymore then set it to oldbeard.EP_DEFAULT_DELETED_STATUS
+                        # if it used to have a file associated with it, and it doesn't anymore then set it to settings.EP_DEFAULT_DELETED_STATUS
                         if episode_object.status in Quality.DOWNLOADED:
                             if settings.EP_DEFAULT_DELETED_STATUS == ARCHIVED:
                                 old_status_, old_quality = Quality.splitCompositeStatus(episode_object.status)
@@ -2071,19 +2073,19 @@ class TVEpisode(object):
             self.indexerid = int(sql_results[0]["indexerid"])
             self.indexer = int(sql_results[0]["indexer"])
 
-            sickchill.oldbeard.scene_numbering.xem_refresh(self.show.indexerid, self.show.indexer)
+            sickchill.show.scene_numbering.xem_refresh(self.show.indexerid, self.show.indexer)
 
             self.scene_season = try_int(sql_results[0]["scene_season"])
             self.scene_episode = try_int(sql_results[0]["scene_episode"])
             self.scene_absolute_number = try_int(sql_results[0]["scene_absolute_number"])
 
             if self.scene_absolute_number == 0:
-                self.scene_absolute_number = sickchill.oldbeard.scene_numbering.get_scene_absolute_numbering(
+                self.scene_absolute_number = sickchill.show.scene_numbering.get_scene_absolute_numbering(
                     self.show.indexerid, self.show.indexer, self.absolute_number
                 )
 
             if self.scene_season == 0 or self.scene_episode == 0:
-                self.scene_season, self.scene_episode = sickchill.oldbeard.scene_numbering.get_scene_numbering(
+                self.scene_season, self.scene_episode = sickchill.show.scene_numbering.get_scene_numbering(
                     self.show.indexerid, self.show.indexer, self.season, self.episode
                 )
 
@@ -2237,13 +2239,11 @@ class TVEpisode(object):
         self.season = (season, self.season)[season is None]
         self.episode = (episode, self.episode)[season is None]
 
-        sickchill.oldbeard.scene_numbering.xem_refresh(self.show.indexerid, self.show.indexer)
+        sickchill.show.scene_numbering.xem_refresh(self.show.indexerid, self.show.indexer)
 
-        self.scene_absolute_number = sickchill.oldbeard.scene_numbering.get_scene_absolute_numbering(
-            self.show.indexerid, self.show.indexer, self.absolute_number
-        )
+        self.scene_absolute_number = sickchill.show.scene_numbering.get_scene_absolute_numbering(self.show.indexerid, self.show.indexer, self.absolute_number)
 
-        self.scene_season, self.scene_episode = sickchill.oldbeard.scene_numbering.get_scene_numbering(
+        self.scene_season, self.scene_episode = sickchill.show.scene_numbering.get_scene_numbering(
             self.show.indexerid, self.show.indexer, self.season, self.episode
         )
 
@@ -2380,13 +2380,13 @@ class TVEpisode(object):
                     self.episode = int(ep_details.findtext("episode"))
                     self.season = int(ep_details.findtext("season"))
 
-                    sickchill.oldbeard.scene_numbering.xem_refresh(self.show.indexerid, self.show.indexer)
+                    sickchill.show.scene_numbering.xem_refresh(self.show.indexerid, self.show.indexer)
 
-                    self.scene_absolute_number = sickchill.oldbeard.scene_numbering.get_scene_absolute_numbering(
+                    self.scene_absolute_number = sickchill.show.scene_numbering.get_scene_absolute_numbering(
                         self.show.indexerid, self.show.indexer, self.absolute_number
                     )
 
-                    self.scene_season, self.scene_episode = sickchill.oldbeard.scene_numbering.get_scene_numbering(
+                    self.scene_season, self.scene_episode = sickchill.show.scene_numbering.get_scene_numbering(
                         self.show.indexerid, self.show.indexer, self.season, self.episode
                     )
 

@@ -91,7 +91,7 @@ def sync_torrent_ctx_to_settings(ctx, *, overwrite_empty: bool = False) -> None:
 
 
 class TorrentClientPlugin(ClientPlugin):
-    """Wraps sickchill.oldbeard.clients.<id>.Client."""
+    """Wraps sickchill.clients.<id>.Client."""
 
     version = "1.0.0"
     schema: ClassVar[tuple[Field, ...]] = TORRENT_COMMON_SCHEMA
@@ -131,7 +131,7 @@ class TorrentClientPlugin(ClientPlugin):
 
         # Always positional: qBittorrent.Client first param is named `url`, not `host`.
         # Matches legacy getClientInstance(name)(host, username, password).
-        mod = importlib.import_module(f"sickchill.oldbeard.clients.{self.id}")
+        mod = importlib.import_module(f"sickchill.clients.{self.id}")
         return mod.Client(host, username, password)
 
     def send(self, result: Any, host=None, username=None, password=None) -> bool:

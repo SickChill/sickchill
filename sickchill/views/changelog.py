@@ -1,7 +1,7 @@
 import markdown2
 
 from sickchill import logger
-from sickchill.oldbeard import helpers
+from sickchill.helper import helpers
 from sickchill.views.common import PageTemplate
 from sickchill.views.home import Home
 from sickchill.views.routes import Route

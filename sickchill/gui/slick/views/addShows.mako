@@ -1,6 +1,6 @@
 <%inherit file="/layouts/main.mako" />
 <%!
-    from sickchill.oldbeard.trakt_api import trakt_credentials_configured
+    from sickchill.clients.trakt_api import trakt_credentials_configured
 %>
 <%block name="content">
 <div id="addShowPortal">

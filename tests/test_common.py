@@ -3,8 +3,7 @@ from typing import ClassVar
 
 import pytest
 
-from sickchill import settings
-from sickchill.oldbeard import common
+from sickchill import common, settings
 
 
 class QualityStringTests(unittest.TestCase):

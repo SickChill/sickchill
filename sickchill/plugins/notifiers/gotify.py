@@ -6,7 +6,7 @@ from typing import ClassVar
 import requests
 from requests.structures import CaseInsensitiveDict
 
-from sickchill.oldbeard.common import (
+from sickchill.common import (
     NOTIFY_DOWNLOAD,
     NOTIFY_LOGIN,
     NOTIFY_LOGIN_TEXT,

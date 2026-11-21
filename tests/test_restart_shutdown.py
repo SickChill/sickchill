@@ -4,7 +4,7 @@ import sys
 from unittest.mock import Mock, patch
 
 from sickchill import settings
-from sickchill.oldbeard.event_queue import Events
+from sickchill.helper.event_queue import Events
 from sickchill.views.server_settings import SCWebServer
 
 

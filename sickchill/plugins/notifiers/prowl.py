@@ -33,7 +33,7 @@ class ProwlNotifier(NotifierPlugin):
         settings.PROWL_MESSAGE_TITLE = self.ctx.get("message_title") or ""
 
     def _impl(self):
-        from sickchill.oldbeard.notifiers import prowl as _mod
+        from sickchill.notifiers import prowl as _mod
 
         return _mod.Notifier()
 

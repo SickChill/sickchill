@@ -4,12 +4,12 @@ import sys
 import unittest
 from pathlib import Path
 
-from sickchill.oldbeard import browser
+from sickchill.helper import browser
 
 
 class BrowserTestAll(unittest.TestCase):
     """
-    Test methods in `oldbeard.browser`
+    Test methods in `sickchill.helper.browser`
     """
 
     def setUp(self):

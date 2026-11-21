@@ -33,7 +33,7 @@ class PushbulletNotifier(NotifierPlugin):
         settings.PUSHBULLET_CHANNEL = self.ctx.get("channel") or ""
 
     def _impl(self):
-        from sickchill.oldbeard.notifiers import pushbullet as _mod
+        from sickchill.notifiers import pushbullet as _mod
 
         return _mod.Notifier()
 

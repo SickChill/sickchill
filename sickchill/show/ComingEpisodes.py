@@ -3,12 +3,12 @@ from operator import itemgetter
 from typing import ClassVar
 
 from sickchill import settings
+from sickchill.common import UNAIRED, WANTED, Quality
+from sickchill.db import DBConnection
 from sickchill.helper.common import dateFormat, timeFormat, try_int
+from sickchill.helper.network_timezones import parse_date_time, sc_today
 from sickchill.helper.quality import get_quality_string
-from sickchill.oldbeard.common import UNAIRED, WANTED, Quality
-from sickchill.oldbeard.db import DBConnection
-from sickchill.oldbeard.network_timezones import parse_date_time, sc_today
-from sickchill.oldbeard.scdatetime import scdatetime
+from sickchill.helper.scdatetime import scdatetime
 
 SNATCHED = Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST  # type = list
 

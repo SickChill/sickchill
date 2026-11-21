@@ -27,7 +27,7 @@ class Nmjv2Notifier(NotifierPlugin):
         settings.NMJv2_DBLOC = self.ctx.get("dbloc") or ""
 
     def _impl(self):
-        from sickchill.oldbeard.notifiers import nmjv2 as _mod
+        from sickchill.notifiers import nmjv2 as _mod
 
         return _mod.Notifier()
 

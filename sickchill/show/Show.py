@@ -2,9 +2,9 @@ from datetime import date
 from typing import TYPE_CHECKING, Union
 
 from sickchill import settings
+from sickchill.common import SKIPPED, WANTED, Quality
+from sickchill.db import DBConnection
 from sickchill.helper.exceptions import MultipleShowObjectsException
-from sickchill.oldbeard.common import SKIPPED, WANTED, Quality
-from sickchill.oldbeard.db import DBConnection
 
 if TYPE_CHECKING:
     from sickchill.tv import TVShow
@@ -78,7 +78,7 @@ class Show(object):
 
     @staticmethod
     def overall_stats() -> dict:
-        from sickchill.oldbeard.network_timezones import sc_today
+        from sickchill.helper.network_timezones import sc_today
 
         db = DBConnection()
         shows = settings.show_list

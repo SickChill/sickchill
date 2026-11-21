@@ -43,7 +43,7 @@ class NzbgetClient(ClientPlugin):
 
     def send(self, result: Any, proper: bool = False, **_kwargs) -> bool:
         self._sync_settings()
-        from sickchill.oldbeard import nzbget
+        from sickchill.clients import nzbget
 
         return bool(nzbget.send_nzb(result, proper))
 

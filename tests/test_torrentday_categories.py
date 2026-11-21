@@ -6,9 +6,9 @@ import unittest
 
 from configobj import ConfigObj
 
-from sickchill.oldbeard.providers.torrentday import DEFAULT_TV_CATEGORIES, Provider
 from sickchill.plugins.providers.config import _apply_provider_options, _provider_to_section
 from sickchill.plugins.settings import write_provider_section
+from sickchill.providers.torrentday import DEFAULT_TV_CATEGORIES, Provider
 
 
 class TestTorrentDayTvCategories(unittest.TestCase):

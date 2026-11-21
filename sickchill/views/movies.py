@@ -1,7 +1,7 @@
 import logging
 
 from sickchill import settings
-from sickchill.oldbeard import config
+from sickchill.helper import config
 from sickchill.views.common import PageTemplate
 from sickchill.views.index import WebRoot
 

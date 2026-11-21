@@ -94,6 +94,6 @@ class ManagerTests(unittest.TestCase):
             elif isinstance(node, ast.ImportFrom) and node.module:
                 imported.append(node.module)
         self.assertFalse(
-            any(name.startswith("sickchill.oldbeard.providers") or name == "sickchill.oldbeard.providers" for name in imported),
+            any(name.startswith("sickchill.providers") or name == "sickchill.providers" for name in imported),
             msg=f"manager.py imports providers: {imported}",
         )

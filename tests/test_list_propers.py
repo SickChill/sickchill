@@ -8,11 +8,10 @@ import time
 import unittest
 from unittest import mock
 
-from sickchill import settings
-from sickchill.oldbeard import db
-from sickchill.oldbeard.network_timezones import sc_now, sc_timezone
-from sickchill.oldbeard.properFinder import ProperFinder
-from sickchill.oldbeard.tvcache import TVCache
+from sickchill import db, settings
+from sickchill.helper.network_timezones import sc_now, sc_timezone
+from sickchill.search.properFinder import ProperFinder
+from sickchill.search.tvcache import TVCache
 from tests import conftest
 
 
@@ -89,7 +88,7 @@ class TestProperSearchDate(unittest.TestCase):
     def test_defaults_to_two_day_floor_when_never_run(self):
         finder = ProperFinder()
         with mock.patch.object(finder, "_get_last_proper_search", return_value=datetime.date.min):
-            with mock.patch("sickchill.oldbeard.properFinder.sc_now") as now_mock:
+            with mock.patch("sickchill.search.properFinder.sc_now") as now_mock:
                 fixed = datetime.datetime(2026, 9, 4, 15, 0, 0, tzinfo=sc_timezone)
                 now_mock.return_value = fixed
                 got = finder._proper_search_date()
@@ -99,7 +98,7 @@ class TestProperSearchDate(unittest.TestCase):
         finder = ProperFinder()
         last = datetime.date(2026, 9, 3)
         with mock.patch.object(finder, "_get_last_proper_search", return_value=last):
-            with mock.patch("sickchill.oldbeard.properFinder.sc_now") as now_mock:
+            with mock.patch("sickchill.search.properFinder.sc_now") as now_mock:
                 fixed = datetime.datetime(2026, 9, 4, 15, 0, 0, tzinfo=sc_timezone)
                 now_mock.return_value = fixed
                 got = finder._proper_search_date()
@@ -111,11 +110,11 @@ class TestProperSearchDate(unittest.TestCase):
         window = datetime.datetime(2026, 11, 3, 18, 27, 1, tzinfo=sc_timezone)
         with (
             mock.patch.object(finder, "_proper_search_date", return_value=window),
-            mock.patch("sickchill.oldbeard.scdatetime.settings.DATE_PRESET", "%Y-%m-%d"),
-            mock.patch("sickchill.oldbeard.scdatetime.settings.TIME_PRESET_W_SECONDS", "%H:%M:%S"),
-            mock.patch("sickchill.oldbeard.scdatetime.settings.TIME_PRESET", "%H:%M"),
-            mock.patch("sickchill.oldbeard.scdatetime.settings.TIMEZONE_DISPLAY", "local"),
-            mock.patch("sickchill.oldbeard.properFinder.logger") as log,
+            mock.patch("sickchill.helper.scdatetime.settings.DATE_PRESET", "%Y-%m-%d"),
+            mock.patch("sickchill.helper.scdatetime.settings.TIME_PRESET_W_SECONDS", "%H:%M:%S"),
+            mock.patch("sickchill.helper.scdatetime.settings.TIME_PRESET", "%H:%M"),
+            mock.patch("sickchill.helper.scdatetime.settings.TIMEZONE_DISPLAY", "local"),
+            mock.patch("sickchill.search.properFinder.logger") as log,
         ):
             finder._get_propers(providers=[])
         msg = log.debug.call_args[0][0]
@@ -615,9 +614,9 @@ class TestProperFinderFingerprint(unittest.TestCase):
         }
 
         with mock.patch.object(finder, "_latest_history_resources", return_value=latest):
-            with mock.patch("sickchill.oldbeard.properFinder.snatch_episode") as snatch:
-                with mock.patch("sickchill.oldbeard.properFinder.time.sleep"):
-                    with mock.patch("sickchill.oldbeard.properFinder.cpu_presets", {None: 0}):
+            with mock.patch("sickchill.search.properFinder.snatch_episode") as snatch:
+                with mock.patch("sickchill.search.properFinder.time.sleep"):
+                    with mock.patch("sickchill.search.properFinder.cpu_presets", {None: 0}):
                         finder._download_propers([proper])
 
         provider.get_result.assert_called_once()
@@ -748,7 +747,7 @@ class TestGenericFindPropersCachedProperGrp(conftest.SickChillTestDBCase):
 class TestProperQueueAndInterval(unittest.TestCase):
     def test_run_enqueues_instead_of_searching(self):
         from sickchill import settings
-        from sickchill.oldbeard.search_queue import ProperSearchQueueItem, SearchQueue
+        from sickchill.search.search_queue import ProperSearchQueueItem, SearchQueue
 
         finder = ProperFinder()
         queue = SearchQueue()
@@ -761,7 +760,7 @@ class TestProperQueueAndInterval(unittest.TestCase):
 
     def test_change_check_propers_interval_updates_cycle(self):
         from sickchill import settings
-        from sickchill.oldbeard import config, scheduler
+        from sickchill.helper import config, scheduler
 
         settings.properFinderScheduler = scheduler.Scheduler(lambda: None)
         config.change_check_propers_interval("90m")
@@ -770,7 +769,7 @@ class TestProperQueueAndInterval(unittest.TestCase):
 
     def test_change_download_propers_window_days(self):
         from sickchill import settings
-        from sickchill.oldbeard import config
+        from sickchill.helper import config
 
         previous = settings.DOWNLOAD_PROPERS_WINDOW_DAYS
         try:
@@ -791,7 +790,7 @@ class TestProperQueueAndInterval(unittest.TestCase):
         try:
             settings.DOWNLOAD_PROPERS_WINDOW_DAYS = 5
             with mock.patch.object(finder, "_get_last_proper_search", return_value=datetime.date.min):
-                with mock.patch("sickchill.oldbeard.properFinder.sc_now") as now_mock:
+                with mock.patch("sickchill.search.properFinder.sc_now") as now_mock:
                     fixed = datetime.datetime(2026, 9, 4, 15, 0, 0, tzinfo=sc_timezone)
                     now_mock.return_value = fixed
                     got = finder._proper_search_date()

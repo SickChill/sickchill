@@ -27,7 +27,7 @@ class SynologynotifierNotifier(NotifierPlugin):
         settings.SYNOLOGYNOTIFIER_NOTIFY_ONSUBTITLEDOWNLOAD = bool(self.ctx.get("notify_onsubtitledownload"))
 
     def _impl(self):
-        from sickchill.oldbeard.notifiers import synologynotifier as _mod
+        from sickchill.notifiers import synologynotifier as _mod
 
         return _mod.Notifier()
 
