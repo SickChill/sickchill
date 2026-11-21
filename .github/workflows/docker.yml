@@ -31,14 +31,10 @@ jobs:
         uses: actions/cache@v4
         with:
           path: /tmp/buildkitd.toml
-          key: ${{ github.workflow }}-environment
+          key: ${{ github.workflow }}-environment-no-insecure
       - name: Create buildkitd config
         run: |
-          echo 'experimantal = true' > /tmp/buildkitd.toml
-          echo 'debug = true' >> /tmp/buildkitd.toml
-          echo 'insecure-entitlements  = [ "security.insecure" ]' >> /tmp/buildkitd.toml
-          # echo '[worker.oci]' >> /tmp/buildkitd.toml
-          # echo 'max-parallelism = 1' >> /tmp/buildkitd.toml
+          echo 'debug = true' > /tmp/buildkitd.toml
           cat /tmp/buildkitd.toml
       - name: Immutable Docker tag
         id: immutable
@@ -71,8 +67,8 @@ jobs:
         uses: actions/cache@v4
         with:
           path: /tmp/buildkitd.toml
-          key: ${{ github.workflow }}-environment
-          restore-keys: ${{ github.workflow }}-environment
+          key: ${{ github.workflow }}-environment-no-insecure
+          restore-keys: ${{ github.workflow }}-environment-no-insecure
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
       - name: Set up Docker Buildx
