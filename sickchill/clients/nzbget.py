@@ -71,19 +71,23 @@ def _downloaded_body(downloaded):
 
 
 def _nzb_bytes(data: bytes, name: str):
-    """NZB bytes, or None when the body is not an NZB. The caller treats None as a dead link."""
+    """Return ``(nzb, body)``. ``nzb`` is None when the body is not an NZB.
+
+    ``body`` is the gunzipped, BOM-stripped document so an API error can be classified
+    from the same bytes. It is None when a gzip body cannot be read.
+    """
     if data.startswith(b"\x1f\x8b"):
         try:
             data = gzip.decompress(data)
         except (OSError, EOFError, zlib.error):
             logger.warning(_("NZB link for {name} was not a readable gzip file").format(name=name))
-            return None
+            return None, None
     if data.startswith(b"\xef\xbb\xbf"):
         data = data[3:]
     if b"<nzb" not in data.lower():
         logger.warning(_("Download for {name} is not an NZB").format(name=name))
-        return None
-    return data
+        return None, data
+    return data, data
 
 
 def _retryable_api_error(result: "SearchResult", data: bytes) -> bool:
@@ -148,9 +152,9 @@ def _nzb_payload(result: "SearchResult"):
         logger.warning(_("NZB link for {name} returned nothing").format(name=result.name))
         return None, True
 
-    data = _nzb_bytes(downloaded, result.name)
+    data, body = _nzb_bytes(downloaded, result.name)
     if data is None:
-        if _retryable_api_error(result, downloaded):
+        if body is not None and _retryable_api_error(result, body):
             logger.warning(_("NZB link for {name} returned an API error").format(name=result.name))
             return None, False
         return None, True

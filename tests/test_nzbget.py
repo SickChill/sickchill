@@ -149,6 +149,29 @@ class NzbGetSendTests(unittest.TestCase):
         proxy.append.assert_not_called()
         history.return_value.log_dead_url.assert_not_called()
 
+    def test_gzipped_api_error_is_classified_after_decompression(self):
+        account_xml = b'<?xml version="1.0" encoding="UTF-8"?><error code="100" description="Incorrect user credentials"/>'
+        account = _result(gzip.compress(account_xml))
+        account.url = "http://indexer/account-gzip"
+        account.provider.check_auth_from_data.return_value = False
+        sent, proxy, history = self._send(account, "26.3", 5)
+
+        self.assertFalse(sent)
+        proxy.append.assert_not_called()
+        account.provider.check_auth_from_data.assert_called_once()
+        history.return_value.log_dead_url.assert_not_called()
+
+        missing_xml = b'<?xml version="1.0" encoding="UTF-8"?><error code="300" description="No such item"/>'
+        missing = _result(gzip.compress(missing_xml))
+        missing.url = "http://indexer/missing-gzip"
+        missing.provider.check_auth_from_data.return_value = False
+        sent, proxy, history = self._send(missing, "26.3", 5)
+
+        self.assertFalse(sent)
+        proxy.append.assert_not_called()
+        history.return_value.log_dead_url.assert_called_once_with("http://indexer/missing-gzip", "Show.S01E01", "Indexer")
+        missing.provider.check_auth_from_data.assert_not_called()
+
     def test_login_failure_is_not_recorded_as_dead(self):
         result = _result()
         result.provider.login.return_value = False
