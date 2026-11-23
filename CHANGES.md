@@ -1,11 +1,32 @@
-### Unreleased
+### 2026.11.23
 
-* feat: pause the search queue and retry connectivity on DNS/connect failures and hung searches
-* fix: use the new release group in `%RG` when replacing an existing episode file
-* fix: persist a filename-derived release group after a successful rename when none is stored
-* ci: test Python 3.14 on Ubuntu, Windows, and macOS while keeping 3.11–3.13
-* ci: Docker images, Test-Docker smoke, and Deploy on Python 3.14
-* fix: stop the web server on the Tornado IOLoop thread before spawning a restart so Linux menu restart can bind the port
+[full changelog](https://github.com/SickChill/SickChill/compare/2026.10.8...2026.11.23)
+
+* feat: pause the search queue and retry connectivity on DNS/connect failures and hung searches (#9323)
+* feat: show size on each show (#9271)
+* feat: flexible home show list (#9269)
+* feat: expanded network logos, with the network name shown when the image file is missing (#9273, #9290, #9326)
+* update: post-processing release names are parsed with guessit (#9344)
+* update: copy, hardlink, and reversed-symlink processing keep associated source files (#9291)
+* update: NZBGet records a failed download when the job folder was never created, and a season NZB can be sent to SABnzbd (#9266, #9268, #9359)
+* update: NZB account and API errors stay retryable; a missing item (code 300) stays a dead URL (#9359)
+* update: provider JSON that uses `\'` in a name is read as an apostrophe (#9360)
+* update: the log view groups `WEBSERVER-*` and `NOTIFICATIONS-*` threads under their prefix (#9361)
+* update: Jackett results that carry more than one info-hash (#9356, #9357, #9358)
+* update: backlog search falls back from episodes to a season pack, and manual search stays on the requested episode (#9263)
+* update: proper, backlog, and manual searches drop extra quality text and filter more tightly, including anime propers (#9265, #9267, #9270, #9286, #9287)
+* update: unused libraries removed; IMDb and Kodi use in-tree clients (#9252)
+* update: search iteration, image-cache population, and a warning when a database update fails (#9341, #9345, #9346)
+* fix: use the new release group in `%RG` when replacing an existing episode file (#9322)
+* fix: persist a filename-derived release group after a successful rename when none is stored (#9322)
+* fix: stop the web server on the Tornado IOLoop thread before spawning a restart so Linux menu restart can bind the port (#9320)
+* fix: backlog `forceSearch` lastRun is timezone-aware (#9251)
+* fix: Pirate Bay dates use the SickChill timezone (#9250)
+* fix: IMDb country names and origin country codes (#9342, #9343)
+* ci: test Python 3.14 on Ubuntu, Windows, and macOS while keeping 3.11–3.13 (#9312)
+* ci: Docker images, Test-Docker smoke, and Deploy on Python 3.14 (#9312)
+* update: Debian 13 and Ubuntu 24.04 installers, including Raspberry Pi package errors (#9272)
+* chore: dependency updates (#9264, #9274, #9275, #9285, #9288, #9289, #9292, #9311, #9321, #9324, #9355)
 
 ### 2026.10.8
 
