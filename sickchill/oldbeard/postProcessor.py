@@ -33,6 +33,7 @@ METHOD_SYMLINK = "symlink"
 METHOD_SYMLINK_REVERSED = "symlink_reversed"
 
 PROCESS_METHODS = [METHOD_COPY, METHOD_MOVE, METHOD_HARDLINK, METHOD_SYMLINK, METHOD_SYMLINK_REVERSED]
+SOURCE_PRESERVING_METHODS = frozenset({METHOD_COPY, METHOD_HARDLINK, METHOD_SYMLINK_REVERSED})
 
 
 class PostProcessor(object):
@@ -86,6 +87,7 @@ class PostProcessor(object):
         self.anidbEpisode = None
 
         self.history = History()
+        self.show = None
 
         # Set before every soft failure (``return False``) so processTV can surface it.
         self.failure_reason = ""
@@ -141,7 +143,7 @@ class PostProcessor(object):
             self._log(_("File {existing_file} doesn't exist so there's no worries about replacing it").format(existing_file=existing_file), logger.DEBUG)
             return PostProcessor.DOESNT_EXIST
 
-    def list_associated_files(self, file_path, subtitles_only=False, subfolders=False, rename=False):
+    def list_associated_files(self, file_path, subtitles_only=False, subfolders=False, rename=False, delete_unwanted=True):
         """
         For a given file path searches for files with the same name but different extension and returns their absolute paths
 
@@ -149,6 +151,7 @@ class PostProcessor(object):
         :param subfolders: check in subfolders
         :param rename: if we are looking for all files to rename
         :param file_path: The file to check for associated files
+        :param delete_unwanted: when False, skip deleting disallowed associated files (copy/hardlink/symlink_reversed)
         :return: A list containing all files which are associated to the given file
         """
 
@@ -202,7 +205,7 @@ class PostProcessor(object):
                 file_ext = Path(associated_file_path).suffix.lstrip(".").lower()
                 if settings.MOVE_ASSOCIATED_FILES and (not allowed_exts or file_ext in allowed_exts):
                     file_path_list_to_allow.append(associated_file_path)
-                elif settings.DELETE_NON_ASSOCIATED_FILES:
+                elif settings.DELETE_NON_ASSOCIATED_FILES and delete_unwanted:
                     file_path_list_to_delete.append(associated_file_path)
 
         if file_path_list_to_allow or file_path_list_to_delete:
@@ -296,10 +299,11 @@ class PostProcessor(object):
 
         file_list = [file_path]
         subfolders = os.path.normpath(os.path.dirname(file_path)) != os.path.normpath(settings.TV_DOWNLOAD_DIR)
+        delete_unwanted = self.process_method not in SOURCE_PRESERVING_METHODS
         if associated_files:
-            file_list += self.list_associated_files(file_path, subfolders=subfolders)
+            file_list += self.list_associated_files(file_path, subfolders=subfolders, delete_unwanted=delete_unwanted)
         elif subtitles:
-            file_list += self.list_associated_files(file_path, subtitles_only=True, subfolders=subfolders)
+            file_list += self.list_associated_files(file_path, subtitles_only=True, subfolders=subfolders, delete_unwanted=delete_unwanted)
 
         if not file_list:
             self._log(_("There were no files associated with {file_path}, not moving anything").format(file_path=file_path), logger.DEBUG)
@@ -964,6 +968,7 @@ class PostProcessor(object):
 
         # retrieve/create the corresponding TVEpisode objects
         episode_object = self._get_ep_obj(show, season, episodes)
+        self.show = episode_object.show
         old_ep_status_, old_ep_quality = common.Quality.splitCompositeStatus(episode_object.status)
         self._log(_("Processing as - {pretty_name}").format(pretty_name=episode_object.pretty_name))
 
@@ -1047,6 +1052,21 @@ class PostProcessor(object):
 
         episodes = [episode_object] + episode_object.related_episodes
         created_show_dir = False
+        previous_download_state = [
+            {
+                "episode": cur_ep,
+                "release_name": cur_ep.release_name,
+                "release_group": cur_ep.release_group,
+                "is_proper": cur_ep.is_proper,
+                "status": cur_ep.status,
+                "subtitles": cur_ep.subtitles,
+                "subtitles_searchcount": cur_ep.subtitles_searchcount,
+                "subtitles_lastsearch": cur_ep.subtitles_lastsearch,
+                "version": cur_ep.version,
+                "location": cur_ep.location,
+            }
+            for cur_ep in episodes
+        ]
 
         for cur_ep in episodes:
             with cur_ep.lock:
@@ -1103,8 +1123,20 @@ class PostProcessor(object):
                 self._delete(cur_ep.location, associated_files=True)
                 if cur_ep.location:
                     helpers.delete_empty_folders(os.path.dirname(cur_ep.location), keep_dir=episode_object.show.get_location)
-                cur_ep.cleanup_download_properties()
             except (OSError, IOError):
+                for saved in previous_download_state:
+                    failed_ep = saved["episode"]
+                    with failed_ep.lock:
+                        failed_ep.release_name = saved["release_name"]
+                        failed_ep.release_group = saved["release_group"]
+                        failed_ep.is_proper = saved["is_proper"]
+                        failed_ep.status = saved["status"]
+                        failed_ep.subtitles = saved["subtitles"]
+                        failed_ep.subtitles_searchcount = saved["subtitles_searchcount"]
+                        failed_ep.subtitles_lastsearch = saved["subtitles_lastsearch"]
+                        failed_ep.version = saved["version"]
+                        old_location = saved["location"]
+                        failed_ep.location = old_location if old_location and os.path.isfile(old_location) else ""
                 raise EpisodePostProcessingFailedException(_("Unable to delete the existing files"))
 
         if not os.path.isdir(episode_object.show.get_location) and settings.CREATE_MISSING_SHOW_DIRS:
@@ -1232,25 +1264,51 @@ class PostProcessor(object):
         return True
 
 
+_EXPLICIT_EPISODE = re.compile(r"(?i)(?:s\d{1,2}[. _-]*e\d{1,3}|\d{1,2}x\d{2})")
+
+
+def _guess_title(guess):
+    title = guess.get("title") if guess else None
+    if isinstance(title, list):
+        title = " ".join(str(part) for part in title)
+    return title or ""
+
+
+def _guess_has_usable_episode(name, guess, show):
+    """Season/episode, an air date, or an anime absolute number that guessit did not invent."""
+    if not guess or show is None:
+        return False
+    if guess.get("date") and not (guess.get("season") and guess.get("episode")):
+        return True
+    if show.is_anime and guess.get("absolute_episode"):
+        return True
+    if guess.get("season") and guess.get("episode"):
+        # Bare numbers like 102 are absolute episodes for anime, not S01E02.
+        return (not show.is_anime) or _EXPLICIT_EPISODE.search(name or "") is not None
+    return False
+
+
 def guessit_findit(name: str) -> Union["ParseResult", None]:
     logger.debug(f"Trying a new way to verify if we can parse this file; {name}")
-    title = guessit(name, {"type": "episode"}).get("title")
-
-    if title:
-        # if the title is a list instead of a string, then join it with spaces.
-        if isinstance(title, list):
-            title = " ".join(title)
-
-        show: "TVShow" = helpers.get_show(title)
-        if show:
-            try:
-                np = NameParser(show_object=show).parse(name, cache_result=False)
-                return np
-            except (InvalidNameException, InvalidShowException) as error:
-                logger.debug(f"Sorry, guessit failed to parse {show.name}: {name} Error: {error} ... continuing with the old way")
     try:
-        np = NameParser().parse(name, cache_result=False)
-        return np
+        guess = guessit(name, {"type": "episode"})
+    except Exception:
+        guess = {}
+
+    title = _guess_title(guess)
+    show: "TVShow" = helpers.get_show(title) if title else None
+    if _guess_has_usable_episode(name, guess, show):
+        try:
+            parsed = NameParser(show_object=show).result_from_guess(name, guess, show)
+            if parsed:
+                return parsed
+        except (InvalidNameException, InvalidShowException) as error:
+            logger.debug(f"Sorry, guessit failed to parse {show.name}: {name} Error: {error} ... continuing with the old way")
+
+    try:
+        # One regex pass: the show's normal or anime list, or both when the show is unknown.
+        parser = NameParser(show_object=show) if show else NameParser()
+        return parser.parse(name, cache_result=False)
     except (InvalidNameException, InvalidShowException) as error:
         logger.debug(f"Could not properly parse a show and episode from [{name}]: {error}")
 

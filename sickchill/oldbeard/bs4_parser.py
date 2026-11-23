@@ -42,7 +42,7 @@ class BS4Parser(object):
                 parsers = [parsers]
 
             if language == "html":
-                extra_parsers = ["lxml", "html5lib", "html.parser"]
+                extra_parsers = ["lxml", "html.parser"]
             elif language == "xml":
                 extra_parsers = ["lxml-xml", "html.parser"]
 

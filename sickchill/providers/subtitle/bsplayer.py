@@ -62,8 +62,7 @@ class BSPlayerSubtitle(Subtitle):
         movie_size,
         movie_fps,
     ):
-        super().__init__(language, page_link=page_link, encoding=encoding)
-        self.subtitle_id = subtitle_id
+        super().__init__(language, subtitle_id=str(subtitle_id), page_link=page_link, encoding=encoding)
         self.size = size
         self.page_link = page_link
         self.language = language

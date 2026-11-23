@@ -358,23 +358,33 @@ class SickChill:
                 except Exception:
                     pass
 
+            if self.flask_server:
+                try:
+                    self.flask_server.stop()
+                except Exception:
+                    pass
+
             self.clear_cache()  # Clean cache
 
             # if run as daemon delete the pid file
             remove_pid_file()
 
+            web_alive = bool(self.web_server and self.web_server.is_alive())
             if event == sickchill.oldbeard.event_queue.Events.SystemEvent.RESTART:
                 popen_list = [sys.executable, settings.MY_FULLNAME]
                 if popen_list and not settings.NO_RESTART:
-                    popen_list += settings.MY_ARGS
-                    # noinspection SpellCheckingInspection
-                    if "--nolaunch" not in popen_list:
+                    if web_alive:
+                        logger.warning("Web server did not stop; not spawning a new process. Start SickChill again manually.")
+                    else:
+                        popen_list += settings.MY_ARGS
                         # noinspection SpellCheckingInspection
-                        popen_list += ["--nolaunch"]
-                    logger.info("Restarting SickChill with {options}".format(options=popen_list))
-                    # shutdown the logger to make sure it's released the logfile BEFORE it restarts SC.
-                    logger.shutdown()
-                    subprocess.Popen(popen_list, cwd=os.getcwd(), universal_newlines=True)
+                        if "--nolaunch" not in popen_list:
+                            # noinspection SpellCheckingInspection
+                            popen_list += ["--nolaunch"]
+                        logger.info("Restarting SickChill with {options}".format(options=popen_list))
+                        # shutdown the logger to make sure it's released the logfile BEFORE it restarts SC.
+                        logger.shutdown()
+                        subprocess.Popen(popen_list, cwd=os.getcwd(), start_new_session=True)
 
         # Make sure the logger has stopped, just in case
         logger.shutdown()

@@ -15,6 +15,7 @@
     <link rel="stylesheet" type="text/css" href="${static_url('css/imageSelector.css')}" />
 </%block>
 <%block name="scripts">
+    <script type="text/javascript" src="${static_url('js/lib/bootstrap-formhelpers.min.js')}"></script>
     <script type="text/javascript" src="${static_url('js/blackwhite.js')}"></script>
     <script type="text/javascript" src="${static_url('js/imageSelector.js')}"></script>
 </%block>

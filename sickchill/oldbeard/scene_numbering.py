@@ -457,6 +457,10 @@ def get_xem_absolute_numbering_for_show(indexer_id, indexer):
     return result
 
 
+# (indexer, indexer_id) -> unix time until which the daily XEM check can be skipped.
+_xem_fresh_until = {}
+
+
 def xem_refresh(indexer_id, indexer, force=False):
     """
     Refresh data from xem for a tv show
@@ -473,8 +477,12 @@ def xem_refresh(indexer_id, indexer, force=False):
 
     MAX_REFRESH_AGE_SECS = 86400  # 1 day
 
-    main_db_con = db.DBConnection()
     now_epoch = int(sc_now().timestamp())
+    cache_key = (indexer, indexer_id)
+    if not force and now_epoch < _xem_fresh_until.get(cache_key, 0):
+        return
+
+    main_db_con = db.DBConnection()
 
     rows = main_db_con.select("SELECT last_refreshed FROM xem_refresh WHERE indexer = ? and indexer_id = ?", [indexer, indexer_id])
     if rows:
@@ -483,85 +491,89 @@ def xem_refresh(indexer_id, indexer, force=False):
     else:
         refresh = True
 
-    if refresh or force:
-        logger.debug(f"Looking up XEM scene mapping for show {indexer_id} on {sickchill.indexer.name(indexer)}")
+    if not (refresh or force):
+        _xem_fresh_until[cache_key] = last_refresh + MAX_REFRESH_AGE_SECS
+        return
 
-        # mark refreshed
-        main_db_con.upsert("xem_refresh", {"indexer": indexer, "last_refreshed": now_epoch}, {"indexer_id": indexer_id})
+    logger.debug(f"Looking up XEM scene mapping for show {indexer_id} on {sickchill.indexer.name(indexer)}")
 
-        try:
-            xem_session = get_xem_session()
-            # XEM MAP URL
-            url = f"https://thexem.info/map/havemap?origin={sickchill.indexer.slug(indexer)}"
-            parsed_json = sickchill.oldbeard.helpers.getURL(url, session=xem_session, returns="json")
+    # mark refreshed
+    main_db_con.upsert("xem_refresh", {"indexer": indexer, "last_refreshed": now_epoch}, {"indexer_id": indexer_id})
+    _xem_fresh_until[cache_key] = now_epoch + MAX_REFRESH_AGE_SECS
 
-            if (
-                not parsed_json
-                or "result" not in parsed_json
-                or "success" not in parsed_json["result"]
-                or "data" not in parsed_json
-                or str(indexer_id) not in parsed_json["data"]
-            ):
-                return
+    try:
+        xem_session = get_xem_session()
+        # XEM MAP URL
+        url = f"https://thexem.info/map/havemap?origin={sickchill.indexer.slug(indexer)}"
+        parsed_json = sickchill.oldbeard.helpers.getURL(url, session=xem_session, returns="json")
 
-            # XEM API URL
-            url = f"https://thexem.info/map/all?id={indexer_id}&origin={sickchill.indexer.slug(indexer)}&destination=scene"
+        if (
+            not parsed_json
+            or "result" not in parsed_json
+            or "success" not in parsed_json["result"]
+            or "data" not in parsed_json
+            or str(indexer_id) not in parsed_json["data"]
+        ):
+            return
 
-            parsed_json = sickchill.oldbeard.helpers.getURL(url, session=xem_session, returns="json")
+        # XEM API URL
+        url = f"https://thexem.info/map/all?id={indexer_id}&origin={sickchill.indexer.slug(indexer)}&destination=scene"
 
-            if not parsed_json or "result" not in parsed_json or "success" not in parsed_json["result"]:
-                logger.info(f'No XEM data for show "{indexer_id} on {sickchill.indexer.name(indexer)}"')
-                return
+        parsed_json = sickchill.oldbeard.helpers.getURL(url, session=xem_session, returns="json")
 
-            cl = []
-            for entry in parsed_json["data"]:
-                if "scene" in entry:
-                    cl.append(
+        if not parsed_json or "result" not in parsed_json or "success" not in parsed_json["result"]:
+            logger.info(f'No XEM data for show "{indexer_id} on {sickchill.indexer.name(indexer)}"')
+            return
+
+        cl = []
+        for entry in parsed_json["data"]:
+            if "scene" in entry:
+                cl.append(
+                    [
+                        "UPDATE tv_episodes SET scene_season = ?, scene_episode = ?, scene_absolute_number = ? WHERE showid = ? AND season = ? AND episode = ?",
                         [
-                            "UPDATE tv_episodes SET scene_season = ?, scene_episode = ?, scene_absolute_number = ? WHERE showid = ? AND season = ? AND episode = ?",
-                            [
-                                entry["scene"]["season"],
-                                entry["scene"]["episode"],
-                                entry["scene"]["absolute"],
-                                indexer_id,
-                                entry[sickchill.indexer.slug(indexer)]["season"],
-                                entry[sickchill.indexer.slug(indexer)]["episode"],
-                            ],
-                        ]
-                    )
-                    cl.append(
+                            entry["scene"]["season"],
+                            entry["scene"]["episode"],
+                            entry["scene"]["absolute"],
+                            indexer_id,
+                            entry[sickchill.indexer.slug(indexer)]["season"],
+                            entry[sickchill.indexer.slug(indexer)]["episode"],
+                        ],
+                    ]
+                )
+                cl.append(
+                    [
+                        "UPDATE tv_episodes SET absolute_number = ? WHERE showid = ? AND season = ? AND episode = ? AND absolute_number = 0",
                         [
-                            "UPDATE tv_episodes SET absolute_number = ? WHERE showid = ? AND season = ? AND episode = ? AND absolute_number = 0",
-                            [
-                                entry[sickchill.indexer.slug(indexer)]["absolute"],
-                                indexer_id,
-                                entry[sickchill.indexer.slug(indexer)]["season"],
-                                entry[sickchill.indexer.slug(indexer)]["episode"],
-                            ],
-                        ]
-                    )
-                if "scene_2" in entry:  # for doubles
-                    cl.append(
+                            entry[sickchill.indexer.slug(indexer)]["absolute"],
+                            indexer_id,
+                            entry[sickchill.indexer.slug(indexer)]["season"],
+                            entry[sickchill.indexer.slug(indexer)]["episode"],
+                        ],
+                    ]
+                )
+            if "scene_2" in entry:  # for doubles
+                cl.append(
+                    [
+                        "UPDATE tv_episodes SET scene_season = ?, scene_episode = ?, scene_absolute_number = ? WHERE showid = ? AND season = ? AND episode = ?",
                         [
-                            "UPDATE tv_episodes SET scene_season = ?, scene_episode = ?, scene_absolute_number = ? WHERE showid = ? AND season = ? AND episode = ?",
-                            [
-                                entry["scene_2"]["season"],
-                                entry["scene_2"]["episode"],
-                                entry["scene_2"]["absolute"],
-                                indexer_id,
-                                entry[sickchill.indexer.slug(indexer)]["season"],
-                                entry[sickchill.indexer.slug(indexer)]["episode"],
-                            ],
-                        ]
-                    )
+                            entry["scene_2"]["season"],
+                            entry["scene_2"]["episode"],
+                            entry["scene_2"]["absolute"],
+                            indexer_id,
+                            entry[sickchill.indexer.slug(indexer)]["season"],
+                            entry[sickchill.indexer.slug(indexer)]["episode"],
+                        ],
+                    ]
+                )
 
-            if cl:
-                main_db_con = db.DBConnection()
-                main_db_con.mass_action(cl)
+        if cl:
+            main_db_con = db.DBConnection()
+            main_db_con.mass_action(cl)
 
-        except Exception as error:
-            logger.warning(f"Exception while refreshing XEM data for show {indexer_id} on {sickchill.indexer.name(indexer)}: {error}")
-            logger.debug(traceback.format_exc())
+    except Exception as error:
+        logger.warning(f"Exception while refreshing XEM data for show {indexer_id} on {sickchill.indexer.name(indexer)}: {error}")
+        logger.debug(traceback.format_exc())
 
 
 def fix_xem_numbering(indexer_id, indexer):

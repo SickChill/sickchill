@@ -52,7 +52,7 @@ window.SICKCHILL.home = {
                 $('.show-details').hide();
             } else {
                 $('.show-details').show();
-                $('.show-dlstats, .show-quality').css('fontSize', fontSize);
+                $('.show-dlstats, .show-quality, .show-network-name').css('fontSize', fontSize);
                 $('.show-network-image').css('width', logoWidth);
             }
 
@@ -120,352 +120,347 @@ window.SICKCHILL.home = {
             $(this).remove();
         });
 
-        $('#showListTableShows:has(tbody tr), #showListTableAnime:has(tbody tr)').tablesorter({
-            sortList: [[7, 1], [2, 0]],
-            textExtraction: {
-                0(node) {
-                    return $(node).find('time').attr('datetime');
-                },
-                1(node) {
-                    return $(node).find('time').attr('datetime');
-                },
-                2(node) {
-                    return latinize($(node).text().normalize('NFC'));
-                },
-                3(node) {
-                    return ($(node).find('span').prop('title') || 'zunknown').toLowerCase();
-                },
-                4(node) {
-                    return $(node).find('span').text().toLowerCase();
-                },
-                5(node) {
-                    const progress = $(node).find('div').attr('data-progress-percentage');
-                    const progressResult = progress === undefined ? -Infinity : (progress.length > 0 && Number.parseFloat(progress)) || 0;
-                    const total = $(node).find('div').attr('data-progress-total');
-                    const totalTesult = total === undefined ? -Infinity : (total.length > 0 && Number.parseInt(total, 10)) || 0;
-                    return (progressResult * 100 * 1000) + totalTesult;
-                },
-                6(node) {
-                    return $(node).data('show-size');
-                },
-                7(node) {
-                    return ($(node).find('span').attr('title') || 'No').toLowerCase();
-                },
-                9(node) {
-                    return latinize($(node).text().normalize('NFC'));
-                },
-            },
-            widgets: ['saveSort', 'zebra', 'stickyHeaders', 'filter', 'columnSelector'],
-            headers: {
-                0: {sorter: 'realISODate'},
-                1: {sorter: 'realISODate'},
-                2: {sorter: 'loadingNames'},
-                4: {sorter: 'quality'},
-                5: {sorter: 'digit'},
-                6: {sorter: 'digit'},
-                7: {filter: 'parsed'},
-                9: {sorter: 'text'},
-            },
-            widgetOptions: {
-                filter_columnFilters: true, // eslint-disable-line camelcase
-                filter_hideFilters: true, // eslint-disable-line camelcase
-                stickyHeaders_offset: 50, // eslint-disable-line camelcase
-                filter_saveFilters: false, // eslint-disable-line camelcase
-                filter_functions: { // eslint-disable-line camelcase
-                    // HOWTO: https://mottie.github.io/tablesorter/docs/example-widget-filter-custom.html#notes
-                    5(exact, normalized, filterInput) {
-                        let isTest = false;
-                        const pct = Math.floor((normalized % 1) * 1000);
-                        const doCompare = {
-                            '<'(a, b) {
-                                return a < b;
-                            },
-                            '<='(a, b) {
-                                return a <= b;
-                            },
-                            '>='(a, b) {
-                                return a >= b;
-                            },
-                            '>'(a, b) {
-                                return a > b;
-                            },
-                        };
+        function wrappingMinWidth($table, maxChars, floorCh) {
+            const textCh = Math.max(floorCh, Math.ceil(maxChars / 2));
+            const $scroll = $table.closest('.horizontal-scroll');
+            const viewportPx = ($scroll.length > 0 ? $scroll.innerWidth() : window.innerWidth) || window.innerWidth || 0;
+            const capPx = Math.max(1, Math.floor(viewportPx * 0.4));
+            return `min(${textCh}ch, max(${floorCh}ch, ${capPx}px))`;
+        }
 
-                        if (filterInput === '') {
-                            isTest = true;
-                        } else {
-                            let result = filterInput.match(/(<|<=|>=|>)\s?(\d+)/);
-                            if (result) {
+        function setWrappingColumnMins($table) {
+            let $header = $table.find('thead th.home-col-show');
+            let $all = $table.find('.home-col-show');
+            if ($header.length === 0 || !$header.is(':visible')) {
+                $all.css('min-width', '');
+            } else {
+                let maxChars = 0;
+                $table.find('tbody td.home-col-show').each(function () {
+                    maxChars = Math.max(maxChars, $(this).text().trim().length);
+                });
+                $all.css('min-width', wrappingMinWidth($table, maxChars, 12));
+            }
+
+            $header = $table.find('thead th.home-col-location');
+            $all = $table.find('.home-col-location');
+            if ($header.length === 0 || !$header.is(':visible')) {
+                $all.css('min-width', '');
+            } else {
+                let maxChars = 0;
+                $table.find('tbody td.home-col-location').each(function () {
+                    maxChars = Math.max(maxChars, $(this).text().trim().length);
+                });
+                $all.css('min-width', wrappingMinWidth($table, maxChars, 12));
+            }
+
+            $header = $table.find('thead th.home-col-network');
+            $all = $table.find('.home-col-network');
+            if ($header.length === 0 || !$header.is(':visible')) {
+                $all.css('min-width', '');
+            } else {
+                let maxChars = 0;
+                $table.find('tbody td.home-col-network').each(function () {
+                    const label = ($(this).find('span').attr('title') || $(this).text()).trim();
+                    maxChars = Math.max(maxChars, label.length);
+                });
+                $all.css('min-width', wrappingMinWidth($table, maxChars, 8));
+            }
+        }
+
+        $('#showListTableShows:has(tbody tr), #showListTableAnime:has(tbody tr)').each(function () {
+            $(this).tablesorter({
+                sortList: [[7, 1], [2, 0]],
+                textExtraction: {
+                    0(node) {
+                        return $(node).find('time').attr('datetime');
+                    },
+                    1(node) {
+                        return $(node).find('time').attr('datetime');
+                    },
+                    2(node) {
+                        return latinize($(node).text().normalize('NFC'));
+                    },
+                    3(node) {
+                        return ($(node).find('span').prop('title') || 'zunknown').toLowerCase();
+                    },
+                    4(node) {
+                        return $(node).find('span').text().toLowerCase();
+                    },
+                    5(node) {
+                        const progress = $(node).find('div').attr('data-progress-percentage');
+                        const progressResult = progress === undefined ? -Infinity : (progress.length > 0 && Number.parseFloat(progress)) || 0;
+                        const total = $(node).find('div').attr('data-progress-total');
+                        const totalTesult = total === undefined ? -Infinity : (total.length > 0 && Number.parseInt(total, 10)) || 0;
+                        return (progressResult * 100 * 1000) + totalTesult;
+                    },
+                    6(node) {
+                        return $(node).data('show-size');
+                    },
+                    7(node) {
+                        return ($(node).find('span').attr('title') || 'No').toLowerCase();
+                    },
+                    9(node) {
+                        return latinize($(node).text().normalize('NFC'));
+                    },
+                },
+                widgets: ['saveSort', 'zebra', 'stickyHeaders', 'filter', 'columnSelector'],
+                headers: {
+                    0: {sorter: 'realISODate'},
+                    1: {sorter: 'realISODate'},
+                    2: {sorter: 'loadingNames'},
+                    4: {sorter: 'quality'},
+                    5: {sorter: 'digit'},
+                    6: {sorter: 'digit'},
+                    7: {filter: 'parsed'},
+                    9: {sorter: 'text'},
+                },
+                widgetOptions: {
+                    filter_columnFilters: true, // eslint-disable-line camelcase
+                    filter_hideFilters: true, // eslint-disable-line camelcase
+                    stickyHeaders_offset: 50, // eslint-disable-line camelcase
+                    stickyHeaders_xScroll: $(this).closest('.horizontal-scroll'), // eslint-disable-line camelcase
+                    filter_saveFilters: false, // eslint-disable-line camelcase
+                    filter_functions: { // eslint-disable-line camelcase
+                    // HOWTO: https://mottie.github.io/tablesorter/docs/example-widget-filter-custom.html#notes
+                        5(exact, normalized, filterInput) {
+                            let isTest = false;
+                            const pct = Math.floor((normalized % 1) * 1000);
+                            const doCompare = {
+                                '<'(a, b) {
+                                    return a < b;
+                                },
+                                '<='(a, b) {
+                                    return a <= b;
+                                },
+                                '>='(a, b) {
+                                    return a >= b;
+                                },
+                                '>'(a, b) {
+                                    return a > b;
+                                },
+                            };
+
+                            if (filterInput === '') {
+                                isTest = true;
+                            } else {
+                                let result = filterInput.match(/(<|<=|>=|>)\s?(\d+)/);
+                                if (result) {
                                 // Compare using the matched operator
-                                const comp = doCompare[result[1]];
-                                if (comp(pct, Number.parseInt(result[2], 10))) {
+                                    const comp = doCompare[result[1]];
+                                    if (comp(pct, Number.parseInt(result[2], 10))) {
+                                        isTest = true;
+                                    }
+                                }
+
+                                result = filterInput.match(/(\d+)\s(-|to)\s+(\d+)/i);
+                                if (result && ((result[2] === '-') || (result[2] === 'to')) && (pct >= Number.parseInt(result[1], 10)) && (pct <= Number.parseInt(result[3], 10))) {
+                                    isTest = true;
+                                }
+
+                                result = filterInput.match(/(=)?\s?(\d+)\s?(=)?/);
+                                if (result && ((result[1] === '=') || (result[3] === '=')) && Number.parseInt(result[2], 10) === pct) {
+                                    isTest = true;
+                                }
+
+                                if (!Number.isNaN(Number.parseFloat(filterInput)) && Number.isFinite(filterInput) && Number.parseInt(filterInput, 10) === pct) {
                                     isTest = true;
                                 }
                             }
 
-                            result = filterInput.match(/(\d+)\s(-|to)\s+(\d+)/i);
-                            if (result && ((result[2] === '-') || (result[2] === 'to')) && (pct >= Number.parseInt(result[1], 10)) && (pct <= Number.parseInt(result[3], 10))) {
-                                isTest = true;
-                            }
-
-                            result = filterInput.match(/(=)?\s?(\d+)\s?(=)?/);
-                            if (result && ((result[1] === '=') || (result[3] === '=')) && Number.parseInt(result[2], 10) === pct) {
-                                isTest = true;
-                            }
-
-                            if (!Number.isNaN(Number.parseFloat(filterInput)) && Number.isFinite(filterInput) && Number.parseInt(filterInput, 10) === pct) {
-                                isTest = true;
-                            }
-                        }
-
-                        return isTest;
+                            return isTest;
+                        },
+                    },
+                    columnSelector_mediaquery: false, // eslint-disable-line camelcase
+                    columnSelector_saveColumns: true, // eslint-disable-line camelcase
+                    columnSelector_columns: { // eslint-disable-line camelcase
+                        9: false,
                     },
                 },
-                columnSelector_mediaquery: false, // eslint-disable-line camelcase
-                columnSelector_saveColumns: true, // eslint-disable-line camelcase
-                columnSelector_columns: { // eslint-disable-line camelcase
-                    9: false,
-                },
-            },
-            sortStable: true,
-            sortAppend: [[2, 0]],
+                sortStable: true,
+                sortAppend: [[2, 0]],
+            });
+            setWrappingColumnMins($(this));
+            $(this).on('columnUpdate', () => {
+                setWrappingColumnMins($(this));
+            });
         });
 
-        {
-            let sort;
-            switch (getMeta('settings.POSTER_SORTBY')) {
+        $(window).on('resize.homeListCols', __.debounce(() => {
+            $('#showListTableShows, #showListTableAnime').each(function () {
+                setWrappingColumnMins($(this));
+            });
+        }, 200));
+
+        function posterSortCriteria(sortValue) {
+            switch (sortValue) {
                 case 'progress': {
-                    sort = ['progress', 'total', 'name'];
-                    break;
+                    return ['progress', 'total', 'name'];
                 }
 
                 case 'date': {
-                    sort = ['date', 'status', 'name'];
-                    break;
+                    return ['date', 'status', 'name'];
                 }
 
                 case 'status': {
-                    sort = ['status', 'progress', 'name'];
-                    break;
+                    return ['status', 'progress', 'name'];
+                }
+
+                case 'network': {
+                    return ['network', 'name'];
                 }
 
                 default: {
-                    sort = getMeta('settings.POSTER_SORTBY');
-                    break;
+                    return 'name';
                 }
             }
+        }
 
-            $('.loading-spinner').hide();
-            $('.show-grid').show().isotope({
-                itemSelector: '.show-container',
-                sortBy: sort,
-                sortAscending: getMeta('settings.POSTER_SORTDIR'),
-                layoutMode: 'masonry',
-                masonry: {
-                    isFitWidth: true,
-                    horizontalOrder: true,
-                },
-                getSortData: {
-                    name(itemElement) {
-                        const name = $(itemElement).attr('data-name') || '';
-                        const regex = new RegExp('^((?:' + getMeta('settings.GRAMMAR_ARTICLES') + String.raw`)\s)`, 'i');
-                        return latinize((metaToBool('settings.SORT_ARTICLE') ? name : name.replace(regex, '')).toLowerCase().normalize('NFC'));
-                    },
-                    network: '[data-network]',
-                    date(itemElement) {
-                        const date = $(itemElement).attr('data-date');
-                        return (date.length > 0 && Number.parseInt(date, 10)) || Infinity;
-                    },
-                    progress(itemElement) {
-                        const progress = $(itemElement).attr('data-progress');
-                        return (progress.length > 0 && Number.parseFloat(progress)) || 0;
-                    },
-                    total(itemElement) {
-                        const totalEps = $(itemElement).attr('data-progress-total');
-                        return (totalEps.length > 0 && Number.parseInt(totalEps, 10)) || 0;
-                    },
-                    status: '[data-status]',
-                },
-            });
-            bindMasonryImageLayout($('.show-grid'));
+        const posterSortData = {
+            name(itemElement) {
+                const name = $(itemElement).attr('data-name') || '';
+                const regex = new RegExp('^((?:' + getMeta('settings.GRAMMAR_ARTICLES') + String.raw`)\s)`, 'i');
+                return latinize((metaToBool('settings.SORT_ARTICLE') ? name : name.replace(regex, '')).toLowerCase().normalize('NFC'));
+            },
+            network(itemElement) {
+                const network = $(itemElement).attr('data-network') || '';
+                return latinize(network.toLowerCase().normalize('NFC'));
+            },
+            date(itemElement) {
+                const date = $(itemElement).attr('data-date') || '';
+                return (date.length > 0 && Number.parseInt(date, 10)) || Infinity;
+            },
+            progress(itemElement) {
+                const progress = $(itemElement).attr('data-progress') || '';
+                return (progress.length > 0 && Number.parseFloat(progress)) || 0;
+            },
+            total(itemElement) {
+                const totalEps = $(itemElement).attr('data-progress-total') || '';
+                return (totalEps.length > 0 && Number.parseInt(totalEps, 10)) || 0;
+            },
+            status: '[data-status]',
+        };
 
-            // When posters are small enough to not display the .show-details
-            // table, display a larger poster when hovering.
-            $('.show-container').on('mouseenter', function () {
+        const posterMasonry = {
+            layoutMode: 'masonry',
+            masonry: {
+                isFitWidth: true,
+                horizontalOrder: true,
+            },
+        };
+
+        $('.loading-spinner').hide();
+        $('.show-grid').show().isotope({
+            itemSelector: '.show-container',
+            sortBy: posterSortCriteria(getMeta('settings.POSTER_SORTBY')),
+            sortAscending: getMeta('settings.POSTER_SORTDIR'),
+            ...posterMasonry,
+            getSortData: posterSortData,
+        });
+        bindMasonryImageLayout($('.show-grid'));
+
+        // When posters are small enough to not display the .show-details
+        // table, display a larger poster when hovering.
+        $('.show-container').on('mouseenter', function () {
+            if (posterPopupDisabled) {
+                return;
+            }
+
+            const poster = $(this);
+            const details = poster.find('.show-network-image');
+            if (details[0].style.cssText !== 'width: 0px;') {
+                return;
+            }
+
+            posterHoverTimer = setTimeout(() => {
+                posterHoverTimer = null;
                 if (posterPopupDisabled) {
                     return;
                 }
 
-                const poster = $(this);
-                const details = poster.find('.show-network-image');
-                if (details[0].style.cssText !== 'width: 0px;') {
-                    return;
-                }
+                $('#posterPopup').remove();
 
-                posterHoverTimer = setTimeout(() => {
-                    posterHoverTimer = null;
-                    if (posterPopupDisabled) {
-                        return;
-                    }
+                const popup = poster.clone().attr({
+                    id: 'posterPopup',
+                });
+                const origLeft = poster.offset().left;
+                const origWidth = poster.width();
+                const origHeight = poster.height();
+                const origTop = poster.offset().top;
+                popup.css({
+                    position: 'absolute',
+                    margin: 0,
+                    top: origTop,
+                    left: origLeft,
+                    zIndex: 9999,
+                });
 
-                    $('#posterPopup').remove();
-
-                    const popup = poster.clone().attr({
-                        id: 'posterPopup',
-                    });
-                    const origLeft = poster.offset().left;
-                    const origWidth = poster.width();
-                    const origHeight = poster.height();
-                    const origTop = poster.offset().top;
-                    popup.css({
-                        position: 'absolute',
-                        margin: 0,
+                popup.find('.show-details').show();
+                popup.on('mouseleave', function () {
+                    $(this).animate({
+                        height: origHeight + 8,
+                        width: origWidth + 8,
                         top: origTop,
                         left: origLeft,
-                        zIndex: 9999,
                     });
+                });
+                popup.appendTo('body');
 
-                    popup.find('.show-details').show();
-                    popup.on('mouseleave', function () {
-                        $(this).animate({
-                            height: origHeight + 8,
-                            width: origWidth + 8,
-                            top: origTop,
-                            left: origLeft,
-                        });
-                    });
-                    popup.appendTo('body');
+                const height = 438;
+                const width = 250;
+                let newTop = (origTop + (poster.height() / 2)) - (height / 2);
+                let newLeft = (origLeft + (poster.width() / 2)) - (width / 2);
 
-                    const height = 438;
-                    const width = 250;
-                    let newTop = (origTop + (poster.height() / 2)) - (height / 2);
-                    let newLeft = (origLeft + (poster.width() / 2)) - (width / 2);
-
-                    // Make sure the popup isn't outside the viewport
-                    const margin = 5;
-                    const scrollTop = $(window).scrollTop();
-                    const scrollLeft = $(window).scrollLeft();
-                    const scrollBottom = scrollTop + $(window).innerHeight();
-                    const scrollRight = scrollLeft + $(window).innerWidth();
-                    if (newTop < scrollTop + margin) {
-                        newTop = scrollTop + margin;
-                    }
-
-                    if (newLeft < scrollLeft + margin) {
-                        newLeft = scrollLeft + margin;
-                    }
-
-                    if (newTop + height + margin > scrollBottom) {
-                        newTop = scrollBottom - height - margin;
-                    }
-
-                    if (newLeft + width + margin > scrollRight) {
-                        newLeft = scrollRight - width - margin;
-                    }
-
-                    popup.animate({
-                        top: newTop,
-                        left: newLeft,
-                        width: 250,
-                        height: 438,
-                    });
-                }, 300);
-            }).on('mouseleave', () => {
-                if (posterHoverTimer !== null) {
-                    clearTimeout(posterHoverTimer);
+                // Make sure the popup isn't outside the viewport
+                const margin = 5;
+                const scrollTop = $(window).scrollTop();
+                const scrollLeft = $(window).scrollLeft();
+                const scrollBottom = scrollTop + $(window).innerHeight();
+                const scrollRight = scrollLeft + $(window).innerWidth();
+                if (newTop < scrollTop + margin) {
+                    newTop = scrollTop + margin;
                 }
-            });
-        }
+
+                if (newLeft < scrollLeft + margin) {
+                    newLeft = scrollLeft + margin;
+                }
+
+                if (newTop + height + margin > scrollBottom) {
+                    newTop = scrollBottom - height - margin;
+                }
+
+                if (newLeft + width + margin > scrollRight) {
+                    newLeft = scrollRight - width - margin;
+                }
+
+                popup.animate({
+                    top: newTop,
+                    left: newLeft,
+                    width: 250,
+                    height: 438,
+                });
+            }, 300);
+        }).on('mouseleave', () => {
+            if (posterHoverTimer !== null) {
+                clearTimeout(posterHoverTimer);
+            }
+        });
 
         $('#layout').on('change', function () {
             window.location.assign($(this).find('option:selected').val());
         });
 
         $('#postersort').on('change', function () {
-            let sort;
-            switch ($(this).val()) {
-                case 'progress': {
-                    sort = ['progress', 'total', 'name'];
-                    break;
-                }
-
-                case 'date': {
-                    sort = ['date', 'status', 'name'];
-                    break;
-                }
-
-                case 'status': {
-                    sort = ['status', 'progress', 'name'];
-                    break;
-                }
-
-                default: {
-                    sort = getMeta('settings.POSTER_SORTBY');
-                    break;
-                }
-            }
-
             $('.show-grid').isotope({
-                layoutMode: 'masonry',
-                masonry: {
-                    isFitWidth: true,
-                    horizontalOrder: true,
-                },
-                sortBy: sort,
-                getSortData: {
-                    name(itemElement) {
-                        const name = $(itemElement).attr('data-name') || '';
-                        const regex = new RegExp('^((?:' + getMeta('settings.GRAMMAR_ARTICLES') + String.raw`)\s)`, 'i');
-                        return latinize((metaToBool('settings.SORT_ARTICLE') ? name : name.replace(regex, '')).toLowerCase().normalize('NFC'));
-                    },
-                    network: '[data-network]',
-                    date(itemElement) {
-                        const date = $(itemElement).attr('data-date');
-                        return (date.length > 0 && Number.parseInt(date, 10)) || Infinity;
-                    },
-                    progress(itemElement) {
-                        const progress = $(itemElement).attr('data-progress');
-                        return (progress.length > 0 && Number.parseFloat(progress)) || 0;
-                    },
-                    total(itemElement) {
-                        const totalEps = $(itemElement).attr('data-progress-total');
-                        return (totalEps.length > 0 && Number.parseInt(totalEps, 10)) || 0;
-                    },
-                    status: '[data-status]',
-                },
+                ...posterMasonry,
+                sortBy: posterSortCriteria($(this).val()),
             });
             $.post($(this).find('option:selected').data('sort'));
         });
 
         $('#postersortdirection').on('change', function () {
             $('.show-grid').isotope({
-                layoutMode: 'masonry',
-                masonry: {
-                    isFitWidth: true,
-                    horizontalOrder: true,
-                },
+                ...posterMasonry,
                 sortAscending: ($(this).val() === 'true'),
-                getSortData: {
-                    name(itemElement) {
-                        const name = $(itemElement).attr('data-name') || '';
-                        const regex = new RegExp('^((?:' + getMeta('settings.GRAMMAR_ARTICLES') + String.raw`)\s)`, 'i');
-                        return latinize((metaToBool('settings.SORT_ARTICLE') ? name : name.replace(regex, '')).toLowerCase().normalize('NFC'));
-                    },
-                    network: '[data-network]',
-                    date(itemElement) {
-                        const date = $(itemElement).attr('data-date');
-                        return (date.length > 0 && Number.parseInt(date, 10)) || Infinity;
-                    },
-                    progress(itemElement) {
-                        const progress = $(itemElement).attr('data-progress');
-                        return (progress.length > 0 && Number.parseFloat(progress)) || 0;
-                    },
-                    total(itemElement) {
-                        const totalEps = $(itemElement).attr('data-progress-total');
-                        return (totalEps.length > 0 && Number.parseInt(totalEps, 10)) || 0;
-                    },
-                    status: '[data-status]',
-                },
             });
             $.post($(this).find('option:selected').data('sort'));
         });

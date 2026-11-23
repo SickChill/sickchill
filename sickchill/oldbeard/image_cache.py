@@ -153,7 +153,7 @@ class ImageCache(object):
 
         width, height = imagesize.get(path)
 
-        if not (width and height):
+        if width <= 0 or height <= 0:
             logger.debug(f"Unable to get metadata from {path}, not using your existing image")
             return None
 
@@ -280,20 +280,17 @@ class ImageCache(object):
             return False
 
         # retrieve the image from indexer using the generic metadata class
-        # TODO: refactor
         img_data = getShowImage(img_url)
         result = metadata_generator._write_image(img_data, dest_path)
 
         return result
 
-    def fill_cache(self, show_obj, from_indexer=True):
+    def fill_cache(self, show_obj):
         """
         Caches all images for the given show. Copies them from the show dir if possible, or
         downloads them from indexer if they aren't in the show dir.
 
         :param show_obj: TVShow object to cache images for
-        :param from_indexer: When False, only copy from the show dir into the web cache —
-            do not download poster/banner/fanart from TVDB (used on refresh/update; add uses True).
         """
 
         logger.debug(f"Checking if we need any cache images for show {show_obj.indexerid}")
@@ -346,15 +343,9 @@ class ImageCache(object):
                 logger.debug("[{}] Unable to search for images in show dir because it doesn't exist".format(show_obj.indexerid))
 
         # download from indexer for missing ones (add-time / explicit only)
-        if from_indexer:
-            for cur_image_type in need_images:
-                logger.debug("[{}] Seeing if we still need a {}: {}".format(show_obj.indexerid, self.image_str[cur_image_type], need_images[cur_image_type]))
-                if need_images.get(cur_image_type):
-                    self._cache_image_from_indexer(show_obj, cur_image_type)
-        elif any(need_images.values()):
-            missing = [self.image_str[t] for t, needed in need_images.items() if needed]
-            logger.debug(
-                f"[{show_obj.indexerid}] Skipping indexer artwork download for missing cache image(s): {', '.join(missing)} (use edit show / add-time populate)"
-            )
+        for cur_image_type in need_images:
+            logger.debug("[{}] Seeing if we still need a {}: {}".format(show_obj.indexerid, self.image_str[cur_image_type], need_images[cur_image_type]))
+            if need_images.get(cur_image_type):
+                self._cache_image_from_indexer(show_obj, cur_image_type)
 
         logger.info("Done cache check")

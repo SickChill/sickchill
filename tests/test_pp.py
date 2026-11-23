@@ -4,7 +4,9 @@ Test post processing
 
 import os.path
 import shutil
+import tempfile
 import unittest
+from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 from sickchill import settings
@@ -12,7 +14,7 @@ from sickchill.helper.exceptions import EpisodeNotFoundException, EpisodePostPro
 from sickchill.oldbeard import processTV
 from sickchill.oldbeard.helpers import make_dirs
 from sickchill.oldbeard.name_cache import add_name
-from sickchill.oldbeard.postProcessor import PostProcessor
+from sickchill.oldbeard.postProcessor import METHOD_COPY, METHOD_HARDLINK, METHOD_MOVE, METHOD_SYMLINK, METHOD_SYMLINK_REVERSED, PostProcessor
 from sickchill.tv import TVEpisode, TVShow
 from tests import conftest
 
@@ -187,6 +189,69 @@ class ListAssociatedFiles(unittest.TestCase):
         )
 
         assert associated_files == out_list
+
+
+class SourcePreservingAssociatedFiles(unittest.TestCase):
+    """Copy/hardlink/symlink_reversed must not delete source associated files such as .nfo."""
+
+    def setUp(self):
+        self.tmpdir = tempfile.mkdtemp()
+        self.addCleanup(shutil.rmtree, self.tmpdir, ignore_errors=True)
+        self.src_dir = Path(self.tmpdir) / "src"
+        self.dest_dir = Path(self.tmpdir) / "dest"
+        self.src_dir.mkdir()
+        self.dest_dir.mkdir()
+        self.video = self.src_dir / "Show.S01E01.mkv"
+        self.nfo = self.src_dir / "Show.S01E01.nfo"
+        self.video.write_bytes(b"video")
+        self.nfo.write_text("nfo")
+
+        self._move_associated = settings.MOVE_ASSOCIATED_FILES
+        self._delete_non = settings.DELETE_NON_ASSOCIATED_FILES
+        self._allowed = settings.ALLOWED_EXTENSIONS
+        self.addCleanup(self._restore_settings)
+        settings.DELETE_NON_ASSOCIATED_FILES = True
+        settings.MOVE_ASSOCIATED_FILES = False
+        settings.ALLOWED_EXTENSIONS = "srt,ass,ssa,nfo,srr,sfv"
+
+    def _restore_settings(self):
+        settings.MOVE_ASSOCIATED_FILES = self._move_associated
+        settings.DELETE_NON_ASSOCIATED_FILES = self._delete_non
+        settings.ALLOWED_EXTENSIONS = self._allowed
+
+    def _process(self, method):
+        processor = PostProcessor(str(self.video), process_method=method)
+        with patch("sickchill.oldbeard.helpers.chmodAsParent"):
+            if method == METHOD_COPY:
+                processor._copy(str(self.video), str(self.dest_dir), None, associated_files=True)
+            elif method == METHOD_HARDLINK:
+                processor._hardlink(str(self.video), str(self.dest_dir), None, associated_files=True)
+            elif method == METHOD_SYMLINK_REVERSED:
+                processor._symlink(str(self.video), str(self.dest_dir), None, associated_files=True)
+            elif method == METHOD_MOVE:
+                processor._move(str(self.video), str(self.dest_dir), None, associated_files=True)
+            elif method == METHOD_SYMLINK:
+                processor._move_and_symlink(str(self.video), str(self.dest_dir), None, associated_files=True)
+
+    def test_copy_keeps_source_nfo(self):
+        self._process(METHOD_COPY)
+        self.assertTrue(self.nfo.is_file())
+        self.assertTrue(self.video.is_file())
+
+    def test_hardlink_keeps_source_nfo(self):
+        self._process(METHOD_HARDLINK)
+        self.assertTrue(self.nfo.is_file())
+        self.assertTrue(self.video.is_file())
+
+    def test_symlink_reversed_keeps_source_nfo(self):
+        self._process(METHOD_SYMLINK_REVERSED)
+        self.assertTrue(self.nfo.is_file())
+        self.assertTrue(self.video.is_file())
+
+    def test_move_still_deletes_disallowed_source_nfo_when_not_moving_associated(self):
+        settings.MOVE_ASSOCIATED_FILES = False
+        self._process(METHOD_MOVE)
+        self.assertFalse(self.nfo.exists())
 
 
 if __name__ == "__main__":

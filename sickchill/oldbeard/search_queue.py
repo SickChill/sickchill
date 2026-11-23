@@ -25,6 +25,7 @@ class SearchQueue(generic_queue.GenericQueue):
     def __init__(self):
         super().__init__()
         self.queue_name = "SEARCHQUEUE"
+        self.watch_stuck_items = True
 
     def is_in_queue(self, show, segment):
         for cur_item in self.queue:
@@ -129,7 +130,7 @@ class SearchQueue(generic_queue.GenericQueue):
         return False
 
     def queue_length(self):
-        length = {"backlog": 0, "daily": 0, "manual": 0, "failed": 0, "subtitle": 0, "proper": 0}
+        length = {"backlog": 0, "daily": 0, "manual": 0, "failed": 0, "subtitle": 0, "proper": 0, "connectivity": 0}
         for cur_item in self.queue + [self.currentItem]:
             if isinstance(cur_item, DailySearchQueueItem):
                 length["daily"] += 1
@@ -143,11 +144,24 @@ class SearchQueue(generic_queue.GenericQueue):
                 length["failed"] += 1
             elif isinstance(cur_item, SubtitleEpisodeQueueItem):
                 length["subtitle"] += 1
+            elif self._is_connectivity_item(cur_item):
+                length["connectivity"] += 1
         return length
+
+    def stuck_threshold(self, item):
+        if isinstance(item, (ManualSearchQueueItem, FailedQueueItem, SubtitleEpisodeQueueItem)):
+            return int(getattr(settings, "CONNECTIVITY_STUCK_MANUAL", 600) or 600)
+        if isinstance(item, DailySearchQueueItem):
+            return int(getattr(settings, "CONNECTIVITY_STUCK_DAILY", 1800) or 1800)
+        if isinstance(item, (BacklogQueueItem, MovieQueueItem)):
+            return int(getattr(settings, "CONNECTIVITY_STUCK_BACKLOG", 3600) or 3600)
+        return super().stuck_threshold(item)
 
     def add_item(self, item, front=False):
         should_add = False
-        if isinstance(item, DailySearchQueueItem):
+        if self._is_connectivity_item(item):
+            should_add = not self._queued_connectivity_check()
+        elif isinstance(item, DailySearchQueueItem):
             # daily searches
             should_add = True
         elif isinstance(item, ProperSearchQueueItem):
@@ -194,10 +208,19 @@ class DailySearchQueueItem(generic_queue.QueueItem):
             if not found_results:
                 logger.info("No needed episodes found")
             else:
+                covered_episodes = set()
+                seen_urls = set()
                 for result in found_results:
-                    # just use the first result for now
+                    if result.url and result.url in seen_urls:
+                        continue
+                    if result.episodes and all(episode in covered_episodes for episode in result.episodes):
+                        continue
+                    if result.url:
+                        seen_urls.add(result.url)
                     logger.info(f"Downloading {result.name} from {result.provider.name}")
-                    self.success = search.snatch_episode(result)
+                    if search.snatch_episode(result):
+                        covered_episodes.update(result.episodes)
+                        self.success = True
 
                     # give the CPU a break
                     time.sleep(common.cpu_presets[settings.CPU_PRESET])
@@ -254,12 +277,20 @@ class ManualSearchQueueItem(generic_queue.QueueItem):
             search_result = search.search_providers(self.show, [self.segment], True, self.downCurQuality)
 
             if search_result:
-                # just use the first result for now
-                logger.info(f"Downloading {search_result[0].name} from {search_result[0].provider.name}")
-                self.success = search.snatch_episode(search_result[0])
+                candidates = [search_result[0]] + [item for item in getattr(search_result[0], "alternatives", []) or [] if item is not search_result[0]]
+                seen_urls = set()
+                for result in candidates:
+                    if result.url and result.url in seen_urls:
+                        continue
+                    if result.url:
+                        seen_urls.add(result.url)
+                    logger.info(f"Downloading {result.name} from {result.provider.name}")
+                    self.success = search.snatch_episode(result)
 
-                # give the CPU a break
-                time.sleep(common.cpu_presets[settings.CPU_PRESET])
+                    # give the CPU a break
+                    time.sleep(common.cpu_presets[settings.CPU_PRESET])
+                    if self.success:
+                        break
 
             else:
                 ui.notifications.message("No downloads were found", "Couldn't find a download for <i>{0}</i>".format(self.segment.pretty_name))

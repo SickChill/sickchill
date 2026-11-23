@@ -62,6 +62,7 @@ import ssl
 import unittest
 from pathlib import Path
 from shutil import rmtree
+from unittest.mock import MagicMock
 
 from sickchill import settings
 from sickchill.oldbeard import helpers
@@ -620,6 +621,115 @@ class HelpersMiscTests(unittest.TestCase):
             with self.subTest(case=case):
                 self.assertEqual(helpers.sanitizeSceneName(case["name"], anime=case["anime"]), case["expected"])
 
+    def test_scene_title_matches_show_requires_full_name(self):
+        self.assertTrue(helpers.scene_title_matches_show("Pierre.S01E01.1080p.HEVC.x265-MeGusta", "Pierre"))
+        self.assertTrue(helpers.scene_title_matches_show("Pierre S01E01 1080p WEB H264-SYLiX", "Pierre"))
+        self.assertFalse(helpers.scene_title_matches_show("Saint-Pierre.S01E08.REPACK.1080p.HEVC.x265-MeGusta", "Pierre"))
+        self.assertTrue(helpers.scene_title_matches_show("Spider-Man.S01E01.720p", "Spider-Man"))
+        self.assertTrue(helpers.scene_title_matches_show("NCIS.S01E01.PROPER.720p", "NCIS"))
+        self.assertFalse(helpers.scene_title_matches_show("NCIS.Los.Angeles.S01E01.REPACK.720p", "NCIS"))
+        self.assertTrue(helpers.scene_title_matches_show("NCIS.Los.Angeles.S01E01.REPACK.720p", "NCIS Los Angeles"))
+        self.assertFalse(helpers.scene_title_matches_show("NCIS.Los.S01E01.REPACK.720p", "NCIS Los Angeles"))
+        self.assertFalse(helpers.scene_title_matches_show("Doctor.Who.2005.PROPER.720p", "Doctor Who"))
+        self.assertTrue(helpers.scene_title_matches_show("Doctor.Who.2005.S01E01.PROPER.720p", "Doctor Who"))
+        self.assertTrue(helpers.scene_title_matches_show("The.Daily.Show.2024.10.13.REPACK", "The Daily Show"))
+        self.assertFalse(helpers.scene_title_matches_show("The.Daily.Show.2024.REPACK", "The Daily Show"))
+
+    def test_split_release_fingerprint_president_curtis(self):
+        original = "President.Curtis.S01E08.1080p.10bit.WEBRip.6CH.x265.HEVC-PSA"
+        fingerprint = helpers.split_release_fingerprint(original)
+        self.assertIsNotNone(fingerprint)
+        self.assertEqual(fingerprint.quality_token.lower(), "1080p")
+        self.assertEqual(fingerprint.episode_tag, "S01E08")
+        self.assertEqual(fingerprint.season, 1)
+        self.assertEqual(fingerprint.episode, 8)
+        self.assertEqual(fingerprint.remainder, ("10bit", "webrip", "6ch", "x265", "hevc", "psa"))
+        self.assertEqual(fingerprint.title, "president.curtis")
+
+        from_path = helpers.split_release_fingerprint("/tv/President.Curtis.S01E08.1080p.10bit.WEBRip.6CH.x265.HEVC-PSA.mkv")
+        self.assertEqual(from_path.remainder, fingerprint.remainder)
+        self.assertEqual(from_path.quality_token.lower(), "1080p")
+
+        hdtv = helpers.split_release_fingerprint("President.Curtis.S01E08.HDTV.x264-GROUP")
+        self.assertEqual(hdtv.quality_token, "")
+        self.assertEqual(hdtv.remainder, ("hdtv", "x264", "group"))
+
+    def test_release_matches_fingerprint_quality_and_remainder(self):
+        original = "President.Curtis.S01E08.1080p.10bit.WEBRip.6CH.x265.HEVC-PSA"
+        fingerprint = helpers.split_release_fingerprint(original)
+        self.assertTrue(
+            helpers.release_matches_fingerprint(
+                "President.Curtis.S01E08.PROPER.1080p.10bit.WEBRip.6CH.x265.HEVC-PSA",
+                fingerprint,
+            )
+        )
+        self.assertTrue(
+            helpers.release_matches_fingerprint(
+                "President.Curtis.S01E08.REPACK.1080p.10bit.WEBRip.6CH.x265.HEVC-PSA",
+                fingerprint,
+            )
+        )
+        self.assertFalse(
+            helpers.release_matches_fingerprint(
+                "President.Curtis.S01E08.PROPER.720p.10bit.WEBRip.6CH.x265.HEVC-PSA",
+                fingerprint,
+            )
+        )
+        self.assertFalse(
+            helpers.release_matches_fingerprint(
+                "President.Curtis.S01E08.PROPER.1080p.10bit.WEBRip.6CH.x265.HEVC-NTb",
+                fingerprint,
+            )
+        )
+        self.assertFalse(
+            helpers.release_matches_fingerprint(
+                "President.Curtis.S01E08.1080p.10bit.WEBRip.6CH.x265.HEVC-PSA",
+                fingerprint,
+            )
+        )
+        self.assertFalse(
+            helpers.release_matches_fingerprint(
+                "Saint-Pierre.S01E08.REPACK.1080p.10bit.WEBRip.6CH.x265.HEVC-PSA",
+                fingerprint,
+            )
+        )
+        self.assertFalse(
+            helpers.release_matches_fingerprint(
+                "President.Curtis.S01E07.PROPER.1080p.10bit.WEBRip.6CH.x265.HEVC-PSA",
+                fingerprint,
+            )
+        )
+        self.assertTrue(
+            helpers.release_matches_fingerprint(
+                "President.Curtis.S01.PROPER.1080p.10bit.WEBRip.6CH.x265.HEVC-PSA",
+                fingerprint,
+                require_episode=False,
+            )
+        )
+
+        original_720p = "President.Curtis.S01E08.720p.10bit.WEBRip.6CH.x265.HEVC-PSA"
+        fingerprint_720p = helpers.split_release_fingerprint(original_720p)
+        self.assertEqual(fingerprint_720p.quality_token.lower(), "720p")
+        self.assertTrue(
+            helpers.release_matches_fingerprint(
+                "President.Curtis.S01E08.PROPER.720p.10bit.WEBRip.6CH.x265.HEVC-PSA",
+                fingerprint_720p,
+            )
+        )
+        self.assertFalse(
+            helpers.release_matches_fingerprint(
+                "President.Curtis.S01E08.PROPER.1080p.10bit.WEBRip.6CH.x265.HEVC-PSA",
+                fingerprint_720p,
+            )
+        )
+
+    def test_release_matches_fingerprint_uses_anime_quality_path(self):
+        original = "Naruto.S01E01.1080p.WEBRip.x265-SubsPlease"
+        proper = "Naruto.S01E01.PROPER.1080p.WEBRip.x265-SubsPlease"
+        fingerprint = helpers.split_release_fingerprint(original, anime=True)
+        self.assertTrue(helpers.release_matches_fingerprint(proper, fingerprint, anime=True))
+        self.assertFalse(helpers.release_matches_fingerprint(proper, fingerprint, anime=False))
+
     def test_full_sanitize_scene_name(self):
         cases = [
             {"name": "Name, with: bad (chars)!", "expected": "name with bad chars"},
@@ -665,6 +775,46 @@ class HelpersMiscTests(unittest.TestCase):
         """
 
 
+class JsonLoadTests(unittest.TestCase):
+    def _response(self, body):
+        response = MagicMock()
+        response.status_code = 200
+        response.is_redirect = False
+        response.text = body
+        session = MagicMock()
+        session.request.return_value = response
+        return session
+
+    def test_valid_json_is_unchanged(self):
+        session = self._response('{"name": "Show.S01E01"}')
+
+        parsed = helpers.getURL("http://indexer/list", session=session, returns="json")
+
+        self.assertEqual(parsed, {"name": "Show.S01E01"})
+
+    def test_invalid_apostrophe_escape_is_cleaned(self):
+        session = self._response('{"name": "Georgie and Mandy\\\'s First Marriage"}')
+
+        parsed = helpers.getURL("http://indexer/list", session=session, returns="json")
+
+        self.assertEqual(parsed["name"], "Georgie and Mandy's First Marriage")
+
+    def test_windows_path_backslashes_stay_while_apostrophe_escape_is_cleaned(self):
+        session = self._response('{"path": "C:\\\\Shows\\\\TV", "name": "Mandy\\\'s"}')
+
+        parsed = helpers.getURL("http://indexer/list", session=session, returns="json")
+
+        self.assertEqual(parsed["path"], "C:\\Shows\\TV")
+        self.assertEqual(parsed["name"], "Mandy's")
+
+    def test_non_json_still_returns_empty(self):
+        session = self._response("<html>not json</html>")
+
+        parsed = helpers.getURL("http://indexer/list", session=session, returns="json")
+
+        self.assertEqual(parsed, "")
+
+
 if __name__ == "__main__":
     print("==================")
     print("STARTING - Helpers TESTS")
@@ -700,4 +850,7 @@ if __name__ == "__main__":
     unittest.TextTestRunner(verbosity=2).run(SUITE)
 
     SUITE = unittest.TestLoader().loadTestsFromTestCase(HelpersZipTests)
+    unittest.TextTestRunner(verbosity=2).run(SUITE)
+
+    SUITE = unittest.TestLoader().loadTestsFromTestCase(JsonLoadTests)
     unittest.TextTestRunner(verbosity=2).run(SUITE)

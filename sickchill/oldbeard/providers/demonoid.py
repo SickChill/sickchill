@@ -136,7 +136,7 @@ class Provider(TorrentProvider):
             logger.debug(_("No data returned from details page for result"))
             return torrent_hash
 
-        with BS4Parser(details_data, "html5lib") as html:
+        with BS4Parser(details_data, "lxml") as html:
             torrent_hash = html("td", string="Torrent hash:")[0].parent("td")[1].get_text(strip=True).replace(" ", "")
 
         return torrent_hash

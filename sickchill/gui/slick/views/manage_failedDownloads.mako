@@ -72,6 +72,31 @@
                                 </td>
                             </tr>
                         % endfor
+                        % for hItem in deadUrls:
+                            <tr>
+                                <td>
+                                    <% provider = providers.getProviderClass(GenericProvider.make_id(hItem["provider"])) %>
+                                    % if provider is not None:
+                                        <img src="${static_url('images/providers/' + provider.image_name())}" width="16" height="16" alt="${provider.name}" title="${provider.name}" />
+                                    % else:
+                                        <img src="${static_url('images/providers/missing.png')}" width="16" height="16" alt="Missing provider" title="Missing provider" />
+                                    % endif
+                                </td>
+                                <td>
+                                    <span>&nbsp;${(hItem['name'] or hItem['url']) | h}</span>
+                                    % if hItem['name'] and hItem['name'] != hItem['url']:
+                                        <br>
+                                        <span class="text-muted">${hItem['url'] | h}</span>
+                                    % endif
+                                </td>
+                                <td class="text-center">
+                                    <i>${_("Dead link")}</i>
+                                </td>
+                                <td class="text-center">
+                                    <input type="checkbox" class="removeCheck" id="dead-${loop.index}" data-dead-url="${hItem['url'] | h}" aria-label="${_('Remove')}" />
+                                </td>
+                            </tr>
+                        % endfor
                     </tbody>
                     <tfoot>
                         <tr>

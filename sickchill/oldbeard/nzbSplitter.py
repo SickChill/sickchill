@@ -17,7 +17,7 @@ def get_season_nzbs(name, url_data, season):
     :return: dict of (episode files, xml matches)
     """
 
-    # TODO: clean up these regex'es, comment them, and make them all raw strings
+    # TODO: clean up these regex'es and comment them
     regex_string = {
         # Match the xmlns in an nzb
         # Example:  nzbElement.getchildren()[1].tag == '{http://www.newzbin.com/DTD/2003/nzb}file'
@@ -176,9 +176,9 @@ def split_result(obj):
         ep_obj_list = [obj.show.get_episode(season, ep) for ep in parsed_obj.episode_numbers]
 
         # make a result
-        cur_obj = result_classes.NZBDataSearchResult(ep_obj_list)
+        cur_obj = result_classes.NZBDataSearchResult(ep_obj_list, obj.provider, obj.url or "")
         cur_obj.name = new_nzb
-        cur_obj.provider = obj.provider
+        cur_obj.show = obj.show
         cur_obj.quality = obj.quality
         cur_obj.extraInfo = [create_nzb_string(separate_nzbs[new_nzb], xmlns)]
 

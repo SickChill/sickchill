@@ -15,6 +15,10 @@
         return LOCALE_NAMES.get(code, {}).get("name", "Unknown")
 %>
 
+<%block name="scripts">
+    <script type="text/javascript" src="${static_url('js/lib/bootstrap-formhelpers.min.js')}"></script>
+</%block>
+
 <%block name="tabs">
     <li><a href="#misc">${_('Misc')}</a></li>
     <li><a href="#indexer-data">${_('Indexer / Data')}</a></li>

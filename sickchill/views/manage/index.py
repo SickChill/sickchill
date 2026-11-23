@@ -13,6 +13,30 @@ from sickchill.views.home import Home, WebRoot
 from sickchill.views.routes import Route
 
 
+def _select_limited(connection, query, limit):
+    if str(limit) == "0":
+        return connection.select(query)
+    return connection.select(query + " LIMIT ?", [limit])
+
+
+def _failed_download_rows(connection, limit):
+    """Failed release names, then dead download URLs, each clipped by the page limit."""
+    failed_rows = _select_limited(connection, "SELECT * FROM failed", limit)
+    if not connection.has_table("dead_urls"):
+        return failed_rows, []
+    return failed_rows, _select_limited(connection, "SELECT * FROM dead_urls", limit)
+
+
+def _clear_failed_downloads(connection, releases, urls):
+    for release in releases or []:
+        connection.action("DELETE FROM failed WHERE failed.release = ?", [release])
+    if not urls or not connection.has_table("dead_urls"):
+        return
+    for url in urls:
+        if url:
+            connection.action("DELETE FROM dead_urls WHERE url = ?", [url])
+
+
 @Route("/manage(/?.*)", name="manage:main")
 class Manage(Home, WebRoot):
     """
@@ -818,29 +842,26 @@ class Manage(Home, WebRoot):
     def failedDownloads(self):
         """
         Handle failed downloads management.
-        Processes removal of failed downloads and redirects to the failed downloads page.
+        Processes removal of failed downloads and dead links, then redirects to the failed downloads page.
         """
         remove = self.get_body_arguments("remove[]")
+        remove_dead = self.get_body_arguments("removeDead[]")
         # Prefer query limit when present; otherwise body; finally default 100
         limit = self.get_query_argument("limit", default=None) or self.get_body_argument("limit", default="100")
         failed_db_con = db.DBConnection("failed.db")
 
-        if limit == "0":
-            sql_results = failed_db_con.select("SELECT * FROM failed")
-        else:
-            sql_results = failed_db_con.select("SELECT * FROM failed LIMIT ?", [limit])
-
-        for release in remove:
-            failed_db_con.action("DELETE FROM failed WHERE failed.release = ?", [release])
-
-        if remove:
+        if remove or remove_dead:
+            _clear_failed_downloads(failed_db_con, remove, remove_dead)
             return self.redirect("/manage/failedDownloads/")
+
+        failed_results, dead_results = _failed_download_rows(failed_db_con, limit)
 
         t = PageTemplate(rh=self, filename="manage_failedDownloads.mako")
 
         return t.render(
             limit=limit,
-            failedResults=sql_results,
+            failedResults=failed_results,
+            deadUrls=dead_results,
             title=_("Failed Downloads"),
             header=_("Failed Downloads"),
             topmenu="manage",

@@ -102,6 +102,22 @@ function hydrateLazyImages() {
             image.setAttribute('loading', 'lazy');
         }
 
+        // Network logos may not exist in images/network/; hide the broken image and show the name
+        if (image.classList.contains('show-network-image') || image.classList.contains('movie-network-image')) {
+            image.addEventListener('error', () => {
+                image.style.display = 'none';
+                const name = image.getAttribute('alt') || image.getAttribute('title');
+                if (!name || image.nextElementSibling) {
+                    return;
+                }
+
+                const label = document.createElement('span');
+                label.className = 'show-network-name';
+                label.textContent = name;
+                image.after(label);
+            }, {once: true});
+        }
+
         image.setAttribute('src', image.dataset.src);
     }
 }
@@ -134,7 +150,7 @@ function bindMasonryImageLayout($grid) {
     }
 
     const relayout = __.debounce(() => {
-        if ($grid.data('isotope')) {
+        if (typeof $.fn.isotope === 'function' && $grid.data('isotope')) {
             $grid.isotope('layout');
         }
     }, 100);
@@ -232,7 +248,7 @@ SICKCHILL.common = {
         hydrateLazyImages();
         initProgressBars();
 
-        if (metaToBool('settings.SICKCHILL_BACKGROUND')) {
+        if (metaToBool('settings.SICKCHILL_BACKGROUND') && typeof $.backstretch === 'function') {
             $.backstretch(scRoot + '/ui/sickchill_background');
             $('.backstretch').css('opacity', getMeta('settings.FANART_BACKGROUND_OPACITY')).fadeIn('500');
         }

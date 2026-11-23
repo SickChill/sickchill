@@ -1,9 +1,11 @@
+import datetime
 import re
 import traceback
 
 import requests
 
 from sickchill import logger, settings
+from sickchill.oldbeard.scdatetime import format_preset_datetime
 from sickchill.tv import TVEpisode
 
 from .base import Indexer
@@ -330,6 +332,16 @@ class _UpdatesResult:
         # Do not set self.series here — it would shadow the series() method
         # (tvdbsimple only assigns the attribute after series() is called).
 
+    def _from_time_display(self) -> str:
+        try:
+            dt = datetime.datetime(1970, 1, 1, tzinfo=datetime.timezone.utc) + datetime.timedelta(seconds=int(self._from_time or 0))
+            displayed = format_preset_datetime(dt)
+            if getattr(settings, "TIMEZONE_DISPLAY", "local") != "local":
+                return f"{displayed} UTC"
+            return displayed
+        except (OverflowError, OSError, TypeError, ValueError):
+            return str(self._from_time)
+
     def series(self):
         """Collect series IDs from V4 series + episode update streams since from_time."""
         records: list = []
@@ -346,7 +358,7 @@ class _UpdatesResult:
         if failed_types:
             # Distinguish feed failure (partial or total) from a successful empty change list
             self.series = []
-            logger.warning(f"TVDB update feed failed for entity type(s) {', '.join(failed_types)} since {self._from_time}")
+            logger.warning(f"TVDB update feed failed for entity type(s) {', '.join(failed_types)} since {self._from_time_display()}")
             return self.series
 
         ids = set()
@@ -383,7 +395,7 @@ class _UpdatesResult:
                 result.append({"id": series_id})
 
         self.series = result  # attribute used by ShowUpdater after series() returns
-        logger.debug(f"TVDB updates since {self._from_time}: {len(result)} series id(s) changed")
+        logger.debug(f"TVDB updates since {self._from_time_display()}: {len(result)} series id(s) changed")
         return result
 
 

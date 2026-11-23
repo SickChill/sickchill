@@ -192,6 +192,40 @@ class SaveProvidersDeleteTests(unittest.TestCase):
     @patch("sickchill.oldbeard.providers.check_enabled_providers")
     @patch("sickchill.start.save_config")
     @patch("sickchill.oldbeard.ui.notifications")
+    def test_newznab_search_fallback_saves_from_underscore_field(self, _notifications, _save_config, _check):
+        handler = self._handler(
+            {
+                "newznab_string": "KeepMe|https://keep.example/|k1|5030",
+                "torrent_rss_string": "RssKeep|https://rss.example/feed||title",
+                "provider_order": "keepme:0",
+                "keepme_search_mode": "season",
+                "keepme_search_fallback": "on",
+            }
+        )
+        handler.saveProviders()
+        provider = settings.newznab_provider_list[0]
+        self.assertEqual(provider.search_mode, "season")
+        self.assertTrue(provider.search_fallback)
+
+    @patch("sickchill.oldbeard.providers.check_enabled_providers")
+    @patch("sickchill.start.save_config")
+    @patch("sickchill.oldbeard.ui.notifications")
+    def test_newznab_search_fallback_unchecked_stays_off(self, _notifications, _save_config, _check):
+        settings.newznab_provider_list[0].search_fallback = True
+        handler = self._handler(
+            {
+                "newznab_string": "KeepMe|https://keep.example/|k1|5030",
+                "torrent_rss_string": "RssKeep|https://rss.example/feed||title",
+                "provider_order": "keepme:0",
+                "keepme_search_mode": "season",
+            }
+        )
+        handler.saveProviders()
+        self.assertFalse(settings.newznab_provider_list[0].search_fallback)
+
+    @patch("sickchill.oldbeard.providers.check_enabled_providers")
+    @patch("sickchill.start.save_config")
+    @patch("sickchill.oldbeard.ui.notifications")
     def test_delete_custom_prunes_providers_section(self, _notifications, _save_config, _check):
         cfg = ConfigObj()
         cfg.indent_type = "  "

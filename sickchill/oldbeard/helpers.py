@@ -3,6 +3,7 @@ import ctypes
 import datetime
 import hashlib
 import ipaddress
+import json
 import os
 import platform
 import random
@@ -19,7 +20,7 @@ import zipfile
 from contextlib import closing
 from itertools import cycle
 from pathlib import Path
-from typing import Union
+from typing import NamedTuple, Union
 from urllib.parse import urljoin
 from urllib.request import HTTPSHandler
 from xml.etree import ElementTree
@@ -30,16 +31,19 @@ import requests
 import urllib3.exceptions
 from cachecontrol import CacheControl
 from cryptography.hazmat.primitives import serialization
+from guessit import guessit
+from text_unidecode import unidecode
 from tornado._locale_data import LOCALE_NAMES
-from unidecode import unidecode
 from urllib3 import disable_warnings
 
 import sickchill
 from sickchill import adba, logger, settings
 from sickchill.helper import SUBTITLE_EXTENSIONS, episode_num, pretty_file_size
-from sickchill.helper.common import USER_AGENT, is_media_file, replace_extension
+from sickchill.helper.common import USER_AGENT, is_media_file, remove_extension, replace_extension
 from sickchill.oldbeard import db
+from sickchill.oldbeard.common import Quality
 from sickchill.show.Show import Show
+from sickchill.tagger.episode import EpisodeTags
 
 # Add some missing languages
 LOCALE_NAMES.update(
@@ -684,6 +688,134 @@ def sanitizeSceneName(name, anime=False):
     return name
 
 
+def scene_title_matches_show(title, show_name, anime=False, guess=None):
+    """True when guessit series title equals the show name (same path as postProcessor.guessit_findit)."""
+    if not title or not show_name:
+        return False
+    if guess is None:
+        guess = guessit(title, {"type": "episode"})
+    parsed_title = guess.get("title")
+    if isinstance(parsed_title, list):
+        parsed_title = " ".join(str(part) for part in parsed_title)
+    if not parsed_title:
+        return False
+    if sanitizeSceneName(parsed_title, anime=anime).lower() != sanitizeSceneName(show_name, anime=anime).lower():
+        return False
+    return guess.get("season") is not None or guess.get("episode") is not None or guess.get("date") is not None
+
+
+class ReleaseFingerprint(NamedTuple):
+    title: str
+    season: int | None
+    episode: int | None
+    quality_token: str
+    remainder: tuple[str, ...]
+    episode_tag: str
+    original: str
+    quality: int
+    is_proper: bool
+
+
+def _release_tokens(name):
+    return [token for token in re.split(r"[.\s_\-]+", name or "") if token]
+
+
+def _guessit_title(guess):
+    parsed_title = guess.get("title")
+    if isinstance(parsed_title, list):
+        return " ".join(str(part) for part in parsed_title)
+    return parsed_title or ""
+
+
+def _guessit_int(value):
+    if isinstance(value, list):
+        value = value[0] if value else None
+    return None if value is None else int(value)
+
+
+def split_release_fingerprint(name, anime=False, guess=None):
+    """Split a history release using guessit, EpisodeTags, and Quality.nameQuality."""
+    if not name:
+        return None
+    name = str(remove_extension(Path(str(name)).name))
+    if guess is None:
+        guess = guessit(name, {"type": "episode"})
+    title = sanitizeSceneName(_guessit_title(guess), anime=anime).lower()
+    if not title:
+        return None
+
+    quality_token = str(guess.get("screen_size") or "")
+    if not quality_token:
+        quality_token = EpisodeTags(name).res or ""
+    quality = Quality.nameQuality(name, anime=anime, guess=guess)
+    tokens = _release_tokens(name)
+    quality_idx = None
+    if quality_token:
+        for index, token in enumerate(tokens):
+            if token.lower() == quality_token.lower():
+                quality_idx = index
+                break
+
+    season = _guessit_int(guess.get("season"))
+    episode = _guessit_int(guess.get("episode"))
+    if season is not None and episode is not None:
+        # Same SxxExx form as GenericProvider.get_episode_search_strings / naming_ep_type[2]
+        episode_tag = f"S{season:02d}E{episode:02d}"
+    elif guess.get("date"):
+        episode_tag = str(guess.get("date")).replace("-", " ")
+    elif season is not None:
+        episode_tag = f"S{season:02d}"
+    else:
+        episode_tag = ""
+
+    remainder_start = quality_idx + 1 if quality_idx is not None else None
+    if remainder_start is None and episode_tag:
+        tag = episode_tag.lower()
+        for index, token in enumerate(tokens):
+            if token.lower() == tag:
+                remainder_start = index + 1
+                break
+    if remainder_start is None:
+        remainder_start = len(tokens)
+    remainder = tuple(token.lower() for token in tokens[remainder_start:])
+
+    return ReleaseFingerprint(
+        title,
+        season,
+        episode,
+        quality_token,
+        remainder,
+        episode_tag,
+        name,
+        quality,
+        bool(guess.get("proper_count")),
+    )
+
+
+def release_matches_fingerprint(title, fingerprint, require_episode=True, anime=False):
+    """True when title is a proper of the same show/episode, Quality, and remainder."""
+    if not title or fingerprint is None:
+        return False
+    candidate = split_release_fingerprint(title, anime=anime)
+    if candidate is None or not candidate.is_proper or candidate.title != fingerprint.title:
+        return False
+    if fingerprint.quality not in (None, Quality.UNKNOWN) and candidate.quality != fingerprint.quality:
+        return False
+    title_tokens = {token.lower() for token in _release_tokens(title)}
+    if fingerprint.quality_token and fingerprint.quality_token.lower() not in title_tokens:
+        return False
+    if any(token not in title_tokens for token in fingerprint.remainder):
+        return False
+    if fingerprint.season is not None and candidate.season != fingerprint.season:
+        return False
+    if require_episode:
+        if fingerprint.episode is not None and candidate.episode != fingerprint.episode:
+            return False
+        if fingerprint.episode is None and fingerprint.episode_tag and candidate.episode_tag != fingerprint.episode_tag:
+            return False
+    return True
+
+
 def create_https_certificates(ssl_cert, ssl_key):
     """
     Create self-signed HTTPS certificares and store in paths 'ssl_cert' and 'ssl_key'
@@ -930,16 +1062,38 @@ def full_sanitizeSceneName(name):
     return re.sub("[. -]", " ", sanitizeSceneName(name)).lower().strip()
 
 
+def _sanitized_show_labels(show):
+    """Sanitized show and custom names, reused until those strings change."""
+    key = (show.show_name, show.custom_name)
+    if getattr(show, "_sanitized_label_key", None) == key:
+        return show._sanitized_label_values
+    values = []
+    if show.show_name:
+        values.append(full_sanitizeSceneName(show.show_name))
+    if show.custom_name:
+        values.append(full_sanitizeSceneName(show.custom_name))
+    show._sanitized_label_key = key
+    show._sanitized_label_values = values
+    return values
+
+
 def _check_against_names(nameInQuestion, show, season=-1):
-    showNames = []
-    if season in [-1, 1]:
-        showNames = [show.name]
+    """True when nameInQuestion is this show or one of its scene exceptions.
 
-    showNames.extend(sickchill.oldbeard.scene_exceptions.get_scene_exceptions(show.indexerid, season=season))
+    Own names are compared first. Startup naming validation parses a sample
+    episode before cache.db has scene_exceptions, and a missing table is fatal.
+    """
+    if season in (-1, 1):
+        for candidate in (getattr(show, "name", None), getattr(show, "show_name", None), getattr(show, "custom_name", None)):
+            if candidate and full_sanitizeSceneName(candidate) == nameInQuestion:
+                return True
 
-    for showName in showNames:
-        nameFromList = full_sanitizeSceneName(showName)
-        if nameFromList == nameInQuestion:
+    # Shows are loaded after the cache schema exists. Skip the query until then.
+    if not settings.show_list:
+        return False
+
+    for show_name in sickchill.oldbeard.scene_exceptions.get_scene_exceptions(show.indexerid, season=season):
+        if full_sanitizeSceneName(show_name) == nameInQuestion:
             return True
 
     return False
@@ -963,12 +1117,7 @@ def get_show(name, try_indexers=False):
             show_object = Show.find(settings.show_list, int(cache))
         else:
             check_names = [full_sanitizeSceneName(name), name]
-            show_matches = [
-                show
-                for show in settings.show_list
-                if (show.show_name and full_sanitizeSceneName(show.show_name) in check_names)
-                or (show.custom_name and full_sanitizeSceneName(show.custom_name) in check_names)
-            ]
+            show_matches = [show for show in settings.show_list if any(label in check_names for label in _sanitized_show_labels(show))]
 
             if len(show_matches) == 1:
                 show_object = show_matches[0]
@@ -1203,6 +1352,17 @@ def make_session():
     return CacheControl(sess=session, cache_etags=True)
 
 
+def _load_json(text: str, url: str = ""):
+    """Parse JSON. These documents are valid except for ``\\'`` in a name, which becomes an apostrophe."""
+    try:
+        return json.loads(text)
+    except json.JSONDecodeError as error:
+        if "escape" not in error.msg.lower():
+            raise
+    logger.debug(_("Cleaned invalid JSON escapes from {url}").format(url=url))
+    return json.loads(text.replace("\\'", "'"))
+
+
 def request_defaults(kwargs):
     verify = certifi.where() if all([settings.SSL_VERIFY, kwargs.pop("verify", True)]) else False
 
@@ -1233,6 +1393,7 @@ def getURL(
         response_type = kwargs.pop("returns", "text")
         stream = kwargs.pop("stream", False)
         allow_redirects = kwargs.pop("allow_redirects", True)
+        raise_status = kwargs.pop("raise_status", True)
 
         hooks, cookies, verify, proxies = request_defaults(kwargs)
 
@@ -1284,9 +1445,10 @@ def getURL(
         )
         is_redirect = getattr(response, "is_redirect", False) or response.status_code in {301, 302, 303, 307, 308}
         # When callers disable redirects they must inspect 3xx themselves (e.g. SSRF-safe image fetch).
-        if allow_redirects or not is_redirect:
+        # raise_status=False leaves 404 and other HTTP errors on the response for the caller.
+        if raise_status and (allow_redirects or not is_redirect):
             response.raise_for_status()
-        elif response_type not in ("response", None):
+        elif raise_status and response_type not in ("response", None):
             # Do not treat a redirect payload as successful text/json/content (e.g. Jackett with allow_redirects=False).
             logger.debug(_("Ignoring redirect response for {url} because redirects are disabled").format(url=url))
             return ""
@@ -1295,7 +1457,11 @@ def getURL(
         return ""
 
     try:
-        return response if response_type in ("response", None) else response.json() if response_type == "json" else getattr(response, response_type, response)
+        if response_type in ("response", None):
+            return response
+        if response_type == "json":
+            return _load_json(response.text, url)
+        return getattr(response, response_type, response)
     except ValueError:
         logger.debug(_("Requested a json response but response was not json, check the url: {url}").format(url=url))
         return ""
@@ -1424,6 +1590,10 @@ def handle_requests_exception(
 
     def classname(error: Exception) -> str:
         return error.__class__.__name__
+
+    from sickchill.oldbeard.connectivity import maybe_request_connectivity_check
+
+    maybe_request_connectivity_check(requests_exception)
 
     try:
         raise requests_exception
@@ -1745,15 +1915,13 @@ def resolve_imdb_title_id(imdb_id: Union[str, None], client=None) -> str:
     """Normalize an IMDb title id and follow IMDb redirections to the canonical id.
 
     IMDb sometimes keeps duplicate/legacy ids that redirect to a canonical ``tt`` id.
-    ``imdbpie`` refuses those with ``Title not found. … is a redirection imdb id``.
     """
     normalized = normalize_imdb_id(imdb_id)
     if not normalized:
         return ""
 
     try:
-        from imdbpie import Imdb
-        from imdbpie.imdbpie import BASE_URI
+        from sickchill.oldbeard.imdb_api import BASE_URI, Imdb
     except Exception as error:
         logger.debug(f"IMDb redirect resolve unavailable: {error}")
         return normalized

@@ -129,7 +129,7 @@ class Provider(TorrentProvider, tvcache.RSSTorrentMixin):
 
     @classmethod
     def _is_usable_jackett_url(cls, url: str) -> bool:
-        """Like ``invalid_url``, but also accept Docker service names validators.url rejects."""
+        """Like ``invalid_url``, but also accept Docker service names some URL checkers reject."""
         parts = urlsplit((url or "").strip())
         try:
             _ = parts.port

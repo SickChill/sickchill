@@ -2,10 +2,12 @@ import datetime
 import os
 import sys
 import unittest
+from unittest.mock import MagicMock, patch
 
 from sickchill import settings, tv
 from sickchill.oldbeard import common, scheduler, show_queue
 from sickchill.oldbeard.name_parser import parser
+from sickchill.oldbeard.postProcessor import guessit_findit
 from tests import conftest
 
 DEBUG = os.getenv("DEBUG")
@@ -160,6 +162,25 @@ UNICODE_TEST_CASES = [
 
 # noinspection SpellCheckingInspection
 FAILURE_CASES = ["7sins-jfcs01e09-720p-bluray-x264"]
+
+# nameQuality must stay equal to scene_quality for these release shapes.
+QUALITY_CASES = (
+    ("Show.Name.S01E02.720p.HDTV.x264-GROUP", False, common.Quality.HDTV),
+    ("Show.Name.S01E02.1080p.HDTV.x264-GROUP", False, common.Quality.FULLHDTV),
+    ("Show.Name.S01E02.2160p.HDTV.x265-GROUP", False, common.Quality.UHD_4K_TV),
+    ("Show.Name.S01E02.720p.WEB-DL.x264-GROUP", False, common.Quality.HDWEBDL),
+    ("Show.Name.S01E02.1080p.WEB-DL-GROUP", False, common.Quality.FULLHDWEBDL),
+    ("Show.Name.S01E02.2160p.WEB-DL.x265-GROUP", False, common.Quality.UHD_4K_WEBDL),
+    ("Show.Name.S01E02.720p.BluRay.x264-GROUP", False, common.Quality.HDBLURAY),
+    ("Show.Name.S01E02.1080p.BluRay.x264-GROUP", False, common.Quality.FULLHDBLURAY),
+    ("Show.Name.S01E02.2160p.BluRay.x265-GROUP", False, common.Quality.UHD_4K_BLURAY),
+    ("Show.Name.S01E02.720p.HDTV.DD5.1.MPEG2-GROUP", False, common.Quality.RAWHDTV),
+    ("Show.Name.S01E02.1080i.HDTV.DD2.0.MPEG2-GROUP", False, common.Quality.RAWHDTV),
+    ("Show.Name.S01E02.1080i.HDTV.H.264.DD2.0-GROUP", False, common.Quality.RAWHDTV),
+    ("Show.Name.S01E02.PDTV.XViD-GROUP", False, common.Quality.SDTV),
+    ("Show.Name.S01E02.HDTV.x264-GROUP", False, common.Quality.SDTV),
+    ("Show.Name.S01E01.720p.BluRay.x264-GROUP", True, common.Quality.HDBLURAY),
+)
 
 
 class UnicodeTests(conftest.SickChillTestDBCase):
@@ -666,6 +687,162 @@ class SceneMultiEpContiguousTests(unittest.TestCase):
         self.assertEqual(result.episode_numbers, [1, 2, 3])
 
 
+def _guess_show(name, anime=False):
+    show = MagicMock()
+    show.name = name
+    show.show_name = name
+    show.custom_name = ""
+    show.is_anime = anime
+    show.is_scene = False
+    show.indexer = 1
+    show.indexerid = 4242
+    return show
+
+
+class QualityGuessTests(unittest.TestCase):
+    def test_name_quality_matches_scene_quality(self):
+        for name, anime, expected in QUALITY_CASES:
+            with self.subTest(name=name, anime=anime):
+                scene = common.Quality.scene_quality(name, anime)
+                named = common.Quality.nameQuality(name, anime)
+                self.assertEqual(scene, expected, name)
+                self.assertEqual(named, scene, name)
+
+
+class GuessitFinditTests(unittest.TestCase):
+    def test_standard_webdl_skips_regex(self):
+        show = _guess_show("Show Name")
+        with patch("sickchill.oldbeard.postProcessor.helpers.get_show", return_value=show):
+            with patch.object(parser.NameParser, "parse", side_effect=AssertionError("regex sweep")):
+                result = guessit_findit("Show.Name.S01E02.1080p.WEB-DL.mkv")
+
+        self.assertEqual(result.which_regex, ["guessit"])
+        self.assertEqual(result.series_name, "Show Name")
+        self.assertEqual(result.season_number, 1)
+        self.assertEqual(result.episode_numbers, [2])
+        self.assertEqual(result.quality, common.Quality.FULLHDWEBDL)
+        self.assertIs(result.show, show)
+        self.assertIsNone(result.extra_info)
+
+    def test_proper_and_repack_reach_finalize(self):
+        from sickchill.oldbeard.postProcessor import PostProcessor
+
+        show = _guess_show("Show Name")
+        with patch("sickchill.oldbeard.postProcessor.helpers.get_show", return_value=show):
+            with patch.object(parser.NameParser, "parse", side_effect=AssertionError("regex sweep")):
+                proper = guessit_findit("Show.Name.S01E02.PROPER.1080p.WEB-DL.mkv")
+                repack = guessit_findit("Show.Name.S01E02.REPACK.720p.HDTV.x264.mkv")
+
+        for result in (proper, repack):
+            self.assertEqual(result.which_regex, ["guessit"])
+            processor = PostProcessor.__new__(PostProcessor)
+            processor.is_proper = False
+            processor.release_name = None
+            processor._finalize(result)
+            self.assertTrue(processor.is_proper)
+            self.assertRegex(result.extra_info or "", r"(?i)\b(proper|repack|real)\b")
+
+    def test_bare_season_uses_regex(self):
+        show = _guess_show("Show Name")
+        with patch("sickchill.oldbeard.postProcessor.helpers.get_show", return_value=show):
+            with patch("sickchill.oldbeard.name_parser.parser.helpers.get_show", return_value=show):
+                result = guessit_findit("Show.Name.S02.Source.Quality.Etc-Group")
+
+        self.assertNotIn("guessit", result.which_regex)
+        self.assertIn("season_only", result.which_regex)
+        self.assertEqual(result.season_number, 2)
+        self.assertEqual(result.episode_numbers, [])
+        self.assertEqual(result.series_name, "Show Name")
+
+    def test_anime_absolute_uses_regex(self):
+        show = _guess_show("Show Name", anime=True)
+        with patch("sickchill.oldbeard.postProcessor.helpers.get_show", return_value=show):
+            with patch("sickchill.oldbeard.name_parser.parser.helpers.get_show", return_value=show):
+                with patch("sickchill.oldbeard.name_parser.parser.helpers._check_against_names", return_value=True):
+                    with patch(
+                        "sickchill.oldbeard.name_parser.parser.scene_exceptions.get_scene_exception_by_name",
+                        return_value=(show.indexerid, None),
+                    ):
+                        with patch(
+                            "sickchill.oldbeard.name_parser.parser.helpers.get_all_episodes_from_absolute_number",
+                            return_value=(1, [123]),
+                        ):
+                            result = guessit_findit("[SC]_Show_Name_123.mkv")
+
+        self.assertNotIn("guessit", result.which_regex)
+        self.assertTrue(any("anime" in regex_name for regex_name in result.which_regex))
+        self.assertEqual(result.ab_episode_numbers, [123])
+
+
+class AirDateScanTests(unittest.TestCase):
+    def test_sports_event_number_is_not_part_of_the_series_name(self):
+        result = parser.NameParser()._parse_string("UFC.246.2020.01.18.720p.HDTV.x264-GROUP")
+        self.assertEqual(result.which_regex, ["scene_sports_format"])
+        self.assertEqual(result.series_name, "UFC")
+        self.assertEqual(result.air_date, datetime.date(2020, 1, 18))
+
+    def test_plain_air_date_stays_on_scene_date_format(self):
+        result = parser.NameParser()._parse_string("Show.Name.2010.11.23.Source.Quality.Etc-Group")
+        self.assertEqual(result.which_regex, ["scene_date_format"])
+        self.assertEqual(result.series_name, "Show Name")
+        self.assertEqual(result.air_date, datetime.date(2010, 11, 23))
+
+
+class SceneExceptionStartupTests(unittest.TestCase):
+    """Naming samples must not query scene_exceptions before cache.db exists."""
+
+    def test_matching_show_name_skips_scene_exception_table(self):
+        from sickchill.oldbeard import helpers
+        from sickchill.oldbeard.naming import TVShow as SampleShow
+
+        show = SampleShow()
+        show.anime = 1
+        with patch("sickchill.oldbeard.scene_exceptions.get_scene_exceptions", side_effect=AssertionError("scene_exceptions")):
+            self.assertTrue(helpers._check_against_names(helpers.full_sanitizeSceneName(show.name), show))
+
+    def test_unmatched_name_skips_table_before_shows_load(self):
+        from sickchill.oldbeard import helpers
+        from sickchill.oldbeard.naming import TVShow as SampleShow
+
+        show = SampleShow()
+        with patch("sickchill.oldbeard.helpers.settings.show_list", []):
+            with patch("sickchill.oldbeard.scene_exceptions.get_scene_exceptions", side_effect=AssertionError("scene_exceptions")):
+                self.assertFalse(helpers._check_against_names("other name", show))
+
+    def test_unmatched_name_uses_scene_exceptions_after_shows_load(self):
+        from sickchill.oldbeard import helpers
+        from sickchill.oldbeard.naming import TVShow as SampleShow
+
+        show = SampleShow()
+        with patch("sickchill.oldbeard.helpers.settings.show_list", [show]):
+            with patch("sickchill.oldbeard.scene_exceptions.get_scene_exceptions", return_value=["Alternate Title"]) as query:
+                self.assertTrue(helpers._check_against_names(helpers.full_sanitizeSceneName("Alternate Title"), show))
+                query.assert_called_once_with(show.indexerid, season=-1)
+
+    def test_other_season_does_not_match_show_name_alone(self):
+        from sickchill.oldbeard import helpers
+        from sickchill.oldbeard.naming import TVShow as SampleShow
+
+        show = SampleShow()
+        with patch("sickchill.oldbeard.helpers.settings.show_list", [show]):
+            with patch("sickchill.oldbeard.scene_exceptions.get_scene_exceptions", return_value=[]) as query:
+                self.assertFalse(helpers._check_against_names(helpers.full_sanitizeSceneName(show.name), show, season=2))
+                query.assert_called_once_with(show.indexerid, season=2)
+
+    def test_anime_naming_sample_parse_does_not_query_scene_exceptions(self):
+        from sickchill.oldbeard.naming import TVShow as SampleShow
+
+        show = SampleShow()
+        show.anime = 1
+        name = "Show.Name.003.HDTV.XviD-SICKCHILL"
+        with patch("sickchill.oldbeard.helpers.settings.show_list", []):
+            with patch("sickchill.oldbeard.scene_exceptions.get_scene_exceptions", side_effect=AssertionError("scene_exceptions")):
+                result = parser.NameParser(name, show_object=show, naming_pattern=True).parse(name)
+
+        self.assertEqual(result.show, show)
+        self.assertEqual(result.series_name, "Show Name")
+
+
 if __name__ == "__main__":
     if len(sys.argv) > 1:
         SUITE = unittest.TestLoader().loadTestsFromName("name_parser_tests.BasicTests.test_" + sys.argv[1])
@@ -687,4 +864,16 @@ if __name__ == "__main__":
     unittest.TextTestRunner(verbosity=2).run(SUITE)
 
     SUITE = unittest.TestLoader().loadTestsFromTestCase(SceneMultiEpContiguousTests)
+    unittest.TextTestRunner(verbosity=2).run(SUITE)
+
+    SUITE = unittest.TestLoader().loadTestsFromTestCase(QualityGuessTests)
+    unittest.TextTestRunner(verbosity=2).run(SUITE)
+
+    SUITE = unittest.TestLoader().loadTestsFromTestCase(GuessitFinditTests)
+    unittest.TextTestRunner(verbosity=2).run(SUITE)
+
+    SUITE = unittest.TestLoader().loadTestsFromTestCase(SceneExceptionStartupTests)
+    unittest.TextTestRunner(verbosity=2).run(SUITE)
+
+    SUITE = unittest.TestLoader().loadTestsFromTestCase(AirDateScanTests)
     unittest.TextTestRunner(verbosity=2).run(SUITE)

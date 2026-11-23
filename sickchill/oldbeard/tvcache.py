@@ -7,7 +7,7 @@ from urllib.parse import urlparse
 
 from sickchill import logger, settings
 from sickchill.helper.common import convert_size, is_blocked_search_result, try_int, valid_url
-from sickchill.helper.exceptions import AuthException
+from sickchill.helper.exceptions import AuthException, MultipleShowObjectsException
 from sickchill.oldbeard import db, show_name_helpers
 from sickchill.oldbeard.bs4_parser import BS4Parser
 from sickchill.oldbeard.databases import cache
@@ -241,7 +241,7 @@ class TVCache(RSSTorrentMixin):
 
                 if cl:
                     cache_db_con = self.get_db()
-                    cache_db_con.mass_upsert("results", cl)
+                    cache_db_con.mass_upsert("results", cl, replace_same_release=True)
 
         except AuthException as error:
             logger.warning(f"Authentication error: {error}")
@@ -377,8 +377,9 @@ class TVCache(RSSTorrentMixin):
         episodes = parse_result.episode_numbers
 
         if season and episodes:
-            # store episodes as a separated string
-            episode_text = "|" + "|".join({str(episode) for episode in sorted(episodes) if episode}) + "|"
+            # Sort after de-duplicating. Keep episode 0; drop only missing values.
+            present_episodes = sorted(episode for episode in set(episodes) if episode is not None)
+            episode_text = "|" + "|".join(str(episode) for episode in present_episodes) + "|"
 
             # get the current timestamp
             cur_timestamp = int(time.mktime(sc_now().timetuple()))
@@ -416,6 +417,78 @@ class TVCache(RSSTorrentMixin):
         needed_eps = self.find_needed_episodes(episode, manual_search, down_cur_quality)
         return needed_eps.get(episode, [])
 
+    def _cache_query(self, episode_object, filter_quality):
+        """One cache select. Quality is constrained only when the caller asks and wantedQuality has values."""
+        sql = "SELECT * FROM results WHERE provider = ? AND indexerid = ? AND season = ? AND episodes LIKE ?"
+        params = [
+            self.provider_id,
+            episode_object.show.indexerid,
+            episode_object.season,
+            "%|" + str(episode_object.episode) + "|%",
+        ]
+        if filter_quality:
+            qualities = []
+            for quality in episode_object.wantedQuality or []:
+                try:
+                    qualities.append(int(quality))
+                except (TypeError, ValueError):
+                    continue
+            if qualities:
+                sql += " AND quality IN (" + ",".join(str(quality) for quality in qualities) + ")"
+        return [sql, params]
+
+    @staticmethod
+    def _collapse_cache_rows(rows):
+        """Keep the newest stored copy of each release.
+
+        The results table is unique on the download URL. Jackett encrypts a new
+        ``path`` token on every 1337x response, so one release is inserted again
+        on each search. Later reads must see one row, the latest token.
+        """
+
+        def as_int(value):
+            try:
+                return int(value)
+            except (TypeError, ValueError):
+                return value
+
+        def rank(row):
+            stamp = as_int(row["time"])
+            seeders = as_int(row["seeders"])
+            return (stamp if isinstance(stamp, int) else 0, seeders if isinstance(seeders, int) else 0)
+
+        def release_key(row):
+            return (
+                row["provider"],
+                as_int(row["indexerid"]),
+                as_int(row["season"]),
+                row["episodes"] or "",
+                row["name"] or "",
+            )
+
+        chosen = {}
+        for row in rows or []:
+            identity = release_key(row)
+            current = chosen.get(identity)
+            if current is None or rank(row) >= rank(current):
+                chosen[identity] = row
+        return list(chosen.values())
+
+    @staticmethod
+    def _shows_by_indexer():
+        shows_by_id = {}
+        duplicates = set()
+        for show in list(settings.show_list):
+            try:
+                indexer_id = int(show.indexerid)
+            except (TypeError, ValueError):
+                continue
+            previous = shows_by_id.get(indexer_id)
+            if previous is not None and previous is not show:
+                duplicates.add(indexer_id)
+            shows_by_id[indexer_id] = show
+        return shows_by_id, duplicates
+
     def list_propers(self, date=None):
         """Return cached PROPER/REPACK/REAL (etc.) results for this provider only.
 
@@ -440,92 +513,128 @@ class TVCache(RSSTorrentMixin):
             sql += " AND time >= ?"
             params.append(int(time.mktime(date.timetuple())))
 
-        propers_results = cache_db_con.select(sql, params)
+        propers_results = self._collapse_cache_rows(cache_db_con.select(sql, params))
         return [x for x in propers_results if x["indexerid"]]
+
+    @staticmethod
+    def _cached_episode_numbers(episodes_text):
+        """Numbers stored as ``|0|1|2|``. The empty pieces are delimiters; 0 is a real episode."""
+        numbers = []
+        for part in str(episodes_text or "").split("|"):
+            if not part:
+                continue
+            try:
+                number = int(part)
+            except ValueError:
+                continue
+            if number not in numbers:
+                numbers.append(number)
+        return numbers
 
     def find_needed_episodes(self, episode, manual_search=False, down_cur_quality=False):
         needed_eps = {}
-        cl = []
+
+        # An empty list is "nothing to look up". None keeps the full provider scan.
+        if isinstance(episode, list) and not episode:
+            return {}
+
+        if episode is None:
+            requested_episodes = None
+        elif isinstance(episode, list):
+            requested_episodes = {(int(item.show.indexerid), int(item.season), int(item.episode)) for item in episode}
+        else:
+            requested_episodes = {(int(episode.show.indexerid), int(episode.season), int(episode.episode))}
 
         cache_db_con = self.get_db()
-        if not episode:
+        if episode is None:
             sql_results = cache_db_con.select("SELECT * FROM results WHERE provider = ?", [self.provider_id])
-        elif not isinstance(episode, list):
-            sql_results = cache_db_con.select(
-                "SELECT * FROM results WHERE provider = ? AND indexerid = ? AND season = ? AND episodes LIKE ?",
-                [self.provider_id, episode.show.indexerid, episode.season, "%|" + str(episode.episode) + "|%"],
-            )
+        elif isinstance(episode, list):
+            # Manual search may accept the current quality, so leave that filter to want_episode.
+            filter_quality = not manual_search
+            queries = [self._cache_query(episode_object, filter_quality) for episode_object in episode]
+            sql_results = cache_db_con.mass_action(queries, fetchall=True)
+            sql_results = list(itertools.chain.from_iterable(sql_results or []))
         else:
-            for episode_object in episode:
-                cl.append(
-                    [
-                        "SELECT * FROM results WHERE provider = ? AND indexerid = ? AND season = ? AND episodes LIKE ? AND quality IN ("
-                        + ",".join([str(x) for x in episode_object.wantedQuality])
-                        + ")",
-                        [self.provider_id, episode_object.show.indexerid, episode_object.season, "%|" + str(episode_object.episode) + "|%"],
-                    ]
-                )
+            query, params = self._cache_query(episode, False)
+            sql_results = cache_db_con.select(query, params)
 
-            sql_results = cache_db_con.mass_action(cl, fetchall=True)
-            sql_results = list(itertools.chain(*sql_results))
+        # Overlapping episode queries and rotated download URLs both repeat one release.
+        sql_results = self._collapse_cache_rows(sql_results)
 
-        # for each cache entry
+        shows_by_id, duplicate_ids = self._shows_by_indexer()
+        candidates = []
         for cur_result in sql_results:
-            # get the show object, or if it's not one of our shows then ignore it
-            show_obj = Show.find(settings.show_list, int(cur_result["indexerid"]))
+            try:
+                indexer_id = int(cur_result["indexerid"])
+            except (TypeError, ValueError):
+                continue
+            if indexer_id in duplicate_ids:
+                raise MultipleShowObjectsException()
+            show_obj = shows_by_id.get(indexer_id)
             if not show_obj:
                 continue
 
-            # ignored/required words, and non-tv junk
-            if not show_name_helpers.filter_bad_releases(cur_result["name"], show=show_obj):
+            # Names were parsed before they were cached. Ignore and require words still apply.
+            if not show_name_helpers.filter_bad_releases(cur_result["name"], parse=False, show=show_obj):
                 continue
 
-            # skip if provider is anime only and show is not anime
             if self.provider.anime_only and not show_obj.is_anime:
                 logger.debug("" + str(show_obj.name) + " is not an anime, skiping")
                 continue
 
-            # get season and ep data (ignoring multi-eps for now)
             cur_season = int(cur_result["season"])
             if cur_season == -1:
                 continue
 
-            cur_ep = cur_result["episodes"].split("|")[1]
-            if not cur_ep:
+            episode_numbers = self._cached_episode_numbers(cur_result["episodes"])
+            if not episode_numbers:
                 continue
 
-            cur_ep = int(cur_ep)
+            for cur_ep in episode_numbers:
+                if requested_episodes is not None and (indexer_id, cur_season, cur_ep) not in requested_episodes:
+                    continue
+                candidates.append((cur_result, show_obj, cur_season, cur_ep))
 
-            cur_quality = int(cur_result["quality"])
-            cur_release_group = cur_result["release_group"]
-            cur_version = cur_result["version"]
+        by_show = {}
+        for candidate in candidates:
+            by_show.setdefault(candidate[1], []).append(candidate)
 
-            # if the show says we want that episode then add it to the list
-            if not show_obj.want_episode(cur_season, cur_ep, cur_quality, manual_search, down_cur_quality):
-                logger.debug("Ignoring " + cur_result["name"])
-                continue
+        reported_releases = set()
+        for show_obj, show_candidates in by_show.items():
+            statuses = show_obj.load_episode_statuses((season, episode_number) for _, _, season, episode_number in show_candidates)
+            for cur_result, show_obj, cur_season, cur_ep in show_candidates:
+                cur_quality = int(cur_result["quality"])
+                cur_release_group = cur_result["release_group"]
+                cur_version = cur_result["version"]
+                known_status = statuses[(cur_season, cur_ep)]
 
-            episode_object = show_obj.get_episode(cur_season, cur_ep)
+                if not show_obj.want_episode(cur_season, cur_ep, cur_quality, manual_search, down_cur_quality, known_status=known_status):
+                    logger.debug("Ignoring " + cur_result["name"])
+                    continue
 
-            # build a result object
-            title = cur_result["name"]
-            url = cur_result["url"]
+                episode_object = show_obj.get_episode(cur_season, cur_ep)
 
-            logger.info("Found result " + title + " at " + url)
+                # build a result object
+                title = cur_result["name"]
+                url = cur_result["url"]
 
-            result = self.provider.get_result([episode_object], url)
-            result.show = show_obj
-            result.name = title
-            result.quality = cur_quality
-            result.release_group = cur_release_group
-            result.version = cur_version
-            result.content = None
+                if (title, url) not in reported_releases:
+                    logger.info("Found result " + title + " at " + url)
+                    reported_releases.add((title, url))
 
-            # add it to the list
-            if episode_object not in needed_eps:
-                needed_eps[episode_object] = [result]
-            else:
-                needed_eps[episode_object].append(result)
+                result = self.provider.get_result([episode_object], url)
+                result.show = show_obj
+                result.name = title
+                result.quality = cur_quality
+                result.release_group = cur_release_group
+                result.version = cur_version
+                result.content = None
+
+                # add it to the list
+                if episode_object not in needed_eps:
+                    needed_eps[episode_object] = [result]
+                else:
+                    needed_eps[episode_object].append(result)
 
         # datetime stamp this search so cache gets cleared
         self.set_last_search()

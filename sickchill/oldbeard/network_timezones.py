@@ -39,7 +39,7 @@ def update_network_dict():
     url = "https://sickchill.github.io/sc_network_timezones/network_timezones.txt"
     data = helpers.getURL(url, session=helpers.make_session(), returns="text")
     if not data:
-        logger.warning(f"Updating network timezones failed, this can happen from time to time. URL: {url}")
+        logger.warning(f"Updating network timezones failed, this can happen from time to time. Check internet Connectivity. URL: {url}")
         load_network_dict()
         return
 
