@@ -873,15 +873,6 @@ class QueueItemUpdate(ShowQueueItem):
             except Exception as error:
                 logger.warning(f"XEM refresh failed for {self.show.name}: {error}")
 
-        # Pending XEM refresh requested by editShow (scene/anime change) — run off the web thread
-        if getattr(self.show, "_pending_xem_refresh", False):
-            self.show._pending_xem_refresh = False
-            try:
-                logger.info(f"Refreshing XEM scene numbering for {self.show.name}")
-                scene_numbering.xem_refresh(self.show.indexerid, self.show.indexer)
-            except Exception as error:
-                logger.warning(f"XEM refresh failed for {self.show.name}: {error}")
-
         #  save show again, in case episodes have changed
         try:
             self.show.save_to_db()

@@ -285,14 +285,12 @@ class ImageCache(object):
 
         return result
 
-    def fill_cache(self, show_obj, from_indexer=True):
+    def fill_cache(self, show_obj):
         """
         Caches all images for the given show. Copies them from the show dir if possible, or
         downloads them from indexer if they aren't in the show dir.
 
         :param show_obj: TVShow object to cache images for
-        :param from_indexer: When False, only copy from the show dir into the web cache —
-            do not download poster/banner/fanart from TVDB (used on refresh/update; add uses True).
         """
 
         logger.debug(f"Checking if we need any cache images for show {show_obj.indexerid}")
