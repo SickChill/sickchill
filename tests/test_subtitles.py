@@ -115,16 +115,23 @@ class TestGetSubtitlePath(unittest.TestCase):
         result = subliminal.subtitle.get_subtitle_path("/path/to/video.mkv", f".{lang.alpha2}")
         self.assertEqual(result, "/path/to/video.en.srt")
 
-    def test_none_suffix_crashes(self):
-        """Passing None as suffix should raise TypeError (the old bug)."""
-        with self.assertRaises(TypeError):
-            subliminal.subtitle.get_subtitle_path("/path/to/video.mkv", None)
+    def test_none_suffix_is_not_a_usable_path(self):
+        """None is not a valid suffix: 2.6 raises TypeError, 2.7 stringifies to a junk path."""
+        try:
+            result = subliminal.subtitle.get_subtitle_path("/path/to/video.mkv", None)
+        except TypeError:
+            return
+        self.assertNotEqual(result, "/path/to/video.srt")
+        self.assertNotEqual(result, "/path/to/video.en.srt")
 
-    def test_language_object_suffix_crashes(self):
-        """Passing a Language object as suffix should raise TypeError (the old bug)."""
+    def test_language_object_suffix_needs_dot_code(self):
+        """Pass f'.{lang.alpha2}', not a Language object (2.7 concatenates without a dot)."""
         lang = Language("eng")
-        with self.assertRaises(TypeError):
-            subliminal.subtitle.get_subtitle_path("/path/to/video.mkv", lang)
+        try:
+            result = subliminal.subtitle.get_subtitle_path("/path/to/video.mkv", lang)
+        except TypeError:
+            return
+        self.assertNotEqual(result, "/path/to/video.en.srt")
 
 
 class TestRefineVideo(unittest.TestCase):
@@ -217,11 +224,47 @@ class TestForcedSubtitles(unittest.TestCase):
         self.assertFalse(settings.SUBTITLES_FOREIGN_ONLY)
 
     def test_subliminal_supports_foreign_only(self):
-        """subliminal's download_best_subtitles should accept foreign_only parameter."""
+        """2.6 uses foreign_only; 2.7 uses subtitle_categories."""
         import inspect
 
         sig = inspect.signature(subliminal.ProviderPool.download_best_subtitles)
-        self.assertIn("foreign_only", sig.parameters)
+        self.assertTrue("foreign_only" in sig.parameters or "subtitle_categories" in sig.parameters)
+
+    def test_preference_kwargs_match_installed_api(self):
+        from sickchill.oldbeard.subtitles import best_subtitle_preference_kwargs
+
+        original_foreign = settings.SUBTITLES_FOREIGN_ONLY
+        original_hi = settings.SUBTITLES_HEARING_IMPAIRED
+        self.addCleanup(setattr, settings, "SUBTITLES_FOREIGN_ONLY", original_foreign)
+        self.addCleanup(setattr, settings, "SUBTITLES_HEARING_IMPAIRED", original_hi)
+
+        import inspect
+
+        params = inspect.signature(subliminal.ProviderPool.download_best_subtitles).parameters
+        uses_categories = "subtitle_categories" in params
+
+        settings.SUBTITLES_HEARING_IMPAIRED = False
+        settings.SUBTITLES_FOREIGN_ONLY = False
+        empty = best_subtitle_preference_kwargs()
+        if uses_categories:
+            self.assertEqual(empty, {"subtitle_categories": "n,hi,fo"})
+        else:
+            self.assertFalse(empty["hearing_impaired"])
+            self.assertFalse(empty["foreign_only"])
+
+        settings.SUBTITLES_FOREIGN_ONLY = True
+        foreign = best_subtitle_preference_kwargs()
+        if uses_categories:
+            self.assertEqual(foreign, {"subtitle_categories": "fo,n,hi"})
+        else:
+            self.assertTrue(foreign["foreign_only"])
+
+        settings.SUBTITLES_HEARING_IMPAIRED = True
+        both = best_subtitle_preference_kwargs()
+        if uses_categories:
+            self.assertEqual(both, {"subtitle_categories": "hi,n,fo"})
+        else:
+            self.assertTrue(both["hearing_impaired"])
 
     @patch("sickchill.oldbeard.subtitles.subliminal.save_subtitles")
     @patch("sickchill.oldbeard.subtitles.log_scores")
@@ -232,7 +275,7 @@ class TestForcedSubtitles(unittest.TestCase):
     @patch("sickchill.oldbeard.subtitles.get_video")
     @patch("sickchill.oldbeard.subtitles.needs_subtitles", return_value=True)
     def test_download_forwards_foreign_only(self, mock_needs, mock_get_video, mock_pool_cls, mock_enabled, mock_path, mock_langs, mock_log_scores, mock_save):
-        """download_subtitles should pass foreign_only=True to pool.download_best_subtitles."""
+        """download_subtitles should forward foreign-only preference for the installed subliminal API."""
         from sickchill.oldbeard.subtitles import download_subtitles
 
         mock_langs.return_value = {Language("eng")}
@@ -263,10 +306,13 @@ class TestForcedSubtitles(unittest.TestCase):
 
         download_subtitles(episode)
 
-        # Verify foreign_only was passed through
         pool.download_best_subtitles.assert_called_once()
         call_kwargs = pool.download_best_subtitles.call_args[1]
-        self.assertTrue(call_kwargs.get("foreign_only"))
+        if "subtitle_categories" in call_kwargs:
+            self.assertEqual(call_kwargs["subtitle_categories"], "fo,n,hi")
+            self.assertNotIn("foreign_only", call_kwargs)
+        else:
+            self.assertTrue(call_kwargs.get("foreign_only"))
 
 
 class TestSubtitleFileExtensions(unittest.TestCase):
@@ -414,3 +460,46 @@ class TestResolveSavedSubtitlePath(unittest.TestCase):
 
         # Should no-op rather than FileNotFoundError
         chmodAsParent("/tmp/sickchill-missing-subtitle-does-not-exist.en.srt")
+
+
+class TestCustomSubtitleInit(unittest.TestCase):
+    """Custom providers must construct Subtitle with keyword hearing_impaired / subtitle_id."""
+
+    def test_wizdom(self):
+        from sickchill.providers.subtitle.wizdom import WizdomSubtitle
+
+        sub = WizdomSubtitle(Language("heb"), False, "http://x", "Show", 1, 1, "Title", "tt1", "abc", ["GRP"])
+        self.assertEqual(sub.subtitle_id, "abc")
+        self.assertEqual(sub.id, "abc")
+
+    def test_subscenter(self):
+        from sickchill.providers.subtitle.subscenter import SubsCenterSubtitle
+
+        sub = SubsCenterSubtitle(Language("heb"), False, "http://x", "Show", 1, 1, "Title", "abc", "key", "1", 0, ["GRP"])
+        self.assertEqual(sub.subtitle_id, "abc")
+
+    def test_subtitulamos(self):
+        from sickchill.providers.subtitle.subtitulamos import SubtitulamosSubtitle
+
+        sub = SubtitulamosSubtitle(Language("spa"), False, "http://x", "Show", 1, 1, "Title", 2020, "GRP", "http://dl")
+        self.assertEqual(sub.id, "http://dl")
+        self.assertFalse(sub.hearing_impaired)
+
+    def test_tusubtitulo(self):
+        from sickchill.providers.subtitle.tusubtitulo import TuSubtituloSubtitle
+
+        sub = TuSubtituloSubtitle(Language("spa"), True, "http://x", "Show", 1, 1, "Title", 2020, "GRP", "http://dl")
+        self.assertTrue(sub.hearing_impaired)
+
+    def test_bsplayer(self):
+        from sickchill.providers.subtitle.bsplayer import BSPlayerSubtitle
+
+        sub = BSPlayerSubtitle("abc", 1, "http://x", Language("eng"), "file.srt", "web", "hash", 0, 1, 1, "utf-8", "tt1", 0, 2020, "Movie", "mhash", 1, 24)
+        self.assertEqual(sub.subtitle_id, "abc")
+        self.assertEqual(sub.id, "abc")
+
+    def test_itasa(self):
+        from sickchill.providers.subtitle.itasa import ItaSASubtitle
+
+        sub = ItaSASubtitle("abc", "Show", 1, 1, "web", 2020, 1, "data")
+        self.assertEqual(sub.id, "abc")

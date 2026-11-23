@@ -7,6 +7,7 @@
 %>
 
 <%block name="scripts">
+    <script type="text/javascript" src="${static_url('js/lib/jquery.tokeninput.min.js')}"></script>
     <script>
         $(document).ready(function() {
             $("#subtitles_languages").tokenInput([${','.join("{\"id\": \"" + code + "\", name: \"" + subtitles.name_from_code(code) + "\"}" for code in subtitles.subtitle_code_filter())}], {

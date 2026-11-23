@@ -129,6 +129,16 @@ class DBConnection(object):
         except Exception:
             raise
 
+    @staticmethod
+    def _write_succeeded(result) -> bool:
+        """True when a write executed.
+
+        action() returns a cursor after a committed write. An empty list means
+        the retry loop gave up, which is not a successful write. Selects are
+        not checked here: an empty list is a real result for them.
+        """
+        return result is not None and not isinstance(result, list)
+
     def get_db_version(self):
         """
         Fetch major database version
@@ -320,57 +330,171 @@ class DBConnection(object):
 
         return sql_results
 
-    def mass_upsert(self, table_name, query_list, log_transaction=False):
-        # type: (str, List[tuple, list], bool) -> None
+    @staticmethod
+    def _assignment_clause(my_dict, separator):
+        return separator.join(["{} = ?".format(x) for x in my_dict])
+
+    def _upsert_statements(self, table_name, value_dict, key_dict):
+        assert None not in list(key_dict.values()), _("Control dict to upsert cannot have values of None!")
+
+        update = None
+        if key_dict:
+            # language=TEXT
+            query = "UPDATE [{table}] SET {pairs} WHERE {control}".format(
+                table=table_name,
+                pairs=self._assignment_clause(value_dict, ", "),
+                control=self._assignment_clause(key_dict, " AND "),
+            )
+            update = (query, list(value_dict.values()) + list(key_dict.values()))
+
+        keys = list(value_dict) + list(key_dict)
+        # language=TEXT
+        insert_query = "INSERT INTO '{table}' ({columns}) VALUES ({replacements})".format(
+            table=table_name,
+            columns=", ".join(keys),
+            replacements=", ".join(["?"] * len(keys)),
+        )
+        insert = (insert_query, list(value_dict.values()) + list(key_dict.values()))
+        return update, insert
+
+    @staticmethod
+    def _cache_value(row, field):
+        try:
+            return row[field]
+        except (KeyError, IndexError, TypeError):
+            return None
+
+    @classmethod
+    def _release_rank(cls, row):
+        """Same order as ``TVCache._collapse_cache_rows``: newer time, then more seeders."""
+
+        def as_int(value):
+            try:
+                return int(value)
+            except (TypeError, ValueError):
+                return 0
+
+        return as_int(cls._cache_value(row, "time")), as_int(cls._cache_value(row, "seeders"))
+
+    @classmethod
+    def _incoming_release_wins(cls, value_dict, execute):
+        """True when this row should be written.
+
+        A new download URL replaces stored copies only when its (time, seeders) rank is
+        higher. An equal or older row leaves the stored release alone. Rows without a
+        release identity fall through to a normal upsert.
         """
-        Execute multiple queries
+        fields = ("provider", "name", "indexerid", "season", "episodes")
+        if any(value_dict.get(field) is None for field in fields) or value_dict.get("url") is None:
+            return True
+
+        stored = execute(
+            "SELECT time, seeders FROM results WHERE provider = ? AND name = ? AND indexerid = ? AND season = ? AND episodes = ?",
+            [value_dict[field] for field in fields],
+            fetchall=True,
+        )
+        incoming = cls._release_rank(value_dict)
+        return all(incoming > cls._release_rank(row) for row in stored or [])
+
+    @staticmethod
+    def _stale_release_delete(value_dict):
+        """Drop older copies of one cached release so a new download URL replaces them.
+
+        The results table is unique on url. A provider that rotates that URL, such as
+        Jackett's encrypted ``path`` token, would otherwise insert another row.
+        """
+        fields = ("provider", "name", "indexerid", "season", "episodes", "url")
+        if any(value_dict.get(field) is None for field in fields):
+            return None
+        return (
+            "DELETE FROM results WHERE provider = ? AND name = ? AND indexerid = ? AND season = ? AND episodes = ? AND url != ?",
+            [value_dict[field] for field in fields],
+        )
+
+    def _apply_upsert(self, table_name, value_dict, key_dict, execute):
+        """Run UPDATE then INSERT. ``execute`` must not commit; the caller owns the transaction."""
+        update, insert = self._upsert_statements(table_name, value_dict, key_dict)
+        if update:
+            updated = execute(update[0], update[1])
+            if not self._write_succeeded(updated):
+                logger.warning(_("Upsert failed for {table}").format(table=table_name))
+                return False
+            # rowcount is this statement only. total_changes includes every write on the shared connection.
+            if updated.rowcount:
+                return True
+
+        inserted = execute(insert[0], insert[1])
+        if not self._write_succeeded(inserted):
+            logger.warning(_("Upsert failed for {table}").format(table=table_name))
+            return False
+        return True
+
+    def mass_upsert(self, table_name, query_list, log_transaction=False, replace_same_release=False):
+        # type: (str, List[tuple, list], bool, bool) -> bool
+        """
+        Update or insert every row in one transaction.
 
         :param table_name: name of table to upsert
-        :param query_list: list of queries
-        :param log_transaction: Boolean to wrap all in one transaction
-        :return: None
+        :param query_list: list of (value_dict, key_dict) pairs
+        :param log_transaction: Boolean to log each statement at debug
+        :param replace_same_release: For the results cache, delete other URLs of the same release first
+        :return: True when every upsert wrote a row
         """
+        if not query_list:
+            return True
+
         log_level = (logger.DB, logger.DEBUG)[log_transaction]
-        for values, control in query_list:
-            logger.log(log_level, _("{filename}: {query} [{control}]").format(filename=self.filename, query=values, control=control))
-            self.upsert(table_name, values, control)
+        succeeded = True
+        attempt = 0
+
+        with db_locks[self.filename]:
+            self._set_row_factory()
+            while attempt <= self.MAX_ATTEMPTS:
+                succeeded = True
+                try:
+                    for values, control in query_list:
+                        logger.log(log_level, _("{filename}: {query} [{control}]").format(filename=self.filename, query=values, control=control))
+                        if replace_same_release and not self._incoming_release_wins(values, self._execute):
+                            continue
+                        if replace_same_release:
+                            stale = self._stale_release_delete(values)
+                            if stale:
+                                self._execute(stale[0], stale[1])
+                        if not self._apply_upsert(table_name, values, control, self._execute):
+                            succeeded = False
+                    self.connection.commit()
+                    logger.log(log_level, _("Transaction with {count:d} upserts executed successfully").format(count=len(query_list)))
+                    break
+                except (sqlite3.OperationalError, sqlite3.DatabaseError) as error:
+                    succeeded = False
+                    if self.connection:
+                        self.connection.rollback()
+                    severity = (logger.ERROR, logger.WARNING)[self._is_locked_or_denied(error) and attempt < self.MAX_ATTEMPTS]
+                    self._error_log_helper(error, severity, locals(), attempt, "db.mass_upsert")
+                    if severity == logger.ERROR:
+                        raise
+                    time.sleep(1)
+                except Exception as error:
+                    if self.connection:
+                        self.connection.rollback()
+                    self._error_log_helper(error, logger.ERROR, locals(), attempt, "db.mass_upsert")
+                    raise
+
+                attempt += 1
+
+        return succeeded
 
     def upsert(self, table_name, value_dict, key_dict):
         """
         Update values, or if no updates done, insert values
-        TODO: Make this return true/false on success/error
 
         :param table_name: table to update/insert
         :param value_dict: values in table to update/insert
         :param key_dict:  columns in table to update/insert
+        :return: True when this call's update changed a row or its insert executed.
+            False when that write did not run. Fatal database errors still raise.
         """
-
-        changesBefore = self.connection.total_changes
-
-        assert None not in list(key_dict.values()), _("Control dict to upsert cannot have values of None!")
-        if key_dict:
-
-            def make_string(my_dict, separator):
-                return separator.join(["{} = ?".format(x) for x in my_dict])
-
-            # language=TEXT
-            query = "UPDATE [{table}] SET {pairs} WHERE {control}".format(
-                table=table_name, pairs=make_string(value_dict, ", "), control=make_string(key_dict, " AND ")
-            )
-
-            self.action(query, list(value_dict.values()) + list(key_dict.values()))
-
-        if self.connection.total_changes == changesBefore:
-            keys = list(value_dict) + list(key_dict)
-            count = len(keys)
-            columns = ", ".join(keys)
-            replacements = ", ".join(["?"] * count)
-            values = list(value_dict.values()) + list(key_dict.values())
-
-            # language=TEXT
-            query = "INSERT INTO '{table}' ({columns}) VALUES ({replacements})".format(table=table_name, columns=columns, replacements=replacements)
-
-            self.action(query, values)
+        return self._apply_upsert(table_name, value_dict, key_dict, lambda query, args: self.action(query, args))
 
     def table_info(self, table_name):
         """
@@ -416,18 +540,26 @@ class DBConnection(object):
     def add_column(self, table, column, col_type="NUMERIC", default=0):
         """
         Adds a column to a table, default column type is NUMERIC
-        TODO: Make this return true/false on success/failure
 
         :param table: Table to add column too
         :param column: Column name to add
         :param col_type: Column type to add
         :param default: Default value for column
+        :return: True when the column was added and its default was written.
+            False when either write did not run. Fatal database errors still raise.
         """
 
         # language=TEXT
-        self.action("ALTER TABLE [{0}] ADD {1} {2}".format(table, column, col_type))
+        altered = self.action("ALTER TABLE [{0}] ADD {1} {2}".format(table, column, col_type))
+        if not self._write_succeeded(altered):
+            logger.warning(_("Failed to add column {column} to {table}").format(column=column, table=table))
+            return False
         # language=TEXT
-        self.action("UPDATE [{0}] SET {1} = ?".format(table, column), (default,))
+        updated = self.action("UPDATE [{0}] SET {1} = ?".format(table, column), (default,))
+        if not self._write_succeeded(updated):
+            logger.warning(_("Failed to set the default for {column} on {table}").format(column=column, table=table))
+            return False
+        return True
 
 
 def sanity_check_database(connection, sanity_check):
@@ -496,25 +628,32 @@ class SchemaUpgrade(object):
         return self.connection.has_index(index_name=index_name)
 
     def add_column(self, table, column, col_type="NUMERIC", default=0):
-        self.connection.add_column(table=table, column=column, col_type=col_type, default=default)
+        return self.connection.add_column(table=table, column=column, col_type=col_type, default=default)
 
     def get_db_version(self):
         return self.connection.get_db_version()
 
+    def _require_version_write(self, result, statement):
+        if not self.connection._write_succeeded(result):
+            raise sqlite3.OperationalError(f"Failed to update db_version: {statement}")
+
     def increment_db_version(self):
         new_version = self.get_db_version() + 1
-        self.connection.action("UPDATE db_version SET db_version = ?", [new_version])
+        statement = "UPDATE db_version SET db_version = ?"
+        self._require_version_write(self.connection.action(statement, [new_version]), statement)
         return new_version
 
     def inc_major_version(self):
         major_version, minor_version = self.connection.version
         major_version += 1
         minor_version = 0
-        self.connection.action("UPDATE db_version SET db_version = ?, db_minor_version = ?", [major_version, minor_version])
+        statement = "UPDATE db_version SET db_version = ?, db_minor_version = ?"
+        self._require_version_write(self.connection.action(statement, [major_version, minor_version]), statement)
         return self.connection.version
 
     def inc_minor_version(self):
         major_version, minor_version = self.connection.version
         minor_version += 1
-        self.connection.action("UPDATE db_version SET db_version = ?, db_minor_version = ?", [major_version, minor_version])
+        statement = "UPDATE db_version SET db_version = ?, db_minor_version = ?"
+        self._require_version_write(self.connection.action(statement, [major_version, minor_version]), statement)
         return self.connection.version

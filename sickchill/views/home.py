@@ -261,10 +261,7 @@ class Home(WebRoot):
 
         sql_statement += " (SELECT airdate FROM tv_episodes WHERE showid=tv_eps.showid AND airdate > 1"
         sql_statement += (" AND season > 0", "")[settings.DISPLAY_SHOW_SPECIALS] + f" AND status <> {UNAIRED}"
-        sql_statement += " ORDER BY airdate DESC LIMIT 1) AS ep_airs_prev,"
-
-        # @TODO: Store each show_size in tv_shows. also change in displayShow.mako:250, where we use helpers.get_size()
-        sql_statement += " (SELECT SUM(file_size) FROM tv_episodes WHERE showid=tv_eps.showid) AS show_size"
+        sql_statement += " ORDER BY airdate DESC LIMIT 1) AS ep_airs_prev"
         sql_statement += " FROM tv_episodes tv_eps GROUP BY showid"
 
         sql_result = main_db_con.select(sql_statement)
@@ -739,7 +736,7 @@ class Home(WebRoot):
 
         entries = {"emails": emails, "prowlAPIs": prowl_apis}
 
-        # TODO: Split emails and do validators.email
+        # TODO: Split emails and do validate.email
         if emails or prowl_apis:
             result = main_db_con.action("UPDATE tv_shows SET notify_list = ? WHERE indexer_id = ?", [str(entries), show])
         else:
@@ -1925,7 +1922,9 @@ class Home(WebRoot):
         return self.redirect(f"/home/displayShow?show={show}")
 
     def testRename(self):
-        show = self.get_query_argument("show")
+        show = self.get_query_argument("show", None)
+        if not show:
+            return self._genericMessage(_("Error"), _("You must specify a show"))
 
         show_obj = Show.find(settings.show_list, show)
 

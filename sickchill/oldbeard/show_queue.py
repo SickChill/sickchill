@@ -13,11 +13,10 @@ from sickchill.helper.exceptions import (
     CantRefreshShowException,
     CantRemoveShowException,
     CantUpdateShowException,
-    EpisodeDeletedException,
     MultipleShowObjectsException,
     ShowDirectoryNotFoundException,
 )
-from sickchill.oldbeard import generic_queue, name_cache, notifiers, scene_numbering, ui
+from sickchill.oldbeard import db, generic_queue, name_cache, notifiers, scene_numbering, ui
 from sickchill.oldbeard.blackandwhitelist import BlackAndWhiteList
 from sickchill.oldbeard.common import WANTED
 from sickchill.oldbeard.helpers import chmodAsParent, makeDir, sortable_name
@@ -600,15 +599,24 @@ class QueueItemAdd(ShowQueueItem):
             logger.debug(traceback.format_exc())
 
         # if they set default ep status to WANTED then run the backlog to search for episodes
-        # FIXME: This needs to be a backlog queue item!!!
         if self.show.default_ep_status == WANTED:
             logger.info("Launching backlog for this show since its episodes are WANTED")
             settings.backlogSearchScheduler.action.searchBacklog([self.show])
 
         # Initial artwork from indexer + metadata providers (once). Later refreshes skip TVDB art.
-        self.show.write_metadata(fetch_images=True)
+        try:
+            self.show.write_metadata(fetch_images=True)
+        except Exception as error:
+            from sickchill.oldbeard.connectivity import is_connectivity_error
+
+            if not is_connectivity_error(error):
+                raise
+            logger.warning(f"Metadata write failed during add of {self.show.name} due to a network error: {error}")
         self.show.update_metadata()
-        self.show.populate_cache(from_indexer=True)
+        try:
+            self.show.populate_cache()
+        except Exception as error:
+            logger.debug(f"Image cache fill failed during add of {self.show.name}: {error}")
 
         self.show.flush_episodes()
 
@@ -663,24 +671,37 @@ class QueueItemRefresh(ShowQueueItem):
             logger.info(f"Performing refresh on {self.show.name}")
 
         self.show.refresh_dir()
+        try:
+            self.show.recalculate_show_size()
+        except Exception as error:
+            logger.debug(f"show_size update failed for {getattr(self.show, 'indexerid', '?')}: {error}")
         # Do not re-fetch artwork from TVDB on refresh/update — loaded once on add;
         # user changes art via edit show. Still write NFOs and sync cache from local files.
-        self.show.write_metadata(fetch_images=False)
+        metadata_written = False
+        try:
+            self.show.write_metadata(fetch_images=False)
+            metadata_written = True
+        except Exception as error:
+            logger.warning(f"Metadata write failed during refresh of {self.show.name}: {error}")
         if self.force:
             self.show.update_metadata()
-        self.show.populate_cache(from_indexer=False)
+        try:
+            self.show.populate_cache()
+        except Exception as error:
+            logger.debug(f"Image cache fill failed during refresh of {self.show.name}: {error}")
 
         # Load XEM data to DB for show
         scene_numbering.xem_refresh(self.show.indexerid, self.show.indexer)
 
-        # Stamp folder mtime after refresh (incl. silent post-update) so ShowUpdater
+        # Stamp folder mtime after a successful metadata write so ShowUpdater
         # does not immediately re-queue due to NFO/metadata touching the directory.
-        try:
-            from sickchill.oldbeard.show_dir_mtime import stamp_show_dir_mtime
+        if metadata_written:
+            try:
+                from sickchill.oldbeard.show_dir_mtime import stamp_show_dir_mtime
 
-            stamp_show_dir_mtime(self.show)
-        except Exception as error:
-            logger.debug(f"show_dir_mtime stamp failed for {getattr(self.show, 'indexerid', '?')}: {error}")
+                stamp_show_dir_mtime(self.show)
+            except Exception as error:
+                logger.debug(f"show_dir_mtime stamp failed for {getattr(self.show, 'indexerid', '?')}: {error}")
 
         super(QueueItemRefresh, self).finish()
         self.finish()
@@ -819,22 +840,29 @@ class QueueItemUpdate(ShowQueueItem):
             indexer_episodes = dict()
 
         for season in indexer_episodes:
+            season_rows = database_episodes.get(season)
+            if not season_rows:
+                continue
             for episode in indexer_episodes[season]:
-                self.show.get_episode(season, episode).save_to_db()
-                if season in database_episodes and episode in database_episodes[season]:
-                    del database_episodes[season][episode]
+                season_rows.pop(episode, None)
 
         if indexer_episodes:
             # remaining episodes in the database list are not on the indexer, just delete them from the DB
-            # TODO: database: maybe add a "marked for deletion" column to the database, and when we delete an episode just mark it and do the actual deletion after a few days.
-            #  episodes marked for deletion can be hidden from the ui, but we wont lose downloaded files for episodes that are then brought back and they wont be sent to download again?
+            deletes = []
             for season in database_episodes:
                 for episode in database_episodes[season]:
                     logger.info("Permanently deleting episode {0:02d}E{1:02d} from the database".format(season, episode))
-                    try:
-                        self.show.get_episode(season, episode).delete_episode()
-                    except EpisodeDeletedException:
-                        pass
+                    season_map = self.show.episodes.get(season)
+                    if season_map is not None:
+                        season_map.pop(episode, None)
+                    deletes.append(
+                        [
+                            "DELETE FROM tv_episodes WHERE showid = ? AND season = ? AND episode = ?",
+                            [self.show.indexerid, season, episode],
+                        ]
+                    )
+            if deletes:
+                db.DBConnection().mass_action(deletes)
 
         # Pending XEM refresh requested by editShow (scene/anime change) — run off the web thread
         if getattr(self.show, "_pending_xem_refresh", False):

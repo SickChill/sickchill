@@ -4,7 +4,6 @@ import time
 from base64 import b16encode, b32decode
 from datetime import datetime
 from email.utils import parsedate_to_datetime
-from itertools import chain
 from os.path import join
 from random import shuffle
 from typing import TYPE_CHECKING, Callable, ClassVar, Dict, Iterable, List, Union
@@ -204,56 +203,34 @@ class GenericProvider(object):
         items_list = []
         searched_scene_season = None
 
+        cached = self.cache.find_needed_episodes(episodes, manual_search, download_current_quality) if episodes else {}
         for episode in episodes:
-            cache_result = self.cache.search_cache(episode, manual_search=manual_search, down_cur_quality=download_current_quality)
+            cache_result = cached.get(episode, [])
             if cache_result:
                 if episode.episode not in results:
                     results[episode.episode] = cache_result
                 else:
                     results[episode.episode].extend(cache_result)
 
-                continue
-
-            if len(episodes) > 1 and search_mode == "season" and searched_scene_season == episode.scene_season:
+            if search_mode == "season" and searched_scene_season == episode.scene_season:
                 continue
 
             search_strings = []
             searched_scene_season = episode.scene_season
 
-            if len(episodes) > 1 and search_mode == "season":
+            # Live q= is title + Sxx/SxxExx only; quality is in provider categories and result filters.
+            if search_mode == "season":
                 search_strings = self.get_season_search_strings(episode)
             elif search_mode == "episode":
                 search_strings = self.get_episode_search_strings(episode)
 
             self.current_episode_object = episode
+            logger.debug(f"{self.name}: live {search_mode} search for {getattr(episode, 'pretty_name', episode)}")
 
             for search_string in search_strings:
                 items_list += self.search(search_string)
 
-        if len(results) == len(episodes):
-            return results
-
-        if items_list:
-            items = {}
-            unknown_items = []
-
-            for item in items_list:
-                quality = self.get_quality(item, anime=show.is_anime)
-
-                if quality == Quality.UNKNOWN:
-                    unknown_items.append(item)
-                elif quality == Quality.NONE:
-                    pass  # Skipping an HEVC when HEVC is not allowed by settings
-                else:
-                    if quality not in items:
-                        items[quality] = []
-                    items[quality].append(item)
-
-            items_list = list(chain(*[v for (k_, v) in sorted(items.items(), reverse=True)]))
-            items_list += unknown_items
-
-        cache_list = []
-
+        parsed_rows = []
         for item in items_list:
             title, url = self._get_title_and_url(item)
             if is_blocked_search_result(title, url):
@@ -268,8 +245,20 @@ class GenericProvider(object):
                 logger.debug(f"{error}")
                 continue
 
-            show_object = parse_result.show
             quality = parse_result.quality
+            if quality == Quality.NONE:
+                continue  # Skipping an HEVC when HEVC is not allowed by settings
+            parsed_rows.append((quality, item, title, url, seeders, leechers, size, parse_result))
+
+        unknown_rows = [row for row in parsed_rows if row[0] == Quality.UNKNOWN]
+        known_rows = [row for row in parsed_rows if row[0] != Quality.UNKNOWN]
+        known_rows.sort(key=lambda row: row[0], reverse=True)
+        parsed_rows = known_rows + unknown_rows
+
+        cache_list = []
+
+        for quality, item, title, url, seeders, leechers, size, parse_result in parsed_rows:
+            show_object = parse_result.show
             release_group = parse_result.release_group
             version = parse_result.version
             skip_release = False
@@ -386,11 +375,35 @@ class GenericProvider(object):
                 results[episode_number].append(result)
 
         if cache_list:
+            # A live hit for a release already in the cache must stay selectable.
+            # The cached copy can carry an older download URL for the same name.
+            results = self._drop_stale_cached_urls(results, cache_list)
             # Access to a protected member of a client class
             cache_db = self.cache.get_db()
-            cache_db.mass_upsert("results", cache_list)
+            cache_db.mass_upsert("results", cache_list, replace_same_release=True)
 
         return results
+
+    @staticmethod
+    def _drop_stale_cached_urls(results, cache_list):
+        """Drop a cached URL when this search already has a fresh URL for that release."""
+        fresh_urls = {}
+        for values, _control in cache_list or []:
+            fresh_urls.setdefault(values["name"], set()).add(values["url"])
+        if not fresh_urls:
+            return results
+
+        # A multi-episode hit lives in another bucket from the cached first episode.
+        covered = set()
+        for found in results.values():
+            for item in found:
+                if item.name in fresh_urls and item.url in fresh_urls[item.name]:
+                    covered.add(item.name)
+
+        preferred = {}
+        for episode_number, found in results.items():
+            preferred[episode_number] = [item for item in found if item.name not in covered or item.url in fresh_urls.get(item.name, ())]
+        return preferred
 
     def get_id(self, suffix=""):
         return GenericProvider.make_id(self.name) + str(suffix)

@@ -1,5 +1,4 @@
 import requests
-import twitter
 from requests_oauthlib import OAuth1Session
 
 from sickchill import logger, settings
@@ -10,9 +9,18 @@ class Notifier(object):
     consumer_key = "vHHtcB6WzpWDG6KYlBMr8g"
     consumer_hash = "zMqq5CB3f8cWKiRO2KzWPTlBanYmV0VYxSXZ0Pxds0E"  # (consumer_secret)
 
-    REQUEST_TOKEN_URL = "https://api.twitter.com/oauth/request_token"
-    ACCESS_TOKEN_URL = "https://api.twitter.com/oauth/access_token"
-    AUTHORIZATION_URL = "https://api.twitter.com/oauth/authorize"
+    REQUEST_TOKEN_URL = "https://api.x.com/oauth/request_token"
+    ACCESS_TOKEN_URL = "https://api.x.com/oauth/access_token"
+    AUTHORIZATION_URL = "https://api.x.com/oauth/authorize"
+    API_BASE = "https://api.x.com/1.1"
+
+    def _api_session(self):
+        return OAuth1Session(
+            client_key=self.consumer_key,
+            client_secret=self.consumer_hash,
+            resource_owner_key=settings.TWITTER_USERNAME,
+            resource_owner_secret=settings.TWITTER_PASSWORD,
+        )
 
     def notify_snatch(self, ep_name):
         if settings.TWITTER_NOTIFY_ONSNATCH:
@@ -99,16 +107,10 @@ class Notifier(object):
         :param message: Message to send
         :return: True if succeeded, False otherwise
         """
-        api = twitter.Api(
-            consumer_key=self.consumer_key,
-            consumer_secret=self.consumer_hash,
-            access_token_key=settings.TWITTER_USERNAME,
-            access_token_secret=settings.TWITTER_PASSWORD,
-        )
-
         logger.debug("Sending tweet: {}".format(message))
         try:
-            api.PostUpdate(message[:139])
+            response = self._api_session().post(f"{self.API_BASE}/statuses/update.json", data={"status": (message or "")[:139]}, timeout=10)
+            response.raise_for_status()
         except Exception as error:
             logger.exception(f"Error Sending Tweet: {error}")
             return False
@@ -124,16 +126,23 @@ class Notifier(object):
         """
         dmdest = settings.TWITTER_DMTO
 
-        api = twitter.Api(
-            consumer_key=self.consumer_key,
-            consumer_secret=self.consumer_hash,
-            access_token_key=settings.TWITTER_USERNAME,
-            access_token_secret=settings.TWITTER_PASSWORD,
-        )
-
         logger.debug("Sending DM @{0}: {1}".format(dmdest, message))
         try:
-            api.PostDirectMessage(message[:139], screen_name=dmdest)
+            session = self._api_session()
+            user = session.get(f"{self.API_BASE}/users/show.json", params={"screen_name": dmdest}, timeout=10)
+            user.raise_for_status()
+            user_id = user.json()["id"]
+            event = {
+                "event": {
+                    "type": "message_create",
+                    "message_create": {
+                        "target": {"recipient_id": user_id},
+                        "message_data": {"text": (message or "")[:139]},
+                    },
+                }
+            }
+            response = session.post(f"{self.API_BASE}/direct_messages/events/new.json", json=event, timeout=10)
+            response.raise_for_status()
         except Exception as error:
             logger.exception(f"Error Sending Tweet (DM): {error}")
             return False

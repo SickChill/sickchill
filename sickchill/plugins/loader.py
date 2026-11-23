@@ -17,8 +17,7 @@ def _iter_entry_point_classes(kind: PluginKind) -> list[type[Plugin]]:
     group = f"sickchill.{kind.value}"
     try:
         eps = importlib.metadata.entry_points()
-        # Python 3.10+: select(); older returns dict-like
-        selected = eps.select(group=group) if hasattr(eps, "select") else eps.get(group, [])
+        selected = eps.select(group=group)
     except Exception as error:
         logger.debug("entry_points lookup failed for %s: %s", group, error)
         return found

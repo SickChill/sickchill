@@ -79,6 +79,9 @@ def snatch_episode(result: "SearchResult", end_status=SNATCHED):
         logger.info(f"Refusing to snatch {result.name}: blocked .exe file")
         return False
 
+    if _download_link_is_dead(result):
+        return False
+
     if settings.ALLOW_HIGH_PRIORITY:
         # if it aired recently make it high priority
         for episode in result.episodes:
@@ -230,6 +233,9 @@ def pick_best_result(results, show):
         if not show_name_helpers.filter_bad_releases(result.name, parse=False, show=show):
             continue
 
+        if _download_link_is_dead(result):
+            continue
+
         if settings.USE_FAILED_DOWNLOADS and History().has_failed(result.name):
             logger.info(f"{result.name} has previously failed, rejecting it")
             continue
@@ -355,13 +361,131 @@ def wanted_episodes(show, from_date):
     return wanted
 
 
+def _download_link_is_dead(result):
+    """True when this URL already failed to return a file. The release name can still match another URL."""
+    url = getattr(result, "url", None)
+    if not url or not History().is_dead_url(url):
+        return False
+    logger.info(f"{result.name} download link is dead, rejecting it")
+    return True
+
+
+def _result_is_acceptable(result, show):
+    """Same rejects as ``pick_best_result`` before it starts comparing quality."""
+    if show and result.show is not show:
+        return False
+    if show.is_anime and not show.release_groups.is_valid(result):
+        return False
+    allowed_qualities, preferred_qualities = Quality.splitQuality(show.quality)
+    if result.quality not in allowed_qualities + preferred_qualities:
+        return False
+    if not show_name_helpers.filter_bad_releases(result.name, parse=False, show=show):
+        return False
+    if _download_link_is_dead(result):
+        return False
+    return not (settings.USE_FAILED_DOWNLOADS and History().has_failed(result.name))
+
+
+def _result_is_better(result, picked, show):
+    """True when ``pick_best_result`` would replace its current pick with this result."""
+    allowed_qualities, preferred_qualities = Quality.splitQuality(show.quality)
+    if result.quality in preferred_qualities and (picked.quality < result.quality or picked.quality not in preferred_qualities):
+        return True
+    if result.quality in allowed_qualities and picked.quality not in preferred_qualities and picked.quality < result.quality:
+        return True
+    if picked.quality != result.quality:
+        return False
+    name = result.name.lower()
+    picked_name = picked.name.lower()
+    if "proper" in name or "real" in name or "repack" in name:
+        return True
+    if "internal" in picked_name and "internal" not in name:
+        return True
+    return "xvid" in picked_name and "x264" in name
+
+
+def _rank_by_selection(candidates, show):
+    """Best first. Each pass uses the same replacement rules as ``pick_best_result``."""
+    remaining = list(candidates)
+    ranked = []
+    while remaining:
+        winner = None
+        for result in remaining:
+            if winner is None or _result_is_better(result, winner, show):
+                winner = result
+        ranked.append(winner)
+        remaining = [item for item in remaining if item is not winner]
+    return ranked
+
+
+def _ranked_results(results, show):
+    """Acceptable results, best first, using the same order as ``pick_best_result``."""
+    ordered = list(results if isinstance(results, list) else [results])
+    ordered.sort(key=lambda item: show_name_helpers.has_preferred_words(item.name, item.show), reverse=True)
+    acceptable = [result for result in ordered if _result_is_acceptable(result, show)]
+    ranked = _rank_by_selection(acceptable, show)
+    if ranked:
+        logger.debug(f"Picked {ranked[0].name} as the best")
+    else:
+        logger.debug("No result picked.")
+    return ranked
+
+
+def _one_result_per_url(found_results):
+    """One download per URL, covering every episode that selected that release."""
+    chosen = {}
+    order = []
+    for episode, result in found_results.items():
+        key = result.url or id(result)
+        current = chosen.get(key)
+        if current is None:
+            covered = list(result.episodes)
+            if episode not in covered:
+                covered.append(episode)
+            result.episodes = covered
+            chosen[key] = result
+            order.append(key)
+            continue
+        if episode not in current.episodes:
+            current.episodes.append(episode)
+        for covered in result.episodes:
+            if covered not in current.episodes:
+                current.episodes.append(covered)
+        if result.quality > current.quality:
+            result.episodes = current.episodes
+            chosen[key] = result
+    return [chosen[key] for key in order]
+
+
+def _submission_candidates(by_episode):
+    """Best result for each episode first. Each URL is sent once, with every episode it covers."""
+    if not by_episode:
+        return []
+    submissions = []
+    seen = {}
+    max_rank = max(len(options) for options in by_episode.values())
+    for rank in range(max_rank):
+        chosen = {episode: options[rank] for episode, options in by_episode.items() if rank < len(options)}
+        for result in _one_result_per_url(chosen):
+            key = result.url or id(result)
+            current = seen.get(key)
+            if current is None:
+                seen[key] = result
+                submissions.append(result)
+                continue
+            for episode in result.episodes:
+                if episode not in current.episodes:
+                    current.episodes.append(episode)
+    return submissions
+
+
 def search_for_needed_episodes():
     """
     Check providers for details on wanted episodes
 
     :return: episodes we have a search hit for
     """
-    found_results = {}
+    found_candidates = {}
 
     did_search = False
 
@@ -373,60 +497,87 @@ def search_for_needed_episodes():
         if not curShow.paused:
             episodes.extend(wanted_episodes(curShow, from_date))
 
-    if not episodes:
-        # nothing wanted so early out, ie: avoid whatever arbitrarily
-        # complex thing a provider cache update entails, for example,
-        # reading rss feeds
-        logger.info("No episodes needed.")
-        return list(found_results.values())
-
-    # noinspection DuplicatedCode
-    original_thread_name = threading.current_thread().name
-
     providers = [x for x in sickchill.oldbeard.providers.sorted_provider_list(settings.RANDOMIZE_PROVIDERS) if x.is_active and x.enable_daily and x.can_daily]
-    for curProvider in providers:
-        threading.current_thread().name = f"{original_thread_name} :: [{curProvider.name}]"
-        curProvider.cache.update_cache()
 
-    for curProvider in providers:
-        threading.current_thread().name = f"{original_thread_name} :: [{curProvider.name}]"
+    if not episodes:
+        # Skip RSS refresh when nothing is wanted; cached propers still run below.
+        logger.info("No episodes needed.")
+    else:
+        original_thread_name = threading.current_thread().name
+
+        for curProvider in providers:
+            threading.current_thread().name = f"{original_thread_name} :: [{curProvider.name}]"
+            curProvider.cache.update_cache()
+
+        for curProvider in providers:
+            threading.current_thread().name = f"{original_thread_name} :: [{curProvider.name}]"
+            try:
+                found_rss_results = curProvider.search_rss(episodes)
+            except AuthException as error:
+                logger.warning(f"Authentication error: {error}")
+                continue
+            except Exception as error:
+                logger.exception(f"Error while searching {curProvider.name}, skipping: {error}")
+                logger.debug(traceback.format_exc())
+                continue
+
+            did_search = True
+
+            # pick a single result for each episode, respecting existing results
+            for current_episode in found_rss_results:
+                if not current_episode.show or current_episode.show.paused:
+                    logger.debug(f"Skipping {current_episode.pretty_name} because the show is paused ")
+                    continue
+
+                ranked = _ranked_results(found_rss_results[current_episode], current_episode.show)
+
+                # if all results were rejected move on to the next episode
+                if not ranked:
+                    logger.debug(f"All found results for {current_episode.pretty_name} were rejected.")
+                    continue
+
+                # if it's already in the list (from another provider) and the newly found quality is no better, then skip it
+                if current_episode in found_candidates and ranked[0].quality <= found_candidates[current_episode][0].quality:
+                    continue
+
+                found_candidates[current_episode] = ranked
+
+        threading.current_thread().name = original_thread_name
+
+        if not did_search:
+            logger.info("No NZB/Torrent providers found or enabled in the sickchill config for daily searches. Please check your settings.")
+
+    if settings.DOWNLOAD_PROPERS:
         try:
-            found_rss_results = curProvider.search_rss(episodes)
-        except AuthException as error:
-            logger.warning(f"Authentication error: {error}")
-            continue
+            from sickchill.oldbeard.properFinder import ProperFinder
+
+            ProperFinder().process_cached_propers(providers)
         except Exception as error:
-            logger.exception(f"Error while searching {curProvider.name}, skipping: {error}")
-            logger.debug(traceback.format_exc())
-            continue
+            logger.debug(f"Daily proper processing failed: {error}")
 
-        did_search = True
+    return _submission_candidates(found_candidates)
 
-        # pick a single result for each episode, respecting existing results
-        for current_episode in found_rss_results:
-            if not current_episode.show or current_episode.show.paused:
-                logger.debug(f"Skipping {current_episode.pretty_name} because the show is paused ")
-                continue
 
-            best_result = pick_best_result(found_rss_results[current_episode], current_episode.show)
+def _search_results_cover_requested(search_results, episodes, search_mode, show):
+    """True when this pass found a selectable season pack, or every requested episode."""
+    season_results = search_results.get(SEASON_RESULT) or []
+    has_selectable_pack = bool(season_results) and pick_best_result(season_results, show) is not None
 
-            # if all results were rejected move on to the next episode
-            if not best_result:
-                logger.debug(f"All found results for {current_episode.pretty_name} were rejected.")
-                continue
+    if search_mode == "season":
+        return has_selectable_pack
 
-            # if it's already in the list (from another provider) and the newly found quality is no better, then skip it
-            if current_episode in found_results and best_result.quality <= found_results[current_episode].quality:
-                continue
+    if has_selectable_pack:
+        return True
 
-            found_results[current_episode] = best_result
+    covered_episodes = set()
+    for result_key, result_list in search_results.items():
+        if result_key == MULTI_EP_RESULT:
+            for result in result_list:
+                covered_episodes.update(episode.episode for episode in result.episodes)
+        elif result_key >= 0 and result_list:
+            covered_episodes.add(result_key)
 
-    threading.current_thread().name = original_thread_name
-
-    if not did_search:
-        logger.info("No NZB/Torrent providers found or enabled in the sickchill config for daily searches. Please check your settings.")
-
-    return list(found_results.values())
+    return {episode.episode for episode in episodes} <= covered_episodes
 
 
 # noinspection PyPep8Naming
@@ -445,18 +596,16 @@ def search_providers(show, episodes, manual=False, downCurQuality=False):
 
     did_search = False
 
-    # Name cache is process-global (built at startup / exception refresh / show add).
-    # Daily and backlog search use dict lookups only — do not rebuild from SQLite here.
-
     # noinspection DuplicatedCode
     original_thread_name = threading.current_thread().name
 
     providers = [
         x for x in sickchill.oldbeard.providers.sorted_provider_list(settings.RANDOMIZE_PROVIDERS) if x.is_active and x.can_backlog and x.enable_backlog
     ]
-    for curProvider in providers:
-        threading.current_thread().name = f"{original_thread_name} :: [{curProvider.name}]"
-        curProvider.cache.update_cache()
+    if not manual:
+        for curProvider in providers:
+            threading.current_thread().name = f"{original_thread_name} :: [{curProvider.name}]"
+            curProvider.cache.update_cache()
 
     threading.current_thread().name = original_thread_name
 
@@ -472,8 +621,7 @@ def search_providers(show, episodes, manual=False, downCurQuality=False):
         search_count = 0
         search_mode = curProvider.search_mode
 
-        # Always search for episode when manually searching when in season
-        if search_mode == "season" and manual is True:
+        if manual:
             search_mode = "episode"
 
         while True:
@@ -505,15 +653,21 @@ def search_providers(show, episodes, manual=False, downCurQuality=False):
                     else:
                         found_results[curProvider.name][current_episode] = search_results[current_episode]
 
-                break
-            elif search_count == 2 or not curProvider.search_fallback:
+            # Season-pack search succeeds only when a selectable pack was found.
+            # Episode search succeeds when every requested episode is covered.
+            found_wanted_results = _search_results_cover_requested(search_results, episodes, search_mode, show)
+
+            # Fallback (episode ↔ season pack) is backlog-only.
+            allow_fallback = bool(curProvider.search_fallback) and search_count == 1 and not manual
+
+            if found_wanted_results or not allow_fallback:
                 break
 
             if search_mode == "season":
                 logger.debug("Fallback episode search initiated")
                 search_mode = "episode"
             else:
-                logger.debug("Fallback season pack search initiate")
+                logger.debug("Fallback season pack search initiated")
                 search_mode = "season"
 
         # skip to next provider if we have no results to process
@@ -541,33 +695,36 @@ def search_providers(show, episodes, manual=False, downCurQuality=False):
             logger.info(f"The quality of the season {best_season_result.provider.provider_type} is {Quality.qualityStrings[season_quality]}")
 
             main_db_con = db.DBConnection()
-            all_episodes = [
-                int(x["episode"])
-                for x in main_db_con.select(
-                    f"SELECT episode FROM tv_episodes WHERE showid = ? AND ( season IN ( {','.join(['?'] * len(searched_seasons))} ) )",
-                    [show.indexerid] + list(searched_seasons),
+            if searched_seasons:
+                placeholders = ",".join(["?"] * len(searched_seasons))
+                pair_rows = main_db_con.select(
+                    f"SELECT season, episode, status FROM tv_episodes WHERE showid = ? AND season IN ({placeholders})",
+                    [show.indexerid, *list(searched_seasons)],
                 )
-            ]
+            else:
+                pair_rows = []
+            pairs = [(int(row["season"]), int(row["episode"]), int(row["status"])) for row in pair_rows]
 
-            logger.info(f"Executed query: [SELECT episode FROM tv_episodes WHERE showid = {show.indexerid} AND season in {searched_seasons}]")
-            logger.debug(f"Episode list: {all_episodes}")
+            logger.info(f"Executed query: [SELECT season, episode, status FROM tv_episodes WHERE showid = {show.indexerid} AND season in {searched_seasons}]")
+            logger.debug(f"Episode list: {pairs}")
 
             all_wanted = True
             some_wanted = False
-            for episode_number in all_episodes:
-                for season in (x.season for x in episodes):
-                    if not show.want_episode(season, episode_number, season_quality, downCurQuality):
-                        all_wanted = False
-                    else:
-                        some_wanted = True
+            for season, episode_number, status in pairs:
+                if not show.want_episode(season, episode_number, season_quality, downCurQuality, known_status=status):
+                    all_wanted = False
+                else:
+                    some_wanted = True
+                if some_wanted and not all_wanted:
+                    break
+
+            def season_episode_objects():
+                return [show.get_episode(season, episode_number) for season, episode_number, _status in pairs]
 
             # if we need every ep in the season and there's nothing better, then just download this and be done with it (unless single episodes are preferred)
             if all_wanted and best_season_result.quality == highest_quality_overall:
                 logger.info(f"Every ep in this season is needed, downloading the whole {best_season_result.provider.provider_type} {best_season_result.name}")
-                episode_objects = []
-                for episode_number in all_episodes:
-                    for season in {x.season for x in episodes}:
-                        episode_objects.append(show.get_episode(season, episode_number))
+                episode_objects = season_episode_objects()
                 best_season_result.episodes = episode_objects
 
                 # Remove provider from thread name before return results
@@ -602,10 +759,7 @@ def search_providers(show, episodes, manual=False, downCurQuality=False):
                     logger.info(
                         "Adding multi-ep result for full-season torrent. Set the episodes you don't want to 'don't download' in your torrent client if desired!"
                     )
-                    episode_objects = []
-                    for episode_number in all_episodes:
-                        for season in {x.season for x in episodes}:
-                            episode_objects.append(show.get_episode(season, episode_number))
+                    episode_objects = season_episode_objects()
                     best_season_result.episodes = episode_objects
 
                     if MULTI_EP_RESULT in found_results[curProvider.name]:
@@ -679,6 +833,8 @@ def search_providers(show, episodes, manual=False, downCurQuality=False):
             best_result = pick_best_result(found_results[curProvider.name][current_episode], show)
             if not best_result:
                 continue
+            ranked = _ranked_results(found_results[curProvider.name][current_episode], show)
+            best_result.alternatives = [item for item in ranked if item is not best_result]
 
             # add result if it's not a duplicate and
             found = False

@@ -3,13 +3,13 @@ import threading
 
 from sickchill import logger, settings
 from sickchill.oldbeard import common, db, scheduler, search_queue, ui
-from sickchill.oldbeard.network_timezones import sc_today
+from sickchill.oldbeard.network_timezones import sc_timezone, sc_today
 
 
 class BacklogSearchScheduler(scheduler.Scheduler):
     def forceSearch(self):
         self.action.set_lastBacklog(1)
-        self.lastRun = datetime.datetime.fromordinal(1)
+        self.lastRun = datetime.datetime.fromordinal(1).replace(tzinfo=sc_timezone)
 
     def nextRun(self):
         if self.action.lastBacklog <= 1:

@@ -34,6 +34,7 @@ class ManageSearches(Manage):
             autoPostProcessorStatus=settings.autoPostProcessorScheduler.action.amActive,
             showUpdaterStatus=settings.showUpdateScheduler.action.amActive,
             queueLength=settings.searchQueueScheduler.action.queue_length(),
+            connectivityStatus=settings.searchQueueScheduler.action.connectivity_status(),
             processing_queue=settings.postProcessorTaskScheduler.action.queue_length(),
             title=_("Manage Searches"),
             header=_("Manage Searches"),

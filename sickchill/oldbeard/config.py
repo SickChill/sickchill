@@ -474,7 +474,6 @@ def change_check_propers_interval(interval):
     settings.CHECK_PROPERS_INTERVAL = interval
     if settings.properFinderScheduler:
         settings.properFinderScheduler.cycleTime = datetime.timedelta(minutes=search_intervals[interval])
-        logger.info(f"Proper finder interval set to {interval} ({search_intervals[interval]} minutes)")
     return True
 
 
