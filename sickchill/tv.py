@@ -1436,9 +1436,9 @@ class TVShow(object):
             logger.debug(f"Removing show: indexerid {self.indexerid}, Title {self.name} from Watchlist")
             notifiers.trakt_notifier.update_watchlist(self, update="remove")
 
-    def populate_cache(self):
+    def populate_cache(self, from_indexer=True):
         logger.debug(f"Checking & filling cache for show {self.name}")
-        settings.IMAGE_CACHE.fill_cache(self)
+        settings.IMAGE_CACHE.fill_cache(self, from_indexer=from_indexer)
 
     def refresh_dir(self):
         if not os.path.isdir(self._location) and not settings.CREATE_MISSING_SHOW_DIRS:
@@ -1493,7 +1493,7 @@ class TVShow(object):
                             episode_object.status = new_status
                             episode_object.subtitles = []
                             episode_object.subtitles_searchcount = 0
-                            episode_object.subtitles_lastsearch = str(datetime.datetime.min)
+                            episode_object.subtitles_lastsearch = str(datetime.datetime.min)  # noqa: DTZ901
                         episode_object.location = ""
                         episode_object.has_nfo = False
                         episode_object.has_tbn = False
@@ -1818,7 +1818,7 @@ class TVEpisode(object):
     description = DirtySetter("")
     subtitles = DirtySetter(list())
     subtitles_searchcount = DirtySetter(0)
-    subtitles_lastsearch = DirtySetter(str(datetime.datetime.min))
+    subtitles_lastsearch = DirtySetter(str(datetime.datetime.min))  # noqa: DTZ901
     airdate = DirtySetter(datetime.date.min)
     has_nfo = DirtySetter(False)
     has_tbn = DirtySetter(False)

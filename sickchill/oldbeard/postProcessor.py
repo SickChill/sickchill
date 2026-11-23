@@ -92,6 +92,9 @@ class PostProcessor(object):
         # Set before every soft failure (``return False``) so processTV can surface it.
         self.failure_reason = ""
 
+        # Set before every soft failure (``return False``) so processTV can surface it.
+        self.failure_reason = ""
+
     def _log(self, message, level=logging.INFO):
         """
         A wrapper for the internal logger which also keeps track of messages and saves them to a string for later.

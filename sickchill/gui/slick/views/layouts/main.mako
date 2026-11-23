@@ -412,6 +412,9 @@
                 % if controller in ('config', 'home', 'manage', 'history', 'errorlogs', 'schedule', 'addShows', 'movies'):
                     <script type="text/javascript" src="${static_url('js/page-' + controller + '.js')}"></script>
                 % endif
+                % if controller in ('config', 'home', 'manage', 'history', 'errorlogs', 'schedule', 'addShows', 'movies'):
+                    <script type="text/javascript" src="${static_url('js/page-' + controller + '.js')}"></script>
+                % endif
                 <script type="text/javascript" src="${static_url('js/lib/jquery.scrolltopcontrol-1.1.js')}"></script>
                 <script type="text/javascript" src="${static_url('js/browser.js')}" charset="utf-8"></script>
                 <script type="text/javascript" src="${static_url('js/ajaxNotifications.js')}"></script>

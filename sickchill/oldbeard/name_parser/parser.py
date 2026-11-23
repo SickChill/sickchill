@@ -88,6 +88,14 @@ class NameParser(object):
         return ordered == list(range(ordered[0], ordered[-1] + 1))
 
     @staticmethod
+    def _is_contiguous(episodes):
+        """True when episode numbers form an unbroken inclusive range."""
+        if not episodes:
+            return False
+        ordered = sorted(episodes)
+        return ordered == list(range(ordered[0], ordered[-1] + 1))
+
+    @staticmethod
     def clean_series_name(series_name):
         """Cleans up series name by removing any . and _
         characters, along with any trailing hyphens.

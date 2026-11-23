@@ -10,6 +10,7 @@ from urllib.parse import parse_qs, unquote, unquote_plus, urlparse
 
 import appdirs
 import rarfile
+import validators
 
 from sickchill import settings
 from sickchill.init_helpers import get_current_version

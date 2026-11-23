@@ -186,6 +186,39 @@ class WebHandler(BaseHandler):
         except Exception:
             return "<unprintable>"
 
+    def _client_disconnected(self) -> bool:
+        """True if the browser already closed the request (navigate away, AJAX abort, etc.)."""
+        if getattr(self, "_finished", False):
+            return True
+        try:
+            connection = getattr(self.request, "connection", None)
+            if connection is None:
+                return True
+            stream = getattr(connection, "stream", None)
+            if stream is not None and stream.closed():
+                return True
+        except Exception:
+            return True
+        return False
+
+    @staticmethod
+    def _summarize_finish_result(results) -> str:
+        """Short description of a finish payload for logs (avoid dumping full HTML pages)."""
+        if results is None:
+            return "None"
+        if isinstance(results, (bytes, bytearray)):
+            return f"<{type(results).__name__} len={len(results)}>"
+        if isinstance(results, str):
+            if results.lstrip().startswith("<!") or "<html" in results[:200].lower():
+                return f"<html page len={len(results)}>"
+            if len(results) > 200:
+                return f"<str len={len(results)} prefix={results[:80]!r}…>"
+            return repr(results)
+        try:
+            return f"<{type(results).__name__}>"
+        except Exception:
+            return "<unprintable>"
+
     @authenticated
     async def get(self, route, *_args, **_kwargs):
         try:
