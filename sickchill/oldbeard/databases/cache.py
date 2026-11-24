@@ -1,3 +1,5 @@
+import sqlite3
+
 from sickchill.oldbeard import db
 
 
@@ -142,6 +144,8 @@ class AddTvdbSeasonTypes(AddResultsReleaseIndex):
         return self.has_table("tvdb_season_types") and self.get_db_version() >= 6
 
     def execute(self):
-        self.connection.action("CREATE TABLE IF NOT EXISTS tvdb_season_types (indexer_id INTEGER PRIMARY KEY, payload TEXT, last_refreshed INTEGER);")
+        statement = "CREATE TABLE IF NOT EXISTS tvdb_season_types (indexer_id INTEGER PRIMARY KEY, payload TEXT, last_refreshed INTEGER);"
+        if not self.connection._write_succeeded(self.connection.action(statement)):
+            raise sqlite3.OperationalError(f"Failed to create tvdb_season_types: {statement}")
         if self.get_db_version() < 6:
             self.increment_db_version()
