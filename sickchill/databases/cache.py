@@ -1,4 +1,6 @@
-from sickchill import db
+import sqlite3
+
+from sickchill.oldbeard import db
 
 
 # Add new migrations at the bottom of the list; subclass the previous migration.
@@ -18,6 +20,7 @@ class InitialSchema(db.SchemaUpgrade):
             ("CREATE TABLE scene_names (indexer_id INTEGER, name TEXT);",),
             ("CREATE TABLE network_timezones (network_name TEXT PRIMARY KEY, timezone TEXT);",),
             ("CREATE TABLE scene_exceptions_refresh (list TEXT PRIMARY KEY, last_refreshed INTEGER);",),
+            ("CREATE TABLE IF NOT EXISTS tvdb_season_types (indexer_id INTEGER PRIMARY KEY, payload TEXT, last_refreshed INTEGER);",),
             ("CREATE TABLE db_version (db_version INTEGER);",),
             (
                 "CREATE TABLE results (provider TEXT, name TEXT, season NUMERIC, episodes TEXT, indexerid NUMERIC, url TEXT, time NUMERIC, quality TEXT, "
@@ -132,3 +135,17 @@ class AddResultsReleaseIndex(UniqueSceneNamesIndex):
 
     def execute(self):
         self.connection.action("CREATE INDEX IF NOT EXISTS idx_results_release ON results (provider, name, indexerid, season, episodes)")
+
+
+class AddTvdbSeasonTypes(AddResultsReleaseIndex):
+    """Create tvdb_season_types during cache.db startup so the show page never sees a missing table."""
+
+    def test(self):
+        return self.has_table("tvdb_season_types") and self.get_db_version() >= 6
+
+    def execute(self):
+        statement = "CREATE TABLE IF NOT EXISTS tvdb_season_types (indexer_id INTEGER PRIMARY KEY, payload TEXT, last_refreshed INTEGER);"
+        if not self.connection._write_succeeded(self.connection.action(statement)):
+            raise sqlite3.OperationalError(f"Failed to create tvdb_season_types: {statement}")
+        if self.get_db_version() < 6:
+            self.increment_db_version()
