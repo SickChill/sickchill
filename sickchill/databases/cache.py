@@ -1,6 +1,6 @@
 import sqlite3
 
-from sickchill.oldbeard import db
+from sickchill import db
 
 
 # Add new migrations at the bottom of the list; subclass the previous migration.
