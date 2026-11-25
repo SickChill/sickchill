@@ -1289,6 +1289,25 @@ def _guess_has_usable_episode(name, guess, show):
     return False
 
 
+def _show_from_guess(guess):
+    """Match a year-bearing release to that year's show before the bare title.
+
+    guessit splits ``Dig.2026.S01E01`` into title ``Dig`` and year ``2026``. The bare
+    title uniquely matches an older show of the same name.
+    """
+    title = _guess_title(guess)
+    if not title:
+        return None
+    year = guess.get("year") if guess else None
+    if isinstance(year, list):
+        year = year[0] if len(year) == 1 else None
+    if year:
+        show = helpers.get_show(f"{title} {year}")
+        if show:
+            return show
+    return helpers.get_show(title)
+
+
 def guessit_findit(name: str) -> Union["ParseResult", None]:
     logger.debug(f"Trying a new way to verify if we can parse this file; {name}")
     try:
@@ -1296,8 +1315,7 @@ def guessit_findit(name: str) -> Union["ParseResult", None]:
     except Exception:
         guess = {}
 
-    title = _guess_title(guess)
-    show: "TVShow" = helpers.get_show(title) if title else None
+    show: "TVShow" = _show_from_guess(guess)
     if _guess_has_usable_episode(name, guess, show):
         try:
             parsed = NameParser(show_object=show).result_from_guess(name, guess, show)
