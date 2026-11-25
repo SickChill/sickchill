@@ -754,6 +754,54 @@ class GuessitFinditTests(unittest.TestCase):
         self.assertEqual(result.episode_numbers, [])
         self.assertEqual(result.series_name, "Show Name")
 
+    def test_year_in_release_matches_the_year_bearing_show(self):
+        dig_2015 = _guess_show("Dig")
+        dig_2026 = _guess_show("Dig (2026)")
+        dig_2026.indexerid = 2026
+
+        def get_show(name, try_indexers=False):
+            if name == "Dig 2026":
+                return dig_2026
+            if name == "Dig":
+                return dig_2015
+            return None
+
+        with patch("sickchill.oldbeard.postProcessor.helpers.get_show", side_effect=get_show):
+            with patch.object(parser.NameParser, "parse", side_effect=AssertionError("regex sweep")):
+                result = guessit_findit("Dig.2026.S01E01.REPACK.1080p.WEB.H264-GROUP.mkv")
+
+        self.assertIs(result.show, dig_2026)
+        self.assertEqual(result.season_number, 1)
+        self.assertEqual(result.episode_numbers, [1])
+
+    def test_release_without_year_matches_the_bare_title(self):
+        dig = _guess_show("Dig")
+        seen = []
+
+        def get_show(name, try_indexers=False):
+            seen.append(name)
+            return dig if name == "Dig" else None
+
+        with patch("sickchill.oldbeard.postProcessor.helpers.get_show", side_effect=get_show):
+            with patch.object(parser.NameParser, "parse", side_effect=AssertionError("regex sweep")):
+                result = guessit_findit("Dig.S01E01.1080p.WEB.H264-GROUP.mkv")
+
+        self.assertEqual(seen, ["Dig"])
+        self.assertIs(result.show, dig)
+
+    def test_unmatched_year_falls_back_to_the_bare_title(self):
+        dig = _guess_show("Dig")
+
+        def get_show(name, try_indexers=False):
+            return dig if name == "Dig" else None
+
+        with patch("sickchill.oldbeard.postProcessor.helpers.get_show", side_effect=get_show):
+            with patch.object(parser.NameParser, "parse", side_effect=AssertionError("regex sweep")):
+                result = guessit_findit("Dig.1999.S01E01.1080p.WEB.H264-GROUP.mkv")
+
+        self.assertIs(result.show, dig)
+        self.assertEqual(result.series_name, "Dig")
+
     def test_anime_absolute_uses_regex(self):
         show = _guess_show("Show Name", anime=True)
         with patch("sickchill.oldbeard.postProcessor.helpers.get_show", return_value=show):
