@@ -5,7 +5,7 @@ from tornado.web import HTTPError
 
 import sickchill
 from sickchill import settings
-from sickchill.oldbeard.helpers import make_indexer_session
+from sickchill.helper.helpers import make_indexer_session
 from sickchill.providers.metadata.generic import GenericMetadata
 from sickchill.show.indexers.handler import ShowIndexer
 from sickchill.show.Show import Show

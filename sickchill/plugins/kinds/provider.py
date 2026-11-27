@@ -8,7 +8,7 @@ from sickchill.plugins.settings import _as_bool, _coerce_settings_value
 
 class ProviderPlugin(Plugin):
     kind: ClassVar[PluginKind] = PluginKind.PROVIDER
-    # Module basename under sickchill.oldbeard.providers (may differ from id, e.g. jackett → jackett_sc).
+    # Module basename under sickchill.providers (may differ from id, e.g. jackett → jackett_sc).
     provider_module: ClassVar[str] = ""
 
     def apply_to_provider(self, provider: Any) -> None:
@@ -41,11 +41,11 @@ class ProviderPlugin(Plugin):
                 setattr(provider, key, "" if raw is None else raw)
 
     def provider(self) -> Any:
-        """Instantiate the wrapped oldbeard provider and apply ctx settings."""
+        """Instantiate the wrapped provider and apply ctx settings."""
         import importlib
 
         module_name = self.provider_module or self.id
-        mod = importlib.import_module(f"sickchill.oldbeard.providers.{module_name}")
+        mod = importlib.import_module(f"sickchill.providers.{module_name}")
         instance = mod.Provider()
         self.apply_to_provider(instance)
         return instance

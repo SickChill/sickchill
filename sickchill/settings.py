@@ -5,9 +5,9 @@ from typing import TYPE_CHECKING
 
 import rarfile
 
+from sickchill.common import SD
+from sickchill.helper.numdict import NumDict
 from sickchill.init_helpers import setup_gettext, sickchill_dir
-from sickchill.oldbeard.common import SD
-from sickchill.oldbeard.numdict import NumDict
 
 if TYPE_CHECKING:
     from sickchill.movies import MovieList
@@ -377,7 +377,7 @@ ROCKETCHAT_NOTIFY_DOWNLOAD = None
 ROCKETCHAT_NOTIFY_SNATCH = None
 ROCKETCHAT_NOTIFY_SUBTITLEDOWNLOAD = None
 ROCKETCHAT_WEBHOOK = None
-ROOT_DIRS = None
+ROOT_DIRS: str | None = None
 SAB_APIKEY = None
 SAB_CATEGORY = None
 SAB_CATEGORY_ANIME = None

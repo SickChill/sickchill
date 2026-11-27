@@ -21,7 +21,7 @@ from subliminal.providers import Provider, TimeoutSafeTransport
 from subliminal.subtitle import Subtitle, fix_line_ending
 
 from sickchill import settings
-from sickchill.oldbeard.helpers import make_context
+from sickchill.helper.helpers import make_context
 
 logger = logging.getLogger(__name__)
 

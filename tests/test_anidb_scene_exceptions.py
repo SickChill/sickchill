@@ -10,7 +10,7 @@ from xml.etree import ElementTree
 
 from sickchill import settings
 from sickchill.adba import aniDBfileInfo as anidb_files
-from sickchill.oldbeard import scene_exceptions
+from sickchill.show import scene_exceptions
 
 
 def _write_map_xml(path: Path, entries: list[tuple]) -> None:
@@ -98,8 +98,8 @@ class AnidbExceptionsGeneratorTests(unittest.TestCase):
         show.episodes = episodes if episodes is not None else {}
         return show
 
-    @patch("sickchill.oldbeard.scene_exceptions.should_refresh", return_value=True)
-    @patch("sickchill.oldbeard.scene_exceptions.set_last_refresh")
+    @patch("sickchill.show.scene_exceptions.should_refresh", return_value=True)
+    @patch("sickchill.show.scene_exceptions.set_last_refresh")
     def test_tvdb_72025_selects_season_specific_anidb_title(self, set_refresh, _should):
         # Whole series: both AniDB titles, tagged with defaulttvdbseason
         settings.show_list = [self._show("Crest of the Stars", 72025)]

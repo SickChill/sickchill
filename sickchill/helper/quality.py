@@ -1,4 +1,4 @@
-from sickchill.oldbeard.common import Quality, qualityPresetStrings
+from sickchill.common import Quality, qualityPresetStrings
 
 
 def get_quality_string(quality):

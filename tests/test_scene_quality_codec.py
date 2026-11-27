@@ -3,8 +3,8 @@
 from types import SimpleNamespace
 from unittest.mock import patch
 
+from sickchill.common import Quality
 from sickchill.helper.media_info import video_codec_from_file
-from sickchill.oldbeard.common import Quality
 
 
 def test_scene_quality_from_name_x264():

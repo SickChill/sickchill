@@ -22,17 +22,16 @@ def _avi_screen_size(filename):
     :returns tuple: (width, height)
     """
     try:
-        if not filename.endswith(".avi"):
+        if filename.endswith(".avi"):
             with open(filename, "rb") as f:
                 header = f.read(72)
 
             x = binascii.hexlify(header[68:72])
             height = int(x[6:8] + x[4:6] + x[2:4] + x[0:2], 16)
-            assert 100 < height < 4320
-
             x = binascii.hexlify(header[64:68])
             width = int(x[6:8] + x[4:6] + x[2:4] + x[0:2], 16)
-            assert 100 < width < 7680
+            if not (100 < height < 4320 and 100 < width < 7680):
+                return None, None
 
             return width, height
     except Exception:

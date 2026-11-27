@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Any, ClassVar
 
-from sickchill import settings
+from sickchill import logger, settings
 from sickchill.plugins.api import Field
 from sickchill.plugins.kinds.client import ClientPlugin
 from sickchill.plugins.settings import _as_bool
@@ -72,6 +72,8 @@ def sync_torrent_ctx_to_settings(ctx, *, overwrite_empty: bool = False) -> None:
     _set("TORRENT_HOST", ctx.get("host"))
     _set("TORRENT_USERNAME", ctx.get("username"))
     _set("TORRENT_PASSWORD", _plaintext_client_password(ctx.get("password")))
+    logger.register_censored(("CLIENTS", "TORRENT_USERNAME"), settings.TORRENT_USERNAME)
+    logger.register_censored(("CLIENTS", "TORRENT_PASSWORD"), settings.TORRENT_PASSWORD)
     _set("TORRENT_PATH", ctx.get("path"))
     _set("TORRENT_PATH_INCOMPLETE", ctx.get("path_incomplete"))
     _set("TORRENT_LABEL", ctx.get("label"))
@@ -91,7 +93,7 @@ def sync_torrent_ctx_to_settings(ctx, *, overwrite_empty: bool = False) -> None:
 
 
 class TorrentClientPlugin(ClientPlugin):
-    """Wraps sickchill.oldbeard.clients.<id>.Client."""
+    """Wraps sickchill.clients.<id>.Client."""
 
     version = "1.0.0"
     schema: ClassVar[tuple[Field, ...]] = TORRENT_COMMON_SCHEMA
@@ -131,7 +133,7 @@ class TorrentClientPlugin(ClientPlugin):
 
         # Always positional: qBittorrent.Client first param is named `url`, not `host`.
         # Matches legacy getClientInstance(name)(host, username, password).
-        mod = importlib.import_module(f"sickchill.oldbeard.clients.{self.id}")
+        mod = importlib.import_module(f"sickchill.clients.{self.id}")
         return mod.Client(host, username, password)
 
     def send(self, result: Any, host=None, username=None, password=None) -> bool:

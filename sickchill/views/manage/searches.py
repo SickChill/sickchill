@@ -1,6 +1,6 @@
 from sickchill import logger, settings
+from sickchill.helper import ui
 from sickchill.helper.common import resolve_safe_redirect
-from sickchill.oldbeard import ui
 from sickchill.views.common import PageTemplate
 from sickchill.views.manage.index import Manage
 from sickchill.views.routes import Route

@@ -3,12 +3,12 @@ from typing import TYPE_CHECKING, Dict, List
 from urllib.parse import urljoin
 
 from sickchill import logger, settings
+from sickchill.common import uses_absolute_numbering
+from sickchill.helper.bs4_parser import BS4Parser
 from sickchill.helper.common import valid_url
-from sickchill.oldbeard import tvcache
-from sickchill.oldbeard.bs4_parser import BS4Parser
-from sickchill.oldbeard.common import uses_absolute_numbering
-from sickchill.oldbeard.show_name_helpers import all_possible_show_names
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
+from sickchill.search import tvcache
+from sickchill.show.show_name_helpers import all_possible_show_names
 
 if TYPE_CHECKING:
     from sickchill.tv import TVEpisode

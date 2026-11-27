@@ -1,21 +1,19 @@
 from __future__ import annotations
 
-import json
 from typing import ClassVar
 
-import requests
-from requests.structures import CaseInsensitiveDict
-
-from sickchill.oldbeard import common
+from sickchill import settings
 from sickchill.plugins.api import Field, register
-from sickchill.plugins.kinds.notifier import NotifierPlugin
+from sickchill.plugins.kinds.notifier import LegacyNotifierPlugin
+from sickchill.plugins.settings import _as_bool
 
 
 @register
-class SlackNotifier(NotifierPlugin):
+class SlackNotifier(LegacyNotifierPlugin):
     id = "slack"
     name = "Slack"
     version = "1.0.0"
+    enable_setting: ClassVar[str] = "USE_SLACK"
     legacy_sections: ClassVar[tuple[str, ...]] = ("Slack",)
     schema: ClassVar[tuple[Field, ...]] = (
         Field(name="enabled", type="bool", default=False, legacy_keys=("use_slack",)),
@@ -26,63 +24,10 @@ class SlackNotifier(NotifierPlugin):
         Field(name="notify_subtitledownload", type="bool", default=False, legacy_keys=("slack_notify_subtitledownload",)),
     )
 
-    SLACK_WEBHOOK_URL = "https://hooks.slack.com/services/"
-    SLACK_ICON_URL = "https://github.com/SickChill/SickChill/raw/master/sickchill/gui/slick/images/sickchill-sc.png"
-
-    def notify_snatch(self, ep_name: str) -> None:
-        if self.ctx.get("notify_snatch"):
-            self._notify(common.notifyStrings[common.NOTIFY_SNATCH] + ": " + ep_name)
-
-    def notify_download(self, ep_name: str) -> None:
-        if self.ctx.get("notify_download"):
-            self._notify(common.notifyStrings[common.NOTIFY_DOWNLOAD] + ": " + ep_name)
-
-    def notify_postprocess(self, ep_name: str) -> None:
-        if self.ctx.get("notify_download"):
-            self._notify(common.notifyStrings[common.NOTIFY_POSTPROCESS] + ": " + ep_name)
-
-    def notify_subtitle_download(self, ep_name: str, lang: str = "") -> None:
-        if self.ctx.get("notify_subtitledownload"):
-            self._notify(common.notifyStrings[common.NOTIFY_SUBTITLE_DOWNLOAD] + " " + ep_name + ": " + lang)
-
-    def notify_update(self, new_version: str = "??") -> None:
-        update_text = common.notifyStrings[common.NOTIFY_UPDATE_TEXT]
-        title = common.notifyStrings[common.NOTIFY_UPDATE]
-        self._notify(title + " - " + update_text + new_version)
-
-    def notify_login(self, ipaddress: str = "") -> None:
-        update_text = common.notifyStrings[common.NOTIFY_LOGIN_TEXT]
-        title = common.notifyStrings[common.NOTIFY_LOGIN]
-        self._notify(title + " - " + update_text.format(ipaddress))
-
-    def test_notify(self):
-        return self._notify("This is a test notification from SickChill", force=True)
-
-    def test(self) -> tuple[bool, str]:
-        ok = bool(self.test_notify())
-        return ok, "ok" if ok else "failed"
-
-    def _notify(self, message: str = "", force: bool = False) -> bool:
-        if not self.ctx.get("enabled") and not force:
-            self.ctx.logger.debug("Notification for Slack not enabled, skipping this notification")
-            return False
-        return self._send(message)
-
-    def _send(self, message: str | None = None) -> bool:
-        webhook = self.ctx.get("webhook") or ""
-        slack_webhook = self.SLACK_WEBHOOK_URL + str(webhook).replace(self.SLACK_WEBHOOK_URL, "")
-        icon_emoji = self.ctx.get("icon_emoji") or ""
-        self.ctx.logger.info("Sending slack message: %s", message)
-        headers = CaseInsensitiveDict({"Content-Type": "application/json"})
-        try:
-            response = requests.post(
-                slack_webhook,
-                data=json.dumps(dict(text=message, username="SickChillBot", icon_emoji=icon_emoji, icon_url=self.SLACK_ICON_URL)),
-                headers=headers,
-                timeout=30,
-            )
-            response.raise_for_status()
-        except Exception as error:
-            self.ctx.logger.exception("Error Sending Slack message: %s", error)
-            return False
-        return True
+    def _sync_settings(self) -> None:
+        settings.USE_SLACK = _as_bool(self.ctx.get("enabled"))
+        settings.SLACK_WEBHOOK = self.ctx.get("webhook") or ""
+        settings.SLACK_ICON_EMOJI = self.ctx.get("icon_emoji") or ""
+        settings.SLACK_NOTIFY_SNATCH = _as_bool(self.ctx.get("notify_snatch"))
+        settings.SLACK_NOTIFY_DOWNLOAD = _as_bool(self.ctx.get("notify_download"))
+        settings.SLACK_NOTIFY_SUBTITLEDOWNLOAD = _as_bool(self.ctx.get("notify_subtitledownload"))

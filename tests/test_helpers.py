@@ -1,5 +1,5 @@
 """
-Test oldbeard.helpers
+Test sickchill.helper.helpers
 
 Public Methods:
     indentXML
@@ -65,7 +65,7 @@ from shutil import rmtree
 from unittest.mock import MagicMock
 
 from sickchill import settings
-from sickchill.oldbeard import helpers
+from sickchill.helper import helpers
 
 TEST_RESULT = "Show.Name.S01E01.HDTV.x264-SICKCHILL"
 TEST_CASES = {

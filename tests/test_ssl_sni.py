@@ -7,7 +7,7 @@ import unittest
 import certifi
 import requests
 
-from sickchill.oldbeard import providers as providers
+from sickchill import providers as providers
 
 
 def generator(_provider):

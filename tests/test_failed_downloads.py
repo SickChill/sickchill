@@ -2,7 +2,7 @@
 
 import unittest
 
-from sickchill.oldbeard import db
+from sickchill import db
 from sickchill.views.manage.index import _clear_failed_downloads, _failed_download_rows
 from tests import conftest
 

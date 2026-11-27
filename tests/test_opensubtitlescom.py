@@ -3,7 +3,7 @@
 import unittest
 
 from sickchill import settings
-from sickchill.oldbeard import subtitles as subtitle_module
+from sickchill.show import subtitles as subtitle_module
 
 
 class TestOpenSubtitlesComProvider(unittest.TestCase):

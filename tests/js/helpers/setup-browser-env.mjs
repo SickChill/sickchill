@@ -1,3 +1,5 @@
-import browserEnv from 'browser-env';
+import {JSDOM} from 'jsdom';
 
-browserEnv();
+const {window} = new JSDOM('<!doctype html><html><body></body></html>');
+globalThis.window = window;
+globalThis.document = window.document;

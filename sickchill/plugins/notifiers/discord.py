@@ -1,20 +1,18 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, ClassVar
+from typing import ClassVar
 
-from sickchill.oldbeard import common
+from sickchill import settings
 from sickchill.plugins.api import Field, register
-from sickchill.plugins.kinds.notifier import NotifierPlugin
-
-if TYPE_CHECKING:
-    from sickchill.logging.weblog import UIError
+from sickchill.plugins.kinds.notifier import LegacyNotifierPlugin
 
 
 @register
-class DiscordNotifier(NotifierPlugin):
+class DiscordNotifier(LegacyNotifierPlugin):
     id = "discord"
     name = "Discord"
     version = "1.0.0"
+    enable_setting: ClassVar[str] = "USE_DISCORD"
     legacy_sections: ClassVar[tuple[str, ...]] = ("Discord",)
     schema: ClassVar[tuple[Field, ...]] = (
         Field(name="enabled", type="bool", default=False, legacy_keys=("use_discord", "enabled")),
@@ -37,52 +35,16 @@ class DiscordNotifier(NotifierPlugin):
         ),
     )
 
-    def notify_snatch(self, ep_name: str) -> None:
-        if self.ctx.get("notify_snatch"):
-            self._queue(common.notifyStrings[common.NOTIFY_SNATCH] + ": " + ep_name)
-
-    def notify_download(self, ep_name: str) -> None:
-        if self.ctx.get("notify_download"):
-            self._queue(common.notifyStrings[common.NOTIFY_DOWNLOAD] + ": " + ep_name)
-
-    def notify_postprocess(self, ep_name: str) -> None:
-        # Discord has no separate postprocess toggle; reuse download preference.
-        if self.ctx.get("notify_download"):
-            self._queue(common.notifyStrings[common.NOTIFY_POSTPROCESS] + ": " + ep_name)
-
-    def notify_subtitle_download(self, ep_name: str, lang: str = "") -> None:
-        if self.ctx.get("notify_subtitle_download"):
-            self._queue(common.notifyStrings[common.NOTIFY_SUBTITLE_DOWNLOAD] + " " + ep_name + ": " + lang)
-
-    def notify_update(self, new_version: str = "??") -> None:
-        update_text = common.notifyStrings[common.NOTIFY_UPDATE_TEXT]
-        title = common.notifyStrings[common.NOTIFY_UPDATE]
-        self._queue(title + " - " + update_text + new_version)
-
-    def notify_login(self, ipaddress: str = "") -> None:
-        update_text = common.notifyStrings[common.NOTIFY_LOGIN_TEXT]
-        title = common.notifyStrings[common.NOTIFY_LOGIN]
-        self._queue(title + " - " + update_text.format(ipaddress))
-
-    def notify_logged_error(self, ui_error: UIError) -> None:
-        self._queue(f"{ui_error.title} - {ui_error.message}")
-
-    def test_notify(self, webhook: str | None = None, name: str | None = None, avatar: str | None = None, tts=None):
-        from sickchill.oldbeard.notifications_queue import DiscordTask
-
-        task = DiscordTask("This is a test notification from SickChill")
-        return task._send_discord(
-            webhook=webhook or self.ctx.get("webhook"),
-            name=name or self.ctx.get("bot_name"),
-            avatar=avatar or self.ctx.get("avatar_url"),
-            tts=self.ctx.get("tts") if tts is None else tts,
-        )
+    def _sync_settings(self) -> None:
+        settings.USE_DISCORD = bool(self.ctx.get("enabled"))
+        settings.DISCORD_WEBHOOK = self.ctx.get("webhook") or ""
+        settings.DISCORD_NAME = self.ctx.get("bot_name") or "SickChill"
+        settings.DISCORD_AVATAR_URL = self.ctx.get("avatar_url") or ""
+        settings.DISCORD_TTS = bool(self.ctx.get("tts"))
+        settings.DISCORD_NOTIFY_SNATCH = bool(self.ctx.get("notify_snatch"))
+        settings.DISCORD_NOTIFY_DOWNLOAD = bool(self.ctx.get("notify_download"))
+        settings.DISCORD_NOTIFY_SUBTITLEDOWNLOAD = bool(self.ctx.get("notify_subtitle_download"))
 
     def test(self) -> tuple[bool, str]:
         ok = bool(self.test_notify())
         return ok, "Discord message successful" if ok else "Discord message failed"
-
-    def _queue(self, message: str, force: bool = False) -> bool:
-        from sickchill import settings
-
-        return bool(settings.notificationsTaskScheduler.action.add_item(message, notifier="discord", force_next=force))

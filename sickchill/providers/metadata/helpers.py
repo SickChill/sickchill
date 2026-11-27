@@ -5,7 +5,7 @@ from urllib.parse import urljoin, urlparse
 import requests
 
 from sickchill import logger, settings
-from sickchill.oldbeard import helpers
+from sickchill.helper import helpers
 
 meta_session = helpers.make_session()
 

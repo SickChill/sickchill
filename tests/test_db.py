@@ -11,7 +11,7 @@ import time
 import unittest
 from datetime import datetime
 
-import sickchill.oldbeard
+import sickchill
 from tests import conftest
 
 
@@ -28,7 +28,7 @@ class DBBasicTests(conftest.SickChillTestDBCase):
         Set up base.
         """
         super().setUp()
-        self.sc_db = sickchill.oldbeard.db.DBConnection()
+        self.sc_db = sickchill.db.DBConnection()
 
     def test_select(self):
         """
@@ -50,7 +50,7 @@ class DBMultiTests(conftest.SickChillTestDBCase):
         Set up base.
         """
         super().setUp()
-        self.sc_db = sickchill.oldbeard.db.DBConnection()
+        self.sc_db = sickchill.db.DBConnection()
 
     def select(self):
         """
@@ -70,9 +70,9 @@ class DBMultiTests(conftest.SickChillTestDBCase):
 class CacheDBTests(conftest.SickChillTestDBCase):
     def setUp(self):
         super().setUp()
-        self.cache_db_con = sickchill.oldbeard.db.DBConnection("cache.db")
-        sickchill.oldbeard.db.upgrade_database(self.cache_db_con, sickchill.oldbeard.databases.cache.InitialSchema)
-        from sickchill.oldbeard.network_timezones import sc_timezone
+        self.cache_db_con = sickchill.db.DBConnection("cache.db")
+        sickchill.db.upgrade_database(self.cache_db_con, sickchill.databases.cache.InitialSchema)
+        from sickchill.helper.network_timezones import sc_timezone
 
         cur_timestamp = int(time.mktime(datetime.now(tz=sc_timezone).timetuple()))
         self.record = (
@@ -219,6 +219,18 @@ class CacheDBTests(conftest.SickChillTestDBCase):
             ("Other.Show.S01E01", "other"),
             ("name", "path-2"),
         ]
+
+    def test_mass_upsert_replace_same_release_equal_time_keeps_later_url(self):
+        self.cache_db_con.action("UPDATE results SET time = 100, seeders = 50 WHERE url = ?", ["url"])
+        rotated = (dict(self.record[0]), {"url": "path-new"})
+        rotated[0]["url"] = "path-new"
+        rotated[0]["time"] = 100
+        rotated[0]["seeders"] = 1
+
+        assert self.cache_db_con.mass_upsert("results", [rotated], replace_same_release=True)
+
+        rows = self.cache_db_con.select("SELECT url, seeders FROM results")
+        assert [(row["url"], row["seeders"]) for row in rows] == [("path-new", 1)]
 
     def test_stale_release_delete_uses_release_index(self):
         plan = self.cache_db_con.select(

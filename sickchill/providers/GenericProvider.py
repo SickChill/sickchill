@@ -12,18 +12,18 @@ from urllib.parse import urljoin
 from requests.structures import CaseInsensitiveDict
 from requests.utils import add_dict_to_cookiejar
 
-import sickchill.oldbeard
+import sickchill
 from sickchill import logger
+from sickchill.common import MULTI_EP_RESULT, SEASON_RESULT, Quality, uses_absolute_numbering
+from sickchill.db import DBConnection
+from sickchill.helper import filters
 from sickchill.helper.common import is_blocked_search_result, sanitize_filename, valid_url
-from sickchill.oldbeard import filters
-from sickchill.oldbeard.common import MULTI_EP_RESULT, SEASON_RESULT, Quality, uses_absolute_numbering
-from sickchill.oldbeard.db import DBConnection
-from sickchill.oldbeard.helpers import download_file, getURL, make_session, remove_file_failed
-from sickchill.oldbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
-from sickchill.oldbeard.network_timezones import sc_timezone
-from sickchill.oldbeard.show_name_helpers import all_possible_show_names
-from sickchill.oldbeard.tvcache import TVCache
+from sickchill.helper.helpers import download_file, getURL, make_session, remove_file_failed
+from sickchill.helper.network_timezones import sc_timezone
+from sickchill.process.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 from sickchill.providers.result_classes import Proper, SearchResult
+from sickchill.search.tvcache import TVCache
+from sickchill.show.show_name_helpers import all_possible_show_names
 
 if TYPE_CHECKING:
     from sickchill.tv import TVEpisode
@@ -436,7 +436,7 @@ class GenericProvider(object):
                 self.mark_rate_limited(headers.get("Retry-After") or headers.get("retry-after"))
 
             if response.request.method == "POST":
-                logger.debug(f"With post data: {response.request.body}")
+                logger.debug(f"With post data: {logger.redact_post_body(response.request.body)}")
 
     def get_url(self, url, post_data=None, params=None, timeout=30, **kwargs):
         if self.is_rate_limited():
@@ -524,7 +524,7 @@ class GenericProvider(object):
                 episode_string_fallback = episode_string + "{0:02d}".format(int(episode.scene_absolute_number))
                 episode_string += "{0:03d}".format(int(episode.scene_absolute_number))
             else:
-                episode_string += sickchill.oldbeard.config.naming_ep_type[2] % {
+                episode_string += sickchill.helper.config.naming_ep_type[2] % {
                     "seasonnumber": episode.scene_season,
                     "episodenumber": episode.scene_episode,
                 }

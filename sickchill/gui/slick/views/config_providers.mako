@@ -1,9 +1,9 @@
 <%inherit file="/layouts/config.mako" />
 <%!
-    from sickchill.oldbeard import providers
+    from sickchill import providers
     from sickchill import settings
-    from sickchill.oldbeard.filters import hide
-    from sickchill.oldbeard.helpers import anon_url
+    from sickchill.helper.filters import hide
+    from sickchill.helper.helpers import anon_url
     from sickchill.providers.GenericProvider import GenericProvider
 %>
 

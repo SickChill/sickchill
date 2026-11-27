@@ -10,14 +10,14 @@ import subliminal.subtitle
 from babelfish import Language
 
 from sickchill import settings
-from sickchill.oldbeard import subtitles as subtitle_module
+from sickchill.show import subtitles as subtitle_module
 
 
 class TestGetVideo(unittest.TestCase):
     """Test the get_video function."""
 
-    @patch("sickchill.oldbeard.subtitles.get_subtitles_path")
-    @patch("sickchill.oldbeard.subtitles.subliminal")
+    @patch("sickchill.show.subtitles.get_subtitles_path")
+    @patch("sickchill.show.subtitles.subliminal")
     def test_external_subtitles_added_to_video_subtitles(self, mock_subliminal, mock_get_path):
         """External subtitles should be added to video.subtitles, not subtitle_languages."""
         mock_get_path.return_value = "/fake/subs"
@@ -37,8 +37,8 @@ class TestGetVideo(unittest.TestCase):
         self.assertIs(result, mock_video)
         self.assertIn(fake_external_sub, result.subtitles)
 
-    @patch("sickchill.oldbeard.subtitles.get_subtitles_path")
-    @patch("sickchill.oldbeard.subtitles.subliminal")
+    @patch("sickchill.show.subtitles.get_subtitles_path")
+    @patch("sickchill.show.subtitles.subliminal")
     def test_external_subtitles_multiple(self, mock_subliminal, mock_get_path):
         """Multiple external subtitles should all be added."""
         mock_get_path.return_value = "/fake/subs"
@@ -61,8 +61,8 @@ class TestGetVideo(unittest.TestCase):
         self.assertIn(sub_en, result.subtitles)
         self.assertIn(sub_fr, result.subtitles)
 
-    @patch("sickchill.oldbeard.subtitles.get_subtitles_path")
-    @patch("sickchill.oldbeard.subtitles.subliminal")
+    @patch("sickchill.show.subtitles.get_subtitles_path")
+    @patch("sickchill.show.subtitles.subliminal")
     def test_no_external_subtitles_when_disabled(self, mock_subliminal, mock_get_path):
         """When subtitles=False, search_external_subtitles should not be called."""
         mock_get_path.return_value = "/fake/subs"
@@ -150,8 +150,8 @@ class TestRefineVideo(unittest.TestCase):
         ep.episodes = [10]
         self.assertEqual(ep.episode, 10)
 
-    @patch("sickchill.oldbeard.subtitles.guessit")
-    @patch("sickchill.oldbeard.subtitles.subliminal")
+    @patch("sickchill.show.subtitles.guessit")
+    @patch("sickchill.show.subtitles.subliminal")
     def test_refine_video_sets_episodes_not_episode(self, mock_subliminal, mock_guessit):
         """refine_video should set video.episodes (list) not video.episode (property)."""
         mock_video = MagicMock(spec=[])  # no spec so setattr works freely
@@ -178,8 +178,8 @@ class TestRefineVideo(unittest.TestCase):
         # Should have set episodes to [5], not tried to set episode
         self.assertEqual(mock_video.episodes, [5])
 
-    @patch("sickchill.oldbeard.subtitles.guessit")
-    @patch("sickchill.oldbeard.subtitles.subliminal")
+    @patch("sickchill.show.subtitles.guessit")
+    @patch("sickchill.show.subtitles.subliminal")
     def test_refine_video_handles_guessing_error(self, mock_subliminal, mock_guessit):
         """refine_video should handle GuessingError from Episode.fromguess gracefully."""
         mock_video = MagicMock()
@@ -231,7 +231,7 @@ class TestForcedSubtitles(unittest.TestCase):
         self.assertTrue("foreign_only" in sig.parameters or "subtitle_categories" in sig.parameters)
 
     def test_preference_kwargs_match_installed_api(self):
-        from sickchill.oldbeard.subtitles import best_subtitle_preference_kwargs
+        from sickchill.show.subtitles import best_subtitle_preference_kwargs
 
         original_foreign = settings.SUBTITLES_FOREIGN_ONLY
         original_hi = settings.SUBTITLES_HEARING_IMPAIRED
@@ -266,17 +266,17 @@ class TestForcedSubtitles(unittest.TestCase):
         else:
             self.assertTrue(both["hearing_impaired"])
 
-    @patch("sickchill.oldbeard.subtitles.subliminal.save_subtitles")
-    @patch("sickchill.oldbeard.subtitles.log_scores")
-    @patch("sickchill.oldbeard.subtitles.get_needed_languages")
-    @patch("sickchill.oldbeard.subtitles.get_subtitles_path", return_value=None)
-    @patch("sickchill.oldbeard.subtitles.enabled_service_list", return_value=[])
-    @patch("sickchill.oldbeard.subtitles.SubtitleProviderPool")
-    @patch("sickchill.oldbeard.subtitles.get_video")
-    @patch("sickchill.oldbeard.subtitles.needs_subtitles", return_value=True)
+    @patch("sickchill.show.subtitles.subliminal.save_subtitles")
+    @patch("sickchill.show.subtitles.log_scores")
+    @patch("sickchill.show.subtitles.get_needed_languages")
+    @patch("sickchill.show.subtitles.get_subtitles_path", return_value=None)
+    @patch("sickchill.show.subtitles.enabled_service_list", return_value=[])
+    @patch("sickchill.show.subtitles.SubtitleProviderPool")
+    @patch("sickchill.show.subtitles.get_video")
+    @patch("sickchill.show.subtitles.needs_subtitles", return_value=True)
     def test_download_forwards_foreign_only(self, mock_needs, mock_get_video, mock_pool_cls, mock_enabled, mock_path, mock_langs, mock_log_scores, mock_save):
         """download_subtitles should forward foreign-only preference for the installed subliminal API."""
-        from sickchill.oldbeard.subtitles import download_subtitles
+        from sickchill.show.subtitles import download_subtitles
 
         mock_langs.return_value = {Language("eng")}
 
@@ -377,7 +377,7 @@ class TestResolveSavedSubtitlePath(unittest.TestCase):
         import tempfile
         from pathlib import Path
 
-        from sickchill.oldbeard.subtitles import resolve_saved_subtitle_path
+        from sickchill.show.subtitles import resolve_saved_subtitle_path
 
         tmp = Path(tempfile.mkdtemp())
         video = tmp / "Show.S01E01.mkv"
@@ -392,7 +392,7 @@ class TestResolveSavedSubtitlePath(unittest.TestCase):
         import tempfile
         from pathlib import Path
 
-        from sickchill.oldbeard.subtitles import resolve_saved_subtitle_path
+        from sickchill.show.subtitles import resolve_saved_subtitle_path
 
         tmp = Path(tempfile.mkdtemp())
         video = tmp / "Show.S01E01.mkv"
@@ -407,7 +407,7 @@ class TestResolveSavedSubtitlePath(unittest.TestCase):
         import tempfile
         from pathlib import Path
 
-        from sickchill.oldbeard.subtitles import resolve_saved_subtitle_path
+        from sickchill.show.subtitles import resolve_saved_subtitle_path
 
         tmp = Path(tempfile.mkdtemp())
         stem = "Show - S01E01 - Title - AFG[eztv.re]"
@@ -421,7 +421,7 @@ class TestResolveSavedSubtitlePath(unittest.TestCase):
         self.assertNotIn("eztv.en", found)
 
     def test_video_name_without_media_ext_keeps_bracket(self):
-        from sickchill.oldbeard.subtitles import _video_stem
+        from sickchill.show.subtitles import _video_stem
 
         # subliminal may pass a name already without .mkv ending in [eztv.re]
         self.assertEqual(_video_stem("/tv/Show - S01E01 - AFG[eztv.re]"), "/tv/Show - S01E01 - AFG[eztv.re]")
@@ -431,7 +431,7 @@ class TestResolveSavedSubtitlePath(unittest.TestCase):
         import tempfile
         from pathlib import Path
 
-        from sickchill.oldbeard.subtitles import resolve_saved_subtitle_path
+        from sickchill.show.subtitles import resolve_saved_subtitle_path
 
         tmp = Path(tempfile.mkdtemp())
         video = tmp / "Show.S01E01.mkv"
@@ -444,7 +444,7 @@ class TestResolveSavedSubtitlePath(unittest.TestCase):
         import tempfile
         from pathlib import Path
 
-        from sickchill.oldbeard.subtitles import resolve_saved_subtitle_path
+        from sickchill.show.subtitles import resolve_saved_subtitle_path
 
         tmp = Path(tempfile.mkdtemp())
         video = tmp / "Show.S01E01.mkv"
@@ -456,7 +456,7 @@ class TestResolveSavedSubtitlePath(unittest.TestCase):
         self.assertEqual(found, str(real))
 
     def test_chmod_as_parent_missing_path_does_not_raise(self):
-        from sickchill.oldbeard.helpers import chmodAsParent
+        from sickchill.helper.helpers import chmodAsParent
 
         # Should no-op rather than FileNotFoundError
         chmodAsParent("/tmp/sickchill-missing-subtitle-does-not-exist.en.srt")

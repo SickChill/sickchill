@@ -337,7 +337,7 @@ class ClientPluginTests(unittest.TestCase):
 
     def test_client_password_encrypted_on_write_decrypted_on_sync(self):
         from sickchill import settings as sc_settings
-        from sickchill.oldbeard import helpers
+        from sickchill.helper import helpers
         from sickchill.plugins.clients.config import sync_clients_from_settings, write_clients_to_cfg
 
         saved_version = sc_settings.ENCRYPTION_VERSION
@@ -363,7 +363,7 @@ class ClientPluginTests(unittest.TestCase):
     def test_resolve_credentials_decrypts_stored_password(self):
         """reload_client_ctx leaves ciphertext in ctx; send/test must decrypt before Client()."""
         from sickchill import settings as sc_settings
-        from sickchill.oldbeard import helpers
+        from sickchill.helper import helpers
         from sickchill.plugins.manager import plugin_manager
 
         saved_version = sc_settings.ENCRYPTION_VERSION
@@ -543,7 +543,7 @@ class ClientPluginTests(unittest.TestCase):
     def test_send_keeps_username_when_adapter_passes_none(self):
         """Snatch calls Client() with no creds; must not blank TORRENT_USERNAME from empty ctx."""
         from sickchill import settings as sc_settings
-        from sickchill.oldbeard.clients import getClientInstance
+        from sickchill.clients import getClientInstance
         from sickchill.plugins.manager import plugin_manager
 
         load_first_party_clients()
@@ -578,7 +578,7 @@ class ClientPluginTests(unittest.TestCase):
 
     def test_torrent_impl_accepts_qbittorrent_positional_ctor(self):
         """qBittorrent.Client first arg is named `url`; wrappers must not pass host=."""
-        from sickchill.oldbeard.clients import getClientInstance
+        from sickchill.clients import getClientInstance
         from sickchill.plugins.manager import plugin_manager
 
         load_first_party_clients()
@@ -603,7 +603,7 @@ class ClientPluginTests(unittest.TestCase):
     def test_all_torrent_clients_snatch_path_keeps_credentials(self):
         """Every torrent ClientPlugin: snatch-style Client() with no args keeps host/user/pass."""
         from sickchill import settings as sc_settings
-        from sickchill.oldbeard.clients import getClientInstance
+        from sickchill.clients import getClientInstance
         from sickchill.plugins.manager import plugin_manager
 
         torrent_ids = (

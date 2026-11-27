@@ -4,14 +4,15 @@ from typing import ClassVar
 
 from sickchill import settings
 from sickchill.plugins.api import Field, register
-from sickchill.plugins.kinds.notifier import NotifierPlugin
+from sickchill.plugins.kinds.notifier import LegacyNotifierPlugin
 
 
 @register
-class PushoverNotifier(NotifierPlugin):
+class PushoverNotifier(LegacyNotifierPlugin):
     id = "pushover"
     name = "Pushover"
     version = "1.0.0"
+    enable_setting: ClassVar[str] = "USE_PUSHOVER"
     legacy_sections: ClassVar[tuple[str, ...]] = ("Pushover",)
     schema: ClassVar[tuple[Field, ...]] = (
         Field(name="enabled", type="bool", default=False, legacy_keys=("use_pushover",)),
@@ -35,57 +36,3 @@ class PushoverNotifier(NotifierPlugin):
         settings.PUSHOVER_DEVICE = self.ctx.get("device") or ""
         settings.PUSHOVER_SOUND = self.ctx.get("sound") or ""
         settings.PUSHOVER_PRIORITY = self.ctx.get("priority") or ""
-
-    def _impl(self):
-        from sickchill.oldbeard.notifiers import pushover as _mod
-
-        return _mod.Notifier()
-
-    def notify_snatch(self, ep_name, *args, **kwargs):
-        self._sync_settings()
-        return self._impl().notify_snatch(ep_name, *args, **kwargs)
-
-    def notify_download(self, ep_name, *args, **kwargs):
-        self._sync_settings()
-        return self._impl().notify_download(ep_name, *args, **kwargs)
-
-    def notify_postprocess(self, ep_name, *args, **kwargs):
-        self._sync_settings()
-        impl = self._impl()
-        if hasattr(impl, "notify_postprocess"):
-            return impl.notify_postprocess(ep_name, *args, **kwargs)
-        return None
-
-    def notify_subtitle_download(self, ep_name, lang="", *args, **kwargs):
-        self._sync_settings()
-        return self._impl().notify_subtitle_download(ep_name, lang, *args, **kwargs)
-
-    def notify_update(self, new_version="??", *args, **kwargs):
-        self._sync_settings()
-        return self._impl().notify_update(new_version, *args, **kwargs)
-
-    def notify_login(self, ipaddress="", *args, **kwargs):
-        self._sync_settings()
-        return self._impl().notify_login(ipaddress, *args, **kwargs)
-
-    def notify_logged_error(self, ui_error, *args, **kwargs):
-        self._sync_settings()
-        impl = self._impl()
-        if hasattr(impl, "notify_logged_error"):
-            return impl.notify_logged_error(ui_error, *args, **kwargs)
-        return None
-
-    def test_notify(self, *args, **kwargs):
-        self._sync_settings()
-        previous = settings.USE_PUSHOVER
-        settings.USE_PUSHOVER = True
-        try:
-            return self._impl().test_notify(*args, **kwargs)
-        finally:
-            settings.USE_PUSHOVER = previous
-
-    def test(self):
-        result = self.test_notify()
-        if isinstance(result, tuple):
-            return bool(result[0]), str(result[1] if len(result) > 1 else result[0])
-        return bool(result), "ok" if result else "failed"

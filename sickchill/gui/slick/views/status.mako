@@ -1,10 +1,10 @@
 <%inherit file="/layouts/main.mako" />
 <%!
     from sickchill import settings
-    from sickchill.oldbeard import helpers
-    from sickchill.oldbeard.scdatetime import scdatetime, sctimeago
-    from sickchill.oldbeard.network_timezones import sc_now
-    from sickchill.oldbeard.show_queue import ShowQueueActions
+    from sickchill.helper import helpers
+    from sickchill.helper.scdatetime import scdatetime, sctimeago
+    from sickchill.helper.network_timezones import sc_now
+    from sickchill.show.show_queue import ShowQueueActions
 
     # Match timeago's "just now" window (~60s): only show a Start Time when next run is further out
     _START_TIME_MIN_SECONDS = 60

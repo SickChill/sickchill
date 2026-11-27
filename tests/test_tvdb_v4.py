@@ -620,30 +620,30 @@ class UpdatesFeedOkTests(unittest.TestCase):
     def test_from_time_display_uses_time_preset(self):
         updates = _UpdatesResult(MagicMock(), from_time=1793705221)
         with (
-            patch("sickchill.oldbeard.scdatetime.settings.DATE_PRESET", "%Y-%m-%d"),
-            patch("sickchill.oldbeard.scdatetime.settings.TIME_PRESET_W_SECONDS", "%H:%M:%S"),
-            patch("sickchill.oldbeard.scdatetime.settings.TIME_PRESET", "%H:%M"),
-            patch("sickchill.oldbeard.scdatetime.settings.TIMEZONE_DISPLAY", "local"),
+            patch("sickchill.helper.scdatetime.settings.DATE_PRESET", "%Y-%m-%d"),
+            patch("sickchill.helper.scdatetime.settings.TIME_PRESET_W_SECONDS", "%H:%M:%S"),
+            patch("sickchill.helper.scdatetime.settings.TIME_PRESET", "%H:%M"),
+            patch("sickchill.helper.scdatetime.settings.TIMEZONE_DISPLAY", "local"),
         ):
             displayed = updates._from_time_display()
         self.assertRegex(displayed, r"^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$")
         self.assertNotIn("1793705221", displayed)
 
         with (
-            patch("sickchill.oldbeard.scdatetime.settings.DATE_PRESET", "%m/%d/%Y"),
-            patch("sickchill.oldbeard.scdatetime.settings.TIME_PRESET_W_SECONDS", "%I:%M:%S %p"),
-            patch("sickchill.oldbeard.scdatetime.settings.TIME_PRESET", "%I:%M %p"),
-            patch("sickchill.oldbeard.scdatetime.settings.TIMEZONE_DISPLAY", "local"),
+            patch("sickchill.helper.scdatetime.settings.DATE_PRESET", "%m/%d/%Y"),
+            patch("sickchill.helper.scdatetime.settings.TIME_PRESET_W_SECONDS", "%I:%M:%S %p"),
+            patch("sickchill.helper.scdatetime.settings.TIME_PRESET", "%I:%M %p"),
+            patch("sickchill.helper.scdatetime.settings.TIMEZONE_DISPLAY", "local"),
         ):
             displayed = updates._from_time_display()
         self.assertRegex(displayed, r"(?i)^\d{2}/\d{2}/\d{4} \d{1,2}:\d{2}:\d{2} [ap]m$")
         self.assertFalse(displayed.endswith(" UTC"))
 
         with (
-            patch("sickchill.oldbeard.scdatetime.settings.DATE_PRESET", "%Y-%m-%d"),
-            patch("sickchill.oldbeard.scdatetime.settings.TIME_PRESET_W_SECONDS", "%H:%M:%S"),
-            patch("sickchill.oldbeard.scdatetime.settings.TIME_PRESET", "%H:%M"),
-            patch("sickchill.oldbeard.scdatetime.settings.TIMEZONE_DISPLAY", "network"),
+            patch("sickchill.helper.scdatetime.settings.DATE_PRESET", "%Y-%m-%d"),
+            patch("sickchill.helper.scdatetime.settings.TIME_PRESET_W_SECONDS", "%H:%M:%S"),
+            patch("sickchill.helper.scdatetime.settings.TIME_PRESET", "%H:%M"),
+            patch("sickchill.helper.scdatetime.settings.TIMEZONE_DISPLAY", "network"),
             patch("sickchill.show.indexers.tvdb.settings.TIMEZONE_DISPLAY", "network"),
         ):
             displayed = updates._from_time_display()
@@ -743,7 +743,7 @@ class EpisodeSkipApplyTests(unittest.TestCase):
         self.assertEqual(e.name, "Old")  # not applied
 
     def test_load_from_indexer_missing_name_sets_tba(self):
-        from sickchill.oldbeard.common import UNAIRED
+        from sickchill.common import UNAIRED
         from sickchill.tv import TVEpisode
 
         class E:
@@ -771,9 +771,9 @@ class EpisodeSkipApplyTests(unittest.TestCase):
         packet = {"episodeName": "", "lastUpdated": 100, "id": 99, "firstAired": "2026-01-01"}
 
         with (
-            patch("sickchill.oldbeard.scene_numbering.xem_refresh"),
-            patch("sickchill.oldbeard.scene_numbering.get_scene_absolute_numbering", return_value=0),
-            patch("sickchill.oldbeard.scene_numbering.get_scene_numbering", return_value=(1, 1)),
+            patch("sickchill.show.scene_numbering.xem_refresh"),
+            patch("sickchill.show.scene_numbering.get_scene_absolute_numbering", return_value=0),
+            patch("sickchill.show.scene_numbering.get_scene_numbering", return_value=(1, 1)),
             patch("os.path.isdir", return_value=False),
             patch("sickchill.tv.settings.CREATE_MISSING_SHOW_DIRS", False),
             patch("sickchill.tv.settings.ADD_SHOWS_WO_DIR", False),

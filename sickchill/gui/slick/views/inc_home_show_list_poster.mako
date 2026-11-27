@@ -1,8 +1,8 @@
 <%!
     from sickchill import settings
     import calendar
-    from sickchill.oldbeard.filters import filter_shows_being_removed
-    from sickchill.oldbeard import scdatetime, network_timezones
+    from sickchill.helper.filters import filter_shows_being_removed
+    from sickchill.helper import scdatetime, network_timezones
     from sickchill.helper.common import pretty_file_size
     import os
     import re
@@ -111,7 +111,7 @@
                  data-progress="${int(progressbar_percent)}" data-progress-total="${cur_total}" data-status="${curShow.status}">
                 <div class="show-image">
                     <a href="${scRoot}/home/displayShow?show=${curShow.indexerid}">
-                        <img alt="${static_url(curShow.sort_name)}" class="show-image" src="${static_url('images/poster.png')}" data-src="${static_url(curShow.show_image_url('poster_thumb'))}" />
+                        <img alt="${curShow.sort_name}" class="show-image" src="${static_url('images/poster.png')}" data-src="${static_url(curShow.show_image_url('poster_thumb'))}" />
                     </a>
                 </div>
 

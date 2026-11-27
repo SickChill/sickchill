@@ -4,9 +4,9 @@ Test snatching
 
 import unittest
 
-import sickchill.oldbeard.helpers
-from sickchill import settings
-from sickchill.oldbeard import common as common, search as search
+import sickchill.helper.helpers
+from sickchill import common as common, settings
+from sickchill.search import search as search
 from sickchill.tv import TVEpisode, TVShow
 from tests import conftest
 
@@ -98,7 +98,7 @@ class SearchTest(conftest.SickChillTestDBCase):
         settings.USE_TORRENTS = True
         settings.USE_NZBS = True
 
-        for provider in sickchill.oldbeard.providers.sorted_provider_list():
+        for provider in sickchill.providers.sorted_provider_list():
             provider.get_url = self._fake_get_url
             provider.enabled = True
 

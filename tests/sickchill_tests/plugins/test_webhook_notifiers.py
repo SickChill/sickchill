@@ -70,3 +70,31 @@ class WebhookNotifierBatchTests(unittest.TestCase):
         ):
             self.assertIn(required, ids)
         self.assertGreaterEqual(len(ids), 25)
+
+    def test_slack_sync_string_false_stays_disabled(self):
+        from sickchill import settings
+        from sickchill.plugins.api import PluginContext
+        from sickchill.plugins.notifiers.slack import SlackNotifier
+
+        ctx = PluginContext(
+            PluginKind.NOTIFIER,
+            "slack",
+            _data={
+                "enabled": "False",
+                "webhook": "https://hooks.slack.com/services/T/B/X",
+                "icon_emoji": "",
+                "notify_snatch": "False",
+                "notify_download": "False",
+                "notify_subtitledownload": "0",
+            },
+        )
+        settings.USE_SLACK = True
+        settings.SLACK_NOTIFY_SNATCH = True
+        settings.SLACK_NOTIFY_DOWNLOAD = True
+        settings.SLACK_NOTIFY_SUBTITLEDOWNLOAD = True
+        SlackNotifier(ctx)._sync_settings()
+        self.assertFalse(settings.USE_SLACK)
+        self.assertFalse(settings.SLACK_NOTIFY_SNATCH)
+        self.assertFalse(settings.SLACK_NOTIFY_DOWNLOAD)
+        self.assertFalse(settings.SLACK_NOTIFY_SUBTITLEDOWNLOAD)
+        self.assertEqual(settings.SLACK_WEBHOOK, "https://hooks.slack.com/services/T/B/X")

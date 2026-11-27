@@ -1,0 +1,906 @@
+import datetime
+import os
+import re
+import threading
+import traceback
+from typing import TYPE_CHECKING
+
+import sickchill.providers
+from sickchill import logger, settings
+from sickchill.helper.common import is_blocked_search_result
+from sickchill.helper.exceptions import AuthException
+from sickchill.helper.network_timezones import sc_today
+from sickchill.providers.GenericProvider import GenericProvider
+from sickchill.show.History import History
+
+if TYPE_CHECKING:  # pragma: no cover
+    from sickchill.providers.result_classes import SearchResult
+
+from sickchill import clients, common, db, notifiers
+from sickchill.clients import nzbget, sab
+from sickchill.common import MULTI_EP_RESULT, SEASON_RESULT, SNATCHED, SNATCHED_BEST, SNATCHED_PROPER, Quality
+from sickchill.helper import helpers, ui
+from sickchill.process import nzbSplitter
+from sickchill.show import show_name_helpers
+
+
+def _download_result(result: "SearchResult"):
+    """
+    Downloads a result to the appropriate black hole folder.
+
+    :param result: SearchResult instance to download.
+    :return: boolean, True on success
+    """
+
+    result_was_downloaded = False
+
+    result_provider = result.provider
+    if result_provider is None:
+        logger.exception("Invalid provider name - this is a coding error, report it please")
+        return result_was_downloaded
+
+    # nzbs/torrents with a URL can just be downloaded from the provider
+    if result.is_torrent or result.is_nzb:
+        result_was_downloaded = result_provider.download_result(result)
+    # if it's an nzb data result
+    elif result.is_nzbdata:
+        # get the final file path to the nzb
+        filename = os.path.join(settings.NZB_DIR, f"{result.name}.nzb")
+        logger.info(f"Saving NZB to {filename}")
+
+        # save the data to disk
+        try:
+            with open(filename, "w") as fileOut:
+                fileOut.write(result.extraInfo[0])
+
+            result_was_downloaded = True
+            helpers.chmodAsParent(filename)
+
+        except EnvironmentError as error:
+            logger.exception(f"Error trying to save NZB to black hole: {error}")
+            result_was_downloaded = False
+    else:
+        logger.exception("Invalid provider type - this is a coding error, report it please")
+        result_was_downloaded = False
+
+    return result_was_downloaded
+
+
+def snatch_episode(result: "SearchResult", end_status=SNATCHED):
+    """
+    Contains the internal logic necessary to actually "snatch" a result that
+    has been found.
+
+    :param result: SearchResult instance to be snatched.
+    :param end_status: the episode status that should be used for the episode object once it's snatched.
+    :return: boolean, True on success
+    """
+
+    if result is None:
+        return False
+
+    if is_blocked_search_result(result.name, result.url):
+        logger.info(f"Refusing to snatch {result.name}: blocked .exe file")
+        return False
+
+    if _download_link_is_dead(result):
+        return False
+
+    if settings.ALLOW_HIGH_PRIORITY:
+        # if it aired recently make it high priority
+        for episode in result.episodes:
+            if sc_today() - episode.airdate <= datetime.timedelta(days=7):
+                result.priority = 1
+
+    end_status = SNATCHED_PROPER if re.search(r"\b(proper|repack|real)\b", result.name, re.IGNORECASE) else end_status
+
+    # Torrents can be sent to clients or saved to disk
+    if result.is_torrent:
+        # torrents are saved to disk when blackhole mode
+        if settings.TORRENT_METHOD == "blackhole":
+            try:
+                from sickchill.plugins.api import PluginKind
+                from sickchill.plugins.manager import plugin_manager
+
+                plugin = plugin_manager.get(PluginKind.CLIENT, "blackhole")
+            except Exception:
+                plugin = None
+            snatched_result = plugin.send(result) if plugin is not None else _download_result(result)
+        else:
+            if not result.content and not result.url.startswith("magnet") and result.provider.login():
+                result.content = result.provider.get_url(result.url, returns="content")
+
+            if result.content or result.url.startswith("magnet"):
+                client = clients.getClientInstance(settings.TORRENT_METHOD)()
+                snatched_result = client.sendTORRENT(result)
+            else:
+                logger.warning("Torrent file content is empty")
+                History().log_failed(result.episodes[0], result.name, result.provider.name)
+                snatched_result = False
+    # NZBs can be sent straight to SAB or saved to disk
+    elif result.is_nzb or result.is_nzbdata:
+        if settings.NZB_METHOD == "blackhole":
+            try:
+                from sickchill.plugins.api import PluginKind
+                from sickchill.plugins.manager import plugin_manager
+
+                plugin = plugin_manager.get(PluginKind.CLIENT, "blackhole")
+            except Exception:
+                plugin = None
+            snatched_result = plugin.send(result) if plugin is not None else _download_result(result)
+        elif settings.NZB_METHOD == "sabnzbd":
+            try:
+                from sickchill.plugins.api import PluginKind
+                from sickchill.plugins.manager import plugin_manager
+
+                plugin = plugin_manager.get(PluginKind.CLIENT, "sabnzbd")
+            except Exception:
+                plugin = None
+            snatched_result = plugin.send(result) if plugin is not None else sab.send_nzb(result)
+        elif settings.NZB_METHOD == "nzbget":
+            is_proper = end_status == SNATCHED_PROPER
+            try:
+                from sickchill.plugins.api import PluginKind
+                from sickchill.plugins.manager import plugin_manager
+
+                plugin = plugin_manager.get(PluginKind.CLIENT, "nzbget")
+            except Exception:
+                plugin = None
+            snatched_result = plugin.send(result, proper=is_proper) if plugin is not None else nzbget.send_nzb(result, is_proper)
+        elif settings.NZB_METHOD == "download_station":
+            client = clients.getClientInstance(settings.NZB_METHOD)(settings.SYNOLOGY_DSM_HOST, settings.SYNOLOGY_DSM_USERNAME, settings.SYNOLOGY_DSM_PASSWORD)
+            snatched_result = client.send_nzb(result)
+        else:
+            logger.exception(f"Unknown NZB action specified in config: {settings.NZB_METHOD}")
+            snatched_result = False
+    else:
+        logger.exception(f"Unknown result type, unable to download it ({result.result_type})")
+        snatched_result = False
+
+    if not snatched_result:
+        return False
+
+    ui.notifications.message("Episode snatched", result.name)
+    History().log_snatch(result)
+
+    # don't notify when we re-download an episode
+    sql_l = []
+    trakt_data = []
+    for current_episode in result.episodes:
+        with current_episode.lock:
+            # A proper keeps SNATCHED_PROPER even when the quality is preferred.
+            # SNATCHED_BEST stays for an ordinary preferred-quality snatch.
+            if end_status == SNATCHED_PROPER:
+                snatched_status = SNATCHED_PROPER
+            elif is_first_best_match(result):
+                snatched_status = SNATCHED_BEST
+            else:
+                snatched_status = end_status
+            current_episode.status = Quality.compositeStatus(snatched_status, result.quality)
+
+            sql_l.append(current_episode.get_sql())
+
+        if current_episode.status not in Quality.DOWNLOADED:
+            # noinspection PyBroadException
+            try:
+                notifiers.notify_snatch(f"{current_episode.naming_pattern('%SN - %Sx%0E - %EN - %QN')} from {result.provider.name}")
+            except Exception:
+                # Without this, when notification fail, it crashes the snatch thread and SC will
+                # keep snatching until notification is sent
+                logger.debug("Failed to send snatch notification")
+
+            trakt_data.append((current_episode.season, current_episode.episode))
+
+    data = notifiers.trakt_notifier.trakt_episode_data_generate(trakt_data)
+
+    if settings.USE_TRAKT and settings.TRAKT_SYNC_WATCHLIST:
+        logger.debug(f"Add episodes, showid: indexerid {result.show.indexerid}, Title {result.show.name} to Traktv Watchlist")
+        if data:
+            notifiers.trakt_notifier.update_watchlist(result.show, data_episode=data, update="add")
+
+    if sql_l:
+        main_db_con = db.DBConnection()
+        main_db_con.mass_action(sql_l)
+
+    return True
+
+
+def pick_best_result(results, show):
+    """
+    Find the best result out of a list of search results for a show
+
+    :param results: list of result objects
+    :param show: Shows we check for
+    :return: best result object
+    """
+    results = results if isinstance(results, list) else [results]
+
+    logger.debug(f"Picking the best result out of {[x.name for x in results]}")
+
+    picked_result = None
+
+    # order the list so that preferred releases are at the top
+    results.sort(key=lambda ep: show_name_helpers.has_preferred_words(ep.name, ep.show), reverse=True)
+
+    # find the best result for the current episode
+    for result in results:
+        if show and result.show is not show:
+            continue
+
+        # build the black And white list
+        if show.is_anime and not show.release_groups.is_valid(result):
+            continue
+
+        logger.debug(f"Quality of {result.name} is {Quality.qualityStrings[result.quality]}")
+
+        allowed_qualities, preferred_qualities = Quality.splitQuality(show.quality)
+
+        if result.quality not in allowed_qualities + preferred_qualities:
+            logger.debug(f"{result.name} is a quality we know we don't want, rejecting it")
+            continue
+
+        if not show_name_helpers.filter_bad_releases(result.name, parse=False, show=show):
+            continue
+
+        if _download_link_is_dead(result):
+            continue
+
+        if settings.USE_FAILED_DOWNLOADS and History().has_failed(result.name):
+            logger.info(f"{result.name} has previously failed, rejecting it")
+            continue
+
+        # ruff: disable [SIM114]
+        if not picked_result:
+            picked_result = result
+        elif result.quality in preferred_qualities and (picked_result.quality < result.quality or picked_result.quality not in preferred_qualities):
+            picked_result = result
+        elif result.quality in allowed_qualities and picked_result.quality not in preferred_qualities and picked_result.quality < result.quality:
+            picked_result = result
+        elif picked_result.quality == result.quality:
+            if "proper" in result.name.lower() or "real" in result.name.lower() or "repack" in result.name.lower():
+                logger.info(f"Preferring {result.name} (repack/proper/real over nuked)")
+                picked_result = result
+            elif "internal" in picked_result.name.lower() and "internal" not in result.name.lower():
+                logger.info(f"Preferring {result.name} (normal instead of internal)")
+                picked_result = result
+            elif "xvid" in picked_result.name.lower() and "x264" in result.name.lower():
+                logger.info(f"Preferring {result.name} (x264 over xvid)")
+                picked_result = result
+        # ruff: enable [SIM114]
+
+    if picked_result:
+        logger.debug(f"Picked {picked_result.name} as the best")
+    else:
+        logger.debug("No result picked.")
+
+    return picked_result
+
+
+def is_final_result(result: "SearchResult"):
+    """
+    Checks if the given result is good enough quality that we can stop searching for other ones.
+
+    :param result: quality to check
+    :return: True if the result is the highest quality in both of the quality lists else False
+    """
+
+    logger.debug(f"Checking if we should keep searching after we've found {result.name}")
+
+    show_obj = result.episodes[0].show
+
+    any_qualities, best_qualities = Quality.splitQuality(show_obj.quality)
+
+    # ruff: disable [SIM103, SIM114] show the long style ifs
+    # if there is a re-download that's higher than this then we definitely need to keep looking
+    if best_qualities and result.quality < max(best_qualities):
+        return False
+
+    # if it does not match the shows black and white list its no good
+    elif show_obj.is_anime and show_obj.release_groups.is_valid(result):
+        return False
+
+    # No preferred list: only the highest allowed quality ends the search.
+    elif not best_qualities and any_qualities and result.quality == max(any_qualities):
+        return True
+
+    elif best_qualities and result.quality == max(best_qualities):
+        return True
+
+    # if we got here than it's either not on the lists, they're empty, or it's lower than the highest required
+    else:
+        return False
+    # ruff: enable [SIM103, SIM114]
+
+
+def is_first_best_match(result: "SearchResult"):
+    """
+    Checks if the given result is the best match and if we want to stop searching providers here.
+
+    :param result: to check
+    :return: True if the result is the best quality match else False
+    """
+
+    logger.debug(f"Checking if we should stop searching for a better quality for for episode {result.name}")
+
+    show_obj = result.episodes[0].show
+
+    any_qualities_, best_qualities = Quality.splitQuality(show_obj.quality)
+
+    return result.quality in best_qualities if best_qualities else False
+
+
+def wanted_episodes(show, from_date):
+    """
+    Get a list of episodes that we want to download
+    :param show: Show these episodes are from
+    :param from_date: Search from a certain date
+    :return: list of wanted episodes
+    """
+    wanted = []
+    if show.paused:
+        logger.debug(f"Not checking for episodes of {show.name} because the show is paused")
+        return wanted
+
+    allowed_qualities, preferred_qualities = common.Quality.splitQuality(show.quality)
+    all_qualities = list(set(allowed_qualities + preferred_qualities))
+
+    con = db.DBConnection()
+
+    sql_results = con.select(
+        "SELECT status, season, episode FROM tv_episodes WHERE showid = ? AND season > 0 and airdate > ?", [show.indexerid, from_date.toordinal()]
+    )
+
+    # check through the list of statuses to see if we want any
+    for result in sql_results:
+        status, quality = common.Quality.splitCompositeStatus(int(result["status"] or -1))
+        if status not in {common.WANTED, common.DOWNLOADED, common.SNATCHED, common.SNATCHED_PROPER}:
+            continue
+
+        if status != common.WANTED:
+            if preferred_qualities:
+                if quality in preferred_qualities:
+                    continue
+            elif quality in allowed_qualities:
+                continue
+
+        episode_object = show.get_episode(result["season"], result["episode"])
+        episode_object.wantedQuality = [i for i in all_qualities if i > quality and i != common.Quality.UNKNOWN]
+        wanted.append(episode_object)
+
+    return wanted
+
+
+def _download_link_is_dead(result):
+    """True when this URL already failed to return a file. The release name can still match another URL."""
+    url = getattr(result, "url", None)
+    if not url or not History().is_dead_url(url):
+        return False
+    logger.info(f"{result.name} download link is dead, rejecting it")
+    return True
+
+
+def _result_is_acceptable(result, show):
+    """Same rejects as ``pick_best_result`` before it starts comparing quality."""
+    if show and result.show is not show:
+        return False
+    if show.is_anime and not show.release_groups.is_valid(result):
+        return False
+    allowed_qualities, preferred_qualities = Quality.splitQuality(show.quality)
+    if result.quality not in allowed_qualities + preferred_qualities:
+        return False
+    if not show_name_helpers.filter_bad_releases(result.name, parse=False, show=show):
+        return False
+    if _download_link_is_dead(result):
+        return False
+    return not (settings.USE_FAILED_DOWNLOADS and History().has_failed(result.name))
+
+
+def _result_is_better(result, picked, show):
+    """True when ``pick_best_result`` would replace its current pick with this result."""
+    allowed_qualities, preferred_qualities = Quality.splitQuality(show.quality)
+    if result.quality in preferred_qualities and (picked.quality < result.quality or picked.quality not in preferred_qualities):
+        return True
+    if result.quality in allowed_qualities and picked.quality not in preferred_qualities and picked.quality < result.quality:
+        return True
+    if picked.quality != result.quality:
+        return False
+    name = result.name.lower()
+    picked_name = picked.name.lower()
+    if "proper" in name or "real" in name or "repack" in name:
+        return True
+    if "internal" in picked_name and "internal" not in name:
+        return True
+    return "xvid" in picked_name and "x264" in name
+
+
+def _rank_by_selection(candidates, show):
+    """Best first. Each pass uses the same replacement rules as ``pick_best_result``."""
+    remaining = list(candidates)
+    ranked = []
+    while remaining:
+        winner = None
+        for result in remaining:
+            if winner is None or _result_is_better(result, winner, show):
+                winner = result
+        ranked.append(winner)
+        remaining = [item for item in remaining if item is not winner]
+    return ranked
+
+
+def _merge_ranked_candidates(existing, incoming):
+    """Preferred result first, then the other provider's acceptable URLs."""
+    existing = list(existing or [])
+    incoming = list(incoming or [])
+    if not existing:
+        return incoming
+    if not incoming:
+        return existing
+    if incoming[0].quality > existing[0].quality:
+        primary, extra = incoming, existing
+    else:
+        primary, extra = existing, incoming
+    merged = list(primary)
+    seen = {item.url for item in merged if getattr(item, "url", None)}
+    for item in extra:
+        url = getattr(item, "url", None)
+        if url and url in seen:
+            continue
+        if url:
+            seen.add(url)
+        merged.append(item)
+    return merged
+
+
+def _ranked_results(results, show):
+    """Acceptable results, best first, using the same order as ``pick_best_result``."""
+    ordered = list(results if isinstance(results, list) else [results])
+    ordered.sort(key=lambda item: show_name_helpers.has_preferred_words(item.name, item.show), reverse=True)
+    acceptable = [result for result in ordered if _result_is_acceptable(result, show)]
+    ranked = _rank_by_selection(acceptable, show)
+    if ranked:
+        logger.debug(f"Picked {ranked[0].name} as the best")
+    else:
+        logger.debug("No result picked.")
+    return ranked
+
+
+def _one_result_per_url(found_results):
+    """One download per URL, covering every episode that selected that release."""
+    chosen = {}
+    order = []
+    for episode, result in found_results.items():
+        key = result.url or id(result)
+        current = chosen.get(key)
+        if current is None:
+            covered = list(result.episodes)
+            if episode not in covered:
+                covered.append(episode)
+            result.episodes = covered
+            chosen[key] = result
+            order.append(key)
+            continue
+        if episode not in current.episodes:
+            current.episodes.append(episode)
+        for covered in result.episodes:
+            if covered not in current.episodes:
+                current.episodes.append(covered)
+        if result.quality > current.quality:
+            result.episodes = current.episodes
+            chosen[key] = result
+    return [chosen[key] for key in order]
+
+
+def _submission_candidates(by_episode):
+    """Best result for each episode first. Each URL is sent once, with every episode it covers."""
+    if not by_episode:
+        return []
+    submissions = []
+    seen = {}
+    max_rank = max(len(options) for options in by_episode.values())
+    for rank in range(max_rank):
+        chosen = {episode: options[rank] for episode, options in by_episode.items() if rank < len(options)}
+        for result in _one_result_per_url(chosen):
+            key = result.url or id(result)
+            current = seen.get(key)
+            if current is None:
+                seen[key] = result
+                submissions.append(result)
+                continue
+            for episode in result.episodes:
+                if episode not in current.episodes:
+                    current.episodes.append(episode)
+    return submissions
+
+
+def search_for_needed_episodes():
+    """
+    Check providers for details on wanted episodes
+
+    :return: episodes we have a search hit for
+    """
+    found_candidates = {}
+
+    did_search = False
+
+    show_list = settings.show_list
+    from_date = datetime.date.min
+    episodes = []
+
+    for curShow in show_list:
+        if not curShow.paused:
+            episodes.extend(wanted_episodes(curShow, from_date))
+
+    providers = [x for x in sickchill.providers.sorted_provider_list(settings.RANDOMIZE_PROVIDERS) if x.is_active and x.enable_daily and x.can_daily]
+
+    if not episodes:
+        # Skip RSS refresh when nothing is wanted; cached propers still run below.
+        logger.info("No episodes needed.")
+    else:
+        original_thread_name = threading.current_thread().name
+
+        for curProvider in providers:
+            threading.current_thread().name = f"{original_thread_name} :: [{curProvider.name}]"
+            curProvider.cache.update_cache()
+
+        for curProvider in providers:
+            threading.current_thread().name = f"{original_thread_name} :: [{curProvider.name}]"
+            try:
+                found_rss_results = curProvider.search_rss(episodes)
+            except AuthException as error:
+                logger.warning(f"Authentication error: {error}")
+                continue
+            except Exception as error:
+                logger.exception(f"Error while searching {curProvider.name}, skipping: {error}")
+                logger.debug(traceback.format_exc())
+                continue
+
+            did_search = True
+
+            # pick a single result for each episode, respecting existing results
+            for current_episode in found_rss_results:
+                if not current_episode.show or current_episode.show.paused:
+                    logger.debug(f"Skipping {current_episode.pretty_name} because the show is paused ")
+                    continue
+
+                ranked = _ranked_results(found_rss_results[current_episode], current_episode.show)
+
+                # if all results were rejected move on to the next episode
+                if not ranked:
+                    logger.debug(f"All found results for {current_episode.pretty_name} were rejected.")
+                    continue
+
+                # Keep the preferred result first and retain every other acceptable URL.
+                # A later provider can still be tried when the first submission fails.
+                found_candidates[current_episode] = _merge_ranked_candidates(found_candidates.get(current_episode), ranked)
+
+        threading.current_thread().name = original_thread_name
+
+        if not did_search:
+            logger.info("No NZB/Torrent providers found or enabled in the sickchill config for daily searches. Please check your settings.")
+
+    if settings.DOWNLOAD_PROPERS:
+        try:
+            from sickchill.search.properFinder import ProperFinder
+
+            ProperFinder().process_cached_propers(providers)
+        except Exception as error:
+            logger.debug(f"Daily proper processing failed: {error}")
+
+    return _submission_candidates(found_candidates)
+
+
+def _search_results_cover_requested(search_results, episodes, search_mode, show):
+    """True when this pass found a selectable season pack, or every requested episode."""
+    season_results = search_results.get(SEASON_RESULT) or []
+    has_selectable_pack = bool(season_results) and pick_best_result(season_results, show) is not None
+
+    if search_mode == "season":
+        return has_selectable_pack
+
+    if has_selectable_pack:
+        return True
+
+    covered_episodes = set()
+    for result_key, result_list in search_results.items():
+        selectable = [result for result in result_list or [] if _result_is_acceptable(result, show)]
+        if not selectable:
+            continue
+        if result_key == MULTI_EP_RESULT:
+            for result in selectable:
+                covered_episodes.update(episode.episode for episode in result.episodes)
+        elif result_key >= 0:
+            covered_episodes.add(result_key)
+
+    return {episode.episode for episode in episodes} <= covered_episodes
+
+
+# noinspection PyPep8Naming
+def search_providers(show, episodes, manual=False, downCurQuality=False):
+    """
+    Walk providers for information on shows
+
+    :param show: Show we are looking for
+    :param episodes: Episodes we hope to find
+    :param manual: Boolean, is this a manual search?
+    :param downCurQuality: Boolean, should we re-download currently available quality file
+    :return: results for search
+    """
+    found_results = {}
+    final_results = []
+
+    did_search = False
+
+    # noinspection DuplicatedCode
+    original_thread_name = threading.current_thread().name
+
+    providers = [x for x in sickchill.providers.sorted_provider_list(settings.RANDOMIZE_PROVIDERS) if x.is_active and x.can_backlog and x.enable_backlog]
+    if not manual:
+        for curProvider in providers:
+            threading.current_thread().name = f"{original_thread_name} :: [{curProvider.name}]"
+            curProvider.cache.update_cache()
+
+    threading.current_thread().name = original_thread_name
+
+    for curProvider in providers:
+        threading.current_thread().name = f"{original_thread_name} :: [{curProvider.name}]"
+
+        if curProvider.anime_only and not show.is_anime:
+            logger.debug(f"{show.name} is not an anime, skipping")
+            continue
+
+        found_results[curProvider.name] = {}
+
+        search_count = 0
+        search_mode = curProvider.search_mode
+
+        if manual:
+            search_mode = "episode"
+
+        while True:
+            search_count += 1
+
+            logger.info(
+                _("Performing {episode_or_season} search for {show}").format(
+                    episode_or_season=(_("season pack"), _("episode"))[search_mode == "episode"], show=show.name
+                )
+            )
+
+            try:
+                search_results = curProvider.find_search_results(show, episodes, search_mode, manual, downCurQuality)
+            except AuthException as error:
+                logger.warning(f"Authentication error: {error}")
+                break
+            except Exception as error:
+                logger.exception(f"Exception while searching {curProvider.name}. Error: {error}")
+                logger.debug(traceback.format_exc())
+                break
+
+            did_search = True
+
+            if search_results:
+                # make a list of all the results for this provider
+                for current_episode in search_results:
+                    if current_episode in found_results[curProvider.name]:
+                        found_results[curProvider.name][current_episode] += search_results[current_episode]
+                    else:
+                        found_results[curProvider.name][current_episode] = search_results[current_episode]
+
+            # Season-pack search succeeds only when a selectable pack was found.
+            # Episode search succeeds when every requested episode is covered.
+            found_wanted_results = _search_results_cover_requested(search_results, episodes, search_mode, show)
+
+            # Fallback (episode ↔ season pack) is backlog-only.
+            allow_fallback = bool(curProvider.search_fallback) and search_count == 1 and not manual
+
+            if found_wanted_results or not allow_fallback:
+                break
+
+            if search_mode == "season":
+                logger.debug("Fallback episode search initiated")
+                search_mode = "episode"
+            else:
+                logger.debug("Fallback season pack search initiated")
+                search_mode = "season"
+
+        # skip to next provider if we have no results to process
+        if not found_results[curProvider.name]:
+            continue
+
+        # pick the best season NZB
+        best_season_result = None
+        if SEASON_RESULT in found_results[curProvider.name]:
+            best_season_result = pick_best_result(found_results[curProvider.name][SEASON_RESULT], show)
+
+        highest_quality_overall = 0
+        for cur_episode in found_results[curProvider.name]:
+            for cur_result in found_results[curProvider.name][cur_episode]:
+                if cur_result.quality != Quality.UNKNOWN and cur_result.quality > highest_quality_overall:
+                    highest_quality_overall = cur_result.quality
+        logger.debug(f"The highest quality of any match is {Quality.qualityStrings[highest_quality_overall]}")
+
+        # see if every episode is wanted
+        if best_season_result:
+            searched_seasons = {str(x.season) for x in episodes}
+
+            # get the quality of the season nzb
+            season_quality = best_season_result.quality
+            logger.info(f"The quality of the season {best_season_result.provider.provider_type} is {Quality.qualityStrings[season_quality]}")
+
+            main_db_con = db.DBConnection()
+            if searched_seasons:
+                placeholders = ",".join(["?"] * len(searched_seasons))
+                pair_rows = main_db_con.select(
+                    f"SELECT season, episode, status FROM tv_episodes WHERE showid = ? AND season IN ({placeholders})",
+                    [show.indexerid, *list(searched_seasons)],
+                )
+            else:
+                pair_rows = []
+            pairs = [(int(row["season"]), int(row["episode"]), int(row["status"])) for row in pair_rows]
+
+            logger.info(f"Executed query: [SELECT season, episode, status FROM tv_episodes WHERE showid = {show.indexerid} AND season in {searched_seasons}]")
+            logger.debug(f"Episode list: {pairs}")
+
+            all_wanted = True
+            some_wanted = False
+            for season, episode_number, status in pairs:
+                if not show.want_episode(season, episode_number, season_quality, downCurQuality, known_status=status):
+                    all_wanted = False
+                else:
+                    some_wanted = True
+                if some_wanted and not all_wanted:
+                    break
+
+            def season_episode_objects():
+                return [show.get_episode(season, episode_number) for season, episode_number, _status in pairs]
+
+            # if we need every ep in the season and there's nothing better, then just download this and be done with it (unless single episodes are preferred)
+            if all_wanted and best_season_result.quality == highest_quality_overall:
+                logger.info(f"Every ep in this season is needed, downloading the whole {best_season_result.provider.provider_type} {best_season_result.name}")
+                episode_objects = season_episode_objects()
+                best_season_result.episodes = episode_objects
+
+                # Remove provider from thread name before return results
+                threading.current_thread().name = original_thread_name
+
+                return [best_season_result]
+
+            elif not some_wanted:
+                logger.info(f"No eps from this season are wanted at this quality, ignoring the result of {best_season_result.name}")
+
+            else:
+                if best_season_result.result_type != GenericProvider.TORRENT:
+                    logger.debug("Breaking apart the NZB and adding the individual ones to our results")
+
+                    # if not, break it apart and add them as the lowest priority results
+                    split_results = nzbSplitter.split_result(best_season_result)
+                    episode_number = -1
+                    for current_result in split_results:
+                        if len(current_result.episodes) == 1:
+                            episode_number = current_result.episodes[0].episode
+                        elif len(current_result.episodes) > 1:
+                            episode_number = MULTI_EP_RESULT
+
+                        if episode_number >= 0 and episode_number in found_results[curProvider.name]:
+                            found_results[curProvider.name][episode_number].append(current_result)
+                        else:
+                            found_results[curProvider.name][episode_number] = [current_result]
+
+                # If this is a torrent all we can do is leech the entire torrent, user will have to select which eps not do download in his torrent client
+                else:
+                    # Season result from Torrent Provider must be a full-season torrent, creating multi-ep result for it.
+                    logger.info(
+                        "Adding multi-ep result for full-season torrent. Set the episodes you don't want to 'don't download' in your torrent client if desired!"
+                    )
+                    episode_objects = season_episode_objects()
+                    best_season_result.episodes = episode_objects
+
+                    if MULTI_EP_RESULT in found_results[curProvider.name]:
+                        found_results[curProvider.name][MULTI_EP_RESULT].append(best_season_result)
+                    else:
+                        found_results[curProvider.name][MULTI_EP_RESULT] = [best_season_result]
+
+        # go through multi-ep results and see if we really want them or not, get rid of the rest
+        multi_results = {}
+        if MULTI_EP_RESULT in found_results[curProvider.name]:
+            for _multiResult in found_results[curProvider.name][MULTI_EP_RESULT]:
+                logger.debug(f"Seeing if we want to bother with multi-episode result {_multiResult.name}")
+
+                # Filter result by ignore/required/whitelist/blacklist/quality, etc
+                multi_result = pick_best_result(_multiResult, show)
+                if not multi_result:
+                    continue
+
+                # see how many of the eps that this result covers aren't covered by single results
+                needed_episodes = []
+                unneeded_episodes = []
+                for epObj in multi_result.episodes:
+                    # if we have results for the episode
+                    if epObj.episode in found_results[curProvider.name] and len(found_results[curProvider.name][epObj.episode]) > 0:
+                        unneeded_episodes.append(epObj.episode)
+                    else:
+                        needed_episodes.append(epObj.episode)
+
+                logger.debug(f"Single-ep check result is needed_episodes: {needed_episodes}, unneeded_episodes: {unneeded_episodes}")
+
+                if not needed_episodes:
+                    logger.debug("All of these episodes were covered by single episode results, ignoring this multi-episode result")
+                    continue
+
+                # check if these eps are already covered by another multi-result
+                needed_multiepisodes = []
+                unneeded_multiepisodes = []
+                for epObj in multi_result.episodes:
+                    if epObj.episode in multi_results:
+                        unneeded_multiepisodes.append(epObj.episode)
+                    else:
+                        needed_multiepisodes.append(epObj.episode)
+
+                logger.debug(f"Multi-ep check result is needed_multiepisodes: {needed_multiepisodes}, unneeded_multiepisodes: {unneeded_multiepisodes}")
+
+                if not needed_multiepisodes:
+                    logger.debug("All of these episodes were covered by another multi-episode nzbs, ignoring this multi-ep result")
+                    continue
+
+                # don't bother with the single result if we're going to get it with a multi result
+                for epObj in multi_result.episodes:
+                    multi_results[epObj.episode] = multi_result
+                    if epObj.episode in found_results[curProvider.name]:
+                        logger.debug(
+                            "A needed multi-episode result overlaps with a single-episode result for ep #"
+                            + f"{epObj.episode}"
+                            + ", removing the single-episode results from the list"
+                        )
+                        del found_results[curProvider.name][epObj.episode]
+
+        # of all the single ep results narrow it down to the best one for each episode
+        final_results += set(multi_results.values())
+        for current_episode in found_results[curProvider.name]:
+            if current_episode in (MULTI_EP_RESULT, SEASON_RESULT):
+                continue
+
+            if not found_results[curProvider.name][current_episode]:
+                continue
+
+            # if all results were rejected move on to the next episode
+            best_result = pick_best_result(found_results[curProvider.name][current_episode], show)
+            if not best_result:
+                continue
+            ranked = _ranked_results(found_results[curProvider.name][current_episode], show)
+            best_result.alternatives = [item for item in ranked if item is not best_result]
+
+            # Replace an existing result only when this one covers every episode it has.
+            # A better single episode must not drop the other episodes of a multi result.
+            found = False
+            remove_indexes = []
+            for i, result in enumerate(final_results):
+                if not any(episode in result.episodes for episode in best_result.episodes):
+                    continue
+                covers_existing = all(episode in best_result.episodes for episode in result.episodes)
+                covered_by_existing = all(episode in result.episodes for episode in best_result.episodes)
+                if result.quality < best_result.quality and covers_existing:
+                    remove_indexes.append(i)
+                elif result.quality >= best_result.quality and covered_by_existing:
+                    found = True
+            for i in reversed(remove_indexes):
+                final_results.pop(i)
+            if not found:
+                final_results += [best_result]
+
+        # check that we got all the episodes we wanted first before doing a match and snatch
+        wanted_episode_count = 0
+        for wanted_episode in episodes:
+            for result in final_results:
+                if wanted_episode in result.episodes and is_final_result(result):
+                    wanted_episode_count += 1
+                    break
+
+        # make sure we search every provider for results unless we found everything we wanted
+        if wanted_episode_count == len(episodes):
+            break
+
+    if not did_search:
+        logger.info("No NZB/Torrent providers found or enabled in the sickchill config for backlog searches. Please check your settings.")
+
+    # Remove provider from thread name before return results
+    threading.current_thread().name = original_thread_name
+    return final_results

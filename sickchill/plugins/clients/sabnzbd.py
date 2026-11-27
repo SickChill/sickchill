@@ -42,7 +42,7 @@ class SabnzbdClient(ClientPlugin):
 
     def send(self, result: Any, **_kwargs) -> bool:
         self._sync_settings()
-        from sickchill.oldbeard import sab
+        from sickchill.clients import sab
 
         return bool(sab.send_nzb(result))
 
@@ -54,7 +54,7 @@ class SabnzbdClient(ClientPlugin):
         username = kwargs.get("username") or (args[1] if len(args) > 1 else None) or settings.SAB_USERNAME
         password = kwargs.get("password") or (args[2] if len(args) > 2 else None) or settings.SAB_PASSWORD
         apikey = kwargs.get("apikey") or (args[3] if len(args) > 3 else None) or settings.SAB_APIKEY
-        from sickchill.oldbeard import sab
+        from sickchill.clients import sab
 
         connection, access_msg = sab.get_sab_acces_method(host)
         if not connection:

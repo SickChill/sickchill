@@ -9,14 +9,14 @@ import dateutil.parser
 from tornado.web import HTTPError
 
 import sickchill
-from sickchill import logger, settings
-from sickchill.helper import sanitize_filename, try_int
+from sickchill import db, logger, settings
+from sickchill.clients.trakt_api import TraktAPI, trakt_credentials_configured
+from sickchill.clients.trakt_api.traktTrending import trakt_trending
+from sickchill.common import Quality, parse_anime_form
+from sickchill.helper import config, helpers, sanitize_filename, try_int, ui
 from sickchill.helper.list_status import build_list_status
-from sickchill.oldbeard import config, db, helpers, tmdbLists, tvmazePremieres, ui
-from sickchill.oldbeard.blackandwhitelist import short_group_names
-from sickchill.oldbeard.common import Quality, parse_anime_form
-from sickchill.oldbeard.trakt_api import TraktAPI, trakt_credentials_configured
-from sickchill.oldbeard.traktTrending import trakt_trending
+from sickchill.show import tmdbLists, tvmazePremieres
+from sickchill.show.blackandwhitelist import short_group_names
 from sickchill.show.recommendations.imdb import imdb_popular
 from sickchill.show.Show import Show
 from sickchill.tv import TVShow

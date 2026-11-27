@@ -2,8 +2,8 @@ import os
 import re
 
 from sickchill import logger, settings
-from sickchill.oldbeard import helpers
-from sickchill.oldbeard.imdb_api import Imdb, ImdbAPIError, ImdbFacade
+from sickchill.helper import helpers
+from sickchill.show.indexers.imdb_api import Imdb, ImdbAPIError, ImdbFacade
 
 
 class imdbPopular(object):

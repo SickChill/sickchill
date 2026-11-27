@@ -126,7 +126,7 @@ class GetShowImageSSRFTests(unittest.TestCase):
 class GetURLRedirectHandlingTests(unittest.TestCase):
     def test_disabled_redirects_do_not_return_redirect_body_as_text(self):
         """Jackett-style callers use returns=text with allow_redirects=False — must not parse 3xx bodies."""
-        from sickchill.oldbeard import helpers as oldbeard_helpers
+        from sickchill.helper import helpers
 
         session = MagicMock()
         redirect = MagicMock()
@@ -137,7 +137,7 @@ class GetURLRedirectHandlingTests(unittest.TestCase):
         redirect.raise_for_status = MagicMock()
         session.request.return_value = redirect
 
-        result = oldbeard_helpers.getURL(
+        result = helpers.getURL(
             "http://127.0.0.1:9117/api",
             session=session,
             returns="text",

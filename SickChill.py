@@ -17,7 +17,7 @@ from pathlib import Path
 from typing import List, Union
 
 import sickchill.start
-from sickchill.oldbeard.network_timezones import sc_now
+from sickchill.helper.network_timezones import sc_now
 
 try:
     from frontend.app import FlaskServer
@@ -28,7 +28,7 @@ from sickchill import logger, settings
 from sickchill.helper.common import choose_data_dir
 from sickchill.init_helpers import check_installed, format_git_revision, get_current_version, remove_pid_file, setup_gettext
 from sickchill.movies import MovieList
-from sickchill.oldbeard.name_parser.parser import NameParser, ParseResult
+from sickchill.process.name_parser.parser import NameParser, ParseResult
 
 setup_gettext()
 
@@ -42,9 +42,11 @@ mimetypes.add_type("application/font-woff", ".woff")
 
 from configobj import ConfigObj
 
+from sickchill import db
+from sickchill.helper import network_timezones
 from sickchill.helper.argument_parser import SickChillArgumentParser
-from sickchill.oldbeard import db, name_cache, network_timezones
-from sickchill.oldbeard.event_queue import Events
+from sickchill.helper.event_queue import Events
+from sickchill.show import name_cache
 from sickchill.tv import TVShow
 from sickchill.update_manager import PipUpdateManager, UpdateManager
 from sickchill.views.server_settings import SCWebServer
@@ -191,7 +193,7 @@ class SickChill:
                     self.log(f"Cannot process this upgrade directory, you have files that don't belong in {upgrade_dir}. Continuing with startup", 1)
                     sys.exit(1)  # Ok -> 0 , Error -> 1
 
-        # Load the config and publish it to the oldbeard package
+        # Load the config
         if not os.path.isfile(settings.CONFIG_FILE):
             self.log(f"Unable to find {settings.CONFIG_FILE}, all settings will be default!")
 
@@ -262,9 +264,6 @@ class SickChill:
 
         # Pre-populate network timezones, it isn't thread safe
         network_timezones.update_network_dict()
-
-        # Check for metadata indexer updates for shows (sets the next aired ep!)
-        # oldbeard.showUpdateScheduler.forceRun()
 
         # Launch browser
         if settings.LAUNCH_BROWSER and not self.no_launch:
@@ -370,7 +369,7 @@ class SickChill:
             remove_pid_file()
 
             web_alive = bool(self.web_server and self.web_server.is_alive())
-            if event == sickchill.oldbeard.event_queue.Events.SystemEvent.RESTART:
+            if event == sickchill.helper.event_queue.Events.SystemEvent.RESTART:
                 popen_list = [sys.executable, settings.MY_FULLNAME]
                 if popen_list and not settings.NO_RESTART:
                     if web_alive:

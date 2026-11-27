@@ -8,18 +8,18 @@ import unittest
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
+from sickchill.helper import helpers
 from sickchill.helper.exceptions import EpisodePostProcessingFailedException
-from sickchill.oldbeard import helpers
-from sickchill.oldbeard.postProcessor import METHOD_MOVE, PostProcessor
+from sickchill.process.postProcessor import METHOD_MOVE, PostProcessor
 
 
 class TestNoDbDuringMoveFile(unittest.TestCase):
     def test_helpers_move_file_does_not_touch_db(self):
         """moveFile itself must stay IO-only (regression guard for helpers)."""
         with (
-            patch("sickchill.oldbeard.helpers.shutil.move") as mock_move,
-            patch("sickchill.oldbeard.helpers.fixSetGroupID"),
-            patch("sickchill.oldbeard.helpers.db.DBConnection") as mock_db,
+            patch("sickchill.helper.helpers.shutil.move") as mock_move,
+            patch("sickchill.helper.helpers.fixSetGroupID"),
+            patch("sickchill.helper.helpers.db.DBConnection") as mock_db,
         ):
             helpers.moveFile("/tmp/src.mkv", "/tmp/dst.mkv")
             mock_move.assert_called_once()
@@ -27,9 +27,9 @@ class TestNoDbDuringMoveFile(unittest.TestCase):
 
     def test_helpers_copy_file_does_not_touch_db(self):
         with (
-            patch("sickchill.oldbeard.helpers.shutil.copyfile") as mock_copy,
-            patch("sickchill.oldbeard.helpers.shutil.copymode"),
-            patch("sickchill.oldbeard.helpers.db.DBConnection") as mock_db,
+            patch("sickchill.helper.helpers.shutil.copyfile") as mock_copy,
+            patch("sickchill.helper.helpers.shutil.copymode"),
+            patch("sickchill.helper.helpers.db.DBConnection") as mock_db,
         ):
             helpers.copyFile("/tmp/src.mkv", "/tmp/dst.mkv")
             mock_copy.assert_called_once()
@@ -37,7 +37,7 @@ class TestNoDbDuringMoveFile(unittest.TestCase):
 
     def test_process_defers_mass_action_until_after_move(self):
         """Sanity: process() places mass_action after media IO and appends get_sql units."""
-        source = Path("sickchill/oldbeard/postProcessor.py").read_text(encoding="utf-8")
+        source = Path("sickchill/process/postProcessor.py").read_text(encoding="utf-8")
         move_idx = source.find("self._move(")
         mass_idx = source.find("main_db_con.mass_action(sql_l)")
         self.assertGreater(move_idx, 0)
@@ -137,15 +137,15 @@ class TestProcessMoveThenMassAction(unittest.TestCase):
                 patch.object(pp, "_checkForExistingFile", return_value=PostProcessor.DOESNT_EXIST),
                 patch.object(pp, "_delete"),
                 patch.object(pp, "_move", side_effect=tracking_move),
-                patch("sickchill.oldbeard.postProcessor.db.DBConnection", return_value=mock_db),
-                patch("sickchill.oldbeard.postProcessor.helpers.make_dirs", return_value=True),
-                patch("sickchill.oldbeard.postProcessor.helpers.delete_empty_folders"),
-                patch("sickchill.oldbeard.postProcessor.show_name_helpers.determine_release_name", return_value=None),
-                patch("sickchill.oldbeard.postProcessor.settings.USE_FREE_SPACE_CHECK", False),
-                patch("sickchill.oldbeard.postProcessor.settings.RENAME_EPISODES", True),
-                patch("sickchill.oldbeard.postProcessor.settings.CREATE_MISSING_SHOW_DIRS", False),
-                patch("sickchill.oldbeard.postProcessor.settings.USE_SUBTITLES", False),
-                patch("sickchill.oldbeard.postProcessor.settings.MOVE_ASSOCIATED_FILES", False),
+                patch("sickchill.process.postProcessor.db.DBConnection", return_value=mock_db),
+                patch("sickchill.process.postProcessor.helpers.make_dirs", return_value=True),
+                patch("sickchill.process.postProcessor.helpers.delete_empty_folders"),
+                patch("sickchill.process.postProcessor.show_name_helpers.determine_release_name", return_value=None),
+                patch("sickchill.process.postProcessor.settings.USE_FREE_SPACE_CHECK", False),
+                patch("sickchill.process.postProcessor.settings.RENAME_EPISODES", True),
+                patch("sickchill.process.postProcessor.settings.CREATE_MISSING_SHOW_DIRS", False),
+                patch("sickchill.process.postProcessor.settings.USE_SUBTITLES", False),
+                patch("sickchill.process.postProcessor.settings.MOVE_ASSOCIATED_FILES", False),
             ):
                 with self.assertRaises(EpisodePostProcessingFailedException):
                     pp.process()
@@ -230,15 +230,15 @@ class TestProcessMoveThenMassAction(unittest.TestCase):
                 patch.object(pp, "_checkForExistingFile", return_value=PostProcessor.DOESNT_EXIST),
                 patch.object(pp, "_delete"),
                 patch.object(pp, "_move"),
-                patch("sickchill.oldbeard.postProcessor.db.DBConnection", return_value=mock_db),
-                patch("sickchill.oldbeard.postProcessor.helpers.make_dirs", return_value=True),
-                patch("sickchill.oldbeard.postProcessor.helpers.delete_empty_folders"),
-                patch("sickchill.oldbeard.postProcessor.show_name_helpers.determine_release_name", return_value=None),
-                patch("sickchill.oldbeard.postProcessor.settings.USE_FREE_SPACE_CHECK", False),
-                patch("sickchill.oldbeard.postProcessor.settings.RENAME_EPISODES", True),
-                patch("sickchill.oldbeard.postProcessor.settings.CREATE_MISSING_SHOW_DIRS", False),
-                patch("sickchill.oldbeard.postProcessor.settings.USE_SUBTITLES", False),
-                patch("sickchill.oldbeard.postProcessor.settings.MOVE_ASSOCIATED_FILES", False),
+                patch("sickchill.process.postProcessor.db.DBConnection", return_value=mock_db),
+                patch("sickchill.process.postProcessor.helpers.make_dirs", return_value=True),
+                patch("sickchill.process.postProcessor.helpers.delete_empty_folders"),
+                patch("sickchill.process.postProcessor.show_name_helpers.determine_release_name", return_value=None),
+                patch("sickchill.process.postProcessor.settings.USE_FREE_SPACE_CHECK", False),
+                patch("sickchill.process.postProcessor.settings.RENAME_EPISODES", True),
+                patch("sickchill.process.postProcessor.settings.CREATE_MISSING_SHOW_DIRS", False),
+                patch("sickchill.process.postProcessor.settings.USE_SUBTITLES", False),
+                patch("sickchill.process.postProcessor.settings.MOVE_ASSOCIATED_FILES", False),
             ):
                 with self.assertRaises(EpisodePostProcessingFailedException):
                     pp.process()
@@ -315,14 +315,14 @@ class TestProcessMoveThenMassAction(unittest.TestCase):
                 patch.object(pp, "_checkForExistingFile", return_value=PostProcessor.DOESNT_EXIST),
                 patch.object(pp, "_delete", side_effect=OSError("busy")),
                 patch.object(pp, "_move"),
-                patch("sickchill.oldbeard.postProcessor.helpers.make_dirs", return_value=True),
-                patch("sickchill.oldbeard.postProcessor.helpers.delete_empty_folders"),
-                patch("sickchill.oldbeard.postProcessor.show_name_helpers.determine_release_name", return_value=None),
-                patch("sickchill.oldbeard.postProcessor.settings.USE_FREE_SPACE_CHECK", False),
-                patch("sickchill.oldbeard.postProcessor.settings.RENAME_EPISODES", True),
-                patch("sickchill.oldbeard.postProcessor.settings.CREATE_MISSING_SHOW_DIRS", False),
-                patch("sickchill.oldbeard.postProcessor.settings.USE_SUBTITLES", False),
-                patch("sickchill.oldbeard.postProcessor.settings.MOVE_ASSOCIATED_FILES", False),
+                patch("sickchill.process.postProcessor.helpers.make_dirs", return_value=True),
+                patch("sickchill.process.postProcessor.helpers.delete_empty_folders"),
+                patch("sickchill.process.postProcessor.show_name_helpers.determine_release_name", return_value=None),
+                patch("sickchill.process.postProcessor.settings.USE_FREE_SPACE_CHECK", False),
+                patch("sickchill.process.postProcessor.settings.RENAME_EPISODES", True),
+                patch("sickchill.process.postProcessor.settings.CREATE_MISSING_SHOW_DIRS", False),
+                patch("sickchill.process.postProcessor.settings.USE_SUBTITLES", False),
+                patch("sickchill.process.postProcessor.settings.MOVE_ASSOCIATED_FILES", False),
             ):
                 with self.assertRaises(EpisodePostProcessingFailedException):
                     pp.process()
@@ -388,14 +388,14 @@ class TestProcessMoveThenMassAction(unittest.TestCase):
                 patch.object(pp, "_checkForExistingFile", return_value=PostProcessor.DOESNT_EXIST),
                 patch.object(pp, "_delete", side_effect=delete_first_then_fail),
                 patch.object(pp, "_move"),
-                patch("sickchill.oldbeard.postProcessor.helpers.make_dirs", return_value=True),
-                patch("sickchill.oldbeard.postProcessor.helpers.delete_empty_folders"),
-                patch("sickchill.oldbeard.postProcessor.show_name_helpers.determine_release_name", return_value=None),
-                patch("sickchill.oldbeard.postProcessor.settings.USE_FREE_SPACE_CHECK", False),
-                patch("sickchill.oldbeard.postProcessor.settings.RENAME_EPISODES", True),
-                patch("sickchill.oldbeard.postProcessor.settings.CREATE_MISSING_SHOW_DIRS", False),
-                patch("sickchill.oldbeard.postProcessor.settings.USE_SUBTITLES", False),
-                patch("sickchill.oldbeard.postProcessor.settings.MOVE_ASSOCIATED_FILES", False),
+                patch("sickchill.process.postProcessor.helpers.make_dirs", return_value=True),
+                patch("sickchill.process.postProcessor.helpers.delete_empty_folders"),
+                patch("sickchill.process.postProcessor.show_name_helpers.determine_release_name", return_value=None),
+                patch("sickchill.process.postProcessor.settings.USE_FREE_SPACE_CHECK", False),
+                patch("sickchill.process.postProcessor.settings.RENAME_EPISODES", True),
+                patch("sickchill.process.postProcessor.settings.CREATE_MISSING_SHOW_DIRS", False),
+                patch("sickchill.process.postProcessor.settings.USE_SUBTITLES", False),
+                patch("sickchill.process.postProcessor.settings.MOVE_ASSOCIATED_FILES", False),
             ):
                 with self.assertRaises(EpisodePostProcessingFailedException):
                     pp.process()

@@ -9,7 +9,7 @@ import unittest
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
-from sickchill.oldbeard import show_dir_mtime
+from sickchill.show import show_dir_mtime
 
 
 def _show(indexer_id=1, location="/shows/Test"):
@@ -137,13 +137,13 @@ class TestNeedsDiskRefresh(unittest.TestCase):
 class TestShowUpdaterScheduling(unittest.TestCase):
     """Light integration of ShowUpdater decision branches with mocks."""
 
-    @patch("sickchill.show_updater.ui")
-    @patch("sickchill.show_updater.network_timezones")
-    @patch("sickchill.show_updater.db")
-    @patch("sickchill.show_updater.sickchill")
+    @patch("sickchill.show.show_updater.ui")
+    @patch("sickchill.show.show_updater.network_timezones")
+    @patch("sickchill.show.show_updater.db")
+    @patch("sickchill.show.show_updater.sickchill")
     def test_in_feed_queues_update_not_refresh_only(self, mock_sc, mock_db, mock_tz, mock_ui):
         from sickchill import settings
-        from sickchill.show_updater import ShowUpdater
+        from sickchill.show.show_updater import ShowUpdater
 
         show_in = MagicMock()
         show_in.indexerid = 111
@@ -201,7 +201,7 @@ class TestShowUpdaterScheduling(unittest.TestCase):
         cache_con.select.return_value = [[str(int(time.time()) - 86400)]]
         mock_db.DBConnection.return_value = cache_con
 
-        with patch("sickchill.show_updater.needs_disk_refresh", return_value=(False, "mtime unchanged")):
+        with patch("sickchill.show.show_updater.needs_disk_refresh", return_value=(False, "mtime unchanged")):
             ShowUpdater().run()
 
         show_in.update.assert_called_once()
@@ -209,13 +209,13 @@ class TestShowUpdaterScheduling(unittest.TestCase):
         show_out.update.assert_not_called()
         show_out.refresh.assert_not_called()
 
-    @patch("sickchill.show_updater.ui")
-    @patch("sickchill.show_updater.network_timezones")
-    @patch("sickchill.show_updater.db")
-    @patch("sickchill.show_updater.sickchill")
+    @patch("sickchill.show.show_updater.ui")
+    @patch("sickchill.show.show_updater.network_timezones")
+    @patch("sickchill.show.show_updater.db")
+    @patch("sickchill.show.show_updater.sickchill")
     def test_force_bypasses_disk_refresh_gate(self, mock_sc, mock_db, mock_tz, mock_ui):
         from sickchill import settings
-        from sickchill.show_updater import ShowUpdater
+        from sickchill.show.show_updater import ShowUpdater
 
         show_out = MagicMock()
         show_out.indexerid = 222
@@ -259,7 +259,7 @@ class TestShowUpdaterScheduling(unittest.TestCase):
         cache_con.select.return_value = [[str(int(time.time()) - 86400)]]
         mock_db.DBConnection.return_value = cache_con
 
-        with patch("sickchill.show_updater.needs_disk_refresh") as mock_gate:
+        with patch("sickchill.show.show_updater.needs_disk_refresh") as mock_gate:
             mock_gate.return_value = (False, "mtime unchanged")
             ShowUpdater().run(force=True)
             mock_gate.assert_not_called()

@@ -8,8 +8,8 @@
     from sickchill.helper.common import pretty_file_size
     from sickchill.init_helpers import get_current_version
     from sickchill.logging.weblog import WebErrorViewer
-    from sickchill.oldbeard.filters import hide
-    from sickchill.oldbeard.helpers import anon_url
+    from sickchill.helper.filters import hide
+    from sickchill.helper.helpers import anon_url
     from sickchill.show.Show import Show
 
     # resource module is unix only

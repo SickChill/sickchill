@@ -7,7 +7,7 @@ import unittest
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
-from sickchill.oldbeard.imdb_api import Imdb, ImdbFacade, _creds_need_refresh, _creds_path
+from sickchill.show.indexers.imdb_api import Imdb, ImdbFacade, _creds_need_refresh, _creds_path
 from sickchill.show.recommendations.imdb import imdbPopular
 
 

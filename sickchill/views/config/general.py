@@ -4,10 +4,9 @@ from tornado.web import addslash
 
 import sickchill.start
 from sickchill import logger, settings
-from sickchill.helper import try_int
+from sickchill.common import Quality
+from sickchill.helper import config, filters, helpers, try_int, ui
 from sickchill.init_helpers import setup_gettext
-from sickchill.oldbeard import config, filters, helpers, ui
-from sickchill.oldbeard.common import Quality
 from sickchill.views.common import PageTemplate
 from sickchill.views.config.index import Config
 from sickchill.views.routes import Route
@@ -146,11 +145,8 @@ class ConfigGeneral(Config):
         tvdb_changed = new_tvdb_key != (settings.TVDB_V4_APIKEY or "") or (new_tvdb_pin or "") != (settings.TVDB_V4_PIN or "")
         settings.TVDB_V4_APIKEY = new_tvdb_key
         settings.TVDB_V4_PIN = new_tvdb_pin
-        logger.censored_items[("General", "tvdb_v4_apikey")] = settings.TVDB_V4_APIKEY
-        if settings.TVDB_V4_PIN:
-            logger.censored_items[("General", "tvdb_v4_pin")] = settings.TVDB_V4_PIN
-        elif ("General", "tvdb_v4_pin") in logger.censored_items:
-            del logger.censored_items[("General", "tvdb_v4_pin")]
+        logger.register_censored(("General", "tvdb_v4_apikey"), settings.TVDB_V4_APIKEY)
+        logger.register_censored(("General", "tvdb_v4_pin"), settings.TVDB_V4_PIN)
         if tvdb_changed:
             # Force next TVDB call to rebuild client/token with new credentials
             try:
@@ -187,7 +183,7 @@ class ConfigGeneral(Config):
         if key_changed:
             settings.TRAKT_ACCESS_TOKEN = None
             settings.TRAKT_REFRESH_TOKEN = None
-        from sickchill.oldbeard.trakt_api.trakt import refresh_trakt_pin_url
+        from sickchill.clients.trakt_api.trakt import refresh_trakt_pin_url
 
         refresh_trakt_pin_url()
 

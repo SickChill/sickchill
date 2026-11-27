@@ -1,7 +1,7 @@
 import unittest
 
 from sickchill import settings
-from sickchill.oldbeard.show_name_helpers import has_preferred_words
+from sickchill.show.show_name_helpers import has_preferred_words
 
 
 class PreferWordFilterTest(unittest.TestCase):

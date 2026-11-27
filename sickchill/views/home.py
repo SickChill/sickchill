@@ -12,14 +12,17 @@ from urllib.parse import unquote_plus
 
 import requests
 
-import sickchill.oldbeard
-from sickchill import adba, logger, settings
-from sickchill.helper import try_int
-from sickchill.helper.common import episode_num, pretty_file_size
-from sickchill.helper.exceptions import CantUpdateShowException, NoNFOException, ShowDirectoryNotFoundException
-from sickchill.oldbeard import clients, config, db, filters, helpers, notifiers, sab, search_queue, ui
-from sickchill.oldbeard.blackandwhitelist import BlackAndWhiteList, short_group_names
-from sickchill.oldbeard.common import (
+import sickchill
+from sickchill import adba, clients, db, logger, notifiers, settings
+from sickchill.clients import sab
+from sickchill.clients.trakt_api import (
+    TraktAPI,
+    traktDeviceCodeExpiredException,
+    traktDeviceCodePendingException,
+    traktException,
+    traktRateLimitException,
+)
+from sickchill.common import (
     FAILED,
     IGNORED,
     SKIPPED,
@@ -32,8 +35,17 @@ from sickchill.oldbeard.common import (
     parse_anime_mode,
     statusStrings,
 )
-from sickchill.oldbeard.network_timezones import sc_now, sc_timezone, sc_today
-from sickchill.oldbeard.scene_numbering import (
+from sickchill.helper import config, filters, helpers, try_int, ui
+from sickchill.helper.common import episode_num, pretty_file_size
+from sickchill.helper.exceptions import CantUpdateShowException, NoNFOException, ShowDirectoryNotFoundException
+from sickchill.helper.network_timezones import sc_now, sc_timezone, sc_today
+from sickchill.providers import result_classes
+from sickchill.providers.GenericProvider import GenericProvider
+from sickchill.providers.metadata.generic import GenericMetadata
+from sickchill.providers.metadata.helpers import getShowImage, is_allowed_show_image_url
+from sickchill.search import search_queue
+from sickchill.show.blackandwhitelist import BlackAndWhiteList, short_group_names
+from sickchill.show.scene_numbering import (
     get_scene_absolute_numbering,
     get_scene_absolute_numbering_for_show,
     get_scene_numbering,
@@ -42,17 +54,6 @@ from sickchill.oldbeard.scene_numbering import (
     get_xem_numbering_for_show,
     set_scene_numbering,
 )
-from sickchill.oldbeard.trakt_api import (
-    TraktAPI,
-    traktDeviceCodeExpiredException,
-    traktDeviceCodePendingException,
-    traktException,
-    traktRateLimitException,
-)
-from sickchill.providers import result_classes
-from sickchill.providers.GenericProvider import GenericProvider
-from sickchill.providers.metadata.generic import GenericMetadata
-from sickchill.providers.metadata.helpers import getShowImage, is_allowed_show_image_url
 from sickchill.show.Show import Show
 from sickchill.system.Restart import Restart
 from sickchill.system.Shutdown import Shutdown
@@ -114,19 +115,27 @@ class Home(WebRoot):
 
         return episode_object, ""
 
+    @staticmethod
+    def _root_dir_from_selection(selected_root):
+        """Resolve a posted root-dir index to a path prefix.
+
+        The All option posts ``-1``. Using that as a list index wraps to the last directory.
+        """
+        if not selected_root or not settings.ROOT_DIRS:
+            return ""
+        backend_dirs = settings.ROOT_DIRS.split("|")[1:]
+        try:
+            root_index = int(selected_root)
+            if root_index < 0:
+                return ""
+            return backend_dirs[root_index]
+        except (IndexError, ValueError, TypeError):
+            return ""
+
     def index(self):
         t = PageTemplate(rh=self, filename="home.mako")
         selected_root = self.get_body_argument("root", "")
-
-        if selected_root and settings.ROOT_DIRS:
-            backend_dirs = settings.ROOT_DIRS.split("|")[1:]
-            try:
-                assert selected_root != "-1"
-                selected_root_dir = backend_dirs[int(selected_root)]
-            except (IndexError, ValueError, TypeError, AssertionError):
-                selected_root_dir = ""
-        else:
-            selected_root_dir = ""
+        selected_root_dir = self._root_dir_from_selection(selected_root)
 
         shows = []
         anime = []
@@ -161,15 +170,7 @@ class Home(WebRoot):
         if kind not in ("all", "series", "anime"):
             kind = "all"
 
-        if selected_root and settings.ROOT_DIRS:
-            backend_dirs = settings.ROOT_DIRS.split("|")[1:]
-            try:
-                assert selected_root != "-1"
-                selected_root_dir = backend_dirs[int(selected_root)]
-            except (IndexError, ValueError, TypeError, AssertionError):
-                selected_root_dir = ""
-        else:
-            selected_root_dir = ""
+        selected_root_dir = self._root_dir_from_selection(selected_root)
 
         shows_to_show = []
         skipped = 0
@@ -1065,7 +1066,7 @@ class Home(WebRoot):
         if show_obj.is_anime:
             bwl = show_obj.release_groups
 
-        show_obj.exceptions = sickchill.oldbeard.scene_exceptions.get_scene_exceptions(show_obj.indexerid)
+        show_obj.exceptions = sickchill.show.scene_exceptions.get_scene_exceptions(show_obj.indexerid)
 
         indexerid = int(show_obj.indexerid)
         indexer = int(show_obj.indexer)
@@ -1136,7 +1137,7 @@ class Home(WebRoot):
 
     def sceneExceptions(self):
         show = try_int(self.get_query_argument("show"))
-        exeptions_list = sickchill.oldbeard.scene_exceptions.get_all_scene_exceptions(show)
+        exeptions_list = sickchill.show.scene_exceptions.get_all_scene_exceptions(show)
         if not exeptions_list:
             return _("No scene exceptions")
 
@@ -1229,7 +1230,7 @@ class Home(WebRoot):
 
             return self._genericMessage(_("Error"), error_string)
 
-        show_obj.exceptions = sickchill.oldbeard.scene_exceptions.get_all_scene_exceptions(show_obj.indexerid)
+        show_obj.exceptions = sickchill.show.scene_exceptions.get_all_scene_exceptions(show_obj.indexerid)
 
         main_db_con = db.DBConnection()
         seasonResults = main_db_con.select(
@@ -1570,7 +1571,7 @@ class Home(WebRoot):
 
         logger.debug("Updating show exceptions")
         try:
-            sickchill.oldbeard.scene_exceptions.update_custom_scene_exceptions(show_obj.indexerid, exceptions)
+            sickchill.show.scene_exceptions.update_custom_scene_exceptions(show_obj.indexerid, exceptions)
         except CantUpdateShowException:
             logger.debug("Error updating scene exceptions", exc_info=True)
             errors.append(_("Unable to force an update on scene exceptions of the show."))
@@ -1670,7 +1671,7 @@ class Home(WebRoot):
             return self._genericMessage(_("Error"), _("Unable to find the specified show"))
 
         try:
-            from sickchill.oldbeard.show_queue import ShowQueueActions
+            from sickchill.show.show_queue import ShowQueueActions
 
             item = settings.showQueueScheduler.action.download_tba_names(show_obj)
             if item and item.action_id in (ShowQueueActions.UPDATE, ShowQueueActions.FORCEUPDATE):
@@ -2044,7 +2045,7 @@ class Home(WebRoot):
         cache_db_con = db.DBConnection("cache.db", row_type="dict")
         result = cache_db_con.select_one("SELECT * FROM results WHERE url = ?", [url])
         if result:
-            provider = sickchill.oldbeard.providers.getProviderClass(result.get("provider"))
+            provider = sickchill.providers.getProviderClass(result.get("provider"))
             if provider.provider_type == GenericProvider.TORRENT:
                 result = result_classes.TorrentSearchResult.make_result(result)
             elif provider.provider_type == GenericProvider.NZB:
@@ -2059,7 +2060,7 @@ class Home(WebRoot):
         if isinstance(result, str):
             sickchill.logger.info(_("Could not snatch manually selected result: {result}").format(result=result))
         elif isinstance(result, result_classes.SearchResult):
-            sickchill.oldbeard.search.snatch_episode(result, SNATCHED_BEST)
+            sickchill.search.search.snatch_episode(result, SNATCHED_BEST)
 
         return self.redirect("/home/displayShow?show=" + show)
 
@@ -2113,7 +2114,7 @@ class Home(WebRoot):
 
                 return ep_loc
 
-            if isinstance(search_thread, sickchill.oldbeard.search_queue.ManualSearchQueueItem):
+            if isinstance(search_thread, sickchill.search.search_queue.ManualSearchQueueItem):
                 # noinspection PyProtectedMember
                 results.append(
                     {
@@ -2173,11 +2174,11 @@ class Home(WebRoot):
 
         # Finished Searches
         searchstatus = "Finished"
-        for searchThread in sickchill.oldbeard.search_queue.MANUAL_SEARCH_HISTORY:
+        for searchThread in sickchill.search.search_queue.MANUAL_SEARCH_HISTORY:
             if show and str(searchThread.show.indexerid) != show:
                 continue
 
-            if isinstance(searchThread, sickchill.oldbeard.search_queue.ManualSearchQueueItem):
+            if isinstance(searchThread, sickchill.search.search_queue.ManualSearchQueueItem):
                 # noinspection PyTypeChecker
                 if not any(row["episodeindexid"] == searchThread.segment.indexerid for row in episodes):
                     episodes += getEpisodes(searchThread, searchstatus)
@@ -2244,7 +2245,7 @@ class Home(WebRoot):
             print("error")
             return json.dumps({"result": "failure", "errorMessage": error_msg})
 
-        sickchill.oldbeard.notifiers.kodi_notifier.play_episode(episode_object, host)
+        sickchill.notifiers.kodi_notifier.play_episode(episode_object, host)
         return json.dumps({"result": "success"})
 
     def retrySearchSubtitles(self):

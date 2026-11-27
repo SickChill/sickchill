@@ -2,7 +2,7 @@ import re
 from typing import TYPE_CHECKING, List, Union
 
 import sickchill
-from sickchill.oldbeard.common import Quality
+from sickchill.common import Quality
 
 if TYPE_CHECKING:
     from sickchill.providers.GenericProvider import GenericProvider
@@ -70,7 +70,7 @@ class SearchResult(object):
             return error
 
         episode_objects = [show.get_episode(result_dict.get("season"), ep) for ep in result_dict.get("episodes").split("|") if ep]
-        provider = sickchill.oldbeard.providers.getProviderClass(result_dict.get("provider"))
+        provider = sickchill.providers.getProviderClass(result_dict.get("provider"))
         url = result_dict.get("url")
         result = cls(episode_objects, provider, url)
 

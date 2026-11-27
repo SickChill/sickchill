@@ -23,7 +23,7 @@ class BlackholeClient(ClientPlugin):
 
     def send(self, result: Any, **_kwargs) -> bool:
         self._sync_settings()
-        from sickchill.oldbeard.search import _download_result
+        from sickchill.search.search import _download_result
 
         return bool(_download_result(result))
 

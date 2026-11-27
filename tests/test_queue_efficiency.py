@@ -6,8 +6,10 @@ import datetime
 import unittest
 from unittest.mock import MagicMock, patch
 
-from sickchill.oldbeard import generic_queue, search_queue, show_queue
-from sickchill.oldbeard.generic_queue import QueuePriorities
+from sickchill.helper import generic_queue
+from sickchill.helper.generic_queue import QueuePriorities
+from sickchill.search import search_queue
+from sickchill.show import show_queue
 
 
 class TestQueuePrioritiesUser(unittest.TestCase):
@@ -219,7 +221,7 @@ class TestSeasonTypesAllowFetch(unittest.TestCase):
         idxr._default_season_types = TVDB._default_season_types
         idxr._fetch_series_season_types = MagicMock(return_value=[{"slug": "netflix", "name": "Netflix"}])
 
-        with patch("sickchill.oldbeard.db.DBConnection") as mock_db:
+        with patch("sickchill.db.DBConnection") as mock_db:
             mock_db.return_value.select.return_value = []
             result = TVDB.series_season_types(idxr, 12345, use_cache=True, allow_fetch=False)
 

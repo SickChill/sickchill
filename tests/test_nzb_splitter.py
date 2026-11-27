@@ -5,7 +5,7 @@ from __future__ import annotations
 import unittest
 from unittest import mock
 
-from sickchill.oldbeard import nzbSplitter
+from sickchill.process import nzbSplitter
 from sickchill.providers.result_classes import NZBDataSearchResult
 
 
@@ -28,13 +28,13 @@ class SplitResultTests(unittest.TestCase):
         parsed.season_number = 1
         parsed.episode_numbers = [2]
 
-        with mock.patch("sickchill.oldbeard.nzbSplitter.helpers.getURL", return_value=b"<nzb/>"):
+        with mock.patch("sickchill.process.nzbSplitter.helpers.getURL", return_value=b"<nzb/>"):
             with mock.patch(
-                "sickchill.oldbeard.nzbSplitter.get_season_nzbs",
+                "sickchill.process.nzbSplitter.get_season_nzbs",
                 return_value=({"Show.S01E02.WEB-DL": ["file"]}, "http://www.newzbin.com/DTD/2003/nzb"),
             ):
-                with mock.patch("sickchill.oldbeard.nzbSplitter.NameParser") as parser_cls:
-                    with mock.patch("sickchill.oldbeard.nzbSplitter.create_nzb_string", return_value="<nzb/>"):
+                with mock.patch("sickchill.process.nzbSplitter.NameParser") as parser_cls:
+                    with mock.patch("sickchill.process.nzbSplitter.create_nzb_string", return_value="<nzb/>"):
                         parser_cls.return_value.parse.return_value = parsed
                         results = nzbSplitter.split_result(season_result)
 

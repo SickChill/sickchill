@@ -9,10 +9,10 @@ from unittest.mock import MagicMock, patch
 import requests
 
 from sickchill.helper.common import valid_url
-from sickchill.oldbeard.notifiers.tweet import Notifier as TwitterNotifier
-from sickchill.oldbeard.providers.btn import Provider as BTNProvider
-from sickchill.oldbeard.providers.thepiratebay import Provider as TPBProvider
-from sickchill.oldbeard.scdatetime import _format_timeago, sctimeago
+from sickchill.helper.scdatetime import _format_timeago, sctimeago
+from sickchill.notifiers.tweet import Notifier as TwitterNotifier
+from sickchill.providers.btn import Provider as BTNProvider
+from sickchill.providers.thepiratebay import Provider as TPBProvider
 
 
 class ValidUrlTests(unittest.TestCase):
@@ -50,8 +50,8 @@ class BtnJsonRpcTests(unittest.TestCase):
         mock_response = MagicMock()
         mock_response.json.return_value = {"jsonrpc": "2.0", "id": 1, "result": {"torrents": {}, "results": 0}}
         mock_response.raise_for_status = MagicMock()
-        with patch("sickchill.oldbeard.providers.btn.requests.post", return_value=mock_response) as post:
-            with patch("sickchill.oldbeard.providers.btn.time.sleep"):
+        with patch("sickchill.providers.btn.requests.post", return_value=mock_response) as post:
+            with patch("sickchill.providers.btn.time.sleep"):
                 data = provider._api_call({"series": "Show"}, 1000, 0)
 
         self.assertEqual(data, {"torrents": {}, "results": 0})
@@ -66,7 +66,7 @@ class BtnJsonRpcTests(unittest.TestCase):
         mock_response = MagicMock()
         mock_response.json.return_value = {"error": {"code": -32001, "message": "Invalid API Key"}}
         mock_response.raise_for_status = MagicMock()
-        with patch("sickchill.oldbeard.providers.btn.requests.post", return_value=mock_response):
+        with patch("sickchill.providers.btn.requests.post", return_value=mock_response):
             data = provider._api_call()
         self.assertIn("api-error", data)
 

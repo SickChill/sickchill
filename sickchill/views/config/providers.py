@@ -5,11 +5,11 @@ from tornado.web import addslash
 
 import sickchill.start
 from sickchill import logger, settings
+from sickchill.helper import config, ui
 from sickchill.helper.common import try_float
-from sickchill.oldbeard import config, ui
-from sickchill.oldbeard.providers.newznab import NewznabProvider
-from sickchill.oldbeard.providers.rsstorrent import TorrentRssProvider
 from sickchill.providers.GenericProvider import GenericProvider
+from sickchill.providers.newznab import NewznabProvider
+from sickchill.providers.rsstorrent import TorrentRssProvider
 from sickchill.views.common import PageTemplate
 from sickchill.views.config.index import Config
 from sickchill.views.routes import Route
@@ -22,7 +22,7 @@ class ConfigProviders(Config):
         # Instantiate builtins/customs for the list; apply credentials only for enabled providers.
         if settings.CFG is not None:
             try:
-                from sickchill.oldbeard import providers as providers_mod
+                from sickchill import providers as providers_mod
                 from sickchill.plugins.providers.config import apply_providers_from_cfg, custom_providers_from_cfg
 
                 providers_mod.ensure_all_builtin_providers_loaded()
@@ -55,7 +55,7 @@ class ConfigProviders(Config):
         if not provider_id:
             return json.dumps({"error": "No provider specified"})
 
-        from sickchill.oldbeard import providers as providers_mod
+        from sickchill import providers as providers_mod
         from sickchill.plugins.providers.config import apply_one_provider_from_cfg, provider_settings_for_ui
 
         provider = providers_mod.ensure_provider_loaded(provider_id) or providers_mod.getProviderClass(provider_id)
@@ -136,7 +136,7 @@ class ConfigProviders(Config):
     @staticmethod
     def getJackettCategories(url="", key="", indexer="all"):
         """Fetch Torznab TV category caps from the built-in Jackett provider settings/form values."""
-        from sickchill.oldbeard.providers.jackett import Provider as JackettProvider
+        from sickchill.providers.jackett import Provider as JackettProvider
 
         error = ""
         if not url:
@@ -304,7 +304,7 @@ class ConfigProviders(Config):
 
         # do the enable/disable — POST still uses id:0/id:1 for all list items; persist enabled-only order
         enabled_provider_list = []
-        known_provider_ids = {provider.get_id() for provider in sickchill.oldbeard.providers.sorted_provider_list()}
+        known_provider_ids = {provider.get_id() for provider in sickchill.providers.sorted_provider_list()}
         known_provider_ids.update(newznab_provider_dict)
         known_provider_ids.update(torrent_rss_provider_dict)
 
@@ -317,7 +317,7 @@ class ConfigProviders(Config):
                 continue
             enabled = flag == "1"
 
-            current_provider_object = [x for x in sickchill.oldbeard.providers.sorted_provider_list() if x.get_id() == provider_id and hasattr(x, "enabled")]
+            current_provider_object = [x for x in sickchill.providers.sorted_provider_list() if x.get_id() == provider_id and hasattr(x, "enabled")]
 
             if current_provider_object:
                 current_provider_object[0].enabled = enabled
@@ -337,7 +337,7 @@ class ConfigProviders(Config):
             providers_config.mark_provider_settings_loaded(provider_id)
 
         # dynamically load provider settings only for providers whose fields were applied
-        for provider in sickchill.oldbeard.providers.sorted_provider_list():
+        for provider in sickchill.providers.sorted_provider_list():
             if provider.get_id() not in posted_loaded:
                 continue
             provider.check_set_option(self, "custom_url")
@@ -399,7 +399,7 @@ class ConfigProviders(Config):
             providers_config._prune_custom_provider_types = set()
 
         # Add a site_message if no providers are enabled for daily and/or backlog
-        sickchill.oldbeard.providers.check_enabled_providers()
+        sickchill.providers.check_enabled_providers()
 
         ui.notifications.message(_("Configuration Saved"), os.path.join(settings.CONFIG_FILE))
 
