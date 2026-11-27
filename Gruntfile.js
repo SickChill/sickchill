@@ -321,20 +321,6 @@ module.exports = function (grunt) {
                 },
             },
         },
-        po2json: {
-            messages: {
-                options: {
-                    format: 'jed',
-                    singleFile: true,
-                },
-                files: [{
-                    expand: true,
-                    src: 'sickchill/locale/*/LC_MESSAGES/messages.po',
-                    dest: '',
-                    ext: '', // Workaround for relative files
-                }],
-            },
-        },
         exec: {
             // Translations
             updateTranslations: {cmd: 'poe update_translations'},
