@@ -710,10 +710,6 @@ class GenericMetadata(object):
             logger.error(f"Unable to write file to {image_path} - are you sure the folder is writable? {error}")
             return False
 
-        # The next displayShow/editShow URL must hash the new bytes. Tornado otherwise reuses the old ?v=.
-        from sickchill.views.server_settings import SickChillStaticFileHandler
-
-        SickChillStaticFileHandler.drop_cached_version(image_path)
         return True
 
     def retrieveShowMetadata(self, folder):

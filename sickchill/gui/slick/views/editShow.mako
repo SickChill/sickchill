@@ -1,5 +1,6 @@
 <%inherit file="/layouts/main.mako" />
 <%!
+    import datetime
     from sickchill import settings
     from sickchill import common
     from sickchill.common import SKIPPED, WANTED, IGNORED
@@ -510,7 +511,7 @@
                                             <div class="col-md-12">
                                                 <div class="poster-container">
                                                     <input type="hidden" name="poster" />
-                                                    <img src="${static_url(show.show_image_url('poster'))}"
+                                                    <img src="${static_url(show.show_image_url('poster'))}?t=${int(datetime.datetime.now().timestamp())}"
                                                         data-image-type="poster"
                                                         class="custom-image tvshowImg" alt="${_('Poster for')} ${show.name}"
                                                     />
@@ -530,7 +531,7 @@
                                             <div class="col-md-12">
                                                 <div class="banner-container">
                                                     <input type="hidden" name="banner" />
-                                                    <img src="${static_url(show.show_image_url('banner'))}"
+                                                    <img src="${static_url(show.show_image_url('banner'))}?t=${int(datetime.datetime.now().timestamp())}"
                                                          data-image-type="banner"
                                                          class="custom-image banner" alt="${_('Banner for')} ${show.name}"
                                                     />
@@ -550,7 +551,7 @@
                                             <div class="col-md-12">
                                                 <div class="fanart-container">
                                                     <input type="hidden" name="fanart" />
-                                                    <img src="${static_url(show.show_image_url('fanart'))}"
+                                                    <img src="${static_url(show.show_image_url('fanart'))}?t=${int(datetime.datetime.now().timestamp())}"
                                                         data-image-type="fanart"
                                                         class="custom-image tvshowImg" alt="${_('Fanart for')} ${show.name}"
                                                     />
