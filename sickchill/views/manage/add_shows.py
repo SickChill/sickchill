@@ -17,7 +17,7 @@ from sickchill.helper import config, helpers, sanitize_filename, try_int, ui
 from sickchill.helper.list_status import build_list_status
 from sickchill.show import tmdbLists, tvmazePremieres
 from sickchill.show.blackandwhitelist import short_group_names
-from sickchill.show.recommendations.imdb import imdb_popular, poster_cache_path, poster_is_cached
+from sickchill.show.recommendations.imdb import imdb_popular
 from sickchill.show.Show import Show
 from sickchill.tv import TVShow
 from sickchill.views.common import PageTemplate
@@ -539,19 +539,6 @@ class AddShows(Home):
         search = show_name.strip() or str(tmdb_id)
         return self.redirect(f"/addShows/newShow/?search_string={quote_plus(search)}&exact=1")
 
-    def popularShowImage(self):
-        """Serve one IMDb poster from SickChill. The browser does not load Amazon itself."""
-        imdb_id = self.get_query_argument("imdb_id", default="")
-        image_url = self.get_query_argument("image_url", default="")
-        path = poster_cache_path(imdb_id)
-        if path and (poster_is_cached(imdb_id) or imdb_popular.cache_poster(imdb_id, image_url)):
-            self.set_header("Content-Type", "image/jpeg")
-            self.set_header("Cache-Control", "private, max-age=86400")
-            with open(path, "rb") as handle:
-                return handle.read()
-        self.redirect("/images/poster.png")
-        return None
-
     def popularShows(self):
         """
         Fetches data from IMDB to show a list of popular shows.
@@ -574,14 +561,9 @@ class AddShows(Home):
                     title = show.get("title") or show.get("l", "Unknown")
                     year = show.get("year")
 
-                    # Image. The browser loads a same-origin cache file, not Amazon.
+                    # Image
                     image_data = show.get("image")
-                    if isinstance(image_data, dict):
-                        image_url = image_data.get("url") or ""
-                    elif isinstance(image_data, str):
-                        image_url = image_data
-                    else:
-                        image_url = ""
+                    image_url = image_data.get("url") if isinstance(image_data, dict) else None
 
                     popular_shows.append(
                         {

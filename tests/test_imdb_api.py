@@ -8,13 +8,7 @@ from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 from sickchill.show.indexers.imdb_api import Imdb, ImdbFacade, _creds_need_refresh, _creds_path
-from sickchill.show.recommendations.imdb import (
-    allowed_poster_url,
-    imdbPopular,
-    poster_cache_name,
-    poster_cache_path,
-    sized_poster_url,
-)
+from sickchill.show.recommendations.imdb import imdbPopular
 
 
 class ImdbTitleMappingTests(unittest.TestCase):
@@ -116,72 +110,3 @@ class ImdbSearchAndPopularTests(unittest.TestCase):
         self.assertEqual(imdb_id, "tt0944947")
         self.assertEqual(show.get("title") or show.get("l"), "Game of Thrones")
         self.assertEqual(show["image"]["url"], "https://img.example/got.jpg")
-
-
-_AMAZON = "https://m.media-amazon.com/images/M/MV5BZWYwZTZiZGEtNjBlOS00MGEzLWI3MmUtMTRhMWM4NzAwYTQ1XkEyXkFqcGc@._V1_.jpg"
-
-
-class ImdbPosterCacheTests(unittest.TestCase):
-    def test_sized_poster_url_requests_a_card_jpeg(self):
-        self.assertEqual(sized_poster_url(_AMAZON), _AMAZON.replace("@._V1_.jpg", "@._V1_QL75_UX280_.jpg"))
-
-    def test_poster_url_allowlist(self):
-        self.assertTrue(allowed_poster_url(_AMAZON))
-        self.assertTrue(allowed_poster_url(sized_poster_url(_AMAZON)))
-        self.assertFalse(allowed_poster_url("http://m.media-amazon.com/images/M/x.jpg"))
-        self.assertFalse(allowed_poster_url("https://evil.example/images/M/x.jpg"))
-        self.assertFalse(allowed_poster_url("https://user:pass@m.media-amazon.com/images/M/x.jpg"))
-        self.assertFalse(allowed_poster_url("https://m.media-amazon.com/other/x.jpg"))
-
-    def test_poster_cache_name_rejects_path_tricks(self):
-        self.assertEqual(poster_cache_name("tt0944947"), "tt0944947.jpg")
-        self.assertEqual(poster_cache_name("tt41154853"), "tt41154853.jpg")
-        self.assertIsNone(poster_cache_name("tt0944947/../../etc/passwd"))
-        self.assertIsNone(poster_cache_name("../tt0944947"))
-
-    def test_cache_poster_writes_jpeg_and_skips_a_second_download(self):
-        class Response:
-            def __init__(self):
-                self.status_code = 200
-                self.headers = {"Content-Type": "image/jpeg"}
-
-            def iter_content(self, _chunk_size):
-                yield b"\xff\xd8\xff\xd9"
-
-            def close(self):
-                return None
-
-        popular = imdbPopular()
-        popular.session = MagicMock()
-        popular.session.get.return_value = Response()
-        with tempfile.TemporaryDirectory() as cache_dir:
-            with patch("sickchill.show.recommendations.imdb.settings.CACHE_DIR", cache_dir):
-                self.assertTrue(popular.cache_poster("tt0944947", _AMAZON))
-                stored = Path(poster_cache_path("tt0944947")).read_bytes()
-                self.assertEqual(stored, b"\xff\xd8\xff\xd9")
-                popular.session.get.assert_called_once()
-                requested = popular.session.get.call_args.args[0]
-                self.assertTrue(requested.endswith("@._V1_QL75_UX280_.jpg"))
-                self.assertFalse(popular.session.get.call_args.kwargs["allow_redirects"])
-                self.assertTrue(popular.cache_poster("tt0944947", _AMAZON))
-                popular.session.get.assert_called_once()
-
-    def test_cache_poster_rejects_a_redirect(self):
-        class Response:
-            def __init__(self):
-                self.status_code = 302
-                self.headers = {"Location": "http://127.0.0.1/secret", "Content-Type": "image/jpeg"}
-
-            def iter_content(self, _chunk_size):
-                yield b"\xff\xd8\xff\xd9"
-
-            def close(self):
-                return None
-
-        popular = imdbPopular()
-        popular.session = MagicMock()
-        popular.session.get.return_value = Response()
-        with tempfile.TemporaryDirectory() as cache_dir:
-            with patch("sickchill.show.recommendations.imdb.settings.CACHE_DIR", cache_dir):
-                self.assertFalse(popular.cache_poster("tt0944947", _AMAZON))
-                self.assertFalse(Path(cache_dir, "images", "imdb_popular", "tt0944947.jpg").exists())
