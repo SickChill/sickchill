@@ -2,6 +2,7 @@
 <%!
     from sickchill.helper.helpers import anon_url
     from sickchill import settings
+    from urllib.parse import quote_plus
 %>
 
 <%block name="metas">
@@ -48,10 +49,16 @@
                                 <div class="traktContainer">
                                     <div class="trakt-image">
                                         <a href="${anon_url(imdb_url(current_result))}" target="_blank">
-                                            <img src="${current_result.get('image') or static_url('images/poster.png')}"
-                                                 class="trakt-image"
-                                                 alt="${current_result.get('name', '')}"
-                                                 onerror="this.src='${static_url('images/poster.png')}'" />
+                                            % if current_result.get('image') and current_result.get('imdb_id'):
+                                                <img src="${scRoot}/addShows/popularShowImage?imdb_id=${current_result['imdb_id']}&amp;image_url=${quote_plus(current_result['image'])}"
+                                                     class="trakt-image"
+                                                     alt="${current_result.get('name', '')}"
+                                                     onerror="this.src='${static_url('images/poster.png')}'" />
+                                            % else:
+                                                <img src="${static_url('images/poster.png')}"
+                                                     class="trakt-image"
+                                                     alt="${current_result.get('name', '')}" />
+                                            % endif
                                         </a>
                                     </div>
 
