@@ -404,12 +404,21 @@ class FailedQueueItem(generic_queue.QueueItem):
 
             if search_result:
                 for result in search_result:
-                    # just use the first result for now
-                    logger.info(f"Downloading {result.name} from {result.provider.name}")
-                    search.snatch_episode(result)
+                    # Same per-result fallback as a manual search. Stop this result after one success.
+                    candidates = [result] + [item for item in getattr(result, "alternatives", []) or [] if item is not result]
+                    seen_urls = set()
+                    for candidate in candidates:
+                        if candidate.url and candidate.url in seen_urls:
+                            continue
+                        if candidate.url:
+                            seen_urls.add(candidate.url)
+                        logger.info(f"Downloading {candidate.name} from {candidate.provider.name}")
+                        snatched = search.snatch_episode(candidate)
 
-                    # give the CPU a break
-                    time.sleep(common.cpu_presets[settings.CPU_PRESET])
+                        # give the CPU a break
+                        time.sleep(common.cpu_presets[settings.CPU_PRESET])
+                        if snatched:
+                            break
             else:
                 pass
                 # logger.info(f"No valid episode found to retry for: [{self.segment.pretty_name}]")

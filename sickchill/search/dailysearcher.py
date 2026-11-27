@@ -24,6 +24,12 @@ class DailySearcher(object):
             return
 
         self.amActive = True
+        try:
+            self._prepare()
+        finally:
+            self.amActive = False
+
+    def _prepare(self):
         logger.info(_("Searching for new released episodes ..."))
 
         if not network_timezones.network_dict:
@@ -69,23 +75,22 @@ class DailySearcher(object):
             ep = show.get_episode(sqlEp["season"], sqlEp["episode"])
             with ep.lock:
                 prefix = _("New episode {episode_string} airs today,").format(episode_string=ep.pretty_name)
-                if ep.season == 0:
+                if ep.status != common.UNAIRED:
+                    logger.debug(
+                        _(
+                            "{prefix} but it has already been snatched or downloaded, but has not been saved to the database yet. Skipping so we don't download it again!"
+                        ).format(prefix=prefix)
+                    )
+                elif ep.season == 0:
                     logger.info(_("{prefix} setting status to SKIPPED because is a special season").format(prefix=prefix))
                     ep.status = common.SKIPPED
                 else:
-                    if ep.status != common.UNAIRED:
-                        logger.debug(
-                            _(
-                                "{prefix} but it has already been snatched or downloaded, but has not been saved to the database yet. Skipping so we don't download it again!"
-                            ).format(prefix=prefix)
+                    logger.info(
+                        _("{prefix} setting to default episode status for this show: {status_string}").format(
+                            prefix=prefix, status_string=common.statusStrings[ep.show.default_ep_status]
                         )
-                    else:
-                        logger.info(
-                            _("{prefix} setting to default episode status for this show: {status_string}").format(
-                                prefix=prefix, status_string=common.statusStrings[ep.show.default_ep_status]
-                            )
-                        )
-                        ep.status = ep.show.default_ep_status
+                    )
+                    ep.status = ep.show.default_ep_status
 
                 sql_l.append(ep.get_sql())
 
@@ -98,5 +103,3 @@ class DailySearcher(object):
         # queue episode for daily search
         dailysearch_queue_item = sickchill.search.search_queue.DailySearchQueueItem()
         settings.searchQueueScheduler.action.add_item(dailysearch_queue_item)
-
-        self.amActive = False

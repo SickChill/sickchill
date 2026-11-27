@@ -366,7 +366,7 @@ class DBConnection(object):
 
     @classmethod
     def _release_rank(cls, row):
-        """Same order as ``TVCache._collapse_cache_rows``: newer time, then more seeders."""
+        """Timestamp of a cached release. An equal timestamp is still a later write."""
 
         def as_int(value):
             try:
@@ -374,14 +374,15 @@ class DBConnection(object):
             except (TypeError, ValueError):
                 return 0
 
-        return as_int(cls._cache_value(row, "time")), as_int(cls._cache_value(row, "seeders"))
+        return as_int(cls._cache_value(row, "time"))
 
     @classmethod
     def _incoming_release_wins(cls, value_dict, execute):
         """True when this row should be written.
 
-        A new download URL replaces stored copies only when its (time, seeders) rank is
-        higher. An equal or older row leaves the stored release alone. Rows without a
+        A new download URL replaces stored copies when its timestamp is at least as new.
+        An equal timestamp is a later write of that instant, so it wins even with fewer
+        seeders. An older timestamp leaves the stored release alone. Rows without a
         release identity fall through to a normal upsert.
         """
         fields = ("provider", "name", "indexerid", "season", "episodes")
@@ -389,12 +390,12 @@ class DBConnection(object):
             return True
 
         stored = execute(
-            "SELECT time, seeders FROM results WHERE provider = ? AND name = ? AND indexerid = ? AND season = ? AND episodes = ?",
+            "SELECT time FROM results WHERE provider = ? AND name = ? AND indexerid = ? AND season = ? AND episodes = ?",
             [value_dict[field] for field in fields],
             fetchall=True,
         )
         incoming = cls._release_rank(value_dict)
-        return all(incoming > cls._release_rank(row) for row in stored or [])
+        return all(incoming >= cls._release_rank(row) for row in stored or [])
 
     @staticmethod
     def _stale_release_delete(value_dict):

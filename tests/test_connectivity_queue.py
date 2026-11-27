@@ -72,21 +72,29 @@ class TestProbeConnectivity(unittest.TestCase):
             self.assertTrue(connectivity.probe_connectivity([("1.1.1.1", 53)], timeout=1))
             connect.assert_called_once_with(("127.0.0.1", 8888), timeout=1)
 
-    def test_probe_treats_unparseable_proxy_as_success(self):
+    def test_probe_treats_unparseable_proxy_as_failure(self):
         with (
             patch("sickchill.search.connectivity.settings.PROXY_SETTING", "://"),
             patch("sickchill.search.connectivity.socket.create_connection") as connect,
+            patch("sickchill.search.connectivity.logger") as log,
         ):
-            self.assertTrue(connectivity.probe_connectivity([("1.1.1.1", 53)], timeout=1))
+            self.assertFalse(connectivity.probe_connectivity([("1.1.1.1", 53)], timeout=1))
             connect.assert_not_called()
+            text = " ".join(str(arg) for call in log.warning.call_args_list for arg in call.args)
+            self.assertNotIn("://", text)
 
-    def test_probe_treats_invalid_proxy_port_as_success(self):
+    def test_probe_treats_invalid_proxy_port_as_failure(self):
+        proxy = "http://127.0.0.1:abc"
         with (
-            patch("sickchill.search.connectivity.settings.PROXY_SETTING", "http://127.0.0.1:abc"),
+            patch("sickchill.search.connectivity.settings.PROXY_SETTING", proxy),
             patch("sickchill.search.connectivity.socket.create_connection") as connect,
+            patch("sickchill.search.connectivity.logger") as log,
         ):
-            self.assertTrue(connectivity.probe_connectivity([("1.1.1.1", 53)], timeout=1))
+            self.assertFalse(connectivity.probe_connectivity([("1.1.1.1", 53)], timeout=1))
             connect.assert_not_called()
+            text = " ".join(str(arg) for call in log.warning.call_args_list for arg in call.args)
+            self.assertNotIn(proxy, text)
+            self.assertNotIn("127.0.0.1", text)
 
     def test_delay_after_failure_progression(self):
         self.assertEqual(connectivity.delay_after_failure(1), 15)

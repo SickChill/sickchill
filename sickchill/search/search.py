@@ -168,10 +168,15 @@ def snatch_episode(result: "SearchResult", end_status=SNATCHED):
     trakt_data = []
     for current_episode in result.episodes:
         with current_episode.lock:
-            if is_first_best_match(result):
-                current_episode.status = Quality.compositeStatus(SNATCHED_BEST, result.quality)
+            # A proper keeps SNATCHED_PROPER even when the quality is preferred.
+            # SNATCHED_BEST stays for an ordinary preferred-quality snatch.
+            if end_status == SNATCHED_PROPER:
+                snatched_status = SNATCHED_PROPER
+            elif is_first_best_match(result):
+                snatched_status = SNATCHED_BEST
             else:
-                current_episode.status = Quality.compositeStatus(end_status, result.quality)
+                snatched_status = end_status
+            current_episode.status = Quality.compositeStatus(snatched_status, result.quality)
 
             sql_l.append(current_episode.get_sql())
 
@@ -294,8 +299,8 @@ def is_final_result(result: "SearchResult"):
     elif show_obj.is_anime and show_obj.release_groups.is_valid(result):
         return False
 
-    # if there's no re-download that's higher (above) and this is the highest initial download then we're good
-    elif any_qualities and result.quality in any_qualities:
+    # No preferred list: only the highest allowed quality ends the search.
+    elif not best_qualities and any_qualities and result.quality == max(any_qualities):
         return True
 
     elif best_qualities and result.quality == max(best_qualities):
@@ -422,6 +427,30 @@ def _rank_by_selection(candidates, show):
     return ranked
 
 
+def _merge_ranked_candidates(existing, incoming):
+    """Preferred result first, then the other provider's acceptable URLs."""
+    existing = list(existing or [])
+    incoming = list(incoming or [])
+    if not existing:
+        return incoming
+    if not incoming:
+        return existing
+    if incoming[0].quality > existing[0].quality:
+        primary, extra = incoming, existing
+    else:
+        primary, extra = existing, incoming
+    merged = list(primary)
+    seen = {item.url for item in merged if getattr(item, "url", None)}
+    for item in extra:
+        url = getattr(item, "url", None)
+        if url and url in seen:
+            continue
+        if url:
+            seen.add(url)
+        merged.append(item)
+    return merged
+
+
 def _ranked_results(results, show):
     """Acceptable results, best first, using the same order as ``pick_best_result``."""
     ordered = list(results if isinstance(results, list) else [results])
@@ -540,11 +569,9 @@ def search_for_needed_episodes():
                     logger.debug(f"All found results for {current_episode.pretty_name} were rejected.")
                     continue
 
-                # if it's already in the list (from another provider) and the newly found quality is no better, then skip it
-                if current_episode in found_candidates and ranked[0].quality <= found_candidates[current_episode][0].quality:
-                    continue
-
-                found_candidates[current_episode] = ranked
+                # Keep the preferred result first and retain every other acceptable URL.
+                # A later provider can still be tried when the first submission fails.
+                found_candidates[current_episode] = _merge_ranked_candidates(found_candidates.get(current_episode), ranked)
 
         threading.current_thread().name = original_thread_name
 
@@ -575,10 +602,13 @@ def _search_results_cover_requested(search_results, episodes, search_mode, show)
 
     covered_episodes = set()
     for result_key, result_list in search_results.items():
+        selectable = [result for result in result_list or [] if _result_is_acceptable(result, show)]
+        if not selectable:
+            continue
         if result_key == MULTI_EP_RESULT:
-            for result in result_list:
+            for result in selectable:
                 covered_episodes.update(episode.episode for episode in result.episodes)
-        elif result_key >= 0 and result_list:
+        elif result_key >= 0:
             covered_episodes.add(result_key)
 
     return {episode.episode for episode in episodes} <= covered_episodes
@@ -838,15 +868,21 @@ def search_providers(show, episodes, manual=False, downCurQuality=False):
             ranked = _ranked_results(found_results[curProvider.name][current_episode], show)
             best_result.alternatives = [item for item in ranked if item is not best_result]
 
-            # add result if it's not a duplicate and
+            # Replace an existing result only when this one covers every episode it has.
+            # A better single episode must not drop the other episodes of a multi result.
             found = False
+            remove_indexes = []
             for i, result in enumerate(final_results):
-                for best_result_episode in best_result.episodes:
-                    if best_result_episode in result.episodes:
-                        if result.quality < best_result.quality:
-                            final_results.pop(i)
-                        else:
-                            found = True
+                if not any(episode in result.episodes for episode in best_result.episodes):
+                    continue
+                covers_existing = all(episode in best_result.episodes for episode in result.episodes)
+                covered_by_existing = all(episode in result.episodes for episode in best_result.episodes)
+                if result.quality < best_result.quality and covers_existing:
+                    remove_indexes.append(i)
+                elif result.quality >= best_result.quality and covered_by_existing:
+                    found = True
+            for i in reversed(remove_indexes):
+                final_results.pop(i)
             if not found:
                 final_results += [best_result]
 
@@ -856,6 +892,7 @@ def search_providers(show, episodes, manual=False, downCurQuality=False):
             for result in final_results:
                 if wanted_episode in result.episodes and is_final_result(result):
                     wanted_episode_count += 1
+                    break
 
         # make sure we search every provider for results unless we found everything we wanted
         if wanted_episode_count == len(episodes):

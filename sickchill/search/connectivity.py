@@ -69,7 +69,9 @@ def probe_connectivity(hosts: list[tuple[str, int]] | None = None, timeout: floa
     if proxy:
         endpoint = _proxy_endpoint(proxy)
         if endpoint is None:
-            return True
+            # A bad host or port must not look like a successful probe and resume the queue.
+            logger.warning("Connectivity probe skipped: the configured proxy host or port is invalid")
+            return False
         try:
             with socket.create_connection(endpoint, timeout=timeout):
                 return True

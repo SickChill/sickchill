@@ -58,12 +58,17 @@ class ProperFinder(object):
         logger.info(_("Beginning the search for new propers"))
         self.amActive = True
         try:
+            self._provider_scan_complete = False
             propers = self._get_propers()
 
             if propers:
                 self._download_propers(propers)
 
-            self._set_last_proper_search(sc_now().toordinal())
+            # A failed provider must not move the window past releases it never returned.
+            if self._provider_scan_complete:
+                self._set_last_proper_search(sc_now().toordinal())
+            else:
+                logger.info(_("Proper search left the window unchanged because a provider failed"))
 
             when = sctimeago(settings.properFinderScheduler.timeLeft())
             logger.info(_("Completed the search for new propers, next check approximately {when}").format(when=when))
@@ -102,6 +107,7 @@ class ProperFinder(object):
         Walk providers for propers
         """
         propers = {}
+        scan_complete = True
 
         search_date = self._proper_search_date()
         logger.debug(_("Proper search window starts at {when}").format(when=format_preset_datetime(search_date)))
@@ -138,28 +144,37 @@ class ProperFinder(object):
                     provider_propers = provider.find_propers(search_date)
             except AuthException as error:
                 logger.warning(_("Authentication error: {error}").format(error=error))
+                scan_complete = False
                 continue
             except Exception as error:
                 logger.exception(_("Exception while searching propers in {name}, skipping: {error}").format(name=provider.name, error=error))
                 logger.debug(traceback.format_exc())
+                scan_complete = False
                 continue
 
-            # if they haven't been added by a different provider than add the proper to the list
+            # Keep every provider URL for this name until one passes selection.
             for proper in provider_propers:
                 if not re.search(r"\b(proper|repack|real)\b", proper.name, re.IGNORECASE):
                     logger.debug(_("find_propers returned a non-proper, we have caught and skipped it."))
                     continue
 
                 name = self._generic_name(proper.name)
-                if name not in propers:
+                proper.provider = provider
+                propers.setdefault(name, []).append(proper)
+                if len(propers[name]) == 1:
                     logger.debug(_("Found new proper: {name}").format(name=proper.name))
-                    proper.provider = provider
-                    propers[name] = proper
 
             threading.current_thread().name = original_thread_name
 
-        # take the list of unique propers and get it sorted by date
-        sorted_propers = sorted(propers.values(), key=operator.attrgetter("date"), reverse=True)
+        # Newest copy of each name first, with the other provider URLs still attached.
+        representatives = []
+        for group in propers.values():
+            group.sort(key=operator.attrgetter("date"), reverse=True)
+            primary = group[0]
+            primary.url_choices = group
+            representatives.append(primary)
+        sorted_propers = sorted(representatives, key=operator.attrgetter("date"), reverse=True)
+        self._provider_scan_complete = scan_complete
         final_propers = []
         pack_episode_keys = set()
         selected_keys = set()
@@ -209,8 +224,14 @@ class ProperFinder(object):
                 proper.quality = Quality.nameQuality(proper.name, parse_result.is_anime, guess=guess or {})
             proper.content = None
 
-            # filter release
-            best_result = pick_best_result(proper, parse_result.show)
+            # A dead first URL must not hide another provider's copy of this proper.
+            best_result = None
+            for choice in getattr(proper, "url_choices", None) or [proper]:
+                proper.url = choice.url
+                proper.provider = choice.provider
+                best_result = pick_best_result(proper, parse_result.show)
+                if best_result:
+                    break
             if not best_result:
                 logger.debug(_("Proper {name} were rejected by our release filters").format(name=proper.name))
                 continue
@@ -226,12 +247,12 @@ class ProperFinder(object):
                     "SELECT episode, status FROM tv_episodes WHERE showid = ? AND season = ?",
                     [best_result.indexerid, best_result.season],
                 )
-                matching_status = 0
+                status_episodes = set()
                 for row in sql_results or []:
                     old_status, old_quality = Quality.splitCompositeStatus(int(row["status"]))
                     if old_status in (DOWNLOADED, SNATCHED) and old_quality == best_result.quality:
-                        matching_status += 1
-                if matching_status < 2:
+                        status_episodes.add(int(row["episode"]))
+                if len(status_episodes) < 2:
                     continue
             else:
                 sql_results = main_db_con.select(
@@ -280,6 +301,9 @@ class ProperFinder(object):
             best_result.history_resources = latest_resources
             matched_history = self._fingerprint_matching_history(best_result, is_season_pack, history_age, latest_resources)
             if is_season_pack:
+                # Status-qualified episodes and history matches must be the same episodes.
+                matched_history = {key: value for key, value in matched_history.items() if key[1] in status_episodes}
+                best_result.history_resources = matched_history
                 if len(matched_history) < 2:
                     logger.debug(_("Ignoring season pack {name} because fewer than two history releases share its remainder").format(name=best_result.name))
                     continue

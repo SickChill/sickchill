@@ -230,9 +230,6 @@ class TVCache(RSSTorrentMixin):
                 # clear cache
                 self._clear_cache()
 
-                # set updated
-                self.set_last_update()
-
                 cl = []
                 for item in data["entries"] or []:
                     ci = self._parse_item(item)
@@ -241,7 +238,11 @@ class TVCache(RSSTorrentMixin):
 
                 if cl:
                     cache_db_con = self.get_db()
-                    cache_db_con.mass_upsert("results", cl, replace_same_release=True)
+                    if not cache_db_con.mass_upsert("results", cl, replace_same_release=True):
+                        return
+
+                # Empty feeds still advance. A failed write must leave the old marker.
+                self.set_last_update()
 
         except AuthException as error:
             logger.warning(f"Authentication error: {error}")
@@ -261,6 +262,15 @@ class TVCache(RSSTorrentMixin):
     @staticmethod
     def _translate_link_url(url):
         return url.replace("&amp;", "&")
+
+    @staticmethod
+    def _epoch_seconds(value) -> int:
+        """POSIX seconds. Aware datetimes use their real instant, not the clock face."""
+        if value is None:
+            value = sc_now()
+        if getattr(value, "tzinfo", None) is not None and value.tzinfo.utcoffset(value) is not None:
+            return int(value.timestamp())
+        return int(time.mktime(value.timetuple()))
 
     @staticmethod
     def _ts_to_dt(last_time) -> datetime.datetime:
@@ -298,7 +308,7 @@ class TVCache(RSSTorrentMixin):
             last_time = int(last_time or 0)
         except (TypeError, ValueError):
             last_time = 0
-        if last_time > int(time.mktime(sc_now().timetuple())):
+        if last_time > self._epoch_seconds(sc_now()):
             last_time = 0
         return self._ts_to_dt(last_time)
 
@@ -311,7 +321,7 @@ class TVCache(RSSTorrentMixin):
             last_time = int(last_time or 0)
         except (TypeError, ValueError):
             last_time = 0
-        if last_time > int(time.mktime(sc_now().timetuple())):
+        if last_time > self._epoch_seconds(sc_now()):
             last_time = 0
         return self._ts_to_dt(last_time)
 
@@ -325,7 +335,7 @@ class TVCache(RSSTorrentMixin):
             to_date = sc_now()
 
         cache_db_con = self.get_db()
-        cache_db_con.upsert("lastUpdate", {"time": int(time.mktime(to_date.timetuple()))}, {"provider": self.provider_id})
+        cache_db_con.upsert("lastUpdate", {"time": self._epoch_seconds(to_date)}, {"provider": self.provider_id})
 
     def set_last_search(self, to_date=None):
         """
@@ -337,7 +347,7 @@ class TVCache(RSSTorrentMixin):
             to_date = sc_now()
 
         cache_db_con = self.get_db()
-        cache_db_con.upsert("lastSearch", {"time": int(time.mktime(to_date.timetuple()))}, {"provider": self.provider_id})
+        cache_db_con.upsert("lastSearch", {"time": self._epoch_seconds(to_date)}, {"provider": self.provider_id})
 
     def should_update(self):
         # if we've updated recently then skip the update
@@ -372,17 +382,16 @@ class TVCache(RSSTorrentMixin):
             if not parse_result or not parse_result.series_name:
                 return None
 
-        # if we made it this far then lets add the parsed result to cache for usage later on
-        season = parse_result.season_number if parse_result.season_number else 1
+        # Season 0 is a special. Only a missing season defaults to 1.
+        season = 1 if parse_result.season_number is None else parse_result.season_number
         episodes = parse_result.episode_numbers
 
-        if season and episodes:
+        if season is not None and episodes:
             # Sort after de-duplicating. Keep episode 0; drop only missing values.
             present_episodes = sorted(episode for episode in set(episodes) if episode is not None)
             episode_text = "|" + "|".join(str(episode) for episode in present_episodes) + "|"
 
-            # get the current timestamp
-            cur_timestamp = int(time.mktime(sc_now().timetuple()))
+            cur_timestamp = self._epoch_seconds(sc_now())
 
             # get quality of release
             quality = parse_result.quality
@@ -419,7 +428,7 @@ class TVCache(RSSTorrentMixin):
 
     def _cache_query(self, episode_object, filter_quality):
         """One cache select. Quality is constrained only when the caller asks and wantedQuality has values."""
-        sql = "SELECT * FROM results WHERE provider = ? AND indexerid = ? AND season = ? AND episodes LIKE ?"
+        sql = "SELECT rowid, * FROM results WHERE provider = ? AND indexerid = ? AND season = ? AND episodes LIKE ?"
         params = [
             self.provider_id,
             episode_object.show.indexerid,
@@ -452,10 +461,15 @@ class TVCache(RSSTorrentMixin):
             except (TypeError, ValueError):
                 return value
 
-        def rank(row):
+        def write_sequence(row, index):
+            try:
+                return int(row["rowid"])
+            except (KeyError, IndexError, TypeError, ValueError):
+                return index
+
+        def rank(row, index):
             stamp = as_int(row["time"])
-            seeders = as_int(row["seeders"])
-            return (stamp if isinstance(stamp, int) else 0, seeders if isinstance(seeders, int) else 0)
+            return (stamp if isinstance(stamp, int) else 0, write_sequence(row, index))
 
         def release_key(row):
             return (
@@ -467,11 +481,14 @@ class TVCache(RSSTorrentMixin):
             )
 
         chosen = {}
-        for row in rows or []:
+        chosen_rank = {}
+        for index, row in enumerate(rows or []):
             identity = release_key(row)
-            current = chosen.get(identity)
-            if current is None or rank(row) >= rank(current):
+            row_rank = rank(row, index)
+            current = chosen_rank.get(identity)
+            if current is None or row_rank >= current:
                 chosen[identity] = row
+                chosen_rank[identity] = row_rank
         return list(chosen.values())
 
     @staticmethod
@@ -507,11 +524,11 @@ class TVCache(RSSTorrentMixin):
         # Leading '.' required (scene-style delimiter); trailing may be '.' or
         like_clauses = " OR ".join(["name LIKE ?" for _ in tags])
         params = [self.provider_id] + [f"%.{tag}%" for tag in sorted(tags)]
-        sql = f"SELECT * FROM results WHERE provider = ? AND ({like_clauses})"
+        sql = f"SELECT rowid, * FROM results WHERE provider = ? AND ({like_clauses})"
 
         if date is not None:
             sql += " AND time >= ?"
-            params.append(int(time.mktime(date.timetuple())))
+            params.append(self._epoch_seconds(date))
 
         propers_results = self._collapse_cache_rows(cache_db_con.select(sql, params))
         return [x for x in propers_results if x["indexerid"]]
@@ -547,7 +564,7 @@ class TVCache(RSSTorrentMixin):
 
         cache_db_con = self.get_db()
         if episode is None:
-            sql_results = cache_db_con.select("SELECT * FROM results WHERE provider = ?", [self.provider_id])
+            sql_results = cache_db_con.select("SELECT rowid, * FROM results WHERE provider = ?", [self.provider_id])
         elif isinstance(episode, list):
             # Manual search may accept the current quality, so leave that filter to want_episode.
             filter_quality = not manual_search

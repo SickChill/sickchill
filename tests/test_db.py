@@ -220,6 +220,18 @@ class CacheDBTests(conftest.SickChillTestDBCase):
             ("name", "path-2"),
         ]
 
+    def test_mass_upsert_replace_same_release_equal_time_keeps_later_url(self):
+        self.cache_db_con.action("UPDATE results SET time = 100, seeders = 50 WHERE url = ?", ["url"])
+        rotated = (dict(self.record[0]), {"url": "path-new"})
+        rotated[0]["url"] = "path-new"
+        rotated[0]["time"] = 100
+        rotated[0]["seeders"] = 1
+
+        assert self.cache_db_con.mass_upsert("results", [rotated], replace_same_release=True)
+
+        rows = self.cache_db_con.select("SELECT url, seeders FROM results")
+        assert [(row["url"], row["seeders"]) for row in rows] == [("path-new", 1)]
+
     def test_stale_release_delete_uses_release_index(self):
         plan = self.cache_db_con.select(
             "EXPLAIN QUERY PLAN DELETE FROM results WHERE provider = ? AND name = ? AND indexerid = ? AND season = ? AND episodes = ? AND url != ?",

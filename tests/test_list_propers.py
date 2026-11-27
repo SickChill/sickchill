@@ -9,7 +9,9 @@ import unittest
 from unittest import mock
 
 from sickchill import db, settings
+from sickchill.common import DOWNLOADED, Quality
 from sickchill.helper.network_timezones import sc_now, sc_timezone
+from sickchill.providers.result_classes import Proper
 from sickchill.search.properFinder import ProperFinder
 from sickchill.search.tvcache import TVCache
 from tests import conftest
@@ -661,6 +663,165 @@ class TestProperFinderFingerprint(unittest.TestCase):
         other_pack = _proper("President.Curtis.S01.PROPER.720p.HDTV.x264-NTb", 1, -1)
         self.assertTrue(ProperFinder._merge_selected_proper(final_propers, pack_episode_keys, other_pack, True, {(1, 9): "e09", (1, 10): "e10"}))
         self.assertEqual(final_propers, [pack, other_pack])
+
+
+class TestProperSelection(unittest.TestCase):
+    def _parsed(self, episodes=None):
+        parsed = mock.Mock()
+        parsed.series_name = "Show"
+        parsed.show.paused = False
+        parsed.show.name = "Show"
+        parsed.show.indexerid = 1
+        parsed.show.indexer = 1
+        parsed.show.is_anime = False
+        parsed.episode_numbers = [1] if episodes is None else episodes
+        parsed.season_number = 1
+        parsed.original_name = "Show.S01.PROPER"
+        parsed.release_group = "GRP"
+        parsed.version = -1
+        parsed.is_anime = False
+        parsed.quality = Quality.HDTV
+        return parsed
+
+    def _provider(self, name, propers):
+        provider = mock.Mock()
+        provider.name = name
+        provider.cache = None
+        provider.find_propers.return_value = propers
+        return provider
+
+    def test_provider_exception_leaves_the_scan_incomplete(self):
+        provider = self._provider("Down", [])
+        provider.find_propers.side_effect = RuntimeError("timeout")
+        finder = ProperFinder()
+        with mock.patch.object(finder, "_proper_search_date", return_value=datetime.datetime(2026, 1, 1)):
+            self.assertEqual(finder._get_propers(providers=[provider]), [])
+        self.assertFalse(finder._provider_scan_complete)
+
+    def test_empty_provider_scan_is_complete(self):
+        finder = ProperFinder()
+        with mock.patch.object(finder, "_proper_search_date", return_value=datetime.datetime(2026, 1, 1)):
+            self.assertEqual(finder._get_propers(providers=[self._provider("Empty", [])]), [])
+        self.assertTrue(finder._provider_scan_complete)
+
+    def test_failed_scan_does_not_advance_the_watermark(self):
+        finder = ProperFinder()
+
+        def failed():
+            finder._provider_scan_complete = False
+            return []
+
+        with (
+            mock.patch.object(finder, "_get_propers", side_effect=failed),
+            mock.patch.object(finder, "_set_last_proper_search") as mark,
+            mock.patch("sickchill.search.properFinder.settings.properFinderScheduler") as scheduler,
+            mock.patch("sickchill.search.properFinder.sctimeago", return_value="soon"),
+        ):
+            scheduler.timeLeft.return_value = datetime.timedelta(0)
+            finder.run_search()
+        mark.assert_not_called()
+        self.assertFalse(finder.amActive)
+
+    def test_completed_scan_advances_the_watermark(self):
+        finder = ProperFinder()
+        fixed = datetime.datetime(2026, 6, 1, 12, 0, tzinfo=datetime.timezone.utc)
+
+        def completed():
+            finder._provider_scan_complete = True
+            return []
+
+        with (
+            mock.patch.object(finder, "_get_propers", side_effect=completed),
+            mock.patch.object(finder, "_set_last_proper_search") as mark,
+            mock.patch("sickchill.search.properFinder.sc_now", return_value=fixed),
+            mock.patch("sickchill.search.properFinder.settings.properFinderScheduler") as scheduler,
+            mock.patch("sickchill.search.properFinder.sctimeago", return_value="soon"),
+        ):
+            scheduler.timeLeft.return_value = datetime.timedelta(0)
+            finder.run_search()
+        mark.assert_called_once_with(fixed.toordinal())
+        self.assertFalse(finder.amActive)
+
+    def test_cached_propers_do_not_advance_the_watermark(self):
+        finder = ProperFinder()
+
+        def completed(providers=None, cache_only=False):
+            finder._provider_scan_complete = True
+            return []
+
+        with (
+            mock.patch.object(finder, "_get_propers", side_effect=completed),
+            mock.patch.object(finder, "_set_last_proper_search") as mark,
+            mock.patch("sickchill.search.properFinder.settings.DOWNLOAD_PROPERS", True),
+        ):
+            finder.process_cached_propers([mock.Mock()])
+        mark.assert_not_called()
+
+    def test_dead_url_does_not_hide_the_other_provider(self):
+        when = datetime.datetime(2026, 1, 2)
+        show = mock.Mock()
+        dead = Proper("Show.S01E01.PROPER.720p.HDTV-GRP", "http://dead", when, show)
+        good = Proper("Show.S01E01.PROPER.720p.HDTV-GRP", "http://good", when, show)
+        tried = []
+
+        def pick(proper, _show):
+            tried.append(proper.url)
+
+        finder = ProperFinder()
+        with (
+            mock.patch.object(finder, "_proper_search_date", return_value=when),
+            mock.patch("sickchill.search.properFinder.NameParser", return_value=mock.Mock(parse=mock.Mock(return_value=self._parsed()))),
+            mock.patch("sickchill.search.properFinder.guessit", return_value=None),
+            mock.patch("sickchill.search.properFinder.pick_best_result", side_effect=pick),
+        ):
+            self.assertEqual(
+                finder._get_propers(providers=[self._provider("Dead", [dead]), self._provider("Good", [good])]),
+                [],
+            )
+        self.assertEqual(tried, ["http://dead", "http://good"])
+
+    def _season_rows(self):
+        return [
+            {"episode": 1, "status": Quality.compositeStatus(DOWNLOADED, Quality.HDTV)},
+            {"episode": 2, "status": Quality.compositeStatus(DOWNLOADED, Quality.HDTV)},
+            {"episode": 3, "status": Quality.compositeStatus(DOWNLOADED, Quality.SDTV)},
+            {"episode": 4, "status": Quality.compositeStatus(DOWNLOADED, Quality.SDTV)},
+        ]
+
+    def _run_pack(self, history):
+        when = datetime.datetime(2026, 1, 2)
+        show = mock.Mock()
+        pack = Proper("Show.S01.PROPER.720p.HDTV-GRP", "http://pack", when, show)
+        database = mock.Mock()
+        database.select.return_value = self._season_rows()
+        finder = ProperFinder()
+        merged = mock.Mock(return_value=False)
+        with (
+            mock.patch.object(finder, "_proper_search_date", return_value=when),
+            mock.patch("sickchill.search.properFinder.NameParser", return_value=mock.Mock(parse=mock.Mock(return_value=self._parsed(episodes=[])))),
+            mock.patch("sickchill.search.properFinder.guessit", return_value=None),
+            mock.patch("sickchill.search.properFinder.pick_best_result", side_effect=lambda proper, _show: proper),
+            mock.patch("sickchill.search.properFinder.db.DBConnection", return_value=database),
+            mock.patch.object(finder, "_latest_history_resources", return_value=history),
+            mock.patch.object(finder, "_fingerprint_matching_history", return_value=dict(history)),
+            mock.patch.object(finder, "_merge_selected_proper", merged),
+        ):
+            found = finder._get_propers(providers=[self._provider("Pack", [pack])])
+        return found, pack, merged
+
+    def test_season_pack_ignores_history_outside_the_status_set(self):
+        found, pack, merged = self._run_pack({(1, 3): "e3", (1, 4): "e4"})
+        self.assertEqual(found, [])
+        merged.assert_not_called()
+        self.assertEqual(pack.history_resources, {})
+
+    def test_season_pack_submits_only_the_overlapping_episodes(self):
+        history = {(1, 1): "e1", (1, 2): "e2", (1, 3): "e3"}
+        _found, pack, merged = self._run_pack(history)
+        merged.assert_called_once()
+        matched = merged.call_args.args[4]
+        self.assertEqual(set(matched), {(1, 1), (1, 2)})
+        self.assertEqual(set(pack.history_resources), {(1, 1), (1, 2)})
 
 
 class TestProviderRateLimit(unittest.TestCase):
