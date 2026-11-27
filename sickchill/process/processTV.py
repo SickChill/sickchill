@@ -26,6 +26,8 @@ class ProcessResult(object):
         self.missed_files = []
         self.aggresult = True
         self.processed_shows = set()
+        # Inputs whose process() returned True. Cleanup must not treat a later success as success for earlier files.
+        self.processed_files = set()
 
 
 def _update_processed_show_sizes(result):
@@ -37,6 +39,11 @@ def _update_processed_show_sizes(result):
             logger.debug(f"show_size update failed for {getattr(show, 'indexerid', '?')}: {error}")
 
 
+def _input_key(directory, name):
+    """Stable path for one input file so cleanup can tell successes from leftovers."""
+    return os.path.normcase(os.path.abspath(os.path.join(directory, name)))
+
+
 def delete_folder(folder, check_empty=True):
     """
     Removes a folder from the filesystem
@@ -46,7 +53,18 @@ def delete_folder(folder, check_empty=True):
     return: True on success, False on failure
     """
 
-    folder = Path(folder).resolve()
+    folder = Path(folder)
+    # resolve() follows a directory symlink. rmtree would then delete the other directory.
+    if folder.is_symlink():
+        logger.warning(f"Not deleting {folder}: refusing to follow a symlink")
+        return False
+
+    try:
+        folder = folder.resolve()
+    except OSError as error:
+        logger.warning(f"Warning: unable to resolve folder: {folder}: {error}")
+        return False
+
     # check if it's a folder
     if not folder.is_dir():
         return False
@@ -220,14 +238,27 @@ def process_dir(process_path, release_name=None, process_method=None, force=Fals
             if not (process_method == "move" and result.result) or (mode == "manual" and not delete_on):
                 continue
 
-            # noinspection PyTypeChecker
-            unwanted_files = [x for x in filenames if x in video_files + rar_files]
+            successful_videos = [video for video in video_files if _input_key(current_directory, video) in result.processed_files]
+            unresolved_videos = [video for video in video_files if video not in successful_videos]
+            unwanted_files = list(successful_videos)
+            # A rar is still the source for any video this run did not finish.
+            if not unresolved_videos:
+                unwanted_files.extend(rar_name for rar_name in rar_files if rar_name not in unwanted_files)
             if unwanted_files:
                 result.output += log_helper(_("Found unwanted files: {unwanted_files}").format(unwanted_files=unwanted_files), logger.DEBUG)
 
-            delete_folder(os.path.join(current_directory, "@eaDir"), False)
+            if unresolved_videos:
+                result.output += log_helper(
+                    _("Not removing folder {current_directory} because these files were not processed: {files}").format(
+                        current_directory=current_directory, files=unresolved_videos
+                    ),
+                    logger.DEBUG,
+                )
+            else:
+                delete_folder(os.path.join(current_directory, "@eaDir"), False)
+
             delete_files(current_directory, unwanted_files, result)
-            if delete_folder(current_directory, check_empty=not delete_on):
+            if not unresolved_videos and delete_folder(current_directory, check_empty=not delete_on):
                 result.output += log_helper(_("Deleted folder: {current_directory}").format(current_directory=current_directory), logger.DEBUG)
 
         # For processing extracted rars, only allow methods 'move' and 'copy'.
@@ -532,6 +563,7 @@ def process_media(process_path, video_files, release_name, process_method, force
 
         if result.result:
             result.output += log_helper(f"Processing succeeded for {cur_video_file_path}")
+            result.processed_files.add(_input_key(process_path, cur_video_file))
             show = getattr(processor, "show", None)
             if show is not None:
                 result.processed_shows.add(show)

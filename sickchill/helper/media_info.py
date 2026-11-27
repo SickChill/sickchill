@@ -22,7 +22,7 @@ def _avi_screen_size(filename):
     :returns tuple: (width, height)
     """
     try:
-        if not filename.endswith(".avi"):
+        if filename.endswith(".avi"):
             with open(filename, "rb") as f:
                 header = f.read(72)
 

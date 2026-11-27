@@ -5,6 +5,7 @@ from typing import ClassVar
 from sickchill import settings
 from sickchill.plugins.api import Field, register
 from sickchill.plugins.kinds.notifier import LegacyNotifierPlugin
+from sickchill.plugins.settings import _as_bool
 
 
 @register
@@ -24,9 +25,9 @@ class SlackNotifier(LegacyNotifierPlugin):
     )
 
     def _sync_settings(self) -> None:
-        settings.USE_SLACK = bool(self.ctx.get("enabled"))
+        settings.USE_SLACK = _as_bool(self.ctx.get("enabled"))
         settings.SLACK_WEBHOOK = self.ctx.get("webhook") or ""
         settings.SLACK_ICON_EMOJI = self.ctx.get("icon_emoji") or ""
-        settings.SLACK_NOTIFY_SNATCH = bool(self.ctx.get("notify_snatch"))
-        settings.SLACK_NOTIFY_DOWNLOAD = bool(self.ctx.get("notify_download"))
-        settings.SLACK_NOTIFY_SUBTITLEDOWNLOAD = bool(self.ctx.get("notify_subtitledownload"))
+        settings.SLACK_NOTIFY_SNATCH = _as_bool(self.ctx.get("notify_snatch"))
+        settings.SLACK_NOTIFY_DOWNLOAD = _as_bool(self.ctx.get("notify_download"))
+        settings.SLACK_NOTIFY_SUBTITLEDOWNLOAD = _as_bool(self.ctx.get("notify_subtitledownload"))
