@@ -127,7 +127,13 @@ class MoveCleanupTests(unittest.TestCase):
         def factory(path, release_name, process_method, is_priority):
             return _processor(path, release_name, process_method, is_priority, fail_name=fail_name)
 
-        def walk(path, followlinks=False):
+        # Windows shutil.rmtree walks with topdown=False. Keep that on the real walk.
+        real_walk = os.walk
+
+        def walk(path, topdown=True, onerror=None, followlinks=False):
+            if not topdown or onerror is not None:
+                yield from real_walk(path, topdown=topdown, onerror=onerror, followlinks=followlinks)
+                return
             yield str(path), [], list(filenames or ["a.mkv", "b.mkv"])
 
         with (
