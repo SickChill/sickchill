@@ -4,15 +4,16 @@ from typing import ClassVar
 
 from sickchill import settings
 from sickchill.plugins.api import Field, register
-from sickchill.plugins.kinds.notifier import NotifierPlugin
+from sickchill.plugins.kinds.notifier import LegacyNotifierPlugin
 from sickchill.plugins.settings import decrypt_stored_password
 
 
 @register
-class PlexNotifier(NotifierPlugin):
+class PlexNotifier(LegacyNotifierPlugin):
     id = "plex"
     name = "Plex"
     version = "1.0.0"
+    enable_setting: ClassVar[str] = "USE_PLEX_SERVER"
     legacy_sections: ClassVar[tuple[str, ...]] = ("Plex",)
     schema: ClassVar[tuple[Field, ...]] = (
         Field(name="use_plex_server", type="bool", default=False, legacy_keys=("use_plex_server",)),
@@ -47,60 +48,6 @@ class PlexNotifier(NotifierPlugin):
         settings.PLEX_CLIENT_PASSWORD = decrypt_stored_password(self.ctx.get("client_password"))
         settings.PLEX_SERVER_HTTPS = bool(self.ctx.get("server_https"))
 
-    def _impl(self):
-        from sickchill.notifiers import plex as _mod
-
-        return _mod.Notifier()
-
-    def notify_snatch(self, ep_name, *args, **kwargs):
-        self._sync_settings()
-        impl = self._impl()
-        if hasattr(impl, "notify_snatch"):
-            return impl.notify_snatch(ep_name, *args, **kwargs)
-        return None
-
-    def notify_download(self, ep_name, *args, **kwargs):
-        self._sync_settings()
-        impl = self._impl()
-        if hasattr(impl, "notify_download"):
-            return impl.notify_download(ep_name, *args, **kwargs)
-        return None
-
-    def notify_postprocess(self, ep_name, *args, **kwargs):
-        self._sync_settings()
-        impl = self._impl()
-        if hasattr(impl, "notify_postprocess"):
-            return impl.notify_postprocess(ep_name, *args, **kwargs)
-        return None
-
-    def notify_subtitle_download(self, ep_name, lang="", *args, **kwargs):
-        self._sync_settings()
-        impl = self._impl()
-        if hasattr(impl, "notify_subtitle_download"):
-            return impl.notify_subtitle_download(ep_name, lang, *args, **kwargs)
-        return None
-
-    def notify_update(self, new_version="??", *args, **kwargs):
-        self._sync_settings()
-        impl = self._impl()
-        if hasattr(impl, "notify_update"):
-            return impl.notify_update(new_version, *args, **kwargs)
-        return None
-
-    def notify_login(self, ipaddress="", *args, **kwargs):
-        self._sync_settings()
-        impl = self._impl()
-        if hasattr(impl, "notify_login"):
-            return impl.notify_login(ipaddress, *args, **kwargs)
-        return None
-
-    def notify_logged_error(self, ui_error, *args, **kwargs):
-        self._sync_settings()
-        impl = self._impl()
-        if hasattr(impl, "notify_logged_error"):
-            return impl.notify_logged_error(ui_error, *args, **kwargs)
-        return None
-
     def test_notify(self, *args, **kwargs):
         self._sync_settings()
         previous = settings.USE_PLEX_SERVER
@@ -112,42 +59,7 @@ class PlexNotifier(NotifierPlugin):
             if hasattr(impl, "test_notify_pms"):
                 if args or kwargs:
                     return impl.test_notify_pms(*args, **kwargs)
-                return impl.test_notify_pms(
-                    settings.PLEX_SERVER_HOST,
-                    settings.PLEX_SERVER_USERNAME,
-                    settings.PLEX_SERVER_PASSWORD,
-                    settings.PLEX_SERVER_TOKEN,
-                )
+                return impl.test_notify_pms(settings.PLEX_SERVER_HOST, settings.PLEX_SERVER_USERNAME, settings.PLEX_SERVER_PASSWORD, settings.PLEX_SERVER_TOKEN)
             return False
         finally:
             settings.USE_PLEX_SERVER = previous
-
-    def test(self):
-        try:
-            result = self.test_notify()
-        except Exception as error:
-            return False, str(error)
-        if isinstance(result, tuple):
-            return bool(result[0]), str(result[1] if len(result) > 1 else result[0])
-        if result is None:
-            return True, "ok"
-        if result is False:
-            return False, "failed"
-        if isinstance(result, str) and result:
-            return False, result
-        return bool(result), "ok" if result else "failed"
-
-    def update_library(self, *args, **kwargs):
-        self._sync_settings()
-        impl = self._impl()
-        if hasattr(impl, "update_library"):
-            return impl.update_library(*args, **kwargs)
-        return None
-
-    def __getattr__(self, name):
-        # Forward library helpers (addFolder, update_watchlist, play_episode, ...)
-        if name.startswith("_"):
-            raise AttributeError(name)
-        self._sync_settings()
-        impl = self._impl()
-        return getattr(impl, name)

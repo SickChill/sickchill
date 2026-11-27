@@ -1,58 +1,71 @@
-"""Legacy Telegram shim — delivery lives in sickchill.plugins.notifiers.telegram."""
-
 from __future__ import annotations
 
-from sickchill.plugins.api import PluginKind
+from sickchill import logger, settings
+from sickchill.common import (
+    NOTIFY_DOWNLOAD,
+    NOTIFY_LOGIN,
+    NOTIFY_LOGIN_TEXT,
+    NOTIFY_SNATCH,
+    NOTIFY_SUBTITLE_DOWNLOAD,
+    NOTIFY_UPDATE,
+    NOTIFY_UPDATE_TEXT,
+    notifyStrings,
+)
+from sickchill.helper.helpers import make_session
+
+
+def _redact_telegram_secret(text, token) -> str:
+    message = str(text)
+    if token:
+        message = message.replace(str(token), "***")
+    return message
 
 
 class Notifier(object):
-    def _plugin(self):
-        try:
-            from sickchill.plugins.manager import plugin_manager
+    def __init__(self):
+        self.session = make_session()
 
-            return plugin_manager.instance(PluginKind.NOTIFIER, "telegram")
-        except Exception:
-            return None
+    def notify_snatch(self, ep_name, title=notifyStrings[NOTIFY_SNATCH]):
+        if settings.TELEGRAM_NOTIFY_ONSNATCH:
+            self._notify(title, ep_name)
 
-    def notify_snatch(self, ep_name, title=None):
-        plugin = self._plugin()
-        if plugin:
-            plugin.notify_snatch(ep_name) if title is None else plugin.notify_snatch(ep_name, title)
+    def notify_download(self, ep_name, title=notifyStrings[NOTIFY_DOWNLOAD]):
+        if settings.TELEGRAM_NOTIFY_ONDOWNLOAD:
+            self._notify(title, ep_name)
 
-    def notify_download(self, ep_name, title=None):
-        plugin = self._plugin()
-        if plugin:
-            plugin.notify_download(ep_name) if title is None else plugin.notify_download(ep_name, title)
+    def notify_postprocess(self, ep_name):
+        if settings.TELEGRAM_NOTIFY_ONDOWNLOAD:
+            self._notify(notifyStrings[NOTIFY_DOWNLOAD], ep_name)
 
-    def notify_subtitle_download(self, ep_name, lang, title=None):
-        plugin = self._plugin()
-        if plugin:
-            if title is None:
-                plugin.notify_subtitle_download(ep_name, lang)
-            else:
-                plugin.notify_subtitle_download(ep_name, lang, title)
+    def notify_subtitle_download(self, ep_name, lang="", title=notifyStrings[NOTIFY_SUBTITLE_DOWNLOAD]):
+        if settings.TELEGRAM_NOTIFY_ONSUBTITLEDOWNLOAD:
+            self._notify(title, f"{ep_name}: {lang}")
 
     def notify_update(self, new_version="??"):
-        plugin = self._plugin()
-        if plugin:
-            plugin.notify_update(new_version)
+        self._notify(notifyStrings[NOTIFY_UPDATE], notifyStrings[NOTIFY_UPDATE_TEXT] + new_version)
 
     def notify_login(self, ipaddress=""):
-        plugin = self._plugin()
-        if plugin:
-            plugin.notify_login(ipaddress)
+        self._notify(notifyStrings[NOTIFY_LOGIN], notifyStrings[NOTIFY_LOGIN_TEXT].format(ipaddress))
 
     def test_notify(self, id=None, api_key=None):
-        plugin = self._plugin()
-        if plugin is not None:
-            return plugin.test_notify(id=id, api_key=api_key)
-        # Force path for UI test when plugin disabled: build ephemeral send via plugin class helpers
-        from sickchill.plugins.api import PluginContext, PluginKind
-        from sickchill.plugins.notifiers.telegram import TelegramNotifier
+        return self._notify("Test", "This is a test notification from SickChill", id=id, api_key=api_key, force=True)
 
-        ctx = PluginContext(
-            kind=PluginKind.NOTIFIER,
-            plugin_id="telegram",
-            _data={"enabled": True, "id": id or "", "apikey": api_key or ""},
-        )
-        return TelegramNotifier(ctx).test_notify(id=id, api_key=api_key)
+    def _notify(self, title, message, id=None, api_key=None, force=False):
+        if not (force or settings.USE_TELEGRAM):
+            logger.debug("Notification for Telegram not enabled, skipping this notification")
+            return False, "Disabled"
+        chat_id = id or settings.TELEGRAM_ID
+        token = api_key or settings.TELEGRAM_APIKEY
+        logger.debug("Sending a Telegram message for %s", message)
+        params = {"chat_id": chat_id, "text": f"{title} : {message}"}
+        url = f"https://api.telegram.org/bot{token}/sendMessage"
+        try:
+            http = self.session.get(url, params=params, timeout=30)
+            http.raise_for_status()
+            response = http.json()
+        except Exception as error:
+            logger.warning("Telegram request failed: %s", _redact_telegram_secret(error, token))
+            return False, "Sending Telegram message failed, check the log"
+        result_message = ("Sending Telegram message failed, check the log", "Telegram message sent successfully.")[bool(response)]
+        logger.info(result_message)
+        return bool(response), result_message

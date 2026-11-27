@@ -4,15 +4,16 @@ from typing import ClassVar
 
 from sickchill import settings
 from sickchill.plugins.api import Field, register
-from sickchill.plugins.kinds.notifier import NotifierPlugin
+from sickchill.plugins.kinds.notifier import LegacyNotifierPlugin
 from sickchill.plugins.settings import decrypt_stored_password
 
 
 @register
-class KodiNotifier(NotifierPlugin):
+class KodiNotifier(LegacyNotifierPlugin):
     id = "kodi"
     name = "Kodi"
     version = "1.0.0"
+    enable_setting: ClassVar[str] = "USE_KODI"
     legacy_sections: ClassVar[tuple[str, ...]] = ("KODI",)
     schema: ClassVar[tuple[Field, ...]] = (
         Field(name="enabled", type="bool", default=False, legacy_keys=("use_kodi",)),
@@ -41,87 +42,13 @@ class KodiNotifier(NotifierPlugin):
         settings.KODI_USERNAME = self.ctx.get("username") or ""
         settings.KODI_PASSWORD = decrypt_stored_password(self.ctx.get("password"))
 
-    def _impl(self):
-        from sickchill.notifiers import kodi as _mod
-
-        return _mod.Notifier()
-
-    def notify_snatch(self, ep_name, *args, **kwargs):
-        self._sync_settings()
-        impl = self._impl()
-        if hasattr(impl, "notify_snatch"):
-            return impl.notify_snatch(ep_name, *args, **kwargs)
-        return None
-
-    def notify_download(self, ep_name, *args, **kwargs):
-        self._sync_settings()
-        impl = self._impl()
-        if hasattr(impl, "notify_download"):
-            return impl.notify_download(ep_name, *args, **kwargs)
-        return None
-
-    def notify_postprocess(self, ep_name, *args, **kwargs):
-        self._sync_settings()
-        impl = self._impl()
-        if hasattr(impl, "notify_postprocess"):
-            return impl.notify_postprocess(ep_name, *args, **kwargs)
-        return None
-
-    def notify_subtitle_download(self, ep_name, lang="", *args, **kwargs):
-        self._sync_settings()
-        impl = self._impl()
-        if hasattr(impl, "notify_subtitle_download"):
-            return impl.notify_subtitle_download(ep_name, lang, *args, **kwargs)
-        return None
-
-    def notify_update(self, new_version="??", *args, **kwargs):
-        self._sync_settings()
-        impl = self._impl()
-        if hasattr(impl, "notify_update"):
-            return impl.notify_update(new_version, *args, **kwargs)
-        return None
-
-    def notify_login(self, ipaddress="", *args, **kwargs):
-        self._sync_settings()
-        impl = self._impl()
-        if hasattr(impl, "notify_login"):
-            return impl.notify_login(ipaddress, *args, **kwargs)
-        return None
-
-    def notify_logged_error(self, ui_error, *args, **kwargs):
-        self._sync_settings()
-        impl = self._impl()
-        if hasattr(impl, "notify_logged_error"):
-            return impl.notify_logged_error(ui_error, *args, **kwargs)
-        return None
-
     def test_notify(self, *args, **kwargs):
         self._sync_settings()
         impl = self._impl()
         if hasattr(impl, "test_notify"):
             if not args and "host" not in kwargs:
-                kwargs = dict(
-                    kwargs,
-                    host=settings.KODI_HOST,
-                    username=settings.KODI_USERNAME,
-                    password=settings.KODI_PASSWORD,
-                )
+                kwargs = dict(kwargs, host=settings.KODI_HOST, username=settings.KODI_USERNAME, password=settings.KODI_PASSWORD)
             return impl.test_notify(*args, **kwargs)
         if hasattr(impl, "test_notify_pms"):
             return impl.test_notify_pms(*args, **kwargs)
         return False
-
-    def update_library(self, *args, **kwargs):
-        self._sync_settings()
-        impl = self._impl()
-        if hasattr(impl, "update_library"):
-            return impl.update_library(*args, **kwargs)
-        return None
-
-    def __getattr__(self, name):
-        # Forward library helpers (addFolder, update_watchlist, play_episode, ...)
-        if name.startswith("_"):
-            raise AttributeError(name)
-        self._sync_settings()
-        impl = self._impl()
-        return getattr(impl, name)

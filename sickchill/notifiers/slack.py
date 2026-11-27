@@ -1,59 +1,67 @@
-"""Legacy Slack shim — delivery lives in sickchill.plugins.notifiers.slack."""
-
 from __future__ import annotations
 
-from sickchill.plugins.api import PluginKind
+import json
+
+import requests
+from requests.structures import CaseInsensitiveDict
+
+from sickchill import common, logger, settings
 
 
 class Notifier(object):
-    def _plugin(self):
-        try:
-            from sickchill.plugins.manager import plugin_manager
-
-            return plugin_manager.instance(PluginKind.NOTIFIER, "slack")
-        except Exception:
-            return None
+    SLACK_WEBHOOK_URL = "https://hooks.slack.com/services/"
+    SLACK_ICON_URL = "https://github.com/SickChill/SickChill/raw/master/sickchill/gui/slick/images/sickchill-sc.png"
 
     def notify_snatch(self, ep_name):
-        plugin = self._plugin()
-        if plugin:
-            plugin.notify_snatch(ep_name)
+        if settings.SLACK_NOTIFY_SNATCH:
+            self._notify(common.notifyStrings[common.NOTIFY_SNATCH] + ": " + ep_name)
 
     def notify_download(self, ep_name):
-        plugin = self._plugin()
-        if plugin:
-            plugin.notify_download(ep_name)
+        if settings.SLACK_NOTIFY_DOWNLOAD:
+            self._notify(common.notifyStrings[common.NOTIFY_DOWNLOAD] + ": " + ep_name)
+
+    def notify_postprocess(self, ep_name):
+        if settings.SLACK_NOTIFY_DOWNLOAD:
+            self._notify(common.notifyStrings[common.NOTIFY_POSTPROCESS] + ": " + ep_name)
 
     def notify_subtitle_download(self, ep_name, lang):
-        plugin = self._plugin()
-        if plugin:
-            plugin.notify_subtitle_download(ep_name, lang)
+        if settings.SLACK_NOTIFY_SUBTITLEDOWNLOAD:
+            self._notify(common.notifyStrings[common.NOTIFY_SUBTITLE_DOWNLOAD] + " " + ep_name + ": " + lang)
 
     def notify_update(self, new_version="??"):
-        plugin = self._plugin()
-        if plugin:
-            plugin.notify_update(new_version)
+        update_text = common.notifyStrings[common.NOTIFY_UPDATE_TEXT]
+        title = common.notifyStrings[common.NOTIFY_UPDATE]
+        self._notify(title + " - " + update_text + new_version)
 
     def notify_login(self, ipaddress=""):
-        plugin = self._plugin()
-        if plugin:
-            plugin.notify_login(ipaddress)
+        update_text = common.notifyStrings[common.NOTIFY_LOGIN_TEXT]
+        title = common.notifyStrings[common.NOTIFY_LOGIN]
+        self._notify(title + " - " + update_text.format(ipaddress))
 
     def test_notify(self):
-        plugin = self._plugin()
-        if plugin is not None:
-            return plugin.test_notify()
-        from sickchill import settings
-        from sickchill.plugins.api import PluginContext, PluginKind
-        from sickchill.plugins.notifiers.slack import SlackNotifier
+        return self._notify("This is a test notification from SickChill", force=True)
 
-        ctx = PluginContext(
-            kind=PluginKind.NOTIFIER,
-            plugin_id="slack",
-            _data={
-                "enabled": True,
-                "webhook": settings.SLACK_WEBHOOK or "",
-                "icon_emoji": settings.SLACK_ICON_EMOJI or "",
-            },
-        )
-        return SlackNotifier(ctx).test_notify()
+    def _notify(self, message="", force=False):
+        if not settings.USE_SLACK and not force:
+            logger.debug("Notification for Slack not enabled, skipping this notification")
+            return False
+        return self._send(message)
+
+    def _send(self, message=None):
+        webhook = settings.SLACK_WEBHOOK or ""
+        slack_webhook = self.SLACK_WEBHOOK_URL + str(webhook).replace(self.SLACK_WEBHOOK_URL, "")
+        icon_emoji = settings.SLACK_ICON_EMOJI or ""
+        logger.info("Sending slack message: %s", message)
+        headers = CaseInsensitiveDict({"Content-Type": "application/json"})
+        try:
+            response = requests.post(
+                slack_webhook,
+                data=json.dumps(dict(text=message, username="SickChillBot", icon_emoji=icon_emoji, icon_url=self.SLACK_ICON_URL)),
+                headers=headers,
+                timeout=30,
+            )
+            response.raise_for_status()
+        except Exception as error:
+            logger.exception("Error Sending Slack message: %s", error)
+            return False
+        return True
