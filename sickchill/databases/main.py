@@ -4,7 +4,6 @@ from pathlib import Path
 from sickchill import common, db, logger, settings
 from sickchill.helper import helpers
 from sickchill.helper.common import episode_num
-from sickchill.helper.network_timezones import sc_today
 
 MIN_DB_VERSION = 44
 MAX_DB_VERSION = 44
@@ -157,17 +156,7 @@ class MainSanityCheck(db.DBSanityCheck):
             self.connection.action("CREATE INDEX idx_sta_epi_sta_air ON tv_episodes (season, episode, status, airdate)")
 
     def fix_unaired_episodes(self):
-        assert False, "This fix is disabled!"
-        current_date = sc_today()
-        sql_results = self.connection.select(
-            "SELECT episode_id FROM tv_episodes WHERE (airdate > ? or airdate = 1) AND status in (?,?) AND season > 0",
-            [current_date.toordinal(), common.SKIPPED, common.WANTED],
-        )
-
-        for cur_unaired in sql_results:
-            current_episode_id = cur_unaired["episode_id"]
-            logger.info(_("Fixing unaired episode status for episode_id: {current_episode_id}".format(current_episode_id=current_episode_id)))
-            self.connection.action("UPDATE tv_episodes SET status = ? WHERE episode_id = ?", [common.UNAIRED, current_episode_id])
+        """Disabled: incorrectly rewrote skipped/wanted episodes to unaired. See check()."""
 
     def fix_episode_statuses(self):
         sql_results = self.connection.select("SELECT episode_id, showid, location FROM tv_episodes WHERE status IS NULL")

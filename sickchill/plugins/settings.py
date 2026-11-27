@@ -574,7 +574,9 @@ def sync_legacy_maps_to_settings(cfg: ConfigObj, maps) -> None:
             for field_def in legacy_map.fields:
                 if not hasattr(sc_settings, field_def.settings_attr):
                     continue
-                setattr(sc_settings, field_def.settings_attr, _settings_value_from_section(field_def, section))
+                value = _settings_value_from_section(field_def, section)
+                setattr(sc_settings, field_def.settings_attr, value)
+                _register_secret_setting(legacy_map, field_def, value)
             continue
 
         if not section:
@@ -582,7 +584,17 @@ def sync_legacy_maps_to_settings(cfg: ConfigObj, maps) -> None:
         for field_def in legacy_map.fields:
             if not hasattr(sc_settings, field_def.settings_attr):
                 continue
-            setattr(sc_settings, field_def.settings_attr, _settings_value_from_section(field_def, section))
+            value = _settings_value_from_section(field_def, section)
+            setattr(sc_settings, field_def.settings_attr, value)
+            _register_secret_setting(legacy_map, field_def, value)
+
+
+def _register_secret_setting(legacy_map, field_def, value) -> None:
+    from sickchill import logger
+
+    if not logger.field_should_censor(field_def.name, field_def.type):
+        return
+    logger.register_censored((legacy_map.kind, f"{legacy_map.plugin_id}.{field_def.name}"), value)
 
 
 def _ensure_settings_defaults(sc_settings, fields) -> None:

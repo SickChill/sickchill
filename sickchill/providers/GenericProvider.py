@@ -436,7 +436,7 @@ class GenericProvider(object):
                 self.mark_rate_limited(headers.get("Retry-After") or headers.get("retry-after"))
 
             if response.request.method == "POST":
-                logger.debug(f"With post data: {response.request.body}")
+                logger.debug(f"With post data: {logger.redact_post_body(response.request.body)}")
 
     def get_url(self, url, post_data=None, params=None, timeout=30, **kwargs):
         if self.is_rate_limited():

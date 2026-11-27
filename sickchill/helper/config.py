@@ -865,8 +865,8 @@ def check_setting_str(config, cfg_name, item_name, def_val=str(""), silent=True,
 
         config[cfg_name][item_name] = helpers.encrypt(my_val, encryption_version)
 
-    if (censor_log or (cfg_name, item_name) in logger.censored_items.items()) and not item_name.endswith("custom_url"):
-        logger.censored_items[cfg_name, item_name] = my_val
+    if (censor_log or (cfg_name, item_name) in logger.censored_items) and not item_name.endswith("custom_url"):
+        logger.register_censored((cfg_name, item_name), my_val)
 
     if not silent:
         logger.debug(item_name + " -> " + my_val)
@@ -938,8 +938,8 @@ def peek_setting_str(config, cfg_name, item_name, def_val="", censor_log=False) 
     except (ValueError, IndexError, KeyError, TypeError):
         my_val = def_val
 
-    if (censor_log or (cfg_name, item_name) in logger.censored_items.items()) and not item_name.endswith("custom_url"):
-        logger.censored_items[cfg_name, item_name] = my_val
+    if (censor_log or (cfg_name, item_name) in logger.censored_items) and not item_name.endswith("custom_url"):
+        logger.register_censored((cfg_name, item_name), my_val)
 
     return str(my_val)
 

@@ -145,11 +145,8 @@ class ConfigGeneral(Config):
         tvdb_changed = new_tvdb_key != (settings.TVDB_V4_APIKEY or "") or (new_tvdb_pin or "") != (settings.TVDB_V4_PIN or "")
         settings.TVDB_V4_APIKEY = new_tvdb_key
         settings.TVDB_V4_PIN = new_tvdb_pin
-        logger.censored_items[("General", "tvdb_v4_apikey")] = settings.TVDB_V4_APIKEY
-        if settings.TVDB_V4_PIN:
-            logger.censored_items[("General", "tvdb_v4_pin")] = settings.TVDB_V4_PIN
-        elif ("General", "tvdb_v4_pin") in logger.censored_items:
-            del logger.censored_items[("General", "tvdb_v4_pin")]
+        logger.register_censored(("General", "tvdb_v4_apikey"), settings.TVDB_V4_APIKEY)
+        logger.register_censored(("General", "tvdb_v4_pin"), settings.TVDB_V4_PIN)
         if tvdb_changed:
             # Force next TVDB call to rebuild client/token with new credentials
             try:

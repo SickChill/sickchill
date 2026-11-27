@@ -1,3 +1,4 @@
+import logging
 import tempfile
 import threading
 import unittest
@@ -97,3 +98,70 @@ class WebServerThreadNameTests(unittest.TestCase):
             self.assertEqual(worker.name, "WEBSERVER-HOME")
         finally:
             worker.name = previous
+
+
+def _format_censored(msg: str) -> str:
+    record = logging.LogRecord("sickchill", logging.DEBUG, __file__, 1, msg, (), None)
+    return logger.DispatchFormatter("{message}").format(record)
+
+
+class LogCensorTests(unittest.TestCase):
+    def setUp(self):
+        self._saved = dict(logger.censored_items)
+        logger.censored_items.clear()
+
+    def tearDown(self):
+        logger.censored_items.clear()
+        logger.censored_items.update(self._saved)
+
+    def test_register_skips_none_and_placeholders(self):
+        logger.register_censored(("t", "none"), None)
+        logger.register_censored(("t", "none_str"), "None")
+        logger.register_censored(("t", "zero"), "0")
+        logger.register_censored(("t", "short"), "ab")
+        logger.register_censored(("t", "empty"), "")
+        self.assertEqual(logger.censored_items, {})
+
+    def test_none_placeholder_is_not_hashed_in_quality_or_client_logs(self):
+        logger.register_censored(("t", "none"), "None")
+        quality_line = "Any,Best = [ 720p HDTV, 1080p HDTV ] [ None ] Found = [ 1080p WEB-DL ]"
+        formatted = _format_censored(quality_line)
+        self.assertIn("None", formatted)
+        self.assertNotIn(logger.CENSOR_PLACEHOLDER, formatted)
+
+        client_line = "Posting as file with {'ratio_limit': None, 'seeding_time_limit': None, 'tags': 'sickchill'}"
+        formatted = _format_censored(client_line)
+        self.assertIn("None", formatted)
+        self.assertNotIn(logger.CENSOR_PLACEHOLDER, formatted)
+
+        pp_line = "Processing /tmp/show.mkv (None)"
+        formatted = _format_censored(pp_line)
+        self.assertIn("(None)", formatted)
+
+    def test_password_and_username_are_hashed(self):
+        logger.register_censored(("PROVIDERS", "torrentday.username"), "stephenbkk28")
+        logger.register_censored(("PROVIDERS", "torrentday.password"), "TowerDestroyer28")
+        formatted = _format_censored("With post data: username=stephenbkk28&password=TowerDestroyer28&submit.x=0&submit.y=0")
+        self.assertNotIn("stephenbkk28", formatted)
+        self.assertNotIn("TowerDestroyer28", formatted)
+        self.assertIn("username=" + logger.CENSOR_PLACEHOLDER, formatted)
+        self.assertIn("password=" + logger.CENSOR_PLACEHOLDER, formatted)
+        self.assertIn("submit.x=0", formatted)
+
+    def test_redact_post_body_masks_form_and_json(self):
+        form = logger.redact_post_body("username=stephenbkk28&password=TowerDestroyer28&submit.x=0&submit.y=0")
+        self.assertIn("username=" + logger.CENSOR_PLACEHOLDER, form)
+        self.assertIn("password=" + logger.CENSOR_PLACEHOLDER, form)
+        self.assertIn("submit.x=0", form)
+
+        payload = logger.redact_post_body('{"method": "auth.login", "params": [], "password": "secret-pass"}')
+        self.assertNotIn("secret-pass", payload)
+        self.assertIn(logger.CENSOR_PLACEHOLDER, payload)
+        self.assertIn("auth.login", payload)
+
+    def test_register_replaces_previous_value(self):
+        logger.register_censored(("t", "password"), "old-secret-value")
+        logger.register_censored(("t", "password"), "new-secret-value")
+        formatted = _format_censored("old-secret-value new-secret-value")
+        self.assertIn("old-secret-value", formatted)
+        self.assertNotIn("new-secret-value", formatted)

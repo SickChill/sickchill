@@ -161,24 +161,20 @@ class NameParser(object):
 
             if "air_date" in named_groups:
                 air_date = match.group("air_date")
+                # Workaround for shows that get interpreted as 'air_date' incorrectly.
+                # Shows so far are 11.22.63 and 9-1-1
+                if re.sub(r"\D*", "", air_date) in ("112263", "911"):
+                    continue
+
                 try:
-                    # Workaround for shows that get interpreted as 'air_date' incorrectly.
-                    # Shows so far are 11.22.63 and 9-1-1
-                    excluded_shows = ["112263", "911"]
-                    assert re.sub(r"\D*", "", air_date) not in excluded_shows
+                    check: date = parse(air_date, fuzzy=True).date()
+                    # Make sure a 20th century date isn't returned as a 21st century date
+                    # 1 Year into the future (No releases should be coming out a year ahead of time, that's just insane)
+                    if check > check.today() and (check - check.today()).days // 365 > 1:
+                        check = check.replace(year=check.year - 100)
 
-                    try:
-                        check: date = parse(air_date, fuzzy=True).date()
-                        # Make sure a 20th century date isn't returned as a 21st century date
-                        # 1 Year into the future (No releases should be coming out a year ahead of time, that's just insane)
-                        if check > check.today() and (check - check.today()).days // 365 > 1:
-                            check = check.replace(year=check.year - 100)
-
-                        result.air_date = check
-                        result.score += 1
-                    except Exception as error:
-                        logger.debug(error)
-                        continue
+                    result.air_date = check
+                    result.score += 1
                 except Exception as error:
                     logger.debug(error)
                     continue

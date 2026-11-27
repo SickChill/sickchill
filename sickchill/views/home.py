@@ -115,19 +115,27 @@ class Home(WebRoot):
 
         return episode_object, ""
 
+    @staticmethod
+    def _root_dir_from_selection(selected_root):
+        """Resolve a posted root-dir index to a path prefix.
+
+        The All option posts ``-1``. Using that as a list index wraps to the last directory.
+        """
+        if not selected_root or not settings.ROOT_DIRS:
+            return ""
+        backend_dirs = settings.ROOT_DIRS.split("|")[1:]
+        try:
+            root_index = int(selected_root)
+            if root_index < 0:
+                return ""
+            return backend_dirs[root_index]
+        except (IndexError, ValueError, TypeError):
+            return ""
+
     def index(self):
         t = PageTemplate(rh=self, filename="home.mako")
         selected_root = self.get_body_argument("root", "")
-
-        if selected_root and settings.ROOT_DIRS:
-            backend_dirs = settings.ROOT_DIRS.split("|")[1:]
-            try:
-                assert selected_root != "-1"
-                selected_root_dir = backend_dirs[int(selected_root)]
-            except (IndexError, ValueError, TypeError, AssertionError):
-                selected_root_dir = ""
-        else:
-            selected_root_dir = ""
+        selected_root_dir = self._root_dir_from_selection(selected_root)
 
         shows = []
         anime = []
@@ -162,15 +170,7 @@ class Home(WebRoot):
         if kind not in ("all", "series", "anime"):
             kind = "all"
 
-        if selected_root and settings.ROOT_DIRS:
-            backend_dirs = settings.ROOT_DIRS.split("|")[1:]
-            try:
-                assert selected_root != "-1"
-                selected_root_dir = backend_dirs[int(selected_root)]
-            except (IndexError, ValueError, TypeError, AssertionError):
-                selected_root_dir = ""
-        else:
-            selected_root_dir = ""
+        selected_root_dir = self._root_dir_from_selection(selected_root)
 
         shows_to_show = []
         skipped = 0

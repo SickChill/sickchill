@@ -605,6 +605,18 @@ def _apply_provider_options(cfg: ConfigObj, provider) -> None:
             if hasattr(provider, "name") and section.get("name"):
                 provider.name = section["name"]
 
+    _register_provider_secrets(provider)
+
+
+def _register_provider_secrets(provider) -> None:
+    """Keep provider credentials in the log censor list after PROVIDERS-section load."""
+    from sickchill import logger
+
+    provider_id = provider.get_id()
+    for field in ("password", "api_key", "hash", "digest", "username", "passkey", "pin", "cookies", "key"):
+        if hasattr(provider, field):
+            logger.register_censored(("PROVIDERS", f"{provider_id}.{field}"), getattr(provider, field, None))
+
 
 def _normalize_provider_order() -> None:
     """Keep PROVIDER_ORDER as enabled-only ids that still exist (strip stale / disabled / id:flag)."""

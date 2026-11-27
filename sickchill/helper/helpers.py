@@ -1161,9 +1161,10 @@ def is_hidden_folder(folder):
     def has_hidden_attribute(filepath):
         try:
             attrs = ctypes.windll.kernel32.GetFileAttributesW(ctypes.c_wchar_p(str(filepath)))
-            assert attrs != -1
+            if attrs == -1:
+                return False
             result = bool(attrs & 2)
-        except (AttributeError, AssertionError, OSError, IOError):
+        except (AttributeError, OSError, IOError):
             result = False
         return result
 
@@ -1633,7 +1634,7 @@ def handle_requests_exception(
             logger.info(_("url is {requests_exception.request.url}").format(requests_exception=requests_exception))
             logger.info(_("headers are {requests_exception.request.headers}").format(requests_exception=requests_exception))
             logger.info(_("params are {requests_exception.request.params}").format(requests_exception=requests_exception))
-            logger.info(_("post_data is {requests_exception.request.data}").format(requests_exception=requests_exception))
+            logger.info(_("post_data is {post_data}").format(post_data=logger.redact_post_body(getattr(requests_exception.request, "data", None))))
         if level == logger.WARNING:
             logger.debug(traceback.format_exc())
     except Exception as error:

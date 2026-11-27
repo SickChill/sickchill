@@ -153,13 +153,14 @@ class Provider(TorrentProvider):
                 get_params.update(self.categories[mode])
                 get_params["q"] = search_string
 
+                torrents = self.get_url(search_url, params=get_params, returns="json")
+                # Empty string, None, or a non-iterable payload #4304
+                if not torrents:
+                    logger.debug(_("Data returned from provider does not contain any torrents"))
+                    continue
                 try:
-                    torrents = self.get_url(search_url, params=get_params, returns="json")
-                    # Handle empty string response or None #4304
-                    assert torrents
-                    # Make sure it is iterable #4304
                     iter(torrents)
-                except (TypeError, AssertionError):
+                except TypeError:
                     logger.debug(_("Data returned from provider does not contain any torrents"))
                     continue
 

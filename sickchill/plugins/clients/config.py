@@ -68,7 +68,7 @@ _DSM_KEYS = ("host", "username", "password", "path", "use_synoindex")
 
 
 def _apply_section_to_settings(section: dict[str, Any], fields: tuple[tuple[str, str, str], ...]) -> None:
-    from sickchill import settings as sc_settings
+    from sickchill import logger, settings as sc_settings
 
     if not section:
         return
@@ -81,6 +81,8 @@ def _apply_section_to_settings(section: dict[str, Any], fields: tuple[tuple[str,
         if "password" in name:
             value = decrypt_stored_password(value)
         setattr(sc_settings, attr, value)
+        if logger.field_should_censor(name, field_type):
+            logger.register_censored(("CLIENTS", attr), value)
 
 
 def _settings_to_section(fields: tuple[tuple[str, str, str], ...], *, include: set[str] | None = None) -> dict[str, Any]:

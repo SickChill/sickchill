@@ -1,10 +1,11 @@
+import json
 import logging
 import logging.handlers
 import os
 import re
 import sys
 from logging import NullHandler
-from urllib.parse import quote
+from urllib.parse import parse_qsl, quote, quote_plus
 
 from sickchill import settings
 from sickchill.helper.common import dateTimeFormat
@@ -26,6 +27,187 @@ LOGGING_LEVELS = {
 }
 
 censored_items = {}
+
+CENSOR_PLACEHOLDER = "*" * 8
+# Placeholders / type names that show up in logs (empty preferred quality is "None",
+# qBittorrent args use Python None, post-process release_name can be None).
+_CENSOR_SKIP = frozenset(
+    {
+        "none",
+        "true",
+        "false",
+        "yes",
+        "no",
+        "on",
+        "off",
+        "null",
+        "nil",
+        "0",
+        "1",
+        "-1",
+        "tv",
+        "anime",
+        "sickchill",
+        "http",
+        "https",
+        "nzbget",
+    }
+)
+_MIN_CENSOR_LEN = 3
+_SENSITIVE_KEYS = frozenset(
+    {
+        "password",
+        "passwd",
+        "passkey",
+        "pass",
+        "pwd",
+        "username",
+        "user",
+        "api_key",
+        "apikey",
+        "jackett_apikey",
+        "hash",
+        "digest",
+        "pin",
+        "token",
+        "secret",
+        "cookies",
+        "cookie",
+        "authorization",
+        "authorizationtoken",
+        "webhook",
+        "access_token",
+        "refresh_token",
+        "api_secret",
+        "auth_token",
+    }
+)
+_SECRET_NAME_TOKENS = frozenset(
+    {
+        "password",
+        "passwd",
+        "passkey",
+        "username",
+        "apikey",
+        "token",
+        "secret",
+        "webhook",
+        "hash",
+        "digest",
+        "pin",
+        "cookies",
+        "cookie",
+        "authorization",
+    }
+)
+
+
+def usable_censor_value(value) -> str | None:
+    """Return a string worth masking, or None for placeholders / empty / too-short values."""
+    if value is None:
+        return None
+    if isinstance(value, bytes):
+        try:
+            value = value.decode()
+        except UnicodeDecodeError:
+            return None
+    if isinstance(value, bool) or not isinstance(value, (str, int, float)):
+        return None
+    text = str(value).strip()
+    if not text or len(text) < _MIN_CENSOR_LEN:
+        return None
+    if text.lower() in _CENSOR_SKIP:
+        return None
+    return text
+
+
+def register_censored(key, value) -> None:
+    """Store a secret for log masking, or drop the key when the value is not usable."""
+    text = usable_censor_value(value)
+    if text is None:
+        censored_items.pop(key, None)
+        return
+    censored_items[key] = text
+
+
+def field_should_censor(name: str, field_type: str = "", secret: bool = False) -> bool:
+    if secret or (field_type or "").lower() == "password":
+        return True
+    lowered = str(name or "").lower().replace("-", "_")
+    if lowered in _SENSITIVE_KEYS:
+        return True
+    return any(token in lowered.split("_") for token in _SECRET_NAME_TOKENS)
+
+
+def is_sensitive_key(name: str) -> bool:
+    lowered = str(name or "").lower().replace("-", "_")
+    if lowered in _SENSITIVE_KEYS:
+        return True
+    return any(token in lowered.split("_") for token in _SECRET_NAME_TOKENS)
+
+
+def _redact_structure(value):
+    if isinstance(value, dict):
+        return {key: (CENSOR_PLACEHOLDER if is_sensitive_key(key) else _redact_structure(item)) for key, item in value.items()}
+    if isinstance(value, list):
+        return [_redact_structure(item) for item in value]
+    return value
+
+
+def redact_post_body(body) -> str:
+    """Mask credential fields in a logged POST body (form or JSON)."""
+    if body is None:
+        return ""
+    if isinstance(body, bytes):
+        try:
+            text = body.decode()
+        except UnicodeDecodeError:
+            return "<binary>"
+    else:
+        text = str(body)
+    stripped = text.strip()
+    if not stripped:
+        return text
+    if stripped[0] in "{[":
+        try:
+            return json.dumps(_redact_structure(json.loads(stripped)))
+        except (TypeError, ValueError):
+            pass
+    if "=" in stripped:
+        pairs = parse_qsl(stripped, keep_blank_values=True)
+        if pairs:
+            parts = []
+            for key, value in pairs:
+                masked = CENSOR_PLACEHOLDER if is_sensitive_key(key) else quote_plus(str(value))
+                parts.append(f"{quote_plus(str(key))}={masked}")
+            return "&".join(parts)
+    return text
+
+
+def _censor_values() -> list[str]:
+    values = []
+    seen: set[str] = set()
+    for item in censored_items.values():
+        text = usable_censor_value(item)
+        if not text or text in seen:
+            continue
+        seen.add(text)
+        values.append(text)
+        for encoded in (quote(text, safe=""), quote_plus(text)):
+            if encoded and encoded not in seen:
+                seen.add(encoded)
+                values.append(encoded)
+    values.sort(key=len, reverse=True)
+    return values
+
+
+def _replace_secret(msg: str, item: str) -> str:
+    if re.fullmatch(r"\w+", item):
+        try:
+            return re.sub(rf"\b{re.escape(item)}\b", CENSOR_PLACEHOLDER, msg)
+        except re.error:
+            pass
+    return msg.replace(item, CENSOR_PLACEHOLDER)
 
 
 def rotated_log_namer(default_name: str) -> str:
@@ -92,36 +274,27 @@ class DispatchFormatter(logging.Formatter, object):
         :param record: to format
         """
 
-        msg = record.msg
+        try:
+            msg = record.getMessage()
+        except Exception:
+            msg = record.msg
 
-        # set of censored items
-        censored = {item for _, item in censored_items.items() if item}
-        # set of censored items and urlencoded counterparts
-        censored = list(censored | {quote(item) for item in censored})
-        # sort the list in order of descending length so that entire item is censored
-        # e.g. password and password_1 both get censored instead of getting ********_1
-        censored.sort(key=len, reverse=True)
-        # remove sickchill from the list of censored items
-        censored = [item for item in censored if item and item.lower() != "sickchill"]
-
-        if not isinstance(msg, (str, bytes)):
+        if isinstance(msg, bytes):
+            try:
+                msg = msg.decode()
+            except UnicodeDecodeError:
+                msg = repr(msg)
+        elif not isinstance(msg, str):
             msg = repr(msg)
 
-        for item in censored:
-            try:
-                # passwords that include ++ for example will error. Cannot escape or it won't match at all.
-                # Always use 8 *'s, so people cant guess censored item length for things like passwords.
-                msg = re.sub(rf"\b({item})\b", "*" * 8, msg)
-            except re.error:
-                msg = msg.replace(item, "*" * 8)
-            except TypeError:
-                print(msg)
+        for item in _censor_values():
+            msg = _replace_secret(msg, item)
 
         # Needed because Newznab apikey isn't stored as key=value in a section.
         msg = re.sub(r"([&?]r|[&?]apikey|[&?]jackett_apikey|[&?]api_key)(?:=|%3D)[^&]*([&\w]?)", r"\1=**********\2", msg, flags=re.IGNORECASE)
 
-        # Set the new message into the record!
         record.msg = msg
+        record.args = ()
 
         WebErrorViewer.add(record)
 
