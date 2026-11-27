@@ -13,7 +13,7 @@
     from sickchill.helper.common import pretty_file_size, try_int
 %>
 <%block name="metas">
-    <meta data-var="showBackgroundImage" data-content="${static_url(show.show_image_url('fanart'))}?t=${int(datetime.datetime.now().timestamp())}">
+    <meta data-var="showBackgroundImage" data-content="${static_url(show.show_image_url('fanart'))}">
 </%block>
 <%block name="scripts">
     <script type="text/javascript" src="${static_url('js/lib/jquery.bookmarkscroll.js')}"></script>
@@ -114,7 +114,7 @@
                 <div class="col-md-12">
                     <div class="poster-container">
                         <a href="${static_url(show.show_image_url('poster_thumb'))}">
-                            <img src="${static_url(show.show_image_url('poster_thumb'))}?t=${int(datetime.datetime.now().timestamp())}"
+                            <img src="${static_url(show.show_image_url('poster_thumb'))}"
                                  class="tvshowImg" alt="${_('Poster for')} ${show.name}"
                             />
                         </a>
@@ -123,7 +123,7 @@
                     <div class="info-container">
                         <div class="row">
                             <div class="pull-right col-lg-4 col-md-4 hidden-sm hidden-xs">
-                                <img src="${static_url(show.show_image_url('banner'))}?t=${int(datetime.datetime.now().timestamp())}"
+                                <img src="${static_url(show.show_image_url('banner'))}"
                                     alt="Banner"
                                     style="max-height:50px;border:1px solid black;"
                                     class="pull-right">

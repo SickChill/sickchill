@@ -34,6 +34,15 @@ class SickChillStaticFileHandler(StaticFileHandler):
 
         return "%s?v=%s" % (url, version_hash)
 
+    @classmethod
+    def drop_cached_version(cls, file_path: str) -> None:
+        """Forget one file's ?v= hash. Tornado keeps it until reset, so a replaced poster would keep the old URL."""
+        if not file_path:
+            return
+        abs_path = os.path.abspath(file_path)
+        with cls._lock:
+            cls._static_hashes.pop(abs_path, None)
+
 
 class SCWebServer(threading.Thread):
     def __init__(self, options=None):
